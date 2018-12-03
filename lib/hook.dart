@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 @immutable
@@ -14,7 +16,6 @@ class HookState<T extends Hook> {
   T get hook => _hook;
   void initHook() {}
   void dispose() {}
-  void didUpdateWidget(covariant Widget widget) {}
   void didUpdateHook(covariant Hook hook) {}
   void setState(VoidCallback callback) {
     callback();
@@ -43,7 +44,6 @@ class _StreamHookState<T> extends HookState<_StreamHook<T>> {
   }
 
   void onData(T event) {
-    print('on data $event');
     setState(() {
       snapshot = AsyncSnapshot<T>.withData(ConnectionState.active, event);
     });
@@ -72,12 +72,19 @@ class HookElement extends StatelessElement implements HookContext {
   int _hooksIndex;
   List<HookState> _hooks;
 
+  bool _debugIsBuilding;
+
   HookElement(HookWidget widget) : super(widget);
 
   @override
   HookWidget get widget => super.widget;
 
   HookState useHook(Hook hook) {
+    assert(_debugIsBuilding == true, '''
+    Hooks should only be called within the build method of a widget.
+    Calling them outside of build method leads to an unstable state and is therefore prohibited
+    ''');
+
     final int hooksIndex = _hooksIndex;
     _hooksIndex++;
     _hooks ??= [];
@@ -109,11 +116,41 @@ class HookElement extends StatelessElement implements HookContext {
   @override
   void performRebuild() {
     _hooksIndex = 0;
+    assert(() {
+      _debugIsBuilding = true;
+      return true;
+    }());
     super.performRebuild();
+    assert(() {
+      _debugIsBuilding = false;
+      return true;
+    }());
+  }
+
+  @override
+  T useAnimation<T>(Animation<T> animation) {
+    throw new UnimplementedError();
+  }
+
+  @override
+  void useListenable(Listenable listenable) {
+    throw new UnimplementedError();
+  }
+
+  @override
+  ValueNotifier<T> useState<T>([T initialData]) {
+    throw new UnimplementedError();
+  }
+
+  @override
+  T useValueListenable<T>(ValueListenable<T> valueListenable) {
+    throw new UnimplementedError();
   }
 }
 
 abstract class HookWidget extends StatelessWidget {
+  const HookWidget({Key key}) : super(key: key);
+
   @override
   HookElement createElement() => HookElement(this);
 
@@ -123,5 +160,9 @@ abstract class HookWidget extends StatelessWidget {
 
 abstract class HookContext extends BuildContext {
   HookState useHook(Hook hook);
+  void useListenable(Listenable listenable);
+  T useAnimation<T>(Animation<T> animation);
+  T useValueListenable<T>(ValueListenable<T> valueListenable);
+  ValueNotifier<T> useState<T>(T initialData);
   AsyncSnapshot<T> useStream<T>(Stream<T> stream, {T initialData});
 }
