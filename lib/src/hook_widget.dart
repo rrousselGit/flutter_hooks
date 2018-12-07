@@ -1,22 +1,174 @@
 part of 'hook.dart';
 
+/// [Hook] is similar to a [StatelessWidget], but is not associated
+/// to an [Element].
+///
+/// A [Hook] is typically the equivalent of [State] for [StatefulWidget],
+/// with the notable difference that a [HookWidget] can have more than one [Hook].
+/// A [Hook] is created within the [build] method of [HookWidget] and the creation
+/// must be made unconditionally, always in the same order.
+///
+/// ### Good:
+/// ```
+/// class Good extends HookWidget {
+///   @override
+///   Widget build(HookContext context) {
+///     final name = context.useState("");
+///     // ...
+///   }
+/// }
+/// ```
+///
+/// ### Bad:
+/// ```
+/// class Bad extends HookWidget {
+///   @override
+///   Widget build(HookContext context) {
+///     if (condition) {
+///       final name = context.useState("");
+///       // ...
+///     }
+///   }
+/// }
+/// ```
+///
+/// The reason for such restriction is that [HookState] are obtained based on their index.
+/// So the index must never ever change, or it will lead to undesired behavior.
+///
+/// ## The usage
+///
+/// [Hook] is powerful tool to reuse [State] logic between multiple [Widget].
+/// They are used to extract logic that depends on a [Widget] life-cycle (such as [dispose]).
+///
+/// While mixins are a good candidate too, they do not allow sharing values. A mixin cannot reasonnably
+/// define a variable, as this can lead to variable conflicts on bigger widgets.
+///
+/// Hooks are designed so that they get the benefits of mixins, but are totally independent from each others.
+/// This means that hooks can store and expose values without fearing that the name is already taken by another mixin.
+///
+/// ## Example
+///
+/// A common use-case is to handle disposable objects such as [AnimationController].
+///
+/// With the usual [StatefulWidget], we would typically have the following:
+///
+/// ```
+/// class Usual extends StatefulWidget {
+///   @override
+///   _UsualState createState() => _UsualState();
+/// }
+///
+/// class _UsualState extends State<Usual>
+///     with SingleTickerProviderStateMixin {
+///   AnimationController _controller;
+///
+///   @override
+///   void initState() {
+///     super.initState();
+///     _controller = AnimationController(
+///       vsync: this,
+///       duration: const Duration(seconds: 1),
+///     );
+///   }
+///
+///   @override
+///   void dispose() {
+///     super.dispose();
+///     _controller.dispose();
+///   }
+///
+///   @override
+///   Widget build(BuildContext context) {
+///     return Container(
+///
+///     );
+///   }
+/// }
+/// ```
+///
+/// This is undesired because every single widget that want to use an [AnimationController] will have to
+/// rewrite this extact piece of code.
+///
+/// With hooks it is possible to extract that exact piece of code into a reusable one. In fact, one is already provided by default:
+/// [useAnimationController]
+///
+/// This means that with [HookWidget] the following code is equivalent to the previous example:
+///
+/// ```
+/// class Usual extends HookWidget {
+///   @override
+///   Widget build(HookContext context) {
+///     final animationController =
+///         context.useAnimationController(duration: const Duration(seconds: 1));
+///     return Container();
+///   }
+/// }
+/// ```
+///
+/// This is visibly less code then before. But in this example, the `animationController` is still
+/// guaranted to be disposed when the widget is removed from the tree.
+///
+/// In fact this has secondary bonus: `duration` is kept updated with the latest value.
+/// If we were to pass a variable as `duration` instead of a constant, then on value change the [AnimationController] will be updated.
 @immutable
 abstract class Hook {
+  /// Allows subclasses to have a `const` constructor
   const Hook();
 
+  /// Creates the mutable state for this hook linked to its widget creator.
+  ///
+  /// Subclasses should override this method to return a newly created instance of their associated State subclass:
+  ///
+  /// ```
+  /// @override
+  /// HookState createState() => _MyHookState();
+  /// ```
+  ///
+  /// The framework can call this method multiple times over the lifetime of a [HookWidget]. For example,
+  /// if the hook is used multiple times, a separate [HookState] must be created for each usage.
+  @protected
   HookState createState();
 }
 
+/// The logic and internal state for a [HookWidget]
+///
+/// A [HookState]
 class HookState<T extends Hook> {
   Element _element;
+
   // voluntarily not a HookContext so that life-cycles cannot use hooks
+  /// The location in the tree where this widget builds.
+  ///
+  /// The framework associates [HookState] objects with a [BuildContext] after creating them with [Hook.createState] and before calling initState. The association is permanent: the [HookState] object will never change its [BuildContext]. However, the [HookContext] itself can be moved around the tree.
+  ///
+  /// After calling dispose, the framework severs the State object's connection with the BuildContext.
+  @protected
   BuildContext get context => _element;
+
   T _hook;
+
+  /// The current [Hook] associated to this [HookState].
+  ///
+  /// When this value change, [didUpdateHook] is called.
   T get hook => _hook;
+
+  @protected
+  @mustCallSuper
   void initHook() {}
+
+  @protected
+  @mustCallSuper
   void dispose() {}
+
+  @protected
+  @mustCallSuper
   void build(HookContext context) {}
+
+  @protected
+  @mustCallSuper
   void didUpdateHook(covariant Hook oldHook) {}
+
+  @protected
   void setState(VoidCallback callback) {
     // TODO: use official setState
     callback();
