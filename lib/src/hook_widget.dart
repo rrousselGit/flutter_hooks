@@ -130,49 +130,132 @@ abstract class Hook {
   HookState createState();
 }
 
+/// Tracks the lifecycle of [State] objects when asserts are enabled.
+enum _HookLifecycle {
+  /// The [State] object has been created. [State.initState] is called at this
+  /// time.
+  created,
+
+  /// The [State.initState] method has been called but the [State] object is
+  /// not yet ready to build. [State.didChangeDependencies] is called at this time.
+  initialized,
+
+  /// The [State] object is ready to build and [State.dispose] has not yet been
+  /// called.
+  ready,
+
+  /// The [State.dispose] method has been called and the [State] object is
+  /// no longer able to build.
+  defunct,
+}
+
 /// The logic and internal state for a [HookWidget]
 ///
 /// A [HookState]
-class HookState<T extends Hook> {
-  Element _element;
+class HookState<T extends Hook> extends Diagnosticable {
+  _HookLifecycle _debugLifecycleState = _HookLifecycle.created;
 
-  // voluntarily not a HookContext so that life-cycles cannot use hooks
-  /// The location in the tree where this widget builds.
-  ///
-  /// The framework associates [HookState] objects with a [BuildContext] after creating them with [Hook.createState] and before calling initState. The association is permanent: the [HookState] object will never change its [BuildContext]. However, the [HookContext] itself can be moved around the tree.
-  ///
-  /// After calling dispose, the framework severs the State object's connection with the BuildContext.
+  /// Equivalent of [State.context] for [HookState]
   @protected
   BuildContext get context => _element;
+  Element _element;
 
+  /// Equivalent of [State.widget] for [HookState]
+  T get hook => _hook;
   T _hook;
 
-  /// The current [Hook] associated to this [HookState].
+  /// Equivalent of [State.initState] for [HookState]
+  @protected
+  @mustCallSuper
+  void initHook() {
+    assert(_debugLifecycleState == _HookLifecycle.created);
+  }
+
+  /// Equivalent of [State.deactivate] for [HookState]
+  @protected
+  @mustCallSuper
+  void deactivate() {}
+
+  /// Equivalent of [State.dispose] for [HookState]
+  @protected
+  @mustCallSuper
+  void dispose() {
+    assert(_debugLifecycleState == _HookLifecycle.ready);
+    assert(() {
+      _debugLifecycleState = _HookLifecycle.defunct;
+      return true;
+    }());
+  }
+
+  /// Called everytimes the [HookState] is requested
   ///
-  /// When this value change, [didUpdateHook] is called.
-  T get hook => _hook;
-
+  /// [build] is where an [HookState] may use other hooks. This restriction is made to ensure that hooks are unconditionally always requested
   @protected
-  @mustCallSuper
-  void initHook() {}
-
-  @protected
-  @mustCallSuper
-  void dispose() {}
-
-  @protected
-  @mustCallSuper
   void build(HookContext context) {}
 
+  /// Equivalent of [State.didUpdateWidget] for [HookState]
   @protected
   @mustCallSuper
   void didUpdateHook(covariant Hook oldHook) {}
 
+  /// Equivalent of [State.setState] for [HookState]
   @protected
-  void setState(VoidCallback callback) {
-    // TODO: use official setState
-    callback();
+  void setState(VoidCallback fn) {
+    assert(fn != null);
+    assert(() {
+      if (_debugLifecycleState == _HookLifecycle.defunct) {
+        throw FlutterError('setState() called after dispose(): $this\n'
+            'This error happens if you call setState() on a HookState object for a widget that '
+            'no longer appears in the widget tree (e.g., whose parent widget no longer '
+            'includes the widget in its build). This error can occur when code calls '
+            'setState() from a timer or an animation callback. The preferred solution is '
+            'to cancel the timer or stop listening to the animation in the dispose() '
+            'callback. Another solution is to check the "mounted" property of this '
+            'object before calling setState() to ensure the object is still in the '
+            'tree.\n'
+            'This error might indicate a memory leak if setState() is being called '
+            'because another object is retaining a reference to this State object '
+            'after it has been removed from the tree. To avoid memory leaks, '
+            'consider breaking the reference to this object during dispose().');
+      }
+      if (_debugLifecycleState == _HookLifecycle.created && _element == null) {
+        throw FlutterError('setState() called in constructor: $this\n'
+            'This happens when you call setState() on a HookState object for a widget that '
+            'hasn\'t been inserted into the widget tree yet. It is not necessary to call '
+            'setState() in the constructor, since the state is already assumed to be dirty '
+            'when it is initially created.');
+      }
+      return true;
+    }());
+    final dynamic result = fn() as dynamic;
+    assert(() {
+      if (result is Future) {
+        throw FlutterError('setState() callback argument returned a Future.\n'
+            'The setState() method on $this was called with a closure or method that '
+            'returned a Future. Maybe it is marked as "async".\n'
+            'Instead of performing asynchronous work inside a call to setState(), first '
+            'execute the work (without updating the widget state), and then synchronously '
+            'update the state inside a call to setState().');
+      }
+      // We ignore other types of return values so that you can do things like:
+      //   setState(() => x = 3);
+      return true;
+    }());
     _element.markNeedsBuild();
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    assert(() {
+      properties.add(EnumProperty<_HookLifecycle>(
+          'lifecycle state', _debugLifecycleState,
+          defaultValue: _HookLifecycle.ready));
+      return true;
+    }());
+    properties.add(ObjectFlagProperty<T>('_hook', _hook, ifNull: 'no hook'));
+    properties.add(ObjectFlagProperty<HookElement>('_element', _element,
+        ifNull: 'not mounted'));
   }
 }
 
