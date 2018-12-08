@@ -5,7 +5,7 @@ part of 'hook.dart';
 ///
 /// A [Hook] is typically the equivalent of [State] for [StatefulWidget],
 /// with the notable difference that a [HookWidget] can have more than one [Hook].
-/// A [Hook] is created within the [build] method of [HookWidget] and the creation
+/// A [Hook] is created within the [HookState.build] method of [HookWidget] and the creation
 /// must be made unconditionally, always in the same order.
 ///
 /// ### Good:
@@ -38,7 +38,7 @@ part of 'hook.dart';
 /// ## The usage
 ///
 /// [Hook] is powerful tool to reuse [State] logic between multiple [Widget].
-/// They are used to extract logic that depends on a [Widget] life-cycle (such as [dispose]).
+/// They are used to extract logic that depends on a [Widget] life-cycle (such as [HookState.dispose]).
 ///
 /// While mixins are a good candidate too, they do not allow sharing values. A mixin cannot reasonnably
 /// define a variable, as this can lead to variable conflicts on bigger widgets.
@@ -90,7 +90,7 @@ part of 'hook.dart';
 /// rewrite this extact piece of code.
 ///
 /// With hooks it is possible to extract that exact piece of code into a reusable one. In fact, one is already provided by default:
-/// [useAnimationController]
+/// [HookContext.useAnimationController]
 ///
 /// This means that with [HookWidget] the following code is equivalent to the previous example:
 ///
@@ -254,7 +254,7 @@ class HookState<T extends Hook> extends Diagnosticable {
       return true;
     }());
     properties.add(ObjectFlagProperty<T>('_hook', _hook, ifNull: 'no hook'));
-    properties.add(ObjectFlagProperty<HookElement>('_element', _element,
+    properties.add(ObjectFlagProperty<Element>('_element', _element,
         ifNull: 'not mounted'));
   }
 }
@@ -268,27 +268,28 @@ class HookElement extends StatelessElement implements HookContext {
   HookElement(HookWidget widget) : super(widget);
 
   @override
-  HookWidget get widget => super.widget;
+  HookWidget get widget => super.widget as HookWidget;
 
+  @override
   HookState<T> useHook<T extends Hook>(T hook) {
     assert(_debugIsBuilding == true, '''
     Hooks should only be called within the build method of a widget.
     Calling them outside of build method leads to an unstable state and is therefore prohibited
     ''');
 
-    final int hooksIndex = _hooksIndex;
+    final hooksIndex = _hooksIndex;
     _hooksIndex++;
     _hooks ??= [];
 
-    HookState state;
+    HookState<T> state;
     if (hooksIndex >= _hooks.length) {
-      state = hook.createState()
+      state = hook.createState() as HookState<T>
         .._element = this
         .._hook = hook
         ..initHook();
       _hooks.add(state);
     } else {
-      state = _hooks[hooksIndex];
+      state = _hooks[hooksIndex] as HookState<T>;
       if (!identical(state._hook, hook)) {
         // TODO: compare type for potential reassemble
         final Hook previousHook = state._hook;
@@ -299,6 +300,7 @@ class HookElement extends StatelessElement implements HookContext {
     return state..build(this);
   }
 
+  @override
   AsyncSnapshot<T> useStream<T>(Stream<T> stream, {T initialData}) {
     final _StreamHookState<T> state =
         useHook(_StreamHook<T>(stream: stream, initialData: initialData));
@@ -339,10 +341,22 @@ class HookElement extends StatelessElement implements HookContext {
     super.unmount();
     if (_hooks != null) {
       for (final hook in _hooks) {
-        hook.dispose();
-
-        /// TODO: try catch
-        /// See [ChangeNotfier] for what to do in catch
+        try {
+          hook.dispose();
+        } catch (exception, stack) {
+          FlutterError.reportError(
+            FlutterErrorDetails(
+                exception: exception,
+                stack: stack,
+                library: 'hooks library',
+                context: 'while disposing $runtimeType',
+                informationCollector: (StringBuffer information) {
+                  information
+                      .writeln('The $runtimeType sending notification was:');
+                  information.write('  $this');
+                }),
+          );
+        }
       }
     }
   }
@@ -374,6 +388,7 @@ abstract class HookWidget extends StatelessWidget {
   HookElement createElement() => HookElement(this);
 
   @protected
+  @override
   Widget build(covariant HookContext context);
 }
 

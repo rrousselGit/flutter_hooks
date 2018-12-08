@@ -11,13 +11,16 @@ class _StreamHook<T> extends Hook {
 class _StreamHookState<T> extends HookState<_StreamHook<T>> {
   StreamSubscription<T> subscription;
   AsyncSnapshot<T> snapshot;
+
   @override
   void initHook() {
+    super.initHook();
     _listen(hook.stream);
   }
 
   @override
   void didUpdateHook(_StreamHook oldHook) {
+    super.didUpdateHook(oldHook);
     if (oldHook.stream != hook.stream) {
       _listen(hook.stream);
     }
@@ -128,11 +131,13 @@ class _AnimationControllerHookState
 
   @override
   void dispose() {
+    super.dispose();
     animationController?.dispose();
   }
 
   @override
   void didUpdateHook(_AnimationControllerHook oldHook) {
+    super.didUpdateHook(oldHook);
     if (hook.duration != oldHook.duration) {
       animationController?.duration = hook.duration;
     }
