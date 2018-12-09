@@ -10,40 +10,27 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: 'Flutter Demo', home: _Home());
+    return MaterialApp(title: 'Flutter Demo', home: TestAnimation());
   }
 }
 
-@widget
-Widget _home(HookContext context) {
-  final controller =
-      context.useAnimationController(duration: const Duration(seconds: 2));
-  final controller2 =
-      context.useAnimationController(duration: const Duration(seconds: 1));
-  return Scaffold(
-    appBar: AppBar(),
-    body: Row(
-      children: <Widget>[
-        _AnimatedText(controller),
-        _AnimatedText(controller2),
-      ],
-    ),
-  );
-}
+final tween = ColorTween(
+  begin: Colors.red,
+  end: Colors.blue,
+);
 
 @widget
-Column _animatedText(AnimationController controller) {
-  return Column(
-    children: <Widget>[
-      AnimatedBuilder(
-        animation: controller,
-        builder: (context, _) {
-          return Text(controller.value.toString());
-        },
-      ),
-      RaisedButton(
-        onPressed: () => controller.forward(from: 0),
-      )
-    ],
-  );
+Widget testAnimation(HookContext context, {Color color}) {
+  final controller =
+      context.useAnimationController(duration: const Duration(seconds: 1));
+
+  final colorTween =
+      context.useValueChanged(color, (Color previous, Color next) {
+            controller.forward(from: 0);
+            return ColorTween(begin: previous, end: next).animate(controller);
+          },) ??
+          AlwaysStoppedAnimation(color);
+
+  final currentColor = context.useAnimation(colorTween);
+  return Container(color: currentColor);
 }

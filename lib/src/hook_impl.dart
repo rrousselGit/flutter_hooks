@@ -1,66 +1,66 @@
 part of 'hook.dart';
 
-class _StreamHook<T> extends Hook {
-  final Stream<T> stream;
-  final T initialData;
-  _StreamHook({this.stream, this.initialData});
-  @override
-  HookState<Hook> createState() => _StreamHookState<T>();
-}
+// class _StreamHook<T> extends Hook {
+//   final Stream<T> stream;
+//   final T initialData;
+//   _StreamHook({this.stream, this.initialData});
+//   @override
+//   HookState<Hook> createState() => _StreamHookState<T>();
+// }
 
-class _StreamHookState<T> extends HookState<_StreamHook<T>> {
-  StreamSubscription<T> subscription;
-  AsyncSnapshot<T> snapshot;
+// class _StreamHookState<T> extends HookState<_StreamHook<T>> {
+//   StreamSubscription<T> subscription;
+//   AsyncSnapshot<T> snapshot;
 
-  @override
-  void initHook() {
-    super.initHook();
-    _listen(hook.stream);
-  }
+//   @override
+//   void initHook() {
+//     super.initHook();
+//     _listen(hook.stream);
+//   }
 
-  @override
-  void didUpdateHook(_StreamHook oldHook) {
-    super.didUpdateHook(oldHook);
-    if (oldHook.stream != hook.stream) {
-      _listen(hook.stream);
-    }
-  }
+//   @override
+//   void didUpdateHook(_StreamHook oldHook) {
+//     super.didUpdateHook(oldHook);
+//     if (oldHook.stream != hook.stream) {
+//       _listen(hook.stream);
+//     }
+//   }
 
-  void _listen(Stream<T> stream) {
-    subscription?.cancel();
-    snapshot = stream == null
-        ? AsyncSnapshot<T>.nothing()
-        : AsyncSnapshot<T>.withData(ConnectionState.waiting, hook.initialData);
-    subscription =
-        hook.stream.listen(_onData, onDone: _onDone, onError: _onError);
-  }
+//   void _listen(Stream<T> stream) {
+//     subscription?.cancel();
+//     snapshot = stream == null
+//         ? AsyncSnapshot<T>.nothing()
+//         : AsyncSnapshot<T>.withData(ConnectionState.waiting, hook.initialData);
+//     subscription =
+//         hook.stream.listen(_onData, onDone: _onDone, onError: _onError);
+//   }
 
-  void _onData(T event) {
-    setState(() {
-      snapshot = AsyncSnapshot<T>.withData(ConnectionState.active, event);
-    });
-  }
+//   void _onData(T event) {
+//     setState(() {
+//       snapshot = AsyncSnapshot<T>.withData(ConnectionState.active, event);
+//     });
+//   }
 
-  void _onDone() {
-    setState(() {
-      snapshot = snapshot.hasError
-          ? AsyncSnapshot<T>.withError(ConnectionState.active, snapshot.error)
-          : AsyncSnapshot<T>.withData(ConnectionState.done, snapshot.data);
-    });
-  }
+//   void _onDone() {
+//     setState(() {
+//       snapshot = snapshot.hasError
+//           ? AsyncSnapshot<T>.withError(ConnectionState.active, snapshot.error)
+//           : AsyncSnapshot<T>.withData(ConnectionState.done, snapshot.data);
+//     });
+//   }
 
-  void _onError(Object error) {
-    setState(() {
-      snapshot = AsyncSnapshot<T>.withError(ConnectionState.active, error);
-    });
-  }
+//   void _onError(Object error) {
+//     setState(() {
+//       snapshot = AsyncSnapshot<T>.withError(ConnectionState.active, error);
+//     });
+//   }
 
-  @override
-  void dispose() {
-    subscription?.cancel();
-    super.dispose();
-  }
-}
+//   @override
+//   void dispose() {
+//     subscription?.cancel();
+//     super.dispose();
+//   }
+// }
 
 class _TickerProviderHook extends Hook {
   const _TickerProviderHook();
@@ -152,5 +152,109 @@ class _AnimationControllerHookState
       animationController =
           AnimationController(vsync: ticker, duration: hook.duration);
     }
+  }
+}
+
+class _MemoizedHook<T> extends Hook {
+  final T Function() valueBuilder;
+  final void Function(T value) dispose;
+  final List parameters;
+
+  const _MemoizedHook(this.valueBuilder,
+      {this.parameters = const [], this.dispose})
+      : assert(valueBuilder != null),
+        assert(parameters != null);
+
+  @override
+  HookState<Hook> createState() => _MemoizedHookState<T>();
+}
+
+class _MemoizedHookState<T> extends HookState<_MemoizedHook<T>> {
+  T value;
+
+  @override
+  void initHook() {
+    super.initHook();
+    value = hook.valueBuilder();
+  }
+
+  @override
+  void didUpdateHook(_MemoizedHook<T> oldHook) {
+    super.didUpdateHook(oldHook);
+    if (hook.parameters != oldHook.parameters &&
+        (hook.parameters.length != oldHook.parameters.length ||
+            _hasDiffWith(oldHook.parameters))) {
+      if (hook.dispose != null) {
+        hook.dispose(value);
+      }
+      value = hook.valueBuilder();
+    }
+  }
+
+  @override
+  void dispose() {
+    if (hook.dispose != null) {
+      hook.dispose(value);
+    }
+    super.dispose();
+  }
+
+  bool _hasDiffWith(List parameters) {
+    for (var i = 0; i < parameters.length; i++) {
+      if (parameters[i] != hook.parameters[i]) {
+        return true;
+      }
+    }
+    return false;
+  }
+}
+
+class _ValueChangedHook<T, R> extends Hook {
+  final R Function(T previous, T next) valueChanged;
+  final T value;
+
+  const _ValueChangedHook(this.value, this.valueChanged)
+      : assert(valueChanged != null);
+
+  @override
+  HookState<Hook> createState() => _ValueChangedHookState<T, R>();
+}
+
+class _ValueChangedHookState<T, R> extends HookState<_ValueChangedHook<T, R>> {
+  R value;
+
+  @override
+  void didUpdateHook(_ValueChangedHook<T, R> oldHook) {
+    super.didUpdateHook(oldHook);
+    if (hook.value != oldHook.value) {
+      value = hook.valueChanged(oldHook.value, hook.value);
+    }
+  }
+}
+
+class _AnimationHook<T> extends Hook {
+  final Animation<T> animation;
+
+  const _AnimationHook(this.animation) : assert(animation != null);
+
+  @override
+  HookState<Hook> createState() => _AnimationHookState<T>();
+}
+
+class _AnimationHookState<T> extends HookState<_AnimationHook<T>> {
+  void dispose() {
+    super.dispose();
+    hook.animation.removeListener(_listener);
+  }
+
+  @override
+  void build(HookContext context) {
+    context.useValueChanged(hook.animation, valueChange);
+  }
+
+  void _listener() {}
+
+  void valueChange(Animation<T> previous, Animation<T> next) {
+    
   }
 }

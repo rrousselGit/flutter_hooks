@@ -152,7 +152,7 @@ enum _HookLifecycle {
 /// The logic and internal state for a [HookWidget]
 ///
 /// A [HookState]
-class HookState<T extends Hook> extends Diagnosticable {
+abstract class HookState<T extends Hook> extends Diagnosticable {
   _HookLifecycle _debugLifecycleState = _HookLifecycle.created;
 
   /// Equivalent of [State.context] for [HookState]
@@ -227,7 +227,7 @@ class HookState<T extends Hook> extends Diagnosticable {
       }
       return true;
     }());
-    final dynamic result = fn() as dynamic;
+    final result = fn() as dynamic;
     assert(() {
       if (result is Future) {
         throw FlutterError('setState() callback argument returned a Future.\n'
@@ -253,10 +253,21 @@ class HookState<T extends Hook> extends Diagnosticable {
           defaultValue: _HookLifecycle.ready));
       return true;
     }());
-    properties.add(ObjectFlagProperty<T>('_hook', _hook, ifNull: 'no hook'));
-    properties.add(ObjectFlagProperty<Element>('_element', _element,
-        ifNull: 'not mounted'));
+    properties
+      ..add(ObjectFlagProperty<T>('_hook', _hook, ifNull: 'no hook'))
+      ..add(ObjectFlagProperty<Element>('_element', _element,
+          ifNull: 'not mounted'));
   }
+}
+
+abstract class ValueHook<R> extends Hook {
+  @override
+  ValueHookState<R, ValueHook> createState();
+}
+
+abstract class ValueHookState<R, H extends ValueHook<R>> extends HookState<H> {
+  @override
+  R build(HookContext context);
 }
 
 class HookElement extends StatelessElement implements HookContext {
@@ -269,6 +280,39 @@ class HookElement extends StatelessElement implements HookContext {
 
   @override
   HookWidget get widget => super.widget as HookWidget;
+
+  @override
+  void performRebuild() {
+    _hooksIndex = 0;
+    assert(() {
+      _debugIsBuilding = true;
+      return true;
+    }());
+    super.performRebuild();
+    assert(() {
+      _debugIsBuilding = false;
+      return true;
+    }());
+  }
+
+  @override
+  void unmount() {
+    super.unmount();
+    if (_hooks != null) {
+      for (final hook in _hooks) {
+        try {
+          hook.dispose();
+        } catch (exception, stack) {
+          FlutterError.reportError(FlutterErrorDetails(
+            exception: exception,
+            stack: stack,
+            library: 'hooks library',
+            context: 'while disposing $runtimeType',
+          ));
+        }
+      }
+    }
+  }
 
   @override
   HookState<T> useHook<T extends Hook>(T hook) {
@@ -293,78 +337,40 @@ class HookElement extends StatelessElement implements HookContext {
       if (!identical(state._hook, hook)) {
         // TODO: compare type for potential reassemble
         final Hook previousHook = state._hook;
-        state._hook = hook;
-        state.didUpdateHook(previousHook);
+        state
+          .._hook = hook
+          ..didUpdateHook(previousHook);
       }
     }
     return state..build(this);
   }
 
   @override
-  AsyncSnapshot<T> useStream<T>(Stream<T> stream, {T initialData}) {
-    final _StreamHookState<T> state =
-        useHook(_StreamHook<T>(stream: stream, initialData: initialData));
-    return state.snapshot;
+  ValueNotifier<T> useState<T>({T initialData, void dispose(T value)}) {
+    throw new UnimplementedError();
   }
 
-  @override
-  void performRebuild() {
-    _hooksIndex = 0;
-    assert(() {
-      _debugIsBuilding = true;
-      return true;
-    }());
-    super.performRebuild();
-    assert(() {
-      _debugIsBuilding = false;
-      return true;
-    }());
-  }
+  // @override
+  // AsyncSnapshot<T> useStream<T>(Stream<T> stream, {T initialData}) {
+  //   final _StreamHookState<T> state =
+  //       useHook(_StreamHook<T>(stream: stream, initialData: initialData));
+  //   return state.snapshot;
+  // }
 
   @override
   T useAnimation<T>(Animation<T> animation) {
     throw new UnimplementedError();
   }
 
-  @override
-  void useListenable(Listenable listenable) {
-    throw new UnimplementedError();
-  }
+  // @override
+  // void useListenable(Listenable listenable) {
+  //   throw new UnimplementedError();
+  // }
 
-  @override
-  ValueNotifier<T> useState<T>([T initialData]) {
-    throw new UnimplementedError();
-  }
-
-  @override
-  void unmount() {
-    super.unmount();
-    if (_hooks != null) {
-      for (final hook in _hooks) {
-        try {
-          hook.dispose();
-        } catch (exception, stack) {
-          FlutterError.reportError(
-            FlutterErrorDetails(
-                exception: exception,
-                stack: stack,
-                library: 'hooks library',
-                context: 'while disposing $runtimeType',
-                informationCollector: (StringBuffer information) {
-                  information
-                      .writeln('The $runtimeType sending notification was:');
-                  information.write('  $this');
-                }),
-          );
-        }
-      }
-    }
-  }
-
-  @override
-  T useValueListenable<T>(ValueListenable<T> valueListenable) {
-    throw new UnimplementedError();
-  }
+  // @override
+  // T useValueListenable<T>(ValueListenable<T> valueListenable) {
+  //   throw new UnimplementedError();
+  // }
 
   @override
   AnimationController useAnimationController({Duration duration}) {
@@ -378,6 +384,20 @@ class HookElement extends StatelessElement implements HookContext {
     _TickerProviderHookState _tickerProviderHookState =
         useHook(const _TickerProviderHook());
     return _tickerProviderHookState;
+  }
+
+  @override
+  T useMemoized<T>(T Function() valueBuilder,
+      {List parameters = const [], void dispose(T value)}) {
+    final _MemoizedHookState<T> state = useHook(
+        _MemoizedHook(valueBuilder, dispose: dispose, parameters: parameters));
+    return state.value;
+  }
+
+  @override
+  R useValueChanged<T, R>(T value, R valueChange(T previous, T next)) {
+    final _ValueChangedHookState<T, R> state = useHook(_ValueChangedHook(value, valueChange));
+    return state.value;
   }
 }
 
@@ -394,11 +414,13 @@ abstract class HookWidget extends StatelessWidget {
 
 abstract class HookContext extends BuildContext {
   HookState<T> useHook<T extends Hook>(T hook);
-  void useListenable(Listenable listenable);
+  ValueNotifier<T> useState<T>({T initialData, void dispose(T value)});
+  T useMemoized<T>(T valueBuilder(), {List parameters, void dispose(T value)});
+  R useValueChanged<T, R>(T value, R valueChange(T previous, T next));
+  // void useListenable(Listenable listenable);
   T useAnimation<T>(Animation<T> animation);
-  T useValueListenable<T>(ValueListenable<T> valueListenable);
-  ValueNotifier<T> useState<T>(T initialData);
-  AsyncSnapshot<T> useStream<T>(Stream<T> stream, {T initialData});
+  // T useValueListenable<T>(ValueListenable<T> valueListenable);
+  // AsyncSnapshot<T> useStream<T>(Stream<T> stream, {T initialData});
   AnimationController useAnimationController({Duration duration});
   TickerProvider useTickerProvider();
 }
