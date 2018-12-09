@@ -1,21 +1,29 @@
 part of 'hook.dart';
 
-// class _StreamHook<T> extends Hook {
+// class _StreamHook<T> extends Hook<AsyncSnapshot<T>> {
 //   final Stream<T> stream;
 //   final T initialData;
 //   _StreamHook({this.stream, this.initialData});
+
 //   @override
-//   HookState<Hook> createState() => _StreamHookState<T>();
+//   _StreamHookState<T> createState() => _StreamHookState<T>();
 // }
 
-// class _StreamHookState<T> extends HookState<_StreamHook<T>> {
+// class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
 //   StreamSubscription<T> subscription;
 //   AsyncSnapshot<T> snapshot;
-
 //   @override
 //   void initHook() {
 //     super.initHook();
 //     _listen(hook.stream);
+//   }
+
+//   @override
+//   void didUpdateHook(_StreamHook oldHook) {
+//     super.didUpdateHook(oldHook);
+//     if (oldHook.stream != hook.stream) {
+//       _listen(hook.stream);
+//     }
 //   }
 
 //   @override
@@ -62,14 +70,21 @@ part of 'hook.dart';
 //   }
 // }
 
-class _TickerProviderHook extends Hook {
+//   @override
+//   AsyncSnapshot<T> build(HookContext context) {
+//     return snapshot;
+//   }
+// }
+
+class _TickerProviderHook extends Hook<TickerProvider> {
   const _TickerProviderHook();
 
   @override
-  HookState<Hook> createState() => _TickerProviderHookState();
+  _TickerProviderHookState createState() => _TickerProviderHookState();
 }
 
-class _TickerProviderHookState extends HookState<_TickerProviderHook>
+class _TickerProviderHookState
+    extends HookState<TickerProvider, _TickerProviderHook>
     implements TickerProvider {
   Ticker _ticker;
 
@@ -107,25 +122,29 @@ class _TickerProviderHookState extends HookState<_TickerProviderHook>
           'Otherwise, the ticker will leak.\n'
           'The offending ticker was: ${_ticker.toString(debugIncludeStack: true)}');
     }());
+    super.dispose();
   }
 
   @override
-  void build(HookContext context) {
+  TickerProvider build(HookContext context) {
     if (_ticker != null) _ticker.muted = !TickerMode.of(context);
+
+    return this;
   }
 }
 
-class _AnimationControllerHook extends Hook {
+class _AnimationControllerHook extends Hook<AnimationController> {
   final Duration duration;
 
   const _AnimationControllerHook({this.duration});
 
   @override
-  HookState<Hook> createState() => _AnimationControllerHookState();
+  _AnimationControllerHookState createState() =>
+      _AnimationControllerHookState();
 }
 
 class _AnimationControllerHookState
-    extends HookState<_AnimationControllerHook> {
+    extends HookState<AnimationController, _AnimationControllerHook> {
   TickerProvider _ticker;
   AnimationController animationController;
 
@@ -133,6 +152,7 @@ class _AnimationControllerHookState
   void dispose() {
     super.dispose();
     animationController?.dispose();
+    super.dispose();
   }
 
   @override
@@ -144,7 +164,7 @@ class _AnimationControllerHookState
   }
 
   @override
-  void build(HookContext context) {
+  AnimationController build(HookContext context) {
     final ticker = context.useTickerProvider();
     if (ticker != _ticker) {
       _ticker = ticker;
@@ -152,10 +172,12 @@ class _AnimationControllerHookState
       animationController =
           AnimationController(vsync: ticker, duration: hook.duration);
     }
+
+    return animationController;
   }
 }
 
-class _MemoizedHook<T> extends Hook {
+class _MemoizedHook<T> extends Hook<T> {
   final T Function() valueBuilder;
   final void Function(T value) dispose;
   final List parameters;
@@ -166,10 +188,10 @@ class _MemoizedHook<T> extends Hook {
         assert(parameters != null);
 
   @override
-  HookState<Hook> createState() => _MemoizedHookState<T>();
+  _MemoizedHookState<T> createState() => _MemoizedHookState<T>();
 }
 
-class _MemoizedHookState<T> extends HookState<_MemoizedHook<T>> {
+class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
   T value;
 
   @override
@@ -207,9 +229,14 @@ class _MemoizedHookState<T> extends HookState<_MemoizedHook<T>> {
     }
     return false;
   }
+
+  @override
+  T build(HookContext context) {
+    return value;
+  }
 }
 
-class _ValueChangedHook<T, R> extends Hook {
+class _ValueChangedHook<T, R> extends Hook<R> {
   final R Function(T previous, T next) valueChanged;
   final T value;
 
@@ -217,10 +244,11 @@ class _ValueChangedHook<T, R> extends Hook {
       : assert(valueChanged != null);
 
   @override
-  HookState<Hook> createState() => _ValueChangedHookState<T, R>();
+  _ValueChangedHookState<T, R> createState() => _ValueChangedHookState<T, R>();
 }
 
-class _ValueChangedHookState<T, R> extends HookState<_ValueChangedHook<T, R>> {
+class _ValueChangedHookState<T, R>
+    extends HookState<R, _ValueChangedHook<T, R>> {
   R value;
 
   @override
@@ -230,31 +258,37 @@ class _ValueChangedHookState<T, R> extends HookState<_ValueChangedHook<T, R>> {
       value = hook.valueChanged(oldHook.value, hook.value);
     }
   }
+
+  @override
+  R build(HookContext context) {
+    return value;
+  }
 }
 
-class _AnimationHook<T> extends Hook {
+class _AnimationHook<T> extends Hook<T> {
   final Animation<T> animation;
 
   const _AnimationHook(this.animation) : assert(animation != null);
 
   @override
-  HookState<Hook> createState() => _AnimationHookState<T>();
+  _AnimationHookState<T> createState() => _AnimationHookState<T>();
 }
 
-class _AnimationHookState<T> extends HookState<_AnimationHook<T>> {
+class _AnimationHookState<T> extends HookState<T, _AnimationHook<T>> {
+  @override
   void dispose() {
     super.dispose();
     hook.animation.removeListener(_listener);
   }
 
   @override
-  void build(HookContext context) {
-    context.useValueChanged(hook.animation, valueChange);
+  T build(HookContext context) {
+    return context.useValueChanged(hook.animation, valueChange);
   }
 
   void _listener() {}
 
-  void valueChange(Animation<T> previous, Animation<T> next) {
-    
+  T valueChange(Animation<T> previous, Animation<T> next) {
+    return next.value;
   }
 }
