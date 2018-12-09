@@ -259,6 +259,19 @@ abstract class HookState<R, T extends Hook> extends Diagnosticable {
   }
 }
 
+class HookBuilder extends HookWidget {
+  final Widget Function(HookContext context) builder;
+
+  const HookBuilder({
+    @required this.builder,
+    Key key,
+  })  : assert(builder != null),
+        super(key: key);
+
+  @override
+  Widget build(HookContext context) => builder(context);
+}
+
 class HookElement extends StatelessElement implements HookContext {
   int _hooksIndex;
   List<HookState> _hooks;
