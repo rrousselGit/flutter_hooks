@@ -111,7 +111,7 @@ part of 'hook.dart';
 /// In fact this has secondary bonus: `duration` is kept updated with the latest value.
 /// If we were to pass a variable as `duration` instead of a constant, then on value change the [AnimationController] will be updated.
 @immutable
-abstract class Hook {
+abstract class Hook<R> extends Diagnosticable {
   /// Allows subclasses to have a `const` constructor
   const Hook();
 
@@ -127,7 +127,7 @@ abstract class Hook {
   /// The framework can call this method multiple times over the lifetime of a [HookWidget]. For example,
   /// if the hook is used multiple times, a separate [HookState] must be created for each usage.
   @protected
-  HookState createState();
+  HookState<R, Hook<R>> createState();
 }
 
 /// Tracks the lifecycle of [State] objects when asserts are enabled.
@@ -152,7 +152,7 @@ enum _HookLifecycle {
 /// The logic and internal state for a [HookWidget]
 ///
 /// A [HookState]
-class HookState<T extends Hook> extends Diagnosticable {
+abstract class HookState<R, T extends Hook> extends Diagnosticable {
   _HookLifecycle _debugLifecycleState = _HookLifecycle.created;
 
   /// Equivalent of [State.context] for [HookState]
@@ -191,7 +191,7 @@ class HookState<T extends Hook> extends Diagnosticable {
   ///
   /// [build] is where an [HookState] may use other hooks. This restriction is made to ensure that hooks are unconditionally always requested
   @protected
-  void build(HookContext context) {}
+  R build(HookContext context);
 
   /// Equivalent of [State.didUpdateWidget] for [HookState]
   @protected
@@ -270,7 +270,7 @@ class HookElement extends StatelessElement implements HookContext {
   @override
   HookWidget get widget => super.widget;
 
-  HookState<T> useHook<T extends Hook>(T hook) {
+  R useHook<R>(Hook<R> hook) {
     assert(_debugIsBuilding == true, '''
     Hooks should only be called within the build method of a widget.
     Calling them outside of build method leads to an unstable state and is therefore prohibited
@@ -296,13 +296,11 @@ class HookElement extends StatelessElement implements HookContext {
         state.didUpdateHook(previousHook);
       }
     }
-    return state..build(this);
+    return state.build(this);
   }
 
   AsyncSnapshot<T> useStream<T>(Stream<T> stream, {T initialData}) {
-    final _StreamHookState<T> state =
-        useHook(_StreamHook<T>(stream: stream, initialData: initialData));
-    return state.snapshot;
+    return useHook(_StreamHook<T>(stream: stream, initialData: initialData));
   }
 
   @override
@@ -354,16 +352,28 @@ class HookElement extends StatelessElement implements HookContext {
 
   @override
   AnimationController useAnimationController({Duration duration}) {
-    final _AnimationControllerHookState state =
-        useHook(_AnimationControllerHook(duration: duration));
-    return state.animationController;
+    return useHook(_AnimationControllerHook(duration: duration));
   }
 
   @override
   TickerProvider useTickerProvider() {
-    _TickerProviderHookState _tickerProviderHookState =
-        useHook(const _TickerProviderHook());
-    return _tickerProviderHookState;
+    return useHook(const _TickerProviderHook());
+  }
+}
+
+abstract class StatelessHook<R> extends Hook<R> {
+  const StatelessHook();
+
+  R build(HookContext context);
+
+  @override
+  _StatelessHookState<R> createState() => _StatelessHookState<R>();
+}
+
+class _StatelessHookState<R> extends HookState<R, StatelessHook<R>> {
+  @override
+  R build(HookContext context) {
+    return hook.build(context);
   }
 }
 
@@ -378,7 +388,7 @@ abstract class HookWidget extends StatelessWidget {
 }
 
 abstract class HookContext extends BuildContext {
-  HookState<T> useHook<T extends Hook>(T hook);
+  R useHook<R>(Hook<R> hook);
   void useListenable(Listenable listenable);
   T useAnimation<T>(Animation<T> animation);
   T useValueListenable<T>(ValueListenable<T> valueListenable);
