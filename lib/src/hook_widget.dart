@@ -273,6 +273,7 @@ class HookBuilder extends HookWidget {
   Widget build(HookContext context) => builder(context);
 }
 
+// TODO: take errors from StatefulElement
 class HookElement extends StatelessElement implements HookContext {
   int _hooksIndex;
   List<HookState> _hooks;
@@ -354,12 +355,12 @@ class HookElement extends StatelessElement implements HookContext {
 
   @override
   ValueNotifier<T> useState<T>({T initialData, void dispose(T value)}) {
-    throw UnimplementedError();
+    return use(_StateHook(initialData: initialData, dispose: dispose));
   }
 
   @override
   T useAnimation<T>(Animation<T> animation) {
-    throw UnimplementedError();
+    return use(_AnimationHook(animation));
   }
 
   @override
@@ -380,16 +381,16 @@ class HookElement extends StatelessElement implements HookContext {
   @override
   T useMemoized<T>(T Function() valueBuilder,
       {List parameters = const [], void dispose(T value)}) {
-    final _MemoizedHookState<T> state = use(
-        _MemoizedHook(valueBuilder, dispose: dispose, parameters: parameters));
-    return state.value;
+    return use(_MemoizedHook(
+      valueBuilder,
+      dispose: dispose,
+      parameters: parameters,
+    ));
   }
 
   @override
-  R useValueChanged<T, R>(T value, R valueChange(T previous, T next)) {
-    final _ValueChangedHookState<T, R> state =
-        use(_ValueChangedHook(value, valueChange));
-    return state.value;
+  R useValueChanged<T, R>(T value, R valueChange(T oldValue, R oldResult)) {
+    return use(_ValueChangedHook(value, valueChange));
   }
 }
 
@@ -423,7 +424,7 @@ abstract class HookWidget extends StatelessWidget {
 abstract class HookContext extends BuildContext {
   ValueNotifier<T> useState<T>({T initialData, void dispose(T value)});
   T useMemoized<T>(T valueBuilder(), {List parameters, void dispose(T value)});
-  R useValueChanged<T, R>(T value, R valueChange(T previous, T next));
+  R useValueChanged<T, R>(T value, R valueChange(T oldValue, R oldResult));
   // void useListenable(Listenable listenable);
   R use<R>(Hook<R> hook);
   void useListenable(Listenable listenable);

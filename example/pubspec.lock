@@ -161,9 +161,9 @@ packages:
   functional_widget:
     dependency: "direct dev"
     description:
-      name: functional_widget
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../../functional_widget/functional_widget"
+      relative: true
+    source: path
     version: "0.1.0"
   functional_widget_annotation:
     dependency: "direct main"

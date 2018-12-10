@@ -21,6 +21,8 @@ dev_dependencies:
 dependency_overrides:
   flutter_hooks:
     path: ../
+  functional_widget:
+    path: ../../functional_widget/functional_widget
 
 flutter:
   uses-material-design: true

@@ -10,7 +10,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: 'Flutter Demo', home: TestAnimation());
+    return const MaterialApp(
+      title: 'Flutter Demo',
+      home: Foo(),
+    );
   }
 }
 
@@ -22,15 +25,54 @@ final tween = ColorTween(
 @widget
 Widget testAnimation(HookContext context, {Color color}) {
   final controller =
-      context.useAnimationController(duration: const Duration(seconds: 1));
+      context.useAnimationController(duration: const Duration(seconds: 5));
 
-  final colorTween =
-      context.useValueChanged(color, (Color previous, Color next) {
-            controller.forward(from: 0);
-            return ColorTween(begin: previous, end: next).animate(controller);
-          },) ??
-          AlwaysStoppedAnimation(color);
+  final colorTween = context.useValueChanged(
+        color,
+        (Color oldValue, Animation<Color> oldResult) {
+          return ColorTween(
+            begin: oldResult?.value ?? oldValue,
+            end: color,
+          ).animate(controller..forward(from: 0));
+        },
+      ) ??
+      AlwaysStoppedAnimation(color);
 
   final currentColor = context.useAnimation(colorTween);
   return Container(color: currentColor);
+}
+
+@widget
+Widget foo(HookContext context) {
+  final toggle = context.useState(initialData: false);
+  final counter = context.useState(initialData: 0);
+
+  // TODO: adding/removing this scaffold throws an exception
+  return Scaffold(
+    body: GestureDetector(
+      onTap: () {
+        toggle.value = !toggle.value;
+      },
+      child: Column(
+        children: <Widget>[
+          Expanded(
+            child: Container(),
+          ),
+          Text(counter.value.toString()),
+          Expanded(
+            child: Container(
+              child: TestAnimation(
+                  color: toggle.value
+                      ? const Color.fromARGB(255, 255, 0, 0)
+                      : const Color.fromARGB(255, 0, 0, 255)),
+            ),
+          ),
+        ],
+      ),
+    ),
+    floatingActionButton: FloatingActionButton(
+      onPressed: () => counter.value++,
+      child: Icon(Icons.plus_one),
+    ),
+  );
 }

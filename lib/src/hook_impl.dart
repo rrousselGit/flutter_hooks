@@ -1,80 +1,71 @@
 part of 'hook.dart';
 
-// class _StreamHook<T> extends Hook<AsyncSnapshot<T>> {
-//   final Stream<T> stream;
-//   final T initialData;
-//   _StreamHook({this.stream, this.initialData});
+class _StreamHook<T> extends Hook<AsyncSnapshot<T>> {
+  final Stream<T> stream;
+  final T initialData;
+  _StreamHook({this.stream, this.initialData});
 
-//   @override
-//   _StreamHookState<T> createState() => _StreamHookState<T>();
-// }
+  @override
+  _StreamHookState<T> createState() => _StreamHookState<T>();
+}
 
-// class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
-//   StreamSubscription<T> subscription;
-//   AsyncSnapshot<T> snapshot;
-//   @override
-//   void initHook() {
-//     super.initHook();
-//     _listen(hook.stream);
-//   }
+class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
+  StreamSubscription<T> subscription;
+  AsyncSnapshot<T> snapshot;
+  @override
+  void initHook() {
+    super.initHook();
+    _listen(hook.stream);
+  }
 
-//   @override
-//   void didUpdateHook(_StreamHook oldHook) {
-//     super.didUpdateHook(oldHook);
-//     if (oldHook.stream != hook.stream) {
-//       _listen(hook.stream);
-//     }
-//   }
+  @override
+  void didUpdateHook(_StreamHook oldHook) {
+    super.didUpdateHook(oldHook);
+    if (oldHook.stream != hook.stream) {
+      _listen(hook.stream);
+    }
+  }
 
-//   @override
-//   void didUpdateHook(_StreamHook oldHook) {
-//     super.didUpdateHook(oldHook);
-//     if (oldHook.stream != hook.stream) {
-//       _listen(hook.stream);
-//     }
-//   }
+  void _listen(Stream<T> stream) {
+    subscription?.cancel();
+    snapshot = stream == null
+        ? AsyncSnapshot<T>.nothing()
+        : AsyncSnapshot<T>.withData(ConnectionState.waiting, hook.initialData);
+    subscription =
+        hook.stream.listen(_onData, onDone: _onDone, onError: _onError);
+  }
 
-//   void _listen(Stream<T> stream) {
-//     subscription?.cancel();
-//     snapshot = stream == null
-//         ? AsyncSnapshot<T>.nothing()
-//         : AsyncSnapshot<T>.withData(ConnectionState.waiting, hook.initialData);
-//     subscription =
-//         hook.stream.listen(_onData, onDone: _onDone, onError: _onError);
-//   }
+  void _onData(T event) {
+    setState(() {
+      snapshot = AsyncSnapshot<T>.withData(ConnectionState.active, event);
+    });
+  }
 
-//   void _onData(T event) {
-//     setState(() {
-//       snapshot = AsyncSnapshot<T>.withData(ConnectionState.active, event);
-//     });
-//   }
+  void _onDone() {
+    setState(() {
+      snapshot = snapshot.hasError
+          ? AsyncSnapshot<T>.withError(ConnectionState.active, snapshot.error)
+          : AsyncSnapshot<T>.withData(ConnectionState.done, snapshot.data);
+    });
+  }
 
-//   void _onDone() {
-//     setState(() {
-//       snapshot = snapshot.hasError
-//           ? AsyncSnapshot<T>.withError(ConnectionState.active, snapshot.error)
-//           : AsyncSnapshot<T>.withData(ConnectionState.done, snapshot.data);
-//     });
-//   }
+  void _onError(Object error) {
+    setState(() {
+      snapshot = AsyncSnapshot<T>.withError(ConnectionState.active, error);
+    });
+  }
 
-//   void _onError(Object error) {
-//     setState(() {
-//       snapshot = AsyncSnapshot<T>.withError(ConnectionState.active, error);
-//     });
-//   }
+  @override
+  void dispose() {
+    subscription?.cancel();
+    super.dispose();
+  }
 
-//   @override
-//   void dispose() {
-//     subscription?.cancel();
-//     super.dispose();
-//   }
-// }
-
-//   @override
-//   AsyncSnapshot<T> build(HookContext context) {
-//     return snapshot;
-//   }
-// }
+  @override
+  AsyncSnapshot<T> build(HookContext context) {
+    return snapshot;
+  }
+}
 
 class _TickerProviderHook extends Hook<TickerProvider> {
   const _TickerProviderHook();
@@ -237,7 +228,7 @@ class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
 }
 
 class _ValueChangedHook<T, R> extends Hook<R> {
-  final R Function(T previous, T next) valueChanged;
+  final R Function(T oldValue, R oldResult) valueChanged;
   final T value;
 
   const _ValueChangedHook(this.value, this.valueChanged)
@@ -249,19 +240,19 @@ class _ValueChangedHook<T, R> extends Hook<R> {
 
 class _ValueChangedHookState<T, R>
     extends HookState<R, _ValueChangedHook<T, R>> {
-  R value;
+  R _result;
 
   @override
   void didUpdateHook(_ValueChangedHook<T, R> oldHook) {
     super.didUpdateHook(oldHook);
     if (hook.value != oldHook.value) {
-      value = hook.valueChanged(oldHook.value, hook.value);
+      _result = hook.valueChanged(oldHook.value, _result);
     }
   }
 
   @override
   R build(HookContext context) {
-    return value;
+    return _result;
   }
 }
 
@@ -276,19 +267,68 @@ class _AnimationHook<T> extends Hook<T> {
 
 class _AnimationHookState<T> extends HookState<T, _AnimationHook<T>> {
   @override
+  void initHook() {
+    super.initHook();
+    hook.animation.addListener(_listener);
+  }
+
+  @override
   void dispose() {
-    super.dispose();
     hook.animation.removeListener(_listener);
+    super.dispose();
   }
 
   @override
   T build(HookContext context) {
-    return context.useValueChanged(hook.animation, valueChange);
+    context.useValueChanged(hook.animation, valueChange);
+    return hook.animation.value;
   }
 
-  void _listener() {}
+  void _listener() {
+    setState(() {});
+  }
 
-  T valueChange(Animation<T> previous, Animation<T> next) {
-    return next.value;
+  void valueChange(Animation<T> previous, _) {
+    previous.removeListener(_listener);
+    hook.animation.addListener(_listener);
+  }
+}
+
+class _StateHook<T> extends Hook<ValueNotifier<T>> {
+  final T initialData;
+  final void Function(T value) dispose;
+
+  const _StateHook({this.initialData, this.dispose});
+
+  @override
+  _StateHookState<T> createState() => _StateHookState();
+}
+
+class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
+  TickerProvider _ticker;
+  ValueNotifier<T> _state;
+
+  @override
+  void initHook() {
+    super.initHook();
+    _state = ValueNotifier(hook.initialData)..addListener(_listener);
+  }
+
+  @override
+  void dispose() {
+    if (hook.dispose != null) {
+      hook.dispose(_state.value);
+    }
+    _state.dispose();
+    super.dispose();
+  }
+
+  @override
+  ValueNotifier<T> build(HookContext context) {
+    return _state;
+  }
+
+  void _listener() {
+    setState(() {});
   }
 }
