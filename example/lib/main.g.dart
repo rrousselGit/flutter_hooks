@@ -6,14 +6,14 @@ part of 'main.dart';
 // MyGenerator
 // **************************************************************************
 
-class TestAnimation extends HookWidget {
-  const TestAnimation({Key key, this.color}) : super(key: key);
+class _TestAnimation extends HookWidget {
+  const _TestAnimation({Key key, this.color}) : super(key: key);
 
-  final Color color;
+  final dynamic color;
 
   @override
   Widget build(HookContext _context) {
-    return testAnimation(_context, color: color);
+    return _testAnimation(_context, color: color);
   }
 }
 

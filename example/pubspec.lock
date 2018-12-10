@@ -161,7 +161,7 @@ packages:
   functional_widget:
     dependency: "direct dev"
     description:
-      path: "../../functional_widget/functional_widget"
+      path: "..\\..\\functional_widget\\functional_widget"
       relative: true
     source: path
     version: "0.1.0"

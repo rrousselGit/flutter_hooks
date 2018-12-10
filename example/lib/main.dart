@@ -23,7 +23,7 @@ final tween = ColorTween(
 );
 
 @widget
-Widget testAnimation(HookContext context, {Color color}) {
+Widget _testAnimation(HookContext context, {Color color}) {
   final controller =
       context.useAnimationController(duration: const Duration(seconds: 5));
 
@@ -61,7 +61,7 @@ Widget foo(HookContext context) {
           Text(counter.value.toString()),
           Expanded(
             child: Container(
-              child: TestAnimation(
+              child: _TestAnimation(
                   color: toggle.value
                       ? const Color.fromARGB(255, 255, 0, 0)
                       : const Color.fromARGB(255, 0, 0, 255)),
