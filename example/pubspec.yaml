@@ -15,14 +15,12 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  functional_widget: 0.1.0
+  functional_widget: 0.2.1
   build_runner:
 
 dependency_overrides:
   flutter_hooks:
     path: ../
-  functional_widget:
-    path: ../../functional_widget/functional_widget
 
 flutter:
   uses-material-design: true

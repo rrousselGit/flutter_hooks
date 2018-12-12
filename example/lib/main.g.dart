@@ -3,13 +3,13 @@
 part of 'main.dart';
 
 // **************************************************************************
-// MyGenerator
+// Generator: FunctionalWidget
 // **************************************************************************
 
 class _TestAnimation extends HookWidget {
   const _TestAnimation({Key key, this.color}) : super(key: key);
 
-  final dynamic color;
+  final Color color;
 
   @override
   Widget build(HookContext _context) {
