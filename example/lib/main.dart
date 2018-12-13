@@ -72,7 +72,7 @@ Widget foo(HookContext context) {
     ),
     floatingActionButton: FloatingActionButton(
       onPressed: () => counter.value++,
-      child: Icon(Icons.plus_one),
+      child: const Icon(Icons.plus_one),
     ),
   );
 }

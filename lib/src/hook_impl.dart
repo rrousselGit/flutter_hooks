@@ -159,7 +159,7 @@ class _AnimationControllerHookState
     final ticker = context.useTickerProvider();
     if (ticker != _ticker) {
       _ticker = ticker;
-      animationController?.dispose();
+      animationController.resync(_ticker);
       animationController =
           AnimationController(vsync: ticker, duration: hook.duration);
     }
