@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/hook.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:functional_widget_annotation/functional_widget_annotation.dart';
+
+part 'main.g.dart';
 
 void main() => runApp(MyApp());
 
@@ -8,28 +10,61 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: 'Flutter Demo', home: Home());
+    return const MaterialApp(
+      title: 'Flutter Demo',
+      home: _Foo(),
+    );
   }
 }
 
-Observable<int> controller =
-    Observable.periodic(const Duration(seconds: 1), (i) => i);
-Observable<int> controller2 =
-    Observable.periodic(const Duration(seconds: 2), (i) => i);
+@widget
+Widget _testAnimation(HookContext context, {Color color}) {
+  final controller =
+      context.useAnimationController(duration: const Duration(seconds: 5));
 
-class Home extends HookWidget {
-  @override
-  Widget build(HookContext context) {
-    final v1 = context.useStream(controller);
-    final v2 = context.useStream(controller2);
-    return Scaffold(
-      appBar: AppBar(),
-      body: Column(
-        children: <Widget>[
-          Text(v1.data?.toString() ?? "0"),
-          Text(v2.data?.toString() ?? "0"),
+  final colorTween = context.useValueChanged(
+        color,
+        (Color oldValue, Animation<Color> oldResult) {
+          return ColorTween(
+            begin: oldResult?.value ?? oldValue,
+            end: color,
+          ).animate(controller..forward(from: 0));
+        },
+      ) ??
+      AlwaysStoppedAnimation(color);
+
+  final currentColor = context.useAnimation(colorTween);
+  return Container(color: currentColor);
+}
+
+@widget
+Widget _foo(HookContext context) {
+  final toggle = context.useState(initialData: false);
+  final counter = context.useState(initialData: 0);
+
+  return Scaffold(
+    body: GestureDetector(
+      onTap: () {
+        toggle.value = !toggle.value;
+      },
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: _TestAnimation(
+              color: toggle.value
+                  ? const Color.fromARGB(255, 255, 0, 0)
+                  : const Color.fromARGB(255, 0, 0, 255),
+            ),
+          ),
+          Center(
+            child: Text(counter.value.toString()),
+          )
         ],
       ),
-    );
-  }
+    ),
+    floatingActionButton: FloatingActionButton(
+      onPressed: () => counter.value++,
+      child: const Icon(Icons.plus_one),
+    ),
+  );
 }
