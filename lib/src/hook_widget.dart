@@ -153,12 +153,10 @@ enum _HookLifecycle {
 ///
 /// A [HookState]
 abstract class HookState<R, T extends Hook<R>> {
-  _HookLifecycle _debugLifecycleState = _HookLifecycle.created;
-
   /// Equivalent of [State.context] for [HookState]
   @protected
-  BuildContext get context => _element;
-  Element _element;
+  BuildContext get context => _element.context;
+  State _element;
 
   /// Equivalent of [State.widget] for [HookState]
   T get hook => _hook;
@@ -166,26 +164,11 @@ abstract class HookState<R, T extends Hook<R>> {
 
   /// Equivalent of [State.initState] for [HookState]
   @protected
-  @mustCallSuper
-  void initHook() {
-    assert(_debugLifecycleState == _HookLifecycle.created);
-  }
-
-  /// Equivalent of [State.deactivate] for [HookState]
-  @protected
-  @mustCallSuper
-  void deactivate() {}
+  void initHook() {}
 
   /// Equivalent of [State.dispose] for [HookState]
   @protected
-  @mustCallSuper
-  void dispose() {
-    assert(_debugLifecycleState == _HookLifecycle.ready);
-    assert(() {
-      _debugLifecycleState = _HookLifecycle.defunct;
-      return true;
-    }());
-  }
+  void dispose() {}
 
   /// Called everytimes the [HookState] is requested
   ///
@@ -195,62 +178,24 @@ abstract class HookState<R, T extends Hook<R>> {
 
   /// Equivalent of [State.didUpdateWidget] for [HookState]
   @protected
-  @mustCallSuper
   void didUpdateHook(covariant Hook oldHook) {}
 
   /// Equivalent of [State.setState] for [HookState]
   @protected
   void setState(VoidCallback fn) {
-    assert(fn != null);
-    assert(() {
-      if (_debugLifecycleState == _HookLifecycle.defunct) {
-        throw FlutterError('setState() called after dispose(): $this\n'
-            'This error happens if you call setState() on a HookState object for a widget that '
-            'no longer appears in the widget tree (e.g., whose parent widget no longer '
-            'includes the widget in its build). This error can occur when code calls '
-            'setState() from a timer or an animation callback. The preferred solution is '
-            'to cancel the timer or stop listening to the animation in the dispose() '
-            'callback. Another solution is to check the "mounted" property of this '
-            'object before calling setState() to ensure the object is still in the '
-            'tree.\n'
-            'This error might indicate a memory leak if setState() is being called '
-            'because another object is retaining a reference to this State object '
-            'after it has been removed from the tree. To avoid memory leaks, '
-            'consider breaking the reference to this object during dispose().');
-      }
-      if (_debugLifecycleState == _HookLifecycle.created && _element == null) {
-        throw FlutterError('setState() called in constructor: $this\n'
-            'This happens when you call setState() on a HookState object for a widget that '
-            'hasn\'t been inserted into the widget tree yet. It is not necessary to call '
-            'setState() in the constructor, since the state is already assumed to be dirty '
-            'when it is initially created.');
-      }
-      return true;
-    }());
-    final result = fn() as dynamic;
-    assert(() {
-      if (result is Future) {
-        throw FlutterError('setState() callback argument returned a Future.\n'
-            'The setState() method on $this was called with a closure or method that '
-            'returned a Future. Maybe it is marked as "async".\n'
-            'Instead of performing asynchronous work inside a call to setState(), first '
-            'execute the work (without updating the widget state), and then synchronously '
-            'update the state inside a call to setState().');
-      }
-      // We ignore other types of return values so that you can do things like:
-      //   setState(() => x = 3);
-      return true;
-    }());
-    _element.markNeedsBuild();
+    // ignore:  invalid_use_of_protected_member
+    _element.setState(fn);
   }
 }
 
-// TODO: take errors from StatefulElement
-class HookElement extends StatelessElement implements HookContext {
+class HookElement extends StatefulElement implements HookContext {
+  Iterator<HookState> _currentHook;
   int _hooksIndex;
   List<HookState> _hooks;
 
   bool _debugIsBuilding;
+  bool _didReassemble;
+  bool _isFirstBuild;
 
   HookElement(HookWidget widget) : super(widget);
 
@@ -259,13 +204,20 @@ class HookElement extends StatelessElement implements HookContext {
 
   @override
   void performRebuild() {
+    _currentHook = _hooks?.iterator;
+    // first iterator always has null for unknown reasons
+    _currentHook?.moveNext();
     _hooksIndex = 0;
     assert(() {
+      _isFirstBuild ??= true;
+      _didReassemble ??= false;
       _debugIsBuilding = true;
       return true;
     }());
     super.performRebuild();
     assert(() {
+      _isFirstBuild = false;
+      _didReassemble = false;
       _debugIsBuilding = false;
       return true;
     }());
@@ -283,7 +235,7 @@ class HookElement extends StatelessElement implements HookContext {
             exception: exception,
             stack: stack,
             library: 'hooks library',
-            context: 'while disposing $runtimeType',
+            context: 'while disposing ${hook.runtimeType}',
           ));
         }
       }
@@ -297,73 +249,103 @@ class HookElement extends StatelessElement implements HookContext {
     Calling them outside of build method leads to an unstable state and is therefore prohibited
     ''');
 
-    final hooksIndex = _hooksIndex;
-    _hooksIndex++;
-    _hooks ??= [];
-
-    HookState<R, Hook<R>> state;
-    if (hooksIndex >= _hooks.length) {
-      state = hook.createState()
-        .._element = this
-        .._hook = hook
-        ..initHook();
-      _hooks.add(state);
+    HookState<R, Hook<R>> hookState;
+    // first build
+    if (_currentHook == null) {
+      assert(_didReassemble || _isFirstBuild);
+      hookState = _createHookState(hook);
+      _hooks ??= [];
+      _hooks.add(hookState);
     } else {
-      state = _hooks[hooksIndex] as HookState<R, Hook<R>>;
-      if (!identical(state._hook, hook)) {
+      // recreate states on hot-reload of the order changed
+      assert(() {
+        if (!_didReassemble) {
+          return true;
+        }
+        if (_currentHook.current?.hook?.runtimeType == hook.runtimeType) {
+          return true;
+        } else if (_currentHook.current != null) {
+          for (var i = _hooks.length - 1; i >= _hooksIndex; i--) {
+            _hooks.removeLast().dispose();
+          }
+        }
+        hookState = _createHookState(hook);
+        _hooks.add(hookState);
+        _currentHook = _hooks.iterator;
+        for (var i = 0; i < _hooks.length; i++) {
+          _currentHook.moveNext();
+        }
+
+        return true;
+      }());
+      assert(_currentHook.current.hook.runtimeType == hook.runtimeType);
+
+      hookState = _currentHook.current as HookState<R, Hook<R>>;
+      _currentHook.moveNext();
+
+      if (hookState._hook != hook) {
         // TODO: compare type for potential reassemble
-        final Hook previousHook = state._hook;
-        state
+        final Hook previousHook = hookState._hook;
+        hookState
           .._hook = hook
           ..didUpdateHook(previousHook);
       }
     }
-    return state.build(this);
+
+    _hooksIndex++;
+    return hookState.build(this);
   }
 
-  // AsyncSnapshot<T> useStream<T>(Stream<T> stream, {T initialData}) {
-  //   return use(_StreamHook<T>(stream: stream, initialData: initialData));
-  // }
+  HookState<R, Hook<R>> _createHookState<R>(Hook<R> hook) {
+    return hook.createState()
+      .._element = state
+      .._hook = hook
+      ..initHook();
+  }
 
-  // @override
-  // ValueNotifier<T> useState<T>({T initialData, void dispose(T value)}) {
-  //   return use(_StateHook(initialData: initialData, dispose: dispose));
-  // }
+  AsyncSnapshot<T> useStream<T>(Stream<T> stream, {T initialData}) {
+    return use(_StreamHook<T>(stream: stream, initialData: initialData));
+  }
 
-  // @override
-  // T useAnimation<T>(Animation<T> animation) {
-  //   return use(_AnimationHook(animation));
-  // }
+  @override
+  ValueNotifier<T> useState<T>({T initialData, void dispose(T value)}) {
+    return use(_StateHook(initialData: initialData, dispose: dispose));
+  }
 
-  // @override
-  // AnimationController useAnimationController({Duration duration}) {
-  //   return use(_AnimationControllerHook(duration: duration));
-  // }
+  @override
+  T useAnimation<T>(Animation<T> animation) {
+    return use(_AnimationHook(animation));
+  }
 
-  // @override
-  // TickerProvider useTickerProvider() {
-  //   return use(const _TickerProviderHook());
-  // }
+  @override
+  AnimationController useAnimationController({Duration duration}) {
+    return use(_AnimationControllerHook(duration: duration));
+  }
 
-  // @override
-  // void useListenable(Listenable listenable) {
-  //   throw UnimplementedError();
-  // }
+  @override
+  TickerProvider useTickerProvider() {
+    return use(const _TickerProviderHook());
+  }
 
-  // @override
-  // T useMemoized<T>(T Function() valueBuilder,
-  //     {List parameters = const [], void dispose(T value)}) {
-  //   return use(_MemoizedHook(
-  //     valueBuilder,
-  //     dispose: dispose,
-  //     parameters: parameters,
-  //   ));
-  // }
+  @override
+  void useListenable(Listenable listenable) {
+    throw UnimplementedError();
+  }
 
-  // @override
-  // R useValueChanged<T, R>(T value, R valueChange(T oldValue, R oldResult)) {
-  //   return use(_ValueChangedHook(value, valueChange));
-  // }
+  @override
+  T useMemoized<T>(T Function() valueBuilder,
+      {List parameters = const [], void dispose(T value)}) {
+    return use(_MemoizedHook(
+      valueBuilder,
+      dispose: dispose,
+      parameters: parameters,
+    ));
+  }
+
+  @override
+  R useValueChanged<T, R>(T value, R valueChange(T oldValue, R oldResult)) {
+    return use(_ValueChangedHook(value, valueChange));
+  }
 }
 
 abstract class StatelessHook<R> extends Hook<R> {
@@ -382,28 +364,47 @@ class _StatelessHookState<R> extends HookState<R, StatelessHook<R>> {
   }
 }
 
-abstract class HookWidget extends StatelessWidget {
+abstract class HookWidget extends StatefulWidget {
   const HookWidget({Key key}) : super(key: key);
 
   @override
   HookElement createElement() => HookElement(this);
+
+  @override
+  _HookWidgetState createState() => _HookWidgetState();
 
   @protected
   @override
   Widget build(covariant HookContext context);
 }
 
+class _HookWidgetState extends State<HookWidget> {
+  @override
+  void reassemble() {
+    super.reassemble();
+    assert(() {
+      (context as HookElement)._didReassemble = true;
+      return true;
+    }());
+  }
+
+  @override
+  Widget build(covariant HookContext context) {
+    return widget.build(context);
+  }
+}
+
 abstract class HookContext extends BuildContext {
   R use<R>(Hook<R> hook);
 
-  // ValueNotifier<T> useState<T>({T initialData, void dispose(T value)});
-  // T useMemoized<T>(T valueBuilder(), {List parameters, void dispose(T value)});
-  // R useValueChanged<T, R>(T value, R valueChange(T oldValue, R oldResult));
-  // // void useListenable(Listenable listenable);
+  ValueNotifier<T> useState<T>({T initialData, void dispose(T value)});
+  T useMemoized<T>(T valueBuilder(), {List parameters, void dispose(T value)});
+  R useValueChanged<T, R>(T value, R valueChange(T oldValue, R oldResult));
   // void useListenable(Listenable listenable);
-  // T useAnimation<T>(Animation<T> animation);
-  // // T useValueListenable<T>(ValueListenable<T> valueListenable);
-  // // AsyncSnapshot<T> useStream<T>(Stream<T> stream, {T initialData});
-  // AnimationController useAnimationController({Duration duration});
-  // TickerProvider useTickerProvider();
+  void useListenable(Listenable listenable);
+  T useAnimation<T>(Animation<T> animation);
+  // T useValueListenable<T>(ValueListenable<T> valueListenable);
+  // AsyncSnapshot<T> useStream<T>(Stream<T> stream, {T initialData});
+  AnimationController useAnimationController({Duration duration});
+  TickerProvider useTickerProvider();
 }

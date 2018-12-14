@@ -17,11 +17,11 @@ class _TestAnimation extends HookWidget {
   }
 }
 
-class Foo extends HookWidget {
-  const Foo({Key key}) : super(key: key);
+class _Foo extends HookWidget {
+  const _Foo({Key key}) : super(key: key);
 
   @override
   Widget build(HookContext _context) {
-    return foo(_context);
+    return _foo(_context);
   }
 }

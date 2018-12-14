@@ -12,15 +12,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: 'Flutter Demo',
-      home: Foo(),
+      home: _Foo(),
     );
   }
 }
-
-final tween = ColorTween(
-  begin: Colors.red,
-  end: Colors.blue,
-);
 
 @widget
 Widget _testAnimation(HookContext context, {Color color}) {
@@ -43,30 +38,27 @@ Widget _testAnimation(HookContext context, {Color color}) {
 }
 
 @widget
-Widget foo(HookContext context) {
+Widget _foo(HookContext context) {
   final toggle = context.useState(initialData: false);
   final counter = context.useState(initialData: 0);
 
-  // TODO: adding/removing this scaffold throws an exception
   return Scaffold(
     body: GestureDetector(
       onTap: () {
         toggle.value = !toggle.value;
       },
-      child: Column(
-        children: <Widget>[
-          Expanded(
-            child: Container(),
-          ),
-          Text(counter.value.toString()),
-          Expanded(
-            child: Container(
-              child: _TestAnimation(
-                  color: toggle.value
-                      ? const Color.fromARGB(255, 255, 0, 0)
-                      : const Color.fromARGB(255, 0, 0, 255)),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: _TestAnimation(
+              color: toggle.value
+                  ? const Color.fromARGB(255, 255, 0, 0)
+                  : const Color.fromARGB(255, 0, 0, 255),
             ),
           ),
+          Center(
+            child: Text(counter.value.toString()),
+          )
         ],
       ),
     ),
