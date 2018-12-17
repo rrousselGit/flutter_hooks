@@ -130,8 +130,6 @@ abstract class Hook<R> {
 }
 
 /// The logic and internal state for a [HookWidget]
-///
-/// A [HookState]
 abstract class HookState<R, T extends Hook<R>> {
   /// Equivalent of [State.context] for [HookState]
   @protected
@@ -187,7 +185,7 @@ class HookElement extends StatefulElement implements HookContext {
   @override
   void performRebuild() {
     _currentHook = _hooks?.iterator;
-    // first iterator always has null for unknown reasons
+    // first iterator always has null
     _currentHook?.moveNext();
     assert(() {
       _debugHooksIndex = 0;

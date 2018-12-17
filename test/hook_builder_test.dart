@@ -24,4 +24,12 @@ void main() {
     await tester.pumpWidget(createBuilder());
     verify(fn.call(any)).called(1);
   });
+
+  test('builder required', () {
+    expect(
+      // ignore: missing_required_param, prefer_const_constructors
+      () => HookBuilder(),
+      throwsAssertionError,
+    );
+  });
 }
