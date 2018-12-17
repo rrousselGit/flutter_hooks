@@ -195,6 +195,12 @@ class HookElement extends StatefulElement implements HookContext {
       return true;
     }());
     super.performRebuild();
+    assert(_debugHooksIndex == (_hooks?.length ?? 0), '''
+Build for $widget finished with less hooks used than a previous build.
+
+This may happen if the call to `use` is made under some condition.
+Remove that condition to fix this error.
+''');
     assert(() {
       _isFirstBuild = false;
       _didReassemble = false;
@@ -224,7 +230,6 @@ class HookElement extends StatefulElement implements HookContext {
 
   @override
   R use<R>(Hook<R> hook) {
-    // TODO: test
     assert(_debugIsBuilding == true, '''
     Hooks should only be called within the build method of a widget.
     Calling them outside of build method leads to an unstable state and is therefore prohibited
@@ -233,7 +238,6 @@ class HookElement extends StatefulElement implements HookContext {
     HookState<R, Hook<R>> hookState;
     // first build
     if (_currentHook == null) {
-      // TODO: test
       assert(_didReassemble || _isFirstBuild);
       hookState = _createHookState(hook);
       _hooks ??= [];

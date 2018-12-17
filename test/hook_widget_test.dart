@@ -10,9 +10,10 @@ void main() {
   final dispose = Func0<void>();
   final initHook = Func0<void>();
   final didUpdateHook = Func1<HookTest, void>();
+  final onError = Func1<FlutterErrorDetails, void>();
+  final builder = Func1<HookContext, Widget>();
 
-  final createHook = (
-    HookContext context, {
+  final createHook = ({
     void mockDispose(),
   }) =>
       HookTest<int>(
@@ -22,11 +23,8 @@ void main() {
           initHook: initHook.call);
 
   tearDown(() {
-    clearInteractions(build);
-    clearInteractions(dispose);
-    clearInteractions(initHook);
-    clearInteractions(didUpdateHook);
-
+    reset(builder);
+    reset(onError);
     reset(build);
     reset(dispose);
     reset(initHook);
@@ -34,14 +32,13 @@ void main() {
   });
 
   testWidgets('life-cycles in order', (tester) async {
-    final builder = Func1<HookContext, Widget>();
     int result;
     HookTest<int> previousHook;
 
     when(build.call(any)).thenReturn(42);
     when(builder.call(any)).thenAnswer((invocation) {
       HookContext context = invocation.positionalArguments[0];
-      previousHook = createHook(context);
+      previousHook = createHook();
       result = context.use(previousHook);
       return Container();
     });
@@ -89,25 +86,23 @@ void main() {
   });
 
   testWidgets('dispose all called even on failed', (tester) async {
-    final builder = Func1<HookContext, Widget>();
     final dispose2 = Func0<void>();
-    final onError = Func1<FlutterErrorDetails, void>();
 
     when(build.call(any)).thenReturn(42);
     when(builder.call(any)).thenAnswer((invocation) {
-      HookContext context = invocation.positionalArguments[0];
-      context
-        ..use(createHook(context))
-        ..use(createHook(context, mockDispose: dispose2));
+      invocation.positionalArguments[0]
+        ..use(createHook())
+        ..use(createHook(mockDispose: dispose2));
       return Container();
     });
     when(dispose.call()).thenThrow(42);
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
+    final previousErrorHandler = FlutterError.onError;
     FlutterError.onError = onError.call;
     await tester.pumpWidget(const SizedBox());
-    FlutterError.onError = FlutterError.dumpErrorToConsole;
+    FlutterError.onError = previousErrorHandler;
 
     verifyInOrder([
       dispose.call(),
@@ -116,15 +111,115 @@ void main() {
     ]);
   });
 
+  testWidgets('hook update with same instance do not call didUpdateHook',
+      (tester) async {
+    final hook = createHook();
+
+    when(builder.call(any)).thenAnswer((invocation) {
+      invocation.positionalArguments[0].use(hook);
+      return Container();
+    });
+
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    verifyInOrder([
+      initHook.call(),
+      build.call(any),
+    ]);
+    verifyZeroInteractions(didUpdateHook);
+    verifyZeroInteractions(dispose);
+
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    verifyInOrder([
+      build.call(any),
+    ]);
+    verifyNever(didUpdateHook.call(any));
+    verifyNever(initHook.call());
+    verifyNever(dispose.call());
+  });
+
+  testWidgets('rebuild with different hooks crash', (tester) async {
+    when(builder.call(any)).thenAnswer((invocation) {
+      invocation.positionalArguments[0].use(HookTest<int>());
+      return Container();
+    });
+
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    when(builder.call(any)).thenAnswer((invocation) {
+      invocation.positionalArguments[0].use(HookTest<String>());
+      return Container();
+    });
+
+    final previousErrorHandler = FlutterError.onError;
+    FlutterError.onError = onError.call;
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+    FlutterError.onError = previousErrorHandler;
+
+    verify(onError.call(any));
+  });
+  testWidgets('rebuild added hooks crash', (tester) async {
+    when(builder.call(any)).thenAnswer((invocation) {
+      invocation.positionalArguments[0].use(HookTest<int>());
+      return Container();
+    });
+
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    when(builder.call(any)).thenAnswer((invocation) {
+      invocation.positionalArguments[0].use(HookTest<int>());
+      invocation.positionalArguments[0].use(HookTest<String>());
+      return Container();
+    });
+
+    final previousErrorHandler = FlutterError.onError;
+    FlutterError.onError = onError.call;
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+    FlutterError.onError = previousErrorHandler;
+
+    verify(onError.call(any));
+  });
+
+  testWidgets('rebuild removed hooks crash', (tester) async {
+    when(builder.call(any)).thenAnswer((invocation) {
+      invocation.positionalArguments[0].use(HookTest<int>());
+      return Container();
+    });
+
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    when(builder.call(any)).thenAnswer((invocation) {
+      return Container();
+    });
+
+    final previousErrorHandler = FlutterError.onError;
+    FlutterError.onError = onError.call;
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+    FlutterError.onError = previousErrorHandler;
+
+    verify(onError.call(any));
+  });
+
+  testWidgets('use call outside build crash', (tester) async {
+    when(builder.call(any)).thenAnswer((invocation) => Container());
+
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    final context =
+        tester.firstElement(find.byType(HookBuilder)) as HookElement;
+
+    expect(() => context.use(HookTest<int>()), throwsAssertionError);
+  });
+
   testWidgets('hot-reload triggers a build', (tester) async {
-    final builder = Func1<HookContext, Widget>();
     int result;
     HookTest<int> previousHook;
 
     when(build.call(any)).thenReturn(42);
     when(builder.call(any)).thenAnswer((invocation) {
       HookContext context = invocation.positionalArguments[0];
-      previousHook = createHook(context);
+      previousHook = createHook();
       result = context.use(previousHook);
       return Container();
     });
