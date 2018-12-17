@@ -156,7 +156,7 @@ abstract class HookState<R, T extends Hook<R>> {
 
   /// Equivalent of [State.didUpdateWidget] for [HookState]
   @protected
-  void didUpdateHook(covariant Hook oldHook) {}
+  void didUpdateHook(covariant Hook<R> oldHook) {}
 
   /// Equivalent of [State.setState] for [HookState]
   @protected
@@ -224,6 +224,7 @@ class HookElement extends StatefulElement implements HookContext {
 
   @override
   R use<R>(Hook<R> hook) {
+    // TODO: test
     assert(_debugIsBuilding == true, '''
     Hooks should only be called within the build method of a widget.
     Calling them outside of build method leads to an unstable state and is therefore prohibited
@@ -232,12 +233,14 @@ class HookElement extends StatefulElement implements HookContext {
     HookState<R, Hook<R>> hookState;
     // first build
     if (_currentHook == null) {
+      // TODO: test
       assert(_didReassemble || _isFirstBuild);
       hookState = _createHookState(hook);
       _hooks ??= [];
       _hooks.add(hookState);
     } else {
       // recreate states on hot-reload of the order changed
+      // TODO: test
       assert(() {
         if (!_didReassemble) {
           return true;
@@ -264,7 +267,7 @@ class HookElement extends StatefulElement implements HookContext {
       _currentHook.moveNext();
 
       if (hookState._hook != hook) {
-        final Hook previousHook = hookState._hook;
+        final previousHook = hookState._hook;
         hookState
           .._hook = hook
           ..didUpdateHook(previousHook);
