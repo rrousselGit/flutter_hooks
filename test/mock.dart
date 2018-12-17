@@ -1,4 +1,6 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/hook.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
 export 'package:flutter_test/flutter_test.dart' hide Func0, Func1;
@@ -76,4 +78,21 @@ class HookStateTest<R> extends HookState<R, HookTest<R>> {
     }
     return null;
   }
+}
+
+Element _rootOf(Element element) {
+  Element root;
+  element.visitAncestorElements((e) {
+    if (e != null) {
+      root = e;
+    }
+    return e != null;
+  });
+  return root;
+}
+
+void hotReload(WidgetTester tester) {
+  final root = _rootOf(tester.allElements.first);
+
+  TestWidgetsFlutterBinding.ensureInitialized().buildOwner..reassemble(root);
 }
