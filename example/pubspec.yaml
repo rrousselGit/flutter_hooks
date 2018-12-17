@@ -10,13 +10,10 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_hooks: 0.0.1
-  functional_widget_annotation: 0.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  functional_widget: 0.2.1
-  build_runner:
 
 dependency_overrides:
   flutter_hooks:
