@@ -10,7 +10,6 @@ void main() {
   final dispose = Func0<void>();
   final initHook = Func0<void>();
   final didUpdateHook = Func1<HookTest, void>();
-  final onError = Func1<FlutterErrorDetails, void>();
   final builder = Func1<HookContext, Widget>();
 
   final createHook = ({
@@ -24,7 +23,6 @@ void main() {
 
   tearDown(() {
     reset(builder);
-    reset(onError);
     reset(build);
     reset(dispose);
     reset(initHook);
@@ -95,18 +93,17 @@ void main() {
         ..use(createHook(mockDispose: dispose2));
       return Container();
     });
-    when(dispose.call()).thenThrow(42);
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
-    final previousErrorHandler = FlutterError.onError;
-    FlutterError.onError = onError.call;
-    await tester.pumpWidget(const SizedBox());
-    FlutterError.onError = previousErrorHandler;
+    when(dispose.call()).thenThrow(24);
+    await expectPump(
+      () => tester.pumpWidget(const SizedBox()),
+      throwsA(24),
+    );
 
     verifyInOrder([
       dispose.call(),
-      onError.call(argThat(isInstanceOf<FlutterErrorDetails>())),
       dispose2.call(),
     ]);
   });
@@ -152,12 +149,10 @@ void main() {
       return Container();
     });
 
-    final previousErrorHandler = FlutterError.onError;
-    FlutterError.onError = onError.call;
-    await tester.pumpWidget(HookBuilder(builder: builder.call));
-    FlutterError.onError = previousErrorHandler;
-
-    verify(onError.call(any));
+    await expectPump(
+      () => tester.pumpWidget(HookBuilder(builder: builder.call)),
+      throwsAssertionError,
+    );
   });
   testWidgets('rebuild added hooks crash', (tester) async {
     when(builder.call(any)).thenAnswer((invocation) {
@@ -173,12 +168,10 @@ void main() {
       return Container();
     });
 
-    final previousErrorHandler = FlutterError.onError;
-    FlutterError.onError = onError.call;
-    await tester.pumpWidget(HookBuilder(builder: builder.call));
-    FlutterError.onError = previousErrorHandler;
-
-    verify(onError.call(any));
+    await expectPump(
+      () => tester.pumpWidget(HookBuilder(builder: builder.call)),
+      throwsAssertionError,
+    );
   });
 
   testWidgets('rebuild removed hooks crash', (tester) async {
@@ -193,12 +186,10 @@ void main() {
       return Container();
     });
 
-    final previousErrorHandler = FlutterError.onError;
-    FlutterError.onError = onError.call;
-    await tester.pumpWidget(HookBuilder(builder: builder.call));
-    FlutterError.onError = previousErrorHandler;
-
-    verify(onError.call(any));
+    await expectPump(
+      () => tester.pumpWidget(HookBuilder(builder: builder.call)),
+      throwsAssertionError,
+    );
   });
 
   testWidgets('use call outside build crash', (tester) async {
