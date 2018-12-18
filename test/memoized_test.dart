@@ -15,34 +15,20 @@ void main() {
   });
 
   testWidgets('invalid parameters', (tester) async {
-    final onError = Func1<FlutterErrorDetails, void>();
-
-    var previousErrorHandler = FlutterError.onError;
-    FlutterError.onError = onError.call;
-    await tester.pumpWidget(HookBuilder(builder: (context) {
-      context.useMemoized<dynamic>(null);
-      return Container();
-    }));
-    FlutterError.onError = previousErrorHandler;
-
-    expect(
-      (verify(onError.call(captureAny)).captured.first as FlutterErrorDetails)
-          .exception,
-      isInstanceOf<AssertionError>(),
+    await expectPump(
+      () => tester.pumpWidget(HookBuilder(builder: (context) {
+            context.useMemoized<dynamic>(null);
+            return Container();
+          })),
+      throwsAssertionError,
     );
 
-    previousErrorHandler = FlutterError.onError;
-    FlutterError.onError = onError.call;
-    await tester.pumpWidget(HookBuilder(builder: (context) {
-      context.useMemoized<dynamic>(() {}, parameters: null);
-      return Container();
-    }));
-    FlutterError.onError = previousErrorHandler;
-
-    expect(
-      (verify(onError.call(captureAny)).captured.first as FlutterErrorDetails)
-          .exception,
-      isInstanceOf<AssertionError>(),
+    await expectPump(
+      () => tester.pumpWidget(HookBuilder(builder: (context) {
+            context.useMemoized<dynamic>(() {}, parameters: null);
+            return Container();
+          })),
+      throwsAssertionError,
     );
   });
 

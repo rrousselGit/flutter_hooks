@@ -96,3 +96,29 @@ void hotReload(WidgetTester tester) {
 
   TestWidgetsFlutterBinding.ensureInitialized().buildOwner..reassemble(root);
 }
+
+Future<void> expectPump(
+  Future pump(),
+  dynamic matcher, {
+  String reason,
+  dynamic skip,
+}) async {
+  FlutterErrorDetails details;
+  if (skip == null || skip != false) {
+    final previousErrorHandler = FlutterError.onError;
+    FlutterError.onError = (d) {
+      details = d;
+    };
+    await pump();
+    FlutterError.onError = previousErrorHandler;
+  }
+
+  expect(
+    details != null
+        ? Future<void>.error(details.exception)
+        : Future<void>.value(),
+    matcher,
+    reason: reason,
+    skip: skip,
+  );
+}
