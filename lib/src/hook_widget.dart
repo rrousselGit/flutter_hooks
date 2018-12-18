@@ -142,10 +142,12 @@ abstract class HookState<R, T extends Hook<R>> {
 
   /// Equivalent of [State.initState] for [HookState]
   @protected
+  @mustCallSuper
   void initHook() {}
 
   /// Equivalent of [State.dispose] for [HookState]
   @protected
+  @mustCallSuper
   void dispose() {}
 
   /// Called everytimes the [HookState] is requested
@@ -156,6 +158,7 @@ abstract class HookState<R, T extends Hook<R>> {
 
   /// Equivalent of [State.didUpdateWidget] for [HookState]
   @protected
+  @mustCallSuper
   void didUpdateHook(covariant Hook<R> oldHook) {}
 
   /// Equivalent of [State.setState] for [HookState]
@@ -265,7 +268,7 @@ Remove that condition to fix this error.
 
         return true;
       }());
-      assert(_currentHook.current.hook.runtimeType == hook.runtimeType);
+      assert(_currentHook.current?.hook?.runtimeType == hook.runtimeType);
 
       hookState = _currentHook.current as HookState<R, Hook<R>>;
       _currentHook.moveNext();

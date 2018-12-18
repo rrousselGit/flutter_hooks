@@ -113,9 +113,9 @@ Future<void> expectPump(
     FlutterError.onError = previousErrorHandler;
   }
 
-  expect(
+  await expectLater(
     details != null
-        ? Future<void>.error(details.exception)
+        ? Future<void>.error(details.exception, details.stack)
         : Future<void>.value(),
     matcher,
     reason: reason,
