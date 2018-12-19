@@ -178,6 +178,7 @@ class HookElement extends StatefulElement implements HookContext {
   bool _debugIsBuilding;
   bool _didReassemble;
   bool _isFirstBuild;
+  bool _debugShouldDispose;
 
   /// Creates an element that uses the given widget as its configuration.
   HookElement(HookWidget widget) : super(widget);
@@ -191,6 +192,7 @@ class HookElement extends StatefulElement implements HookContext {
     // first iterator always has null
     _currentHook?.moveNext();
     assert(() {
+      _debugShouldDispose = false;
       _debugHooksIndex = 0;
       _isFirstBuild ??= true;
       _didReassemble ??= false;
@@ -198,11 +200,23 @@ class HookElement extends StatefulElement implements HookContext {
       return true;
     }());
     super.performRebuild();
+
+    // dispose removed items
+    assert(() {
+      if (_didReassemble) {
+        while (_currentHook.current != null) {
+          _currentHook.current.dispose();
+          _currentHook.moveNext();
+          _debugHooksIndex++;
+        }
+      }
+      return true;
+    }());
     assert(_debugHooksIndex == (_hooks?.length ?? 0), '''
 Build for $widget finished with less hooks used than a previous build.
-
+Used $_debugHooksIndex hooks while a previous build had ${_hooks.length}.
 This may happen if the call to `use` is made under some condition.
-Remove that condition to fix this error.
+
 ''');
     assert(() {
       _isFirstBuild = false;
@@ -247,25 +261,43 @@ Remove that condition to fix this error.
       _hooks.add(hookState);
     } else {
       // recreate states on hot-reload of the order changed
-      // TODO: test
       assert(() {
         if (!_didReassemble) {
           return true;
         }
-        if (_currentHook.current?.hook?.runtimeType == hook.runtimeType) {
+        if (!_debugShouldDispose &&
+            _currentHook.current?.hook?.runtimeType == hook.runtimeType) {
           return true;
-        } else if (_currentHook.current != null) {
-          for (var i = _hooks.length - 1; i >= _debugHooksIndex; i--) {
-            _hooks.removeLast().dispose();
+        }
+        _debugShouldDispose = true;
+
+        // some previous hook has changed of type, so we dispose all the following states
+        // _currentHook.current can be null when reassemble is adding new hooks
+        if (_currentHook.current != null) {
+          _hooks.remove(_currentHook.current..dispose());
+          // has to be done after the dispose call
+          hookState = _createHookState(hook);
+          // compensate for the `_debutHooksIndex++` at the end
+          _debugHooksIndex--;
+          _hooks.add(hookState);
+
+          // we move the iterator back to where it was
+          _currentHook = _hooks.iterator;
+          for (var i = 0;
+              i + 2 < _hooks.length && _hooks[i + 2] != hookState;
+              i++) {
+            _currentHook.moveNext();
+          }
+        } else {
+          hookState = _createHookState(hook);
+          _hooks.add(hookState);
+
+          // we put the iterator on added item
+          _currentHook = _hooks.iterator;
+          while (_currentHook.current != hookState) {
+            _currentHook.moveNext();
           }
         }
-        hookState = _createHookState(hook);
-        _hooks.add(hookState);
-        _currentHook = _hooks.iterator;
-        for (var i = 0; i < _hooks.length; i++) {
-          _currentHook.moveNext();
-        }
-
         return true;
       }());
       assert(_currentHook.current?.hook?.runtimeType == hook.runtimeType);
