@@ -27,6 +27,30 @@ void main() {
     reset(didUpdateHook);
   });
 
+  testWidgets('hook & setState', (tester) async {
+    final setState = Func0<void>();
+    final hook = MyHook();
+    HookElement hookContext;
+    MyHookState state;
+
+    await tester.pumpWidget(HookBuilder(
+      builder: (context) {
+        hookContext = context as HookElement;
+        state = context.use(hook);
+        return Container();
+      },
+    ));
+
+    expect(state.hook, hook);
+    expect(state.context, hookContext);
+    expect(hookContext.dirty, false);
+
+    state.setState(setState.call);
+    verify(setState.call()).called(1);
+
+    expect(hookContext.dirty, true);
+  });
+
   testWidgets('life-cycles in order', (tester) async {
     int result;
     HookTest<int> previousHook;
@@ -437,4 +461,16 @@ void main() {
     verifyZeroInteractions(didUpdateHook3);
     verifyZeroInteractions(didUpdateHook4);
   });
+}
+
+class MyHook extends Hook<MyHookState> {
+  @override
+  MyHookState createState() => MyHookState();
+}
+
+class MyHookState extends HookState<MyHookState, MyHook> {
+  @override
+  MyHookState build(HookContext context) {
+    return this;
+  }
 }
