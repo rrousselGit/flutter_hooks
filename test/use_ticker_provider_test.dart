@@ -1,0 +1,63 @@
+import 'package:flutter/scheduler.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_hooks/src/hook.dart';
+
+import 'mock.dart';
+
+void main() {
+  testWidgets('useSingleTickerProvider basic', (tester) async {
+    TickerProvider provider;
+
+    await tester.pumpWidget(TickerMode(
+      enabled: true,
+      child: HookBuilder(builder: (context) {
+        provider = useSingleTickerProvider(context);
+        return Container();
+      }),
+    ));
+
+    final animationController = AnimationController(
+        vsync: provider, duration: const Duration(seconds: 1))
+      ..forward();
+
+    expect(() => AnimationController(vsync: provider), throwsFlutterError);
+
+    animationController.dispose();
+
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('useSingleTickerProvider unused', (tester) async {
+    await tester.pumpWidget(HookBuilder(builder: (context) {
+      useSingleTickerProvider(context);
+      return Container();
+    }));
+
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('useSingleTickerProvider still active', (tester) async {
+    TickerProvider provider;
+
+    await tester.pumpWidget(TickerMode(
+      enabled: true,
+      child: HookBuilder(builder: (context) {
+        provider = useSingleTickerProvider(context);
+        return Container();
+      }),
+    ));
+
+    final animationController = AnimationController(
+        vsync: provider, duration: const Duration(seconds: 1));
+
+    try {
+      animationController.forward();
+      await expectPump(
+        () => tester.pumpWidget(const SizedBox()),
+        throwsFlutterError,
+      );
+    } finally {
+      animationController.dispose();
+    }
+  });
+}

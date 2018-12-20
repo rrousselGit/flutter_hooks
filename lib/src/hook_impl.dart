@@ -109,6 +109,61 @@ class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
   }
 }
 
+/// Creates a single usage [TickerProvider].
+/// 
+/// See also:
+///  * [SingleTickerProviderStateMixin]
+TickerProvider useSingleTickerProvider(HookContext context) {
+  return context.use(const _TickerProviderHook());
+}
+
+class _TickerProviderHook extends Hook<TickerProvider> {
+  const _TickerProviderHook();
+
+  @override
+  _TickerProviderHookState createState() => _TickerProviderHookState();
+}
+
+class _TickerProviderHookState
+    extends HookState<TickerProvider, _TickerProviderHook>
+    implements TickerProvider {
+  Ticker _ticker;
+
+  @override
+  Ticker createTicker(TickerCallback onTick) {
+    assert(() {
+      if (_ticker == null) return true;
+      throw FlutterError(
+          '${context.widget.runtimeType} attempted to use a useSingleTickerProvider multiple times.\n'
+          'A SingleTickerProviderStateMixin can only be used as a TickerProvider once. If a '
+          'TickerProvider is used for multiple AnimationController objects, or if it is passed to other '
+          'objects and those objects might use it more than one time in total, then instead of '
+          'using useSingleTickerProvider, use a regular useTickerProvider.');
+    }());
+    _ticker = Ticker(onTick, debugLabel: 'created by $context');
+    return _ticker;
+  }
+
+  @override
+  void dispose() {
+    assert(() {
+      if (_ticker == null || !_ticker.isActive) return true;
+      throw FlutterError(
+          'useSingleTickerProvider created a Ticker, but at the time '
+          'dispose() was called on the Hook, that Ticker was still active. Tickers used '
+          ' by AnimationControllers should be disposed by calling dispose() on '
+          ' the AnimationController itself. Otherwise, the ticker will leak.\n');
+    }());
+    super.dispose();
+  }
+
+  @override
+  TickerProvider build(HookContext context) {
+    if (_ticker != null) _ticker.muted = !TickerMode.of(context);
+    return this;
+  }
+}
+
 /// A [HookWidget] that defer its [HookWidget.build] to a callback
 class HookBuilder extends HookWidget {
   /// The callback used by [HookBuilder] to create a widget.
