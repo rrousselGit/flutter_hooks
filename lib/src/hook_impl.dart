@@ -109,14 +109,6 @@ class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
   }
 }
 
-/// Creates a single usage [TickerProvider].
-/// 
-/// See also:
-///  * [SingleTickerProviderStateMixin]
-TickerProvider useSingleTickerProvider(HookContext context) {
-  return context.use(const _TickerProviderHook());
-}
-
 class _TickerProviderHook extends Hook<TickerProvider> {
   const _TickerProviderHook();
 

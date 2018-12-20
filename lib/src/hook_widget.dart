@@ -343,6 +343,11 @@ This may happen if the call to `use` is made under some condition.
   R useValueChanged<T, R>(T value, R valueChange(T oldValue, R oldResult)) {
     return use(_ValueChangedHook(value, valueChange));
   }
+
+  @override
+  TickerProvider useSingleTickerProvider() {
+    return use(const _TickerProviderHook());
+  }
 }
 
 /// A [Widget] that can use [Hook]
@@ -431,4 +436,10 @@ abstract class HookContext extends BuildContext {
   /// Whenever [useValueChanged] is called with a diffent [value], calls [valueChange].
   /// The value returned by [useValueChanged] is the latest returned value of [valueChange] or `null`.
   R useValueChanged<T, R>(T value, R valueChange(T oldValue, R oldResult));
+
+  /// Creates a single usage [TickerProvider].
+  ///
+  /// See also:
+  ///  * [SingleTickerProviderStateMixin]
+  TickerProvider useSingleTickerProvider();
 }

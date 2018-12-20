@@ -11,7 +11,7 @@ void main() {
     await tester.pumpWidget(TickerMode(
       enabled: true,
       child: HookBuilder(builder: (context) {
-        provider = useSingleTickerProvider(context);
+        provider = context.useSingleTickerProvider();
         return Container();
       }),
     ));
@@ -29,7 +29,7 @@ void main() {
 
   testWidgets('useSingleTickerProvider unused', (tester) async {
     await tester.pumpWidget(HookBuilder(builder: (context) {
-      useSingleTickerProvider(context);
+      context.useSingleTickerProvider();
       return Container();
     }));
 
@@ -42,7 +42,7 @@ void main() {
     await tester.pumpWidget(TickerMode(
       enabled: true,
       child: HookBuilder(builder: (context) {
-        provider = useSingleTickerProvider(context);
+        provider = context.useSingleTickerProvider();
         return Container();
       }),
     ));
