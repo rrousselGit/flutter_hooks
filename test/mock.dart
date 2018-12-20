@@ -3,7 +3,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-export 'package:flutter_test/flutter_test.dart' hide Func0, Func1;
+export 'package:flutter_test/flutter_test.dart'
+    hide Func0, Func1, Func2, Func3, Func4, Func5, Func6;
 export 'package:mockito/mockito.dart';
 
 abstract class _Func0<R> {
@@ -17,6 +18,12 @@ abstract class _Func1<T1, R> {
 }
 
 class Func1<T1, R> extends Mock implements _Func1<T1, R> {}
+
+abstract class _Func2<T1, T2, R> {
+  R call(T1 value, T2 value2);
+}
+
+class Func2<T1, T2, R> extends Mock implements _Func2<T1, T2, R> {}
 
 class HookTest<R> extends Hook<R> {
   final R Function(HookContext context) build;
