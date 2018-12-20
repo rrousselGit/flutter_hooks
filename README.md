@@ -1,11 +1,12 @@
 [![Build Status](https://travis-ci.org/rrousselGit/flutter_hooks.svg?branch=master)](https://travis-ci.org/rrousselGit/flutter_hooks) [![codecov](https://codecov.io/gh/rrousselGit/flutter_hooks/branch/master/graph/badge.svg)](https://codecov.io/gh/rrousselGit/flutter_hooks)
+
 [![pub package](https://img.shields.io/pub/v/flutter_hooks.svg)](https://pub.dartlang.org/packages/flutter_hooks)
 
+![alt text](https://raw.githubusercontent.com/rrousselGit/flutter_hook/master/hooks.png)
 
 # Flutter Hooks
 
 A flutter implementation of React hooks: https://medium.com/@dan_abramov/making-sense-of-react-hooks-fdbde8803889
-
 
 ## What are hooks?
 
@@ -46,15 +47,13 @@ class _ExampleState extends State<Example>
 
 All widgets that desired to use an `AnimationController` will have to copy-paste the `initState`/`dispose`, which is of course undesired.
 
-
 Dart mixins can partially solve this issue, but they are the source of another problem: type conflicts. If two mixins defines the same variable, the behavior may vary from a compilation fail to a totally unexpected behavior.
-
 
 ### The Hook solution
 
 Hooks are designed so that we can reuse the `initState`/`dispose` logic shown before between widgets. But without the potential issues of a mixin.
 
-*Hooks are independents and can be reused as many times as desired.*
+_Hooks are independents and can be reused as many times as desired._
 
 This means that with hooks, the equivalent of the previous code is:
 
