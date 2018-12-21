@@ -3,6 +3,7 @@
 Added a few common hooks:
 
 - `useStream`
+- `useFuture`
 - `useAnimationController`
 - `useSingleTickerProvider`
 - `useListenable`

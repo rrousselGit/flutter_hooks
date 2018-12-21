@@ -259,6 +259,80 @@ class _ListenableStateHook extends HookState<void, _ListenableHook> {
   }
 }
 
+class _FutureHook<T> extends Hook<AsyncSnapshot<T>> {
+  final Future<T> future;
+  final T initialData;
+
+  const _FutureHook(this.future, {this.initialData});
+
+  @override
+  _FutureStateHook<T> createState() => _FutureStateHook<T>();
+}
+
+class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
+  /// An object that identifies the currently active callbacks. Used to avoid
+  /// calling setState from stale callbacks, e.g. after disposal of this state,
+  /// or after widget reconfiguration to a new Future.
+  Object _activeCallbackIdentity;
+  AsyncSnapshot<T> _snapshot;
+
+  @override
+  void initHook() {
+    super.initHook();
+    _snapshot =
+        AsyncSnapshot<T>.withData(ConnectionState.none, hook.initialData);
+    _subscribe();
+  }
+
+  @override
+  void didUpdateHook(_FutureHook<T> oldHook) {
+    super.didUpdateHook(oldHook);
+    if (oldHook.future != hook.future) {
+      if (_activeCallbackIdentity != null) {
+        _unsubscribe();
+        _snapshot = _snapshot.inState(ConnectionState.none);
+      }
+      _subscribe();
+    }
+  }
+
+  @override
+  void dispose() {
+    _unsubscribe();
+    super.dispose();
+  }
+
+  void _subscribe() {
+    if (hook.future != null) {
+      final callbackIdentity = Object();
+      _activeCallbackIdentity = callbackIdentity;
+      hook.future.then<void>((T data) {
+        if (_activeCallbackIdentity == callbackIdentity) {
+          setState(() {
+            _snapshot = AsyncSnapshot<T>.withData(ConnectionState.done, data);
+          });
+        }
+      }, onError: (Object error) {
+        if (_activeCallbackIdentity == callbackIdentity) {
+          setState(() {
+            _snapshot = AsyncSnapshot<T>.withError(ConnectionState.done, error);
+          });
+        }
+      });
+      _snapshot = _snapshot.inState(ConnectionState.waiting);
+    }
+  }
+
+  void _unsubscribe() {
+    _activeCallbackIdentity = null;
+  }
+
+  @override
+  AsyncSnapshot<T> build(HookContext context) {
+    return _snapshot;
+  }
+}
+
 class _StreamHook<T> extends Hook<AsyncSnapshot<T>> {
   final Stream<T> stream;
   final T initialData;
