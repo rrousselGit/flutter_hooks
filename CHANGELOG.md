@@ -2,6 +2,7 @@
 
 Added a few common hooks:
 
+- `useStream`
 - `useAnimationController`
 - `useSingleTickerProvider`
 - `useListenable`
