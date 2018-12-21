@@ -384,6 +384,11 @@ This may happen if the call to `use` is made under some condition.
   }
 
   @override
+  AsyncSnapshot<T> useStream<T>(Stream<T> stream, {T initialData}) {
+    return use(_StreamHook(stream, initialData: initialData));
+  }
+
+  @override
   TickerProvider useSingleTickerProvider() {
     return use(const _TickerProviderHook());
   }
@@ -494,6 +499,7 @@ abstract class HookContext extends BuildContext {
   ///
   /// See also:
   ///   * [AnimationController]
+  ///   * [HookContext.useAnimation]
   AnimationController useAnimationController({
     Duration duration,
     String debugLabel,
@@ -504,23 +510,34 @@ abstract class HookContext extends BuildContext {
     AnimationBehavior animationBehavior = AnimationBehavior.normal,
   });
 
-  /// Subscribes to [listenable] and mark the widget as needing build
+  /// Subscribes to a [Listenable] and mark the widget as needing build
   /// whenever the listener is called.
+  ///
+  /// See also:
+  ///   * [Listenable]
+  ///   * [HookContext.useValueListenable], [HookContext.useAnimation], [HookContext.useStream]
   void useListenable(Listenable listenable);
 
-  /// Subscribes to [valueListenable] and return its value.
+  /// Subscribes to a [ValueListenable] and return its value.
   ///
   /// See also:
   ///   * [ValueListenable]
-  ///   * [HookContext.useListenable]
-  ///   * [HookContext.useAnimation]
+  ///   * [HookContext.useListenable], [HookContext.useAnimation], [HookContext.useStream]
   T useValueListenable<T>(ValueListenable<T> valueListenable);
 
-  /// Subscribes to [animation] and return its value.
+  /// Subscribes to an [Animation] and return its value.
   ///
   /// See also:
   ///   * [Animation]
-  ///   * [HookContext.useListenable]
-  ///   * [HookContext.useValueListenable]
+  ///   * [HookContext.useValueListenable], [HookContext.useListenable], [HookContext.useStream]
   T useAnimation<T>(Animation<T> animation);
+
+  /// Subscribes to a [Stream] and return its current state in an [AsyncSnapshot].
+  ///
+  /// [initialData] is used
+  ///
+  /// See also:
+  ///   * [Stream]
+  ///   * [HookContext.useValueListenable], [HookContext.useListenable], [HookContext.useAnimation]
+  AsyncSnapshot<T> useStream<T>(Stream<T> stream, {T initialData});
 }

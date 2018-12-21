@@ -259,6 +259,98 @@ class _ListenableStateHook extends HookState<void, _ListenableHook> {
   }
 }
 
+class _StreamHook<T> extends Hook<AsyncSnapshot<T>> {
+  final Stream<T> stream;
+  final T initialData;
+
+  _StreamHook(this.stream, {this.initialData});
+
+  @override
+  _StreamHookState<T> createState() => _StreamHookState<T>();
+}
+
+/// a clone of [StreamBuilderBase] implementation
+class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
+  StreamSubscription<T> _subscription;
+  AsyncSnapshot<T> _summary;
+
+  @override
+  void initHook() {
+    super.initHook();
+    _summary = initial();
+    _subscribe();
+  }
+
+  @override
+  void didUpdateHook(_StreamHook<T> oldWidget) {
+    super.didUpdateHook(oldWidget);
+    if (oldWidget.stream != hook.stream) {
+      if (_subscription != null) {
+        _unsubscribe();
+        _summary = afterDisconnected(_summary);
+      }
+      _subscribe();
+    }
+  }
+
+  @override
+  void dispose() {
+    _unsubscribe();
+    super.dispose();
+  }
+
+  void _subscribe() {
+    if (hook.stream != null) {
+      _subscription = hook.stream.listen((T data) {
+        setState(() {
+          _summary = afterData(_summary, data);
+        });
+      }, onError: (Object error) {
+        setState(() {
+          _summary = afterError(_summary, error);
+        });
+      }, onDone: () {
+        setState(() {
+          _summary = afterDone(_summary);
+        });
+      });
+      _summary = afterConnected(_summary);
+    }
+  }
+
+  void _unsubscribe() {
+    if (_subscription != null) {
+      _subscription.cancel();
+      _subscription = null;
+    }
+  }
+
+  @override
+  AsyncSnapshot<T> build(HookContext context) {
+    return _summary;
+  }
+
+  AsyncSnapshot<T> initial() =>
+      AsyncSnapshot<T>.withData(ConnectionState.none, hook.initialData);
+
+  AsyncSnapshot<T> afterConnected(AsyncSnapshot<T> current) =>
+      current.inState(ConnectionState.waiting);
+
+  AsyncSnapshot<T> afterData(AsyncSnapshot<T> current, T data) {
+    return AsyncSnapshot<T>.withData(ConnectionState.active, data);
+  }
+
+  AsyncSnapshot<T> afterError(AsyncSnapshot<T> current, Object error) {
+    return AsyncSnapshot<T>.withError(ConnectionState.active, error);
+  }
+
+  AsyncSnapshot<T> afterDone(AsyncSnapshot<T> current) =>
+      current.inState(ConnectionState.done);
+
+  AsyncSnapshot<T> afterDisconnected(AsyncSnapshot<T> current) =>
+      current.inState(ConnectionState.none);
+}
+
 /// A [HookWidget] that defer its [HookWidget.build] to a callback
 class HookBuilder extends HookWidget {
   /// The callback used by [HookBuilder] to create a widget.
