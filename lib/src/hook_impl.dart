@@ -1,7 +1,7 @@
 part of 'hook.dart';
 
 class _MemoizedHook<T> extends Hook<T> {
-  final T Function() valueBuilder;
+  final T Function(T old) valueBuilder;
   final List parameters;
 
   const _MemoizedHook(this.valueBuilder, {this.parameters = const []})
@@ -18,7 +18,7 @@ class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
   @override
   void initHook() {
     super.initHook();
-    value = hook.valueBuilder();
+    value = hook.valueBuilder(null);
   }
 
   @override
@@ -27,7 +27,7 @@ class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
     if (hook.parameters != oldHook.parameters &&
         (hook.parameters.length != oldHook.parameters.length ||
             _hasDiffWith(oldHook.parameters))) {
-      value = hook.valueBuilder();
+      value = hook.valueBuilder(value);
     }
   }
 

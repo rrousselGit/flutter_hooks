@@ -332,7 +332,7 @@ This may happen if the call to `use` is made under some condition.
   }
 
   @override
-  T useMemoized<T>(T Function() valueBuilder, {List parameters = const []}) {
+  T useMemoized<T>(T Function(T previousValue) valueBuilder, {List parameters = const []}) {
     return use(_MemoizedHook(
       valueBuilder,
       parameters: parameters,
@@ -429,7 +429,7 @@ abstract class HookContext extends BuildContext {
   ///  * [parameters] can be use to specify a list of objects for [useMemoized] to watch.
   /// So that whenever [operator==] fails on any parameter or if the length of [parameters] changes,
   /// [valueBuilder] is called again.
-  T useMemoized<T>(T valueBuilder(), {List parameters});
+  T useMemoized<T>(T valueBuilder(T previousValue), {List parameters});
 
   /// Watches a value.
   ///
