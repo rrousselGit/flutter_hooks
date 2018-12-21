@@ -68,3 +68,106 @@ class Example extends HookWidget {
   }
 }
 ```
+
+`useAnimationController` is what we call a _Hook_. Hooks pretty similar to `State` and mixins, with some important differences:
+
+- A `HookWidget` can use as many hooks as desired. Not just one.
+- The same Hook can be used multiple times too, as opposed to mixins.
+- Hooks are entirely independent from each others and from the widget. Implying that they are composable, reusable, et shareable.
+
+For example using hooks a naive counter widget would be the following:
+
+```dart
+class Counter extends HookWidget {
+  const Counter({Key key}) : super(key: key);
+
+  @override
+  Widget build(HookContext context) {
+    final counter = context.useState(initialData: 0);
+
+    return Scaffold(
+      body: Center(
+        child: Text(counter.value.toString()),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => counter.value++,
+      ),
+    );
+  }
+}
+```
+
+Notice how the widget is written in a single class, with no need to call `setState` or declare a field on the class.
+
+## The principle
+
+Hooks, similarily to `State`, are stored on the `Element`. But instead of having one `State`, the `Element` stores a `List<Hook>`. To then obtain the content of a `Hook`, one must call `HookContext.use`.
+
+The hook returned is based on the number of times the `use` method has been called. So that the first call returns the first hook; the second call returns the second hook, the third returns the third hook, ...
+
+A naive implementation could be the following:
+
+```dart
+class HookElement extends Element {
+  List<HookState> _hooks;
+  int _hookIndex;
+
+  T use<T>(Hook<T> hook) => _hooks[_hookIndex++].build(this);
+
+  @override
+  performRebuild() {
+    _hookIndex = 0;
+    super.performRebuild();
+  }
+}
+```
+
+For more explanation of how they are implemented, here's a great article about how they did it in React: https://medium.com/@ryardley/react-hooks-not-magic-just-arrays-cd4f1857236e
+
+## Limitations
+
+Due to hooks being obtained based on their indexes, there are things you should _not_ do with hooks:
+
+**Calls to `HookContext.use` should be made at top level and always in the same order**
+
+In short,
+DO:
+
+```dart
+Widget build(HookContext context) {
+  final state = context.useState();
+  // ....
+}
+```
+
+DON'T:
+
+```dart
+Widget build(HookContext context) {
+  if (condition) {
+    final state = context.useState();
+  }
+  // ....
+}
+```
+
+This may seem restricting at first, but the gain is more than worth it.
+
+## How to use
+
+Let's assume we want to make a counter app that saves its state into the local storage; something that would be pretty tedious using simple `StatefulWidget`.
+
+Using hooks, we could think of making a `useLocalStorageInt` hook, that will automatically synchronize an integer with the local storage.
+
+The hook would be used as followed:
+
+```dart
+class CounterApp extends HookWidget {
+  @override
+  Widget build(HookContext context) {
+    AsyncSnapshot<int> count = useLocalStorageInt('counter', defaultValue: 0);
+
+    if (count.)
+  }
+}
+```
