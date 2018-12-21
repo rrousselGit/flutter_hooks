@@ -389,6 +389,11 @@ This may happen if the call to `use` is made under some condition.
   }
 
   @override
+  AsyncSnapshot<T> useFuture<T>(Future<T> future, {T initialData}) {
+    return use(_FutureHook(future, initialData: initialData));
+  }
+
+  @override
   TickerProvider useSingleTickerProvider() {
     return use(const _TickerProviderHook());
   }
@@ -534,10 +539,15 @@ abstract class HookContext extends BuildContext {
 
   /// Subscribes to a [Stream] and return its current state in an [AsyncSnapshot].
   ///
-  /// [initialData] is used
-  ///
   /// See also:
   ///   * [Stream]
   ///   * [HookContext.useValueListenable], [HookContext.useListenable], [HookContext.useAnimation]
   AsyncSnapshot<T> useStream<T>(Stream<T> stream, {T initialData});
+
+  /// Subscribes to a [Future] and return its current state in an [AsyncSnapshot].
+  ///
+  /// See also:
+  ///   * [Future]
+  ///   * [HookContext.useValueListenable], [HookContext.useListenable], [HookContext.useAnimation]
+  AsyncSnapshot<T> useFuture<T>(Future<T> future, {T initialData});
 }
