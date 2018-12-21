@@ -346,6 +346,27 @@ This may happen if the call to `use` is made under some condition.
   }
 
   @override
+  AnimationController useAnimationController({
+    Duration duration,
+    String debugLabel,
+    double initialValue = 0,
+    double lowerBound = 0,
+    double upperBound = 1,
+    TickerProvider vsync,
+    AnimationBehavior animationBehavior = AnimationBehavior.normal,
+  }) {
+    return use(_AnimationControllerHook(
+      duration: duration,
+      debugLabel: debugLabel,
+      initialValue: initialValue,
+      lowerBound: lowerBound,
+      upperBound: upperBound,
+      vsync: vsync,
+      animationBehavior: animationBehavior,
+    ));
+  }
+
+  @override
   TickerProvider useSingleTickerProvider() {
     return use(const _TickerProviderHook());
   }
@@ -443,4 +464,26 @@ abstract class HookContext extends BuildContext {
   /// See also:
   ///  * [SingleTickerProviderStateMixin]
   TickerProvider useSingleTickerProvider();
+
+  /// Creates an [AnimationController] automatically disposed.
+  ///
+  /// If no [vsync] is provided, the [TickerProvider] is implicitly obtained using [useSingleTickerProvider].
+  /// If a [vsync] is specified, changing the instance of [vsync] will result in a call to [AnimationController.resync].
+  /// It is not possible to switch between implicit and explicit [vsync].
+  ///
+  /// Changing the [duration] parameter automatically updates [AnimationController.duration].
+  ///
+  /// [initialValue], [lowerBound], [upperBound] and [debugLabel] are ignored after the first call.
+  ///
+  /// See also:
+  ///   * [AnimationController]
+  AnimationController useAnimationController({
+    Duration duration,
+    String debugLabel,
+    double initialValue = 0,
+    double lowerBound = 0,
+    double upperBound = 1,
+    TickerProvider vsync,
+    AnimationBehavior animationBehavior = AnimationBehavior.normal,
+  });
 }

@@ -156,6 +156,63 @@ class _TickerProviderHookState
   }
 }
 
+class _AnimationControllerHook extends Hook<AnimationController> {
+  final Duration duration;
+  final String debugLabel;
+  final double initialValue;
+  final double lowerBound;
+  final double upperBound;
+  final TickerProvider vsync;
+  final AnimationBehavior animationBehavior;
+
+  const _AnimationControllerHook({
+    this.duration,
+    this.debugLabel,
+    this.initialValue,
+    this.lowerBound,
+    this.upperBound,
+    this.vsync,
+    this.animationBehavior,
+  });
+
+  @override
+  _AnimationControllerHookState createState() =>
+      _AnimationControllerHookState();
+}
+
+class _AnimationControllerHookState
+    extends HookState<AnimationController, _AnimationControllerHook> {
+  AnimationController _animationController;
+
+  @override
+  AnimationController build(HookContext context) {
+    final vsync = hook.vsync ?? context.useSingleTickerProvider();
+
+    _animationController ??= AnimationController(
+      vsync: vsync,
+      duration: hook.duration,
+      debugLabel: hook.debugLabel,
+      lowerBound: hook.lowerBound,
+      upperBound: hook.upperBound,
+      animationBehavior: hook.animationBehavior,
+      value: hook.initialValue,
+    );
+
+    context
+      ..useValueChanged(hook.vsync, resync)
+      ..useValueChanged(hook.duration, duration);
+    return _animationController;
+  }
+
+  void resync(_, __) {
+    _animationController.resync(hook.vsync);
+  }
+
+  void duration(_, __) {
+    _animationController.duration = hook.duration;
+  }
+}
+
 /// A [HookWidget] that defer its [HookWidget.build] to a callback
 class HookBuilder extends HookWidget {
   /// The callback used by [HookBuilder] to create a widget.
