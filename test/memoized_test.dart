@@ -15,21 +15,17 @@ void main() {
   });
 
   testWidgets('invalid parameters', (tester) async {
-    await expectPump(
-      () => tester.pumpWidget(HookBuilder(builder: (context) {
-            context.useMemoized<dynamic>(null);
-            return Container();
-          })),
-      throwsAssertionError,
-    );
+    await tester.pumpWidget(HookBuilder(builder: (context) {
+      context.useMemoized<dynamic>(null);
+      return Container();
+    }));
+    expect(tester.takeException(), isAssertionError);
 
-    await expectPump(
-      () => tester.pumpWidget(HookBuilder(builder: (context) {
-            context.useMemoized<dynamic>((_) {}, parameters: null);
-            return Container();
-          })),
-      throwsAssertionError,
-    );
+    await tester.pumpWidget(HookBuilder(builder: (context) {
+      context.useMemoized<dynamic>((_) {}, parameters: null);
+      return Container();
+    }));
+    expect(tester.takeException(), isAssertionError);
   });
 
   testWidgets('memoized without parameter calls valueBuilder once',
