@@ -22,10 +22,10 @@ void main() {
     expect(controller.animationBehavior, AnimationBehavior.normal);
     expect(controller.debugLabel, isNull);
 
-    controller.duration = const Duration(seconds: 1);
-
-    // check has a ticker
-    controller.forward();
+    controller
+      ..duration = const Duration(seconds: 1)
+      // check has a ticker
+      ..forward();
 
     // dispose
     await tester.pumpWidget(const SizedBox());

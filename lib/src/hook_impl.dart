@@ -219,6 +219,212 @@ class _AnimationControllerHookState
   }
 }
 
+class _ListenableHook extends Hook<void> {
+  final Listenable listenable;
+
+  const _ListenableHook(this.listenable) : assert(listenable != null);
+
+  @override
+  _ListenableStateHook createState() => _ListenableStateHook();
+}
+
+class _ListenableStateHook extends HookState<void, _ListenableHook> {
+  @override
+  void initHook() {
+    super.initHook();
+    hook.listenable.addListener(_listener);
+  }
+
+  /// we do it manually instead of using [HookContext.useValueChanged] to win a split second.
+  @override
+  void didUpdateHook(_ListenableHook oldHook) {
+    super.didUpdateHook(oldHook);
+    if (hook.listenable != oldHook.listenable) {
+      oldHook.listenable.removeListener(_listener);
+      hook.listenable.addListener(_listener);
+    }
+  }
+
+  @override
+  void build(HookContext context) {}
+
+  void _listener() {
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    hook.listenable.removeListener(_listener);
+  }
+}
+
+class _FutureHook<T> extends Hook<AsyncSnapshot<T>> {
+  final Future<T> future;
+  final T initialData;
+
+  const _FutureHook(this.future, {this.initialData});
+
+  @override
+  _FutureStateHook<T> createState() => _FutureStateHook<T>();
+}
+
+class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
+  /// An object that identifies the currently active callbacks. Used to avoid
+  /// calling setState from stale callbacks, e.g. after disposal of this state,
+  /// or after widget reconfiguration to a new Future.
+  Object _activeCallbackIdentity;
+  AsyncSnapshot<T> _snapshot;
+
+  @override
+  void initHook() {
+    super.initHook();
+    _snapshot =
+        AsyncSnapshot<T>.withData(ConnectionState.none, hook.initialData);
+    _subscribe();
+  }
+
+  @override
+  void didUpdateHook(_FutureHook<T> oldHook) {
+    super.didUpdateHook(oldHook);
+    if (oldHook.future != hook.future) {
+      if (_activeCallbackIdentity != null) {
+        _unsubscribe();
+        _snapshot = _snapshot.inState(ConnectionState.none);
+      }
+      _subscribe();
+    }
+  }
+
+  @override
+  void dispose() {
+    _unsubscribe();
+    super.dispose();
+  }
+
+  void _subscribe() {
+    if (hook.future != null) {
+      final callbackIdentity = Object();
+      _activeCallbackIdentity = callbackIdentity;
+      hook.future.then<void>((T data) {
+        if (_activeCallbackIdentity == callbackIdentity) {
+          setState(() {
+            _snapshot = AsyncSnapshot<T>.withData(ConnectionState.done, data);
+          });
+        }
+      }, onError: (Object error) {
+        if (_activeCallbackIdentity == callbackIdentity) {
+          setState(() {
+            _snapshot = AsyncSnapshot<T>.withError(ConnectionState.done, error);
+          });
+        }
+      });
+      _snapshot = _snapshot.inState(ConnectionState.waiting);
+    }
+  }
+
+  void _unsubscribe() {
+    _activeCallbackIdentity = null;
+  }
+
+  @override
+  AsyncSnapshot<T> build(HookContext context) {
+    return _snapshot;
+  }
+}
+
+class _StreamHook<T> extends Hook<AsyncSnapshot<T>> {
+  final Stream<T> stream;
+  final T initialData;
+
+  _StreamHook(this.stream, {this.initialData});
+
+  @override
+  _StreamHookState<T> createState() => _StreamHookState<T>();
+}
+
+/// a clone of [StreamBuilderBase] implementation
+class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
+  StreamSubscription<T> _subscription;
+  AsyncSnapshot<T> _summary;
+
+  @override
+  void initHook() {
+    super.initHook();
+    _summary = initial();
+    _subscribe();
+  }
+
+  @override
+  void didUpdateHook(_StreamHook<T> oldWidget) {
+    super.didUpdateHook(oldWidget);
+    if (oldWidget.stream != hook.stream) {
+      if (_subscription != null) {
+        _unsubscribe();
+        _summary = afterDisconnected(_summary);
+      }
+      _subscribe();
+    }
+  }
+
+  @override
+  void dispose() {
+    _unsubscribe();
+    super.dispose();
+  }
+
+  void _subscribe() {
+    if (hook.stream != null) {
+      _subscription = hook.stream.listen((T data) {
+        setState(() {
+          _summary = afterData(_summary, data);
+        });
+      }, onError: (Object error) {
+        setState(() {
+          _summary = afterError(_summary, error);
+        });
+      }, onDone: () {
+        setState(() {
+          _summary = afterDone(_summary);
+        });
+      });
+      _summary = afterConnected(_summary);
+    }
+  }
+
+  void _unsubscribe() {
+    if (_subscription != null) {
+      _subscription.cancel();
+      _subscription = null;
+    }
+  }
+
+  @override
+  AsyncSnapshot<T> build(HookContext context) {
+    return _summary;
+  }
+
+  AsyncSnapshot<T> initial() =>
+      AsyncSnapshot<T>.withData(ConnectionState.none, hook.initialData);
+
+  AsyncSnapshot<T> afterConnected(AsyncSnapshot<T> current) =>
+      current.inState(ConnectionState.waiting);
+
+  AsyncSnapshot<T> afterData(AsyncSnapshot<T> current, T data) {
+    return AsyncSnapshot<T>.withData(ConnectionState.active, data);
+  }
+
+  AsyncSnapshot<T> afterError(AsyncSnapshot<T> current, Object error) {
+    return AsyncSnapshot<T>.withError(ConnectionState.active, error);
+  }
+
+  AsyncSnapshot<T> afterDone(AsyncSnapshot<T> current) =>
+      current.inState(ConnectionState.done);
+
+  AsyncSnapshot<T> afterDisconnected(AsyncSnapshot<T> current) =>
+      current.inState(ConnectionState.none);
+}
+
 /// A [HookWidget] that defer its [HookWidget.build] to a callback
 class HookBuilder extends HookWidget {
   /// The callback used by [HookBuilder] to create a widget.

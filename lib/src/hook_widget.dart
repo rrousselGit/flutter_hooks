@@ -367,6 +367,33 @@ This may happen if the call to `use` is made under some condition.
   }
 
   @override
+  void useListenable(Listenable listenable) {
+    use(_ListenableHook(listenable));
+  }
+
+  @override
+  T useAnimation<T>(Animation<T> animation) {
+    useListenable(animation);
+    return animation.value;
+  }
+
+  @override
+  T useValueListenable<T>(ValueListenable<T> valueListenable) {
+    useListenable(valueListenable);
+    return valueListenable.value;
+  }
+
+  @override
+  AsyncSnapshot<T> useStream<T>(Stream<T> stream, {T initialData}) {
+    return use(_StreamHook(stream, initialData: initialData));
+  }
+
+  @override
+  AsyncSnapshot<T> useFuture<T>(Future<T> future, {T initialData}) {
+    return use(_FutureHook(future, initialData: initialData));
+  }
+
+  @override
   TickerProvider useSingleTickerProvider() {
     return use(const _TickerProviderHook());
   }
@@ -477,6 +504,7 @@ abstract class HookContext extends BuildContext {
   ///
   /// See also:
   ///   * [AnimationController]
+  ///   * [HookContext.useAnimation]
   AnimationController useAnimationController({
     Duration duration,
     String debugLabel,
@@ -486,4 +514,40 @@ abstract class HookContext extends BuildContext {
     TickerProvider vsync,
     AnimationBehavior animationBehavior = AnimationBehavior.normal,
   });
+
+  /// Subscribes to a [Listenable] and mark the widget as needing build
+  /// whenever the listener is called.
+  ///
+  /// See also:
+  ///   * [Listenable]
+  ///   * [HookContext.useValueListenable], [HookContext.useAnimation], [HookContext.useStream]
+  void useListenable(Listenable listenable);
+
+  /// Subscribes to a [ValueListenable] and return its value.
+  ///
+  /// See also:
+  ///   * [ValueListenable]
+  ///   * [HookContext.useListenable], [HookContext.useAnimation], [HookContext.useStream]
+  T useValueListenable<T>(ValueListenable<T> valueListenable);
+
+  /// Subscribes to an [Animation] and return its value.
+  ///
+  /// See also:
+  ///   * [Animation]
+  ///   * [HookContext.useValueListenable], [HookContext.useListenable], [HookContext.useStream]
+  T useAnimation<T>(Animation<T> animation);
+
+  /// Subscribes to a [Stream] and return its current state in an [AsyncSnapshot].
+  ///
+  /// See also:
+  ///   * [Stream]
+  ///   * [HookContext.useValueListenable], [HookContext.useListenable], [HookContext.useAnimation]
+  AsyncSnapshot<T> useStream<T>(Stream<T> stream, {T initialData});
+
+  /// Subscribes to a [Future] and return its current state in an [AsyncSnapshot].
+  ///
+  /// See also:
+  ///   * [Future]
+  ///   * [HookContext.useValueListenable], [HookContext.useListenable], [HookContext.useAnimation]
+  AsyncSnapshot<T> useFuture<T>(Future<T> future, {T initialData});
 }
