@@ -327,20 +327,6 @@ This may happen if the call to `use` is made under some condition.
   }
 
   @override
-  ValueNotifier<T> useState<T>({T initialData}) {
-    return use(_StateHook(initialData: initialData));
-  }
-
-  @override
-  T useMemoized<T>(T Function(T previousValue) valueBuilder,
-      {List parameters = const []}) {
-    return use(_MemoizedHook(
-      valueBuilder,
-      parameters: parameters,
-    ));
-  }
-
-  @override
   R useValueChanged<T, R>(T value, R valueChange(T oldValue, R oldResult)) {
     return use(_ValueChangedHook(value, valueChange));
   }
@@ -397,6 +383,28 @@ This may happen if the call to `use` is made under some condition.
   TickerProvider useSingleTickerProvider() {
     return use(const _TickerProviderHook());
   }
+
+  @override
+  void useEffect(VoidCallback Function() effect, [List parameters]) {}
+
+  @override
+  T useMemoized<T>(T Function() valueBuilder, [List parameters = const []]) {
+    return use(_MemoizedHook(
+      valueBuilder,
+      parameters: parameters,
+    ));
+  }
+
+  @override
+  ValueNotifier<T> useState<T>([T initialData]) {
+    return use(_StateHook(initialData: initialData));
+  }
+
+  @override
+  StreamController<T> useStreamController<T>(
+      {bool broadcast = true, bool sync}) {
+    return null;
+  }
 }
 
 /// A [Widget] that can use [Hook]
@@ -442,6 +450,27 @@ class _HookWidgetState extends State<HookWidget> {
   }
 }
 
+/// A [HookWidget] that defer its [HookWidget.build] to a callback
+class HookBuilder extends HookWidget {
+  /// The callback used by [HookBuilder] to create a widget.
+  ///
+  /// If the passed [HookContext] trigger a rebuild, [builder] will be called again.
+  /// [builder] must not return `null`.
+  final Widget Function(HookContext context) builder;
+
+  /// Creates a widget that delegates its build to a callback.
+  ///
+  /// The [builder] argument must not be null.
+  const HookBuilder({
+    @required this.builder,
+    Key key,
+  })  : assert(builder != null),
+        super(key: key);
+
+  @override
+  Widget build(HookContext context) => builder(context);
+}
+
 /// A [BuildContext] that can use a [Hook].
 ///
 /// See also:
@@ -457,7 +486,14 @@ abstract class HookContext extends BuildContext {
   /// See [Hook] for more explanations.
   R use<R>(Hook<R> hook);
 
-  /// Create a mutable value and subscribes to it.
+  /// A hook for side-effects
+  ///
+  /// [useEffect] is called synchronously on every [HookWidget.build], unless
+  /// [parameters] is specified. In which case [useEffect] is called again only if
+  /// any value inside [parameters] as changed.
+  void useEffect(VoidCallback effect(), [List parameters]);
+
+  /// Create  value and subscribes to it.
   ///
   /// Whenever [ValueNotifier.value] updates, it will mark the caller [HookContext]
   /// as needing build.
@@ -466,9 +502,9 @@ abstract class HookContext extends BuildContext {
   ///
   /// See also:
   ///
-  ///  * [use]
-  ///  * [Hook]
-  ValueNotifier<T> useState<T>({T initialData});
+  ///  * [ValueNotifier]
+  ///  * [useStreamController], an alternative to [ValueNotifier] for state.
+  ValueNotifier<T> useState<T>([T initialData]);
 
   /// Create and cache the instance of an object.
   ///
@@ -478,7 +514,7 @@ abstract class HookContext extends BuildContext {
   ///  * [parameters] can be use to specify a list of objects for [useMemoized] to watch.
   /// So that whenever [operator==] fails on any parameter or if the length of [parameters] changes,
   /// [valueBuilder] is called again.
-  T useMemoized<T>(T valueBuilder(T previousValue), {List parameters});
+  T useMemoized<T>(T valueBuilder(), [List parameters = const []]);
 
   /// Watches a value.
   ///
@@ -514,6 +550,14 @@ abstract class HookContext extends BuildContext {
     TickerProvider vsync,
     AnimationBehavior animationBehavior = AnimationBehavior.normal,
   });
+
+  /// Creates a [StreamController] automatically disposed.
+  ///
+  /// See also:
+  ///   * [StreamController]
+  ///   * [HookContext.useStream]
+  StreamController<T> useStreamController<T>(
+      {bool broadcast = true, bool sync});
 
   /// Subscribes to a [Listenable] and mark the widget as needing build
   /// whenever the listener is called.

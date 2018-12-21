@@ -1,7 +1,7 @@
 part of 'hook.dart';
 
 class _MemoizedHook<T> extends Hook<T> {
-  final T Function(T old) valueBuilder;
+  final T Function() valueBuilder;
   final List parameters;
 
   const _MemoizedHook(this.valueBuilder, {this.parameters = const []})
@@ -18,7 +18,7 @@ class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
   @override
   void initHook() {
     super.initHook();
-    value = hook.valueBuilder(null);
+    value = hook.valueBuilder();
   }
 
   @override
@@ -27,7 +27,7 @@ class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
     if (hook.parameters != oldHook.parameters &&
         (hook.parameters.length != oldHook.parameters.length ||
             _hasDiffWith(oldHook.parameters))) {
-      value = hook.valueBuilder(value);
+      value = hook.valueBuilder();
     }
   }
 
@@ -425,23 +425,3 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
       current.inState(ConnectionState.none);
 }
 
-/// A [HookWidget] that defer its [HookWidget.build] to a callback
-class HookBuilder extends HookWidget {
-  /// The callback used by [HookBuilder] to create a widget.
-  ///
-  /// If the passed [HookContext] trigger a rebuild, [builder] will be called again.
-  /// [builder] must not return `null`.
-  final Widget Function(HookContext context) builder;
-
-  /// Creates a widget that delegates its build to a callback.
-  ///
-  /// The [builder] argument must not be null.
-  const HookBuilder({
-    @required this.builder,
-    Key key,
-  })  : assert(builder != null),
-        super(key: key);
-
-  @override
-  Widget build(HookContext context) => builder(context);
-}

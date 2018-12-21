@@ -6,7 +6,7 @@ import 'mock.dart';
 void main() {
   final builder = Func1<HookContext, Widget>();
   final parameterBuilder = Func0<List>();
-  final valueBuilder = Func1<int, int>();
+  final valueBuilder = Func0<int>();
 
   tearDown(() {
     reset(builder);
@@ -22,7 +22,7 @@ void main() {
     expect(tester.takeException(), isAssertionError);
 
     await tester.pumpWidget(HookBuilder(builder: (context) {
-      context.useMemoized<dynamic>((_) {}, parameters: null);
+      context.useMemoized<dynamic>(() {}, null);
       return Container();
     }));
     expect(tester.takeException(), isAssertionError);
@@ -32,7 +32,7 @@ void main() {
       (tester) async {
     int result;
 
-    when(valueBuilder.call(null)).thenReturn(42);
+    when(valueBuilder.call()).thenReturn(42);
 
     when(builder.call(any)).thenAnswer((invocation) {
       final HookContext context = invocation.positionalArguments.single;
@@ -42,7 +42,7 @@ void main() {
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
-    verify(valueBuilder.call(null)).called(1);
+    verify(valueBuilder.call()).called(1);
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 42);
 
@@ -61,19 +61,19 @@ void main() {
       (tester) async {
     int result;
 
-    when(valueBuilder.call(null)).thenReturn(0);
+    when(valueBuilder.call()).thenReturn(0);
     when(parameterBuilder.call()).thenReturn([]);
 
     when(builder.call(any)).thenAnswer((invocation) {
       final HookContext context = invocation.positionalArguments.single;
-      result = context.useMemoized<int>(valueBuilder.call,
-          parameters: parameterBuilder.call());
+      result =
+          context.useMemoized<int>(valueBuilder.call, parameterBuilder.call());
       return Container();
     });
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
-    verify(valueBuilder.call(null)).called(1);
+    verify(valueBuilder.call()).called(1);
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 0);
 
@@ -87,12 +87,12 @@ void main() {
     /* Add parameter */
 
     when(parameterBuilder.call()).thenReturn(['foo']);
-    when(valueBuilder.call(0)).thenReturn(1);
+    when(valueBuilder.call()).thenReturn(1);
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
     expect(result, 1);
-    verify(valueBuilder.call(0)).called(1);
+    verify(valueBuilder.call()).called(1);
     verifyNoMoreInteractions(valueBuilder);
 
     /* No change */
@@ -105,12 +105,12 @@ void main() {
     /* Remove parameter */
 
     when(parameterBuilder.call()).thenReturn([]);
-    when(valueBuilder.call(1)).thenReturn(2);
+    when(valueBuilder.call()).thenReturn(2);
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
     expect(result, 2);
-    verify(valueBuilder.call(1)).called(1);
+    verify(valueBuilder.call()).called(1);
     verifyNoMoreInteractions(valueBuilder);
 
     /* No change */
@@ -132,17 +132,17 @@ void main() {
 
     when(builder.call(any)).thenAnswer((invocation) {
       final HookContext context = invocation.positionalArguments.single;
-      result = context.useMemoized<int>(valueBuilder.call,
-          parameters: parameterBuilder.call());
+      result =
+          context.useMemoized<int>(valueBuilder.call, parameterBuilder.call());
       return Container();
     });
 
-    when(valueBuilder.call(null)).thenReturn(0);
+    when(valueBuilder.call()).thenReturn(0);
     when(parameterBuilder.call()).thenReturn(['foo', 42, 24.0]);
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
-    verify(valueBuilder.call(null)).called(1);
+    verify(valueBuilder.call()).called(1);
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 0);
 
@@ -156,32 +156,32 @@ void main() {
 
     /* reoder */
 
-    when(valueBuilder.call(0)).thenReturn(1);
+    when(valueBuilder.call()).thenReturn(1);
     when(parameterBuilder.call()).thenReturn([42, 'foo', 24.0]);
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
-    verify(valueBuilder.call(0)).called(1);
+    verify(valueBuilder.call()).called(1);
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 1);
 
-    when(valueBuilder.call(1)).thenReturn(2);
+    when(valueBuilder.call()).thenReturn(2);
     when(parameterBuilder.call()).thenReturn([42, 24.0, 'foo']);
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
-    verify(valueBuilder.call(1)).called(1);
+    verify(valueBuilder.call()).called(1);
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 2);
 
     /* value change */
 
-    when(valueBuilder.call(2)).thenReturn(3);
+    when(valueBuilder.call()).thenReturn(3);
     when(parameterBuilder.call()).thenReturn([43, 24.0, 'foo']);
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
-    verify(valueBuilder.call(2)).called(1);
+    verify(valueBuilder.call()).called(1);
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 3);
 
@@ -210,17 +210,17 @@ void main() {
 
     when(builder.call(any)).thenAnswer((invocation) {
       final HookContext context = invocation.positionalArguments.single;
-      result = context.useMemoized<int>(valueBuilder.call,
-          parameters: parameterBuilder.call());
+      result =
+          context.useMemoized<int>(valueBuilder.call, parameterBuilder.call());
       return Container();
     });
 
-    when(valueBuilder.call(null)).thenReturn(0);
+    when(valueBuilder.call()).thenReturn(0);
     when(parameterBuilder.call()).thenReturn(parameters);
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
-    verify(valueBuilder.call(null)).called(1);
+    verify(valueBuilder.call()).called(1);
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 0);
 
