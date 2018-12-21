@@ -367,6 +367,23 @@ This may happen if the call to `use` is made under some condition.
   }
 
   @override
+  void useListenable(Listenable listenable) {
+    use(_ListenableHook(listenable));
+  }
+
+  @override
+  T useAnimation<T>(Animation<T> animation) {
+    useListenable(animation);
+    return animation.value;
+  }
+
+  @override
+  T useValueListenable<T>(ValueListenable<T> valueListenable) {
+    useListenable(valueListenable);
+    return valueListenable.value;
+  }
+
+  @override
   TickerProvider useSingleTickerProvider() {
     return use(const _TickerProviderHook());
   }
@@ -486,4 +503,24 @@ abstract class HookContext extends BuildContext {
     TickerProvider vsync,
     AnimationBehavior animationBehavior = AnimationBehavior.normal,
   });
+
+  /// Subscribes to [listenable] and mark the widget as needing build
+  /// whenever the listener is called.
+  void useListenable(Listenable listenable);
+
+  /// Subscribes to [valueListenable] and return its value.
+  ///
+  /// See also:
+  ///   * [ValueListenable]
+  ///   * [HookContext.useListenable]
+  ///   * [HookContext.useAnimation]
+  T useValueListenable<T>(ValueListenable<T> valueListenable);
+
+  /// Subscribes to [animation] and return its value.
+  ///
+  /// See also:
+  ///   * [Animation]
+  ///   * [HookContext.useListenable]
+  ///   * [HookContext.useValueListenable]
+  T useAnimation<T>(Animation<T> animation);
 }
