@@ -332,7 +332,8 @@ This may happen if the call to `use` is made under some condition.
   }
 
   @override
-  T useMemoized<T>(T Function() valueBuilder, {List parameters = const []}) {
+  T useMemoized<T>(T Function(T previousValue) valueBuilder,
+      {List parameters = const []}) {
     return use(_MemoizedHook(
       valueBuilder,
       parameters: parameters,
@@ -342,6 +343,32 @@ This may happen if the call to `use` is made under some condition.
   @override
   R useValueChanged<T, R>(T value, R valueChange(T oldValue, R oldResult)) {
     return use(_ValueChangedHook(value, valueChange));
+  }
+
+  @override
+  AnimationController useAnimationController({
+    Duration duration,
+    String debugLabel,
+    double initialValue = 0,
+    double lowerBound = 0,
+    double upperBound = 1,
+    TickerProvider vsync,
+    AnimationBehavior animationBehavior = AnimationBehavior.normal,
+  }) {
+    return use(_AnimationControllerHook(
+      duration: duration,
+      debugLabel: debugLabel,
+      initialValue: initialValue,
+      lowerBound: lowerBound,
+      upperBound: upperBound,
+      vsync: vsync,
+      animationBehavior: animationBehavior,
+    ));
+  }
+
+  @override
+  TickerProvider useSingleTickerProvider() {
+    return use(const _TickerProviderHook());
   }
 }
 
@@ -424,11 +451,39 @@ abstract class HookContext extends BuildContext {
   ///  * [parameters] can be use to specify a list of objects for [useMemoized] to watch.
   /// So that whenever [operator==] fails on any parameter or if the length of [parameters] changes,
   /// [valueBuilder] is called again.
-  T useMemoized<T>(T valueBuilder(), {List parameters});
+  T useMemoized<T>(T valueBuilder(T previousValue), {List parameters});
 
   /// Watches a value.
   ///
   /// Whenever [useValueChanged] is called with a diffent [value], calls [valueChange].
   /// The value returned by [useValueChanged] is the latest returned value of [valueChange] or `null`.
   R useValueChanged<T, R>(T value, R valueChange(T oldValue, R oldResult));
+
+  /// Creates a single usage [TickerProvider].
+  ///
+  /// See also:
+  ///  * [SingleTickerProviderStateMixin]
+  TickerProvider useSingleTickerProvider();
+
+  /// Creates an [AnimationController] automatically disposed.
+  ///
+  /// If no [vsync] is provided, the [TickerProvider] is implicitly obtained using [useSingleTickerProvider].
+  /// If a [vsync] is specified, changing the instance of [vsync] will result in a call to [AnimationController.resync].
+  /// It is not possible to switch between implicit and explicit [vsync].
+  ///
+  /// Changing the [duration] parameter automatically updates [AnimationController.duration].
+  ///
+  /// [initialValue], [lowerBound], [upperBound] and [debugLabel] are ignored after the first call.
+  ///
+  /// See also:
+  ///   * [AnimationController]
+  AnimationController useAnimationController({
+    Duration duration,
+    String debugLabel,
+    double initialValue = 0,
+    double lowerBound = 0,
+    double upperBound = 1,
+    TickerProvider vsync,
+    AnimationBehavior animationBehavior = AnimationBehavior.normal,
+  });
 }

@@ -64,14 +64,13 @@ void main() {
   });
 
   testWidgets('valueChanged required', (tester) async {
-    await expectPump(
-      () => tester.pumpWidget(HookBuilder(
-            builder: (context) {
-              context.useValueChanged<int, int>(42, null);
-              return Container();
-            },
-          )),
-      throwsAssertionError,
-    );
+    await tester.pumpWidget(HookBuilder(
+      builder: (context) {
+        context.useValueChanged<int, int>(42, null);
+        return Container();
+      },
+    ));
+
+    expect(tester.takeException(), isAssertionError);
   });
 }

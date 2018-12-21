@@ -119,10 +119,9 @@ void main() {
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
     when(dispose.call()).thenThrow(24);
-    await expectPump(
-      () => tester.pumpWidget(const SizedBox()),
-      throwsA(24),
-    );
+    await tester.pumpWidget(const SizedBox());
+
+    expect(tester.takeException(), 24);
 
     verifyInOrder([
       dispose.call(),
@@ -190,10 +189,8 @@ void main() {
       return Container();
     });
 
-    await expectPump(
-      () => tester.pumpWidget(HookBuilder(builder: builder.call)),
-      throwsAssertionError,
-    );
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+    expect(tester.takeException(), isAssertionError);
   });
 
   testWidgets('rebuild removed hooks crash', (tester) async {
