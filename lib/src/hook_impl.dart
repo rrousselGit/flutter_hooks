@@ -219,6 +219,46 @@ class _AnimationControllerHookState
   }
 }
 
+class _ListenableHook extends Hook<void> {
+  final Listenable listenable;
+
+  const _ListenableHook(this.listenable) : assert(listenable != null);
+
+  @override
+  _ListenableStateHook createState() => _ListenableStateHook();
+}
+
+class _ListenableStateHook extends HookState<void, _ListenableHook> {
+  @override
+  void initHook() {
+    super.initHook();
+    hook.listenable.addListener(_listener);
+  }
+
+  /// we do it manually instead of using [HookContext.useValueChanged] to win a split second.
+  @override
+  void didUpdateHook(_ListenableHook oldHook) {
+    super.didUpdateHook(oldHook);
+    if (hook.listenable != oldHook.listenable) {
+      oldHook.listenable.removeListener(_listener);
+      hook.listenable.addListener(_listener);
+    }
+  }
+
+  @override
+  void build(HookContext context) {}
+
+  void _listener() {
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    hook.listenable.removeListener(_listener);
+  }
+}
+
 /// A [HookWidget] that defer its [HookWidget.build] to a callback
 class HookBuilder extends HookWidget {
   /// The callback used by [HookBuilder] to create a widget.
