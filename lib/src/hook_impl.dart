@@ -211,6 +211,12 @@ class _AnimationControllerHookState
   void duration(_, __) {
     _animationController.duration = hook.duration;
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _animationController.dispose();
+  }
 }
 
 /// A [HookWidget] that defer its [HookWidget.build] to a callback
