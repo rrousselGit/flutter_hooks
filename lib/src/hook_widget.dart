@@ -332,7 +332,8 @@ This may happen if the call to `use` is made under some condition.
   }
 
   @override
-  T useMemoized<T>(T Function(T previousValue) valueBuilder, {List parameters = const []}) {
+  T useMemoized<T>(T Function(T previousValue) valueBuilder,
+      {List parameters = const []}) {
     return use(_MemoizedHook(
       valueBuilder,
       parameters: parameters,
