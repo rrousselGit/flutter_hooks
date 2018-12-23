@@ -2,7 +2,7 @@
 
 [![pub package](https://img.shields.io/pub/v/flutter_hooks.svg)](https://pub.dartlang.org/packages/flutter_hooks)
 
-![alt text](https://raw.githubusercontent.com/rrousselGit/flutter_hooks/master/hooks.png)
+<img src="flutter-hook.svg" width="200">
 
 # Flutter Hooks
 
