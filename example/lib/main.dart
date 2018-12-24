@@ -1,3 +1,4 @@
+// ignore_for_file: omit_local_variable_types
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -21,152 +22,93 @@ class _Counter extends HookWidget {
 
   @override
   Widget build(HookContext context) {
+    final c1 = context.useState(0);
+    final c2 = context.useState(0);
+    final a = context.useState(0);
+    final c3 = context.useState(0);
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Counter app'),
-      ),
-      body: Center(
-        child: Counter(),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          GestureDetector(
+            onTap: () => c1.value++,
+            child: Text(c1.value.toString()),
+          ),
+          GestureDetector(
+            onTap: () => c2.value++,
+            child: Text(c2.value.toString()),
+          ),
+          GestureDetector(
+            onTap: () => c3.value++,
+            child: Text(c3.value.toString()),
+          ),
+        ],
       ),
     );
+
+    // StreamController<int> countController =
+    //     _useLocalStorageInt(context, 'counter');
+
+    // return Scaffold(
+    //   appBar: AppBar(
+    //     title: const Text('Counter app'),
+    //   ),
+    //   body: Center(
+    //     child: HookBuilder(
+    //       builder: (context) {
+    //         AsyncSnapshot<int> count =
+    //             context.useStream(countController.stream);
+
+    //         return !count.hasData
+    //             // Currently loading value from local storage, or there's an error
+    //             ? const CircularProgressIndicator()
+    //             : GestureDetector(
+    //                 onTap: () => countController.add(count.data + 1),
+    //                 child: Text('You tapped me ${count.data} times'),
+    //               );
+    //       },
+    //     ),
+    //   ),
+    // );
   }
 }
 
-void useEffect(HookContext context, VoidCallback effect(), [List parameters]) {
-  return context.use(_EffectHook(effect, parameters));
-}
+final LocalStorage _storage = LocalStorage('my_app');
 
-final LocalStorage storage = LocalStorage('my_app');
+StreamController<int> _useLocalStorageInt(
+  HookContext context,
+  String key, {
+  int defaultValue = 0,
+}) {
+  final controller = context.useStreamController<int>();
 
-StreamController<int> useLocalStorageInt(HookContext context, String key,
-    {int defaultValue = 0}) {
-  final controller = context.use(const StreamStateHook<int>());
-
-  // we define a callback that will be called on first build
-  // and whenever the controller/key change
-  useEffect(context, () {
-    // We listen to the data and push new values to local storage
-    final sub = controller.stream.listen((data) async {
-      await storage.ready;
-      storage.setItem(key, data);
-    });
-    // Unsubscribe when the widget is disposed
-    // or on controller/key change
-    return sub.cancel;
-  }, [controller, key]);
-
-  // a callback that will be called only on the first build
-  useEffect(context, () {
-    storage.ready.then((ready) {
-      if (ready) {
-        int valueFromStorage = storage.getItem(key);
-        controller.add(valueFromStorage ?? defaultValue);
-      } else {
-        controller
-            .addError(DeferredLoadException('local storage failed to load'));
-      }
-    });
-  }, const []);
+  context
+    // We define a callback that will be called on first build
+    // and whenever the controller/key change
+    ..useEffect(() {
+      // We listen to the data and push new values to local storage
+      final sub = controller.stream.listen((data) async {
+        await _storage.ready;
+        _storage.setItem(key, data);
+      });
+      // Unsubscribe when the widget is disposed
+      // or on controller/key change
+      return sub.cancel;
+    }, [controller, key])
+    // We load the initial value
+    ..useEffect(() {
+      _storage.ready.then((ready) {
+        if (ready) {
+          int valueFromStorage = _storage.getItem(key);
+          controller.add(valueFromStorage ?? defaultValue);
+        } else {
+          controller
+              .addError(DeferredLoadException('local storage failed to load'));
+        }
+      });
+      // ensure the callback is called only on first build
+    }, [controller, key]);
 
   return controller;
-}
-
-class Counter extends HookWidget {
-  @override
-  Widget build(HookContext context) {
-    StreamController<int> countController = useLocalStorageInt(context, 'foo');
-    AsyncSnapshot<int> count = context.useStream(countController.stream);
-
-    // Currently loading value from local storage, or there's an error
-    if (!count.hasData) {
-      return const CircularProgressIndicator();
-    }
-
-    return GestureDetector(
-      onTap: () => countController.add(count.data + 1),
-      child: Text('You tapped me ${count.data} times'),
-    );
-  }
-}
-
-class StreamStateHook<T> extends Hook<StreamController<T>> {
-  const StreamStateHook();
-
-  @override
-  StreamStateHookState<T> createState() => StreamStateHookState<T>();
-}
-
-class StreamStateHookState<T>
-    extends HookState<StreamController<T>, StreamStateHook<T>> {
-  StreamController<T> _controller;
-
-  @override
-  void initHook() {
-    super.initHook();
-    _controller = StreamController.broadcast();
-  }
-
-  @override
-  StreamController<T> build(HookContext context) {
-    return _controller;
-  }
-
-  @override
-  void dispose() {
-    _controller.close();
-    super.dispose();
-  }
-}
-
-class _EffectHook extends Hook<void> {
-  final VoidCallback Function() effect;
-  final List parameters;
-
-  const _EffectHook(this.effect, [this.parameters]) : assert(effect != null);
-
-  @override
-  _EffectHookState createState() => _EffectHookState();
-}
-
-class _EffectHookState extends HookState<void, _EffectHook> {
-  VoidCallback disposer;
-
-  @override
-  void initHook() {
-    super.initHook();
-    disposer = hook.effect();
-  }
-
-  @override
-  void didUpdateHook(_EffectHook oldHook) {
-    super.didUpdateHook(oldHook);
-    if (hook.parameters != oldHook.parameters &&
-        (hook.parameters.length != oldHook.parameters.length ||
-            _hasDiffWith(oldHook.parameters))) {
-      if (disposer != null) {
-        disposer();
-      }
-      disposer = hook.effect();
-    }
-  }
-
-  bool _hasDiffWith(List parameters) {
-    for (var i = 0; i < parameters.length; i++) {
-      if (parameters[i] != hook.parameters[i]) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  @override
-  void build(HookContext context) {}
-
-  @override
-  void dispose() {
-    if (disposer != null) {
-      disposer();
-    }
-    super.dispose();
-  }
 }

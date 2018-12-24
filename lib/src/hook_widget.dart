@@ -385,7 +385,9 @@ This may happen if the call to `use` is made under some condition.
   }
 
   @override
-  void useEffect(VoidCallback Function() effect, [List parameters]) {}
+  void useEffect(VoidCallback Function() effect, [List parameters]) {
+    use(_EffectHook(effect, parameters));
+  }
 
   @override
   T useMemoized<T>(T Function() valueBuilder, [List parameters = const []]) {
@@ -402,14 +404,18 @@ This may happen if the call to `use` is made under some condition.
 
   @override
   StreamController<T> useStreamController<T>(
-      {bool broadcast = true, bool sync}) {
-    return null;
+      {bool sync = false, VoidCallback onListen, VoidCallback onCancel}) {
+    return use(_StreamControllerHook(
+      onCancel: onCancel,
+      onListen: onListen,
+      sync: sync,
+    ));
   }
 }
 
 /// A [Widget] that can use [Hook]
 ///
-/// It's usage is very similar to [StatelessWidget]:
+/// It's usage is very similar to [StatelessWidget].
 /// [HookWidget] do not have any life-cycle and implements
 /// only a [build] method.
 ///
@@ -556,8 +562,11 @@ abstract class HookContext extends BuildContext {
   /// See also:
   ///   * [StreamController]
   ///   * [HookContext.useStream]
-  StreamController<T> useStreamController<T>(
-      {bool broadcast = true, bool sync});
+  StreamController<T> useStreamController<T>({
+    bool sync = false,
+    VoidCallback onListen,
+    VoidCallback onCancel,
+  });
 
   /// Subscribes to a [Listenable] and mark the widget as needing build
   /// whenever the listener is called.
