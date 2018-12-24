@@ -8,28 +8,39 @@
 
 A flutter implementation of React hooks: https://medium.com/@dan_abramov/making-sense-of-react-hooks-fdbde8803889
 
-## What are hooks?
-
 Hooks are a new kind of object that manages a `Widget` life-cycles. They exists for one reason: increase the code sharing _between_ widgets and as a complete replacement for `StatefulWidget`.
 
-### The StatefulWidget issue
+## Motivation
 
 `StatefulWidget` suffer from a big problem: it is very difficult reuse the logic of say `initState` or `dispose`. An obvious example is `AnimationController`:
 
 ```dart
 class Example extends StatefulWidget {
+  final Duration duration;
+
+  const Example({Key key, @required this.duration})
+      : assert(duration != null),
+        super(key: key);
+
   @override
   _ExampleState createState() => _ExampleState();
 }
 
-class _ExampleState extends State<Example>
-    with SingleTickerProviderStateMixin {
+class _ExampleState extends State<Example> with SingleTickerProviderStateMixin {
   AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this);
+    _controller = AnimationController(vsync: this, duration: widget.duration);
+  }
+
+  @override
+  void didUpdateWidget(Example oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.duration != oldWidget.duration) {
+      _controller.duration = widget.duration;
+    }
   }
 
   @override
@@ -45,63 +56,47 @@ class _ExampleState extends State<Example>
 }
 ```
 
-All widgets that desired to use an `AnimationController` will have to copy-paste the `initState`/`dispose`, which is of course undesired.
+All widgets that desires to use an `AnimationController` will have to reimplement the creation/destruction these life-cycles from scratch, which is of course undesired.
 
-Dart mixins can partially solve this issue, but they are the source of another problem: type conflicts. If two mixins defines the same variable, the behavior may vary from a compilation fail to a totally unexpected behavior.
+Dart mixins can partially solve this issue, but they suffer from other issues:
 
-### The Hook solution
+-   One given mixin can only be used once per class.
+-   Mixins and the class shares the same type. This means that if two mixins defines a variable under the same name, the end result may vary between compilation fail to unknown behavior.
 
-Hooks are designed so that we can reuse the `initState`/`dispose` logic shown before between widgets. But without the potential issues of a mixin.
+---
 
-_Hooks are independents and can be reused as many times as desired._
-
-This means that with hooks, the equivalent of the previous code is:
+Now let's reimplement the previous example using this library:
 
 ```dart
 class Example extends HookWidget {
+  final Duration duration;
+
+  const Example({Key key, @required this.duration})
+      : assert(duration != null),
+        super(key: key);
+
   @override
   Widget build(HookContext context) {
-    final controller = context.useAnimationController(
-      duration: const Duration(seconds: 1),
-    );
+    final controller = context.useAnimationController(duration: duration);
     return Container();
   }
 }
 ```
 
-`useAnimationController` is what we call a _Hook_. Hooks pretty similar to `State` and mixins, with some important differences:
+This code is strictly equivalent to the previous example. It still disposes the `AnimationController` and still updates its `duration` when `Example.duration` changes.
+But you're probably thinking:
 
-- A `HookWidget` can use as many hooks as desired. Not just one.
-- The same Hook can be used multiple times too, as opposed to mixins.
-- Hooks are entirely independent from each others and from the widget. Implying that they are composable, reusable, et shareable.
+> Where did all the previous logic go?
 
-For example using hooks a naive counter widget would be the following:
+That logic moved into `useAnimationController`. This function is what we call a _Hook_. Hooks have a few specificies:
 
-```dart
-class Counter extends HookWidget {
-  const Counter({Key key}) : super(key: key);
+-   They can be used only in the `build` method of a `HookWidget`.
+-   The same hook can be reused multiple times without variable conflict.
+-   Hooks are entirely independent from each others and from the widget. Which means they can easily be extracted into a package and published on [pub](https://pub.dartlang.org/) for others to use.
 
-  @override
-  Widget build(HookContext context) {
-    final counter = context.useState(initialData: 0);
+## Principle
 
-    return Scaffold(
-      body: Center(
-        child: Text(counter.value.toString()),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => counter.value++,
-      ),
-    );
-  }
-}
-```
-
-Notice how the widget is written in a single class, with no need to call `setState` or declare a field on the class.
-
-## The principle
-
-Hooks, similarily to `State`, are stored on the `Element`. But instead of having one `State`, the `Element` stores a `List<Hook>`. To then obtain the content of a `Hook`, one must call `HookContext.use`.
+Hooks, similarily to `State`, are stored on the `Element` associated to a `Widget`. But instead of having one `State`, the `Element` stores a `List<Hook>`. Then obtain the content of a `Hook`, one must call `HookContext.use`.
 
 The hook returned is based on the number of times the `use` method has been called. So that the first call returns the first hook; the second call returns the second hook, the third returns the third hook, ...
 
@@ -124,31 +119,191 @@ class HookElement extends Element {
 
 For more explanation of how they are implemented, here's a great article about how they did it in React: https://medium.com/@ryardley/react-hooks-not-magic-just-arrays-cd4f1857236e
 
-## Limitations
+Due to hooks being obtained based on their indexes, there are some rules for using hooks that must be respected:
 
-Due to hooks being obtained based on their indexes, there are things you should _not_ do with hooks:
-
-**Calls to `HookContext.use` should be made at top level and always in the same order**
-
-In short,
-DO:
+### DO call `use` unconditionally
 
 ```dart
 Widget build(HookContext context) {
-  final state = context.useState();
+  context.use(MyHook());
   // ....
 }
 ```
 
-DON'T:
+### DON'T call wrap `use` into a condition
 
 ```dart
 Widget build(HookContext context) {
   if (condition) {
-    final state = context.useState();
+    context.use(MyHook());
   }
   // ....
 }
 ```
 
-This may seem restricting at first, but the gain is more than worth it.
+---
+
+### DO always call all the hooks:
+
+```dart
+Widget build(HookContext context) {
+  context.use(Hook1());
+  context.use(Hook2());
+  // ....
+}
+```
+
+### DON'T abort `build` method before all hooks have been called:
+
+```dart
+Widget build(HookContext context) {
+  context.use(Hook1());
+  if (condition) {
+    return Container();
+  }
+  context.use(Hook2());
+  // ....
+}
+```
+
+## How to use
+
+There are two way to create a hook:
+
+-   A function
+
+Due to hooks composable nature, functions are the most common solution for custom hooks.
+They will have their name prefixed by `use` and take a `HookContext` as argument.
+
+The following defines a custom hook that creates a variable and log its value on the console whenever the value change:
+
+```dart
+ValueNotifier<T> useLoggedState<T>(HookContext context, [T initialData]) {
+  final result = context.useState<T>(initialData);
+  context.useValueChanged(result.value, (_, __) {
+    print(result.value);
+  });
+  return result;
+}
+```
+
+-   A class
+
+When a hook becomes too complex, it is possible to convert it into a class that extends `Hook`, which can then be used using `HookContext.use`. As a class, the hook will look very similar to a `State` and have access to life-cycles and methods such as `initHook`, `dispose` and `setState`.
+
+It is prefered to use functions over classes whenever possible, and to hide classes under a function.
+
+The following defines a hook that prints the time a `State` has been alive.
+
+```dart
+class _TimeAlive<T> extends Hook<void> {
+  const _TimeAlive();
+
+  @override
+  _TimeAliveState<T> createState() => _TimeAliveState<T>();
+}
+
+class _TimeAliveState<T> extends HookState<void, _TimeAlive<T>> {
+  DateTime start;
+
+  @override
+  void initHook() {
+    super.initHook();
+    start = DateTime.now();
+  }
+
+  @override
+  void build(HookContext context) {
+    // this hook doesn't create anything nor uses other hooks
+  }
+
+  @override
+  void dispose() {
+    print(DateTime.now().difference(start));
+    super.dispose();
+  }
+}
+
+```
+
+## Existing hooks
+
+`HookContext` comes with a list of predefined hooks that are commonly used. They can be used directly on the `HookContext` instance. The existing hooks are:
+
+-   useEffect
+
+Useful to trigger side effects in a widget and dispose objects. It takes a callback and calls it immediatly. That callback may optionally return a function, which will be called when the widget is disposed.
+
+By default the callback is called on every `build`, but it is possible to override that behavior by passing a list of objects as second parameter. The callback will then be called only when something inside the list has changed.
+
+The following call to `useEffect` subscribes to a `Stream` and cancel the subscription when the widget is disposed:
+
+```dart
+Stream stream;
+context.useEffect(() {
+    final subscribtion = stream.listen(print);
+    // This will cancel the subscribtion when the widget is disposed
+    // or if the callback is called again.
+    return subscribtion.cancel;
+  },
+  // when the stream change, useEffect will call the callback again.
+  [stream],
+);
+```
+
+-   useState
+
+Defines + watch a variable and whenever the value change, calls `setState`.
+
+The following uses `useState` to make a simple counter application:
+
+```dart
+class Counter extends HookWidget {
+  @override
+  Widget build(HookContext context) {
+    final counter = context.useState(0);
+
+    return GestureDetector(
+      onTap: () => counter.value++,
+      child: Text(counter.value.toString()),
+    );
+  }
+}
+```
+
+-   useMemoized
+
+Takes a callback that creates a value, call it, and stores its result so that next time, the value is reused.
+
+By default the callback is called only on the first build. But it is optionally possible to specify a list of objects as second parameter. The callback will then be called again whenever something inside the list has changed.
+
+The following sample make an http call and return the created `Future` whenever `userId` changes:
+
+```dart
+String userId;
+final Future<http.Response> response = context.useMemoized(() {
+  return http.get('someUrl/$userId');
+}, [userId]);
+```
+
+-   useValueChanged
+
+Takes a value and a callback, and call the callback whenever the value changed. The callback can optionally return an object, which will be stored and returned as the result of `useValueChanged`.
+
+The following example implictly starts a tween animation whenever `color` changes:
+
+```dart
+AnimationController controller;
+Color color;
+
+final colorTween = context.useValueChanged(
+    color,
+    (Color oldColor, Animation<Color> oldAnimation) {
+      return ColorTween(
+        begin: oldAnimation?.value ?? oldColor,
+        end: color,
+      ).animate(controller..forward(from: 0));
+    },
+  ) ??
+  AlwaysStoppedAnimation(color);
+```
