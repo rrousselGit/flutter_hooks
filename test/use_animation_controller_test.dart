@@ -103,6 +103,47 @@ void main() {
     // dispose
     await tester.pumpWidget(const SizedBox());
   });
+
+  testWidgets('switch between controlled and  uncontrolled throws',
+      (tester) async {
+    await tester.pumpWidget(HookBuilder(
+      builder: (context) {
+        context.useAnimationController();
+        return Container();
+      },
+    ));
+
+    await expectPump(
+      () => tester.pumpWidget(HookBuilder(
+            builder: (context) {
+              context.useAnimationController(vsync: tester);
+              return Container();
+            },
+          )),
+      throwsAssertionError,
+    );
+
+    await tester.pumpWidget(Container());
+
+
+    // the other way around
+    await tester.pumpWidget(HookBuilder(
+      builder: (context) {
+        context.useAnimationController(vsync: tester);
+        return Container();
+      },
+    ));
+
+    await expectPump(
+      () => tester.pumpWidget(HookBuilder(
+            builder: (context) {
+              context.useAnimationController();
+              return Container();
+            },
+          )),
+      throwsAssertionError,
+    );
+  });
 }
 
 class _TickerProvider extends Mock implements TickerProvider {}

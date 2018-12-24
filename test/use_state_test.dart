@@ -11,7 +11,7 @@ void main() {
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
         element = context as HookElement;
-        state = context.useState(initialData: 42);
+        state = context.useState(42);
         return Container();
       },
     ));

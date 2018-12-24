@@ -1,7 +1,28 @@
 part of 'hook.dart';
 
+bool _areListsEquals(List p1, List p2) {
+  if (p1 == p2) {
+    return true;
+  }
+  // is one list is null and the other one isn't, or if they have different size
+  if ((p1 != p2 && (p1 == null || p2 == null)) || p1.length != p2.length) {
+    return false;
+  }
+
+  var i1 = p1.iterator;
+  var i2 = p2.iterator;
+  while (true) {
+    if (!i1.moveNext() || !i2.moveNext()) {
+      return true;
+    }
+    if (i1.current != i2.current) {
+      return false;
+    }
+  }
+}
+
 class _MemoizedHook<T> extends Hook<T> {
-  final T Function(T old) valueBuilder;
+  final T Function() valueBuilder;
   final List parameters;
 
   const _MemoizedHook(this.valueBuilder, {this.parameters = const []})
@@ -18,26 +39,15 @@ class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
   @override
   void initHook() {
     super.initHook();
-    value = hook.valueBuilder(null);
+    value = hook.valueBuilder();
   }
 
   @override
   void didUpdateHook(_MemoizedHook<T> oldHook) {
     super.didUpdateHook(oldHook);
-    if (hook.parameters != oldHook.parameters &&
-        (hook.parameters.length != oldHook.parameters.length ||
-            _hasDiffWith(oldHook.parameters))) {
-      value = hook.valueBuilder(value);
+    if (!_areListsEquals(hook.parameters, oldHook.parameters)) {
+      value = hook.valueBuilder();
     }
-  }
-
-  bool _hasDiffWith(List parameters) {
-    for (var i = 0; i < parameters.length; i++) {
-      if (parameters[i] != hook.parameters[i]) {
-        return true;
-      }
-    }
-    return false;
   }
 
   @override
@@ -185,6 +195,21 @@ class _AnimationControllerHookState
   AnimationController _animationController;
 
   @override
+  void didUpdateHook(_AnimationControllerHook oldHook) {
+    super.didUpdateHook(oldHook);
+    if (hook.vsync != oldHook.vsync) {
+      assert(hook.vsync != null && oldHook.vsync != null, '''
+Switching between controller and uncontrolled vsync is not allowed.
+''');
+      _animationController.resync(hook.vsync);
+    }
+
+    if (hook.duration != oldHook.duration) {
+      _animationController.duration = hook.duration;
+    }
+  }
+
+  @override
   AnimationController build(HookContext context) {
     final vsync = hook.vsync ?? context.useSingleTickerProvider();
 
@@ -198,18 +223,7 @@ class _AnimationControllerHookState
       value: hook.initialValue,
     );
 
-    context
-      ..useValueChanged(hook.vsync, resync)
-      ..useValueChanged(hook.duration, duration);
     return _animationController;
-  }
-
-  void resync(_, __) {
-    _animationController.resync(hook.vsync);
-  }
-
-  void duration(_, __) {
-    _animationController.duration = hook.duration;
   }
 
   @override
@@ -235,7 +249,6 @@ class _ListenableStateHook extends HookState<void, _ListenableHook> {
     hook.listenable.addListener(_listener);
   }
 
-  /// we do it manually instead of using [HookContext.useValueChanged] to win a split second.
   @override
   void didUpdateHook(_ListenableHook oldHook) {
     super.didUpdateHook(oldHook);
@@ -425,23 +438,103 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
       current.inState(ConnectionState.none);
 }
 
-/// A [HookWidget] that defer its [HookWidget.build] to a callback
-class HookBuilder extends HookWidget {
-  /// The callback used by [HookBuilder] to create a widget.
-  ///
-  /// If the passed [HookContext] trigger a rebuild, [builder] will be called again.
-  /// [builder] must not return `null`.
-  final Widget Function(HookContext context) builder;
+class _EffectHook extends Hook<void> {
+  final VoidCallback Function() effect;
+  final List parameters;
 
-  /// Creates a widget that delegates its build to a callback.
-  ///
-  /// The [builder] argument must not be null.
-  const HookBuilder({
-    @required this.builder,
-    Key key,
-  })  : assert(builder != null),
-        super(key: key);
+  const _EffectHook(this.effect, [this.parameters]) : assert(effect != null);
 
   @override
-  Widget build(HookContext context) => builder(context);
+  _EffectHookState createState() => _EffectHookState();
+}
+
+class _EffectHookState extends HookState<void, _EffectHook> {
+  VoidCallback disposer;
+
+  @override
+  void initHook() {
+    super.initHook();
+    scheduleEffect();
+  }
+
+  @override
+  void didUpdateHook(_EffectHook oldHook) {
+    super.didUpdateHook(oldHook);
+
+    if (hook.parameters == null ||
+        !_areListsEquals(hook.parameters, oldHook.parameters)) {
+      if (disposer != null) {
+        disposer();
+      }
+      scheduleEffect();
+    }
+  }
+
+  @override
+  void build(HookContext context) {}
+
+  @override
+  void dispose() {
+    if (disposer != null) {
+      disposer();
+    }
+    super.dispose();
+  }
+
+  void scheduleEffect() {
+    disposer = hook.effect();
+  }
+}
+
+class _StreamControllerHook<T> extends Hook<StreamController<T>> {
+  final bool sync;
+  final VoidCallback onListen;
+  final VoidCallback onCancel;
+
+  const _StreamControllerHook({
+    this.sync = false,
+    this.onListen,
+    this.onCancel,
+  });
+
+  @override
+  _StreamControllerHookState<T> createState() =>
+      _StreamControllerHookState<T>();
+}
+
+class _StreamControllerHookState<T>
+    extends HookState<StreamController<T>, _StreamControllerHook<T>> {
+  StreamController<T> _controller;
+
+  @override
+  void initHook() {
+    super.initHook();
+    _controller = StreamController.broadcast(
+      sync: hook.sync,
+      onCancel: hook.onCancel,
+      onListen: hook.onListen,
+    );
+  }
+
+  @override
+  void didUpdateHook(_StreamControllerHook<T> oldHook) {
+    super.didUpdateHook(oldHook);
+    if (oldHook.onListen != hook.onListen) {
+      _controller.onListen = hook.onListen;
+    }
+    if (oldHook.onCancel != hook.onCancel) {
+      _controller.onCancel = hook.onCancel;
+    }
+  }
+
+  @override
+  StreamController<T> build(HookContext context) {
+    return _controller;
+  }
+
+  @override
+  void dispose() {
+    _controller.close();
+    super.dispose();
+  }
 }
