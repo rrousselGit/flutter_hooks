@@ -22,55 +22,30 @@ class _Counter extends HookWidget {
 
   @override
   Widget build(HookContext context) {
-    final c1 = context.useState(0);
-    final c2 = context.useState(0);
-    final a = context.useState(0);
-    final c3 = context.useState(0);
+    StreamController<int> countController =
+        _useLocalStorageInt(context, 'counter');
 
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          GestureDetector(
-            onTap: () => c1.value++,
-            child: Text(c1.value.toString()),
-          ),
-          GestureDetector(
-            onTap: () => c2.value++,
-            child: Text(c2.value.toString()),
-          ),
-          GestureDetector(
-            onTap: () => c3.value++,
-            child: Text(c3.value.toString()),
-          ),
-        ],
+      appBar: AppBar(
+        title: const Text('Counter app'),
+      ),
+      body: Center(
+        child: HookBuilder(
+          builder: (context) {
+            AsyncSnapshot<int> count =
+                context.useStream(countController.stream);
+
+            return !count.hasData
+                // Currently loading value from local storage, or there's an error
+                ? const CircularProgressIndicator()
+                : GestureDetector(
+                    onTap: () => countController.add(count.data + 1),
+                    child: Text('You tapped me ${count.data} times'),
+                  );
+          },
+        ),
       ),
     );
-
-    // StreamController<int> countController =
-    //     _useLocalStorageInt(context, 'counter');
-
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     title: const Text('Counter app'),
-    //   ),
-    //   body: Center(
-    //     child: HookBuilder(
-    //       builder: (context) {
-    //         AsyncSnapshot<int> count =
-    //             context.useStream(countController.stream);
-
-    //         return !count.hasData
-    //             // Currently loading value from local storage, or there's an error
-    //             ? const CircularProgressIndicator()
-    //             : GestureDetector(
-    //                 onTap: () => countController.add(count.data + 1),
-    //                 child: Text('You tapped me ${count.data} times'),
-    //               );
-    //       },
-    //     ),
-    //   ),
-    // );
   }
 }
 

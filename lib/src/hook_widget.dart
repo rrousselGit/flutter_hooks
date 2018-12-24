@@ -277,18 +277,15 @@ This may happen if the call to `use` is made under some condition.
           _hooks.remove(_currentHook.current..dispose());
           // has to be done after the dispose call
           hookState = _createHookState(hook);
-          // compensate for the `_debutHooksIndex++` at the end
-          _debugHooksIndex--;
-          _hooks.add(hookState);
+          _hooks.insert(_debugHooksIndex, hookState);
 
           // we move the iterator back to where it was
-          _currentHook = _hooks.iterator;
-          for (var i = 0;
-              i + 2 < _hooks.length && _hooks[i + 2] != hookState;
-              i++) {
+          _currentHook = _hooks.iterator..moveNext();
+          for (var i = 0; i < _hooks.length && _hooks[i] != hookState; i++) {
             _currentHook.moveNext();
           }
         } else {
+          // new hooks have been pushed at the end of the list.
           hookState = _createHookState(hook);
           _hooks.add(hookState);
 

@@ -258,13 +258,14 @@ void main() {
     verifyNever(dispose.call());
   });
 
-  testWidgets('hot-reload can add hooks', (tester) async {
+  testWidgets('hot-reload can add hooks at the end of the list',
+      (tester) async {
     HookTest hook1;
 
     final dispose2 = Func0<void>();
     final initHook2 = Func0<void>();
     final didUpdateHook2 = Func1<HookTest, void>();
-    final build2 = Func1<HookContext, int>();
+    final build2 = Func1<HookContext, String>();
 
     when(builder.call(any)).thenAnswer((invocation) {
       (invocation.positionalArguments[0] as HookContext)
@@ -286,7 +287,7 @@ void main() {
     when(builder.call(any)).thenAnswer((invocation) {
       (invocation.positionalArguments[0] as HookContext)
         ..use(createHook())
-        ..use(HookTest<int>(
+        ..use(HookTest<String>(
           initHook: initHook2,
           build: build2,
           didUpdateHook: didUpdateHook2,
@@ -306,6 +307,58 @@ void main() {
     ]);
     verifyNoMoreInteractions(initHook);
     verifyZeroInteractions(dispose);
+    verifyZeroInteractions(dispose2);
+    verifyZeroInteractions(didUpdateHook2);
+  });
+
+  testWidgets('hot-reload can add hooks in the middle of the list',
+      (tester) async {
+    final dispose2 = Func0<void>();
+    final initHook2 = Func0<void>();
+    final didUpdateHook2 = Func1<HookTest, void>();
+    final build2 = Func1<HookContext, String>();
+
+    when(builder.call(any)).thenAnswer((invocation) {
+      (invocation.positionalArguments[0] as HookContext)
+        ..use(createHook());
+      return Container();
+    });
+
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    final HookElement context = find.byType(HookBuilder).evaluate().first;
+
+    verifyInOrder([
+      initHook.call(),
+      build.call(context),
+    ]);
+    verifyZeroInteractions(dispose);
+    verifyZeroInteractions(didUpdateHook);
+
+    when(builder.call(any)).thenAnswer((invocation) {
+      (invocation.positionalArguments[0] as HookContext)
+        ..use(HookTest<String>(
+          initHook: initHook2,
+          build: build2,
+          didUpdateHook: didUpdateHook2,
+          dispose: dispose2,
+        ))
+        ..use(createHook());
+      return Container();
+    });
+
+    hotReload(tester);
+    await tester.pump();
+
+    verifyInOrder([
+      dispose.call(),
+      initHook2.call(),
+      build2.call(context),
+      initHook.call(),
+      build.call(context),
+    ]);
+    verifyNoMoreInteractions(didUpdateHook);
+    verifyNoMoreInteractions(dispose);
     verifyZeroInteractions(dispose2);
     verifyZeroInteractions(didUpdateHook2);
   });
@@ -384,8 +437,8 @@ void main() {
       (invocation.positionalArguments[0] as HookContext)
         ..use(hook1 = createHook())
         ..use(HookTest<String>(dispose: dispose2))
-        ..use(HookTest<int>(dispose: dispose3))
-        ..use(HookTest<int>(dispose: dispose4));
+        ..use(HookTest<Object>(dispose: dispose3))
+        ..use(HookTest<void>(dispose: dispose4));
       return Container();
     });
 
