@@ -1,6 +1,4 @@
-[![Build Status](https://travis-ci.org/rrousselGit/flutter_hooks.svg?branch=master)](https://travis-ci.org/rrousselGit/flutter_hooks) [![codecov](https://codecov.io/gh/rrousselGit/flutter_hooks/branch/master/graph/badge.svg)](https://codecov.io/gh/rrousselGit/flutter_hooks)
-
-[![pub package](https://img.shields.io/pub/v/flutter_hooks.svg)](https://pub.dartlang.org/packages/flutter_hooks)
+[![Build Status](https://travis-ci.org/rrousselGit/flutter_hooks.svg?branch=master)](https://travis-ci.org/rrousselGit/flutter_hooks) [![codecov](https://codecov.io/gh/rrousselGit/flutter_hooks/branch/master/graph/badge.svg)](https://codecov.io/gh/rrousselGit/flutter_hooks) [![pub package](https://img.shields.io/pub/v/flutter_hooks.svg)](https://pub.dartlang.org/packages/flutter_hooks) [![pub package](https://img.shields.io/badge/Awesome-Flutter-blue.svg?longCache=true&style=flat-square)](https://stackoverflow.com/questions/tagged/flutter?sort=votes)
 
 <img src="https://raw.githubusercontent.com/rrousselGit/flutter_hooks/master/flutter-hook.svg?sanitize=true" width="200">
 
@@ -88,7 +86,7 @@ But you're probably thinking:
 
 > Where did all the previous logic go?
 
-That logic moved into `useAnimationController`. This function is what we call a _Hook_. Hooks have a few specificities:
+That logic moved into `useAnimationController` (included in the library, see https://github.com/rrousselGit/flutter_hooks#existing-hooks). This function is what we call a _Hook_. Hooks have a few specificities:
 
 - They can be used only in the `build` method of a `HookWidget`.
 - The same hook can be reused multiple times without variable conflict.
