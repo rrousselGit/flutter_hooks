@@ -1,6 +1,4 @@
-[![Build Status](https://travis-ci.org/rrousselGit/flutter_hooks.svg?branch=master)](https://travis-ci.org/rrousselGit/flutter_hooks) [![codecov](https://codecov.io/gh/rrousselGit/flutter_hooks/branch/master/graph/badge.svg)](https://codecov.io/gh/rrousselGit/flutter_hooks)
-
-[![pub package](https://img.shields.io/pub/v/flutter_hooks.svg)](https://pub.dartlang.org/packages/flutter_hooks)
+[![Build Status](https://travis-ci.org/rrousselGit/flutter_hooks.svg?branch=master)](https://travis-ci.org/rrousselGit/flutter_hooks) [![codecov](https://codecov.io/gh/rrousselGit/flutter_hooks/branch/master/graph/badge.svg)](https://codecov.io/gh/rrousselGit/flutter_hooks) [![pub package](https://img.shields.io/pub/v/flutter_hooks.svg)](https://pub.dartlang.org/packages/flutter_hooks) [![pub package](https://img.shields.io/badge/Awesome-Flutter-blue.svg?longCache=true&style=flat-square)](https://stackoverflow.com/questions/tagged/flutter?sort=votes)
 
 <img src="https://raw.githubusercontent.com/rrousselGit/flutter_hooks/master/flutter-hook.svg?sanitize=true" width="200">
 
@@ -8,11 +6,11 @@
 
 A flutter implementation of React hooks: https://medium.com/@dan_abramov/making-sense-of-react-hooks-fdbde8803889
 
-Hooks are a new kind of object that manages a `Widget` life-cycles. They exists for one reason: increase the code sharing _between_ widgets and as a complete replacement for `StatefulWidget`.
+Hooks are a new kind of object that manages a `Widget` life-cycles. They exist for one reason: increase the code sharing _between_ widgets and as a complete replacement for `StatefulWidget`.
 
 ## Motivation
 
-`StatefulWidget` suffer from a big problem: it is very difficult reuse the logic of say `initState` or `dispose`. An obvious example is `AnimationController`:
+`StatefulWidget` suffer from a big problem: it is very difficult to reuse the logic of say `initState` or `dispose`. An obvious example is `AnimationController`:
 
 ```dart
 class Example extends StatefulWidget {
@@ -56,12 +54,12 @@ class _ExampleState extends State<Example> with SingleTickerProviderStateMixin {
 }
 ```
 
-All widgets that desires to use an `AnimationController` will have to reimplement the creation/destruction these life-cycles from scratch, which is of course undesired.
+All widgets that desire to use an `AnimationController` will have to reimplement the creation/destruction these life-cycles from scratch, which is of course undesired.
 
 Dart mixins can partially solve this issue, but they suffer from other issues:
 
--   One given mixin can only be used once per class.
--   Mixins and the class shares the same type. This means that if two mixins defines a variable under the same name, the end result may vary between compilation fail to unknown behavior.
+- One given mixin can only be used once per class.
+- Mixins and the class shares the same type. This means that if two mixins define a variable under the same name, the end result may vary between compilation fail to unknown behavior.
 
 ---
 
@@ -88,15 +86,15 @@ But you're probably thinking:
 
 > Where did all the previous logic go?
 
-That logic moved into `useAnimationController`. This function is what we call a _Hook_. Hooks have a few specificies:
+That logic moved into `useAnimationController`, a function shipped with this library (see https://github.com/rrousselGit/flutter_hooks#existing-hooks). This function is what we call a _Hook_. Hooks have a few specificities:
 
--   They can be used only in the `build` method of a `HookWidget`.
--   The same hook can be reused multiple times without variable conflict.
--   Hooks are entirely independent from each others and from the widget. Which means they can easily be extracted into a package and published on [pub](https://pub.dartlang.org/) for others to use.
+- They can be used only in the `build` method of a `HookWidget`.
+- The same hook can be reused multiple times without variable conflict.
+- Hooks are entirely independent of each other and from the widget. Which means they can easily be extracted into a package and published on [pub](https://pub.dartlang.org/) for others to use.
 
 ## Principle
 
-Hooks, similarily to `State`, are stored on the `Element` associated to a `Widget`. But instead of having one `State`, the `Element` stores a `List<Hook>`. Then obtain the content of a `Hook`, one must call `HookContext.use`.
+Hooks, similarily to `State`, are stored on the `Element` associated with a `Widget`. But instead of having one `State`, the `Element` stores a `List<Hook>`. Then obtain the content of a `Hook`, one must call `HookContext.use`.
 
 The hook returned is based on the number of times the `use` method has been called. So that the first call returns the first hook; the second call returns the second hook, the third returns the third hook, ...
 
@@ -130,7 +128,7 @@ Widget build(HookContext context) {
 }
 ```
 
-### DON'T call wrap `use` into a condition
+### DON'T wrap `use` into a condition
 
 ```dart
 Widget build(HookContext context) {
@@ -153,7 +151,7 @@ Widget build(HookContext context) {
 }
 ```
 
-### DON'T abort `build` method before all hooks have been called:
+### DON'T aborts `build` method before all hooks have been called:
 
 ```dart
 Widget build(HookContext context) {
@@ -166,7 +164,7 @@ Widget build(HookContext context) {
 }
 ```
 
-____
+---
 
 ### About hot-reload
 
@@ -185,7 +183,7 @@ Then consider that after a hot-reload, we edited the parameter of B:
 - B(42)
 - C()
 
-Here there are no issue. All hooks keeps their states. 
+Here there is no issue. All hooks keep their states.
 
 Now consider that we removed B. We now have:
 
@@ -196,14 +194,14 @@ In this situation, A keeps its state but C gets a hard reset.
 
 ## How to use
 
-There are two way to create a hook:
+There is two way to create a hook:
 
--   A function
+- A function
 
 Due to hooks composable nature, functions are the most common solution for custom hooks.
-They will have their name prefixed by `use` and take a `HookContext` as argument.
+They will have their name prefixed by `use` and take a `HookContext` as an argument.
 
-The following defines a custom hook that creates a variable and log its value on the console whenever the value change:
+The following defines a custom hook that creates a variable and logs its value on the console whenever the value change:
 
 ```dart
 ValueNotifier<T> useLoggedState<T>(HookContext context, [T initialData]) {
@@ -215,11 +213,11 @@ ValueNotifier<T> useLoggedState<T>(HookContext context, [T initialData]) {
 }
 ```
 
--   A class
+- A class
 
 When a hook becomes too complex, it is possible to convert it into a class that extends `Hook`, which can then be used using `HookContext.use`. As a class, the hook will look very similar to a `State` and have access to life-cycles and methods such as `initHook`, `dispose` and `setState`.
 
-It is prefered to use functions over classes whenever possible, and to hide classes under a function.
+It is preferred to use functions over classes whenever possible and to hide classes under a function.
 
 The following defines a hook that prints the time a `State` has been alive.
 
@@ -258,11 +256,11 @@ class _TimeAliveState<T> extends HookState<void, _TimeAlive<T>> {
 
 `HookContext` comes with a list of predefined hooks that are commonly used. They can be used directly on the `HookContext` instance. The existing hooks are:
 
--   useEffect
+- useEffect
 
-Useful to trigger side effects in a widget and dispose objects. It takes a callback and calls it immediatly. That callback may optionally return a function, which will be called when the widget is disposed.
+Useful to trigger side effects in a widget and dispose objects. It takes a callback and calls it immediately. That callback may optionally return a function, which will be called when the widget is disposed.
 
-By default the callback is called on every `build`, but it is possible to override that behavior by passing a list of objects as second parameter. The callback will then be called only when something inside the list has changed.
+By default, the callback is called on every `build`, but it is possible to override that behavior by passing a list of objects as the second parameter. The callback will then be called only when something inside the list has changed.
 
 The following call to `useEffect` subscribes to a `Stream` and cancel the subscription when the widget is disposed:
 
@@ -279,7 +277,7 @@ context.useEffect(() {
 );
 ```
 
--   useState
+- useState
 
 Defines + watch a variable and whenever the value change, calls `setState`.
 
@@ -299,11 +297,11 @@ class Counter extends HookWidget {
 }
 ```
 
--   useMemoized
+- useMemoized
 
-Takes a callback that creates a value, call it, and stores its result so that next time, the value is reused.
+Takes a callback that creates a value, calls it, and stores its result so that next time, the value is reused.
 
-By default the callback is called only on the first build. But it is optionally possible to specify a list of objects as second parameter. The callback will then be called again whenever something inside the list has changed.
+By default, the callback is called only on the first build. But it is optionally possible to specify a list of objects as the second parameter. The callback will then be called again whenever something inside the list has changed.
 
 The following sample make an http call and return the created `Future` whenever `userId` changes:
 
@@ -314,11 +312,11 @@ final Future<http.Response> response = context.useMemoized(() {
 }, [userId]);
 ```
 
--   useValueChanged
+- useValueChanged
 
 Takes a value and a callback, and call the callback whenever the value changed. The callback can optionally return an object, which will be stored and returned as the result of `useValueChanged`.
 
-The following example implictly starts a tween animation whenever `color` changes:
+The following example implicitly starts a tween animation whenever `color` changes:
 
 ```dart
 AnimationController controller;
@@ -334,4 +332,28 @@ final colorTween = context.useValueChanged(
     },
   ) ??
   AlwaysStoppedAnimation(color);
+```
+
+- useAnimationController, useStreamController, useSingleTickerProvider
+
+A set of hooks that handles the whole life-cycle of an object. These hooks will take care of both creating, disposing and updating the object.
+
+They are the equivalent of both `initState`, `dispose` and `didUpdateWidget` for that specific object.
+
+```dart
+Duration duration;
+AnimationController controller = context.useAnimationController(
+  // duration is automatically updates when the widget is rebuilt with a different `duration`
+  duration: duration,
+);
+```
+
+- useStream, useFuture, useAnimation, useValueListenable, useListenable
+
+A set of hooks that subscribes to an object and calls `setState` accordingly.
+
+```dart
+Stream<int> stream;
+// automatically rebuild the widget when a new value is pushed to the stream
+AsyncSnapshot<int> snapshot = context.useStream(stream);
 ```
