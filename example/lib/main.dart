@@ -1,5 +1,9 @@
+// ignore_for_file: omit_local_variable_types
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(_MyApp());
 
@@ -18,18 +22,61 @@ class _Counter extends HookWidget {
 
   @override
   Widget build(HookContext context) {
-    final counter = context.useState(initialData: 0);
+    StreamController<int> countController =
+        _useLocalStorageInt(context, 'counter');
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Counter app'),
       ),
       body: Center(
-        child: Text(counter.value.toString()),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => counter.value++,
+        child: HookBuilder(
+          builder: (context) {
+            AsyncSnapshot<int> count =
+                context.useStream(countController.stream);
+
+            return !count.hasData
+                // Currently loading value from local storage, or there's an error
+                ? const CircularProgressIndicator()
+                : GestureDetector(
+                    onTap: () => countController.add(count.data + 1),
+                    child: Text('You tapped me ${count.data} times'),
+                  );
+          },
+        ),
       ),
     );
   }
+}
+
+StreamController<int> _useLocalStorageInt(
+  HookContext context,
+  String key, {
+  int defaultValue = 0,
+}) {
+  final controller = context.useStreamController<int>();
+
+  context
+    // We define a callback that will be called on first build
+    // and whenever the controller/key change
+    ..useEffect(() {
+      // We listen to the data and push new values to local storage
+      final sub = controller.stream.listen((data) async {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setInt(key, data);
+      });
+      // Unsubscribe when the widget is disposed
+      // or on controller/key change
+      return sub.cancel;
+    }, [controller, key])
+    // We load the initial value
+    ..useEffect(() {
+      SharedPreferences.getInstance().then((prefs) async {
+        int valueFromStorage = prefs.getInt(key);
+        controller.add(valueFromStorage ?? defaultValue);
+      }).catchError(controller.addError);
+      // ensure the callback is called only on first build
+    }, [controller, key]);
+
+  return controller;
 }
