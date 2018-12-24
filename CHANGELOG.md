@@ -4,6 +4,7 @@
 Use `useValueChanged` instead.
 - Introduced `useEffect` and `useStreamController`
 - fixed a bug where hot-reload while reordering/adding hooks did not work properly
+- improved readme
 
 ## 0.0.1:
 
