@@ -86,7 +86,7 @@ But you're probably thinking:
 
 > Where did all the previous logic go?
 
-That logic moved into `useAnimationController` (included in the library, see https://github.com/rrousselGit/flutter_hooks#existing-hooks). This function is what we call a _Hook_. Hooks have a few specificities:
+That logic moved into `useAnimationController`, a function shipped with this library (see https://github.com/rrousselGit/flutter_hooks#existing-hooks). This function is what we call a _Hook_. Hooks have a few specificities:
 
 - They can be used only in the `build` method of a `HookWidget`.
 - The same hook can be reused multiple times without variable conflict.
@@ -332,4 +332,28 @@ final colorTween = context.useValueChanged(
     },
   ) ??
   AlwaysStoppedAnimation(color);
+```
+
+- useAnimationController, useStreamController, useSingleTickerProvider
+
+A set of hooks that handles the whole life-cycle of an object. These hooks will take care of both creating, disposing and updating the object.
+
+They are the equivalent of both `initState`, `dispose` and `didUpdateWidget` for that specific object.
+
+```dart
+Duration duration;
+AnimationController controller = context.useAnimationController(
+  // duration is automatically updates when the widget is rebuilt with a different `duration`
+  duration: duration,
+);
+```
+
+- useStream, useFuture, useAnimation, useValueListenable, useListenable
+
+A set of hooks that subscribes to an object and calls `setState` accordingly.
+
+```dart
+Stream<int> stream;
+// automatically rebuild the widget when a new value is pushed to the stream
+AsyncSnapshot<int> snapshot = context.useStream(stream);
 ```
