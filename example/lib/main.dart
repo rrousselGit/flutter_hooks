@@ -3,7 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:localstorage/localstorage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(_MyApp());
 
@@ -49,8 +49,6 @@ class _Counter extends HookWidget {
   }
 }
 
-final LocalStorage _storage = LocalStorage('my_app');
-
 StreamController<int> _useLocalStorageInt(
   HookContext context,
   String key, {
@@ -64,8 +62,8 @@ StreamController<int> _useLocalStorageInt(
     ..useEffect(() {
       // We listen to the data and push new values to local storage
       final sub = controller.stream.listen((data) async {
-        await _storage.ready;
-        _storage.setItem(key, data);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setInt(key, data);
       });
       // Unsubscribe when the widget is disposed
       // or on controller/key change
@@ -73,15 +71,10 @@ StreamController<int> _useLocalStorageInt(
     }, [controller, key])
     // We load the initial value
     ..useEffect(() {
-      _storage.ready.then((ready) {
-        if (ready) {
-          int valueFromStorage = _storage.getItem(key);
-          controller.add(valueFromStorage ?? defaultValue);
-        } else {
-          controller
-              .addError(DeferredLoadException('local storage failed to load'));
-        }
-      });
+      SharedPreferences.getInstance().then((prefs) async {
+        int valueFromStorage = prefs.getInt(key);
+        controller.add(valueFromStorage ?? defaultValue);
+      }).catchError(controller.addError);
       // ensure the callback is called only on first build
     }, [controller, key]);
 
