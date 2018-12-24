@@ -152,22 +152,3 @@ Widget build(HookContext context) {
 ```
 
 This may seem restricting at first, but the gain is more than worth it.
-
-## How to use
-
-Let's assume we want to make a counter app that saves its state into the local storage; something that would be pretty tedious using simple `StatefulWidget`.
-
-Using hooks, we could think of making a `useLocalStorageInt` hook, that will automatically synchronize an integer with the local storage.
-
-The hook would be used as followed:
-
-```dart
-class CounterApp extends HookWidget {
-  @override
-  Widget build(HookContext context) {
-    AsyncSnapshot<int> count = useLocalStorageInt('counter', defaultValue: 0);
-
-    if (count.)
-  }
-}
-```
