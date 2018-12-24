@@ -166,6 +166,34 @@ Widget build(HookContext context) {
 }
 ```
 
+____
+
+### About hot-reload
+
+Since hooks are obtained based on their index, one may think that hot-reload will break the application. But that is not the case.
+
+`HookWidget` overrides the default hot-reload behavior to work with hooks. But in certain situations, the state of a Hook may get reset.
+Consider the following list of hooks:
+
+- A()
+- B(0)
+- C()
+
+Then consider that after a hot-reload, we edited the parameter of B:
+
+- A()
+- B(42)
+- C()
+
+Here there are no issue. All hooks keeps their states. 
+
+Now consider that we removed B. We now have:
+
+- A()
+- C()
+
+In this situation, A keeps its state but C gets a hard reset.
+
 ## How to use
 
 There are two way to create a hook:
