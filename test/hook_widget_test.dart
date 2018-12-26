@@ -6,11 +6,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'mock.dart';
 
 void main() {
-  final build = Func1<HookContext, int>();
+  final build = Func1<BuildContext, int>();
   final dispose = Func0<void>();
   final initHook = Func0<void>();
   final didUpdateHook = Func1<HookTest, void>();
-  final builder = Func1<HookContext, Widget>();
+  final builder = Func1<BuildContext, Widget>();
 
   final createHook = () => HookTest<int>(
         build: build.call,
@@ -33,9 +33,8 @@ void main() {
 
     final dispose2 = Func0<void>();
     when(builder.call(any)).thenAnswer((invocation) {
-      (invocation.positionalArguments[0] as HookContext)
-        ..use(HookTest<int>(dispose: dispose.call, keys: keys))
-        ..use(HookTest<String>(dispose: dispose2.call, keys: keys2));
+      Hook.use(HookTest<int>(dispose: dispose.call, keys: keys));
+      Hook.use(HookTest<String>(dispose: dispose2.call, keys: keys2));
       return Container();
     });
     await tester.pumpWidget(HookBuilder(builder: builder.call));
@@ -62,15 +61,14 @@ void main() {
     when(createState.call()).thenReturn(HookStateTest<int>());
 
     when(builder.call(any)).thenAnswer((invocation) {
-      (invocation.positionalArguments[0] as HookContext)
-        ..use(HookTest<int>(
-          build: build.call,
-          dispose: dispose.call,
-          didUpdateHook: didUpdateHook.call,
-          initHook: initHook.call,
-          keys: keys,
-          createStateFn: createState.call,
-        ));
+      Hook.use(HookTest<int>(
+        build: build.call,
+        dispose: dispose.call,
+        didUpdateHook: didUpdateHook.call,
+        initHook: initHook.call,
+        keys: keys,
+        createStateFn: createState.call,
+      ));
       return Container();
     });
     await tester.pumpWidget(HookBuilder(builder: builder.call));
@@ -173,7 +171,7 @@ void main() {
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
         hookContext = context as HookElement;
-        state = context.use(hook);
+        state = Hook.use(hook);
         return Container();
       },
     ));
@@ -194,9 +192,8 @@ void main() {
 
     when(build.call(any)).thenReturn(42);
     when(builder.call(any)).thenAnswer((invocation) {
-      HookContext context = invocation.positionalArguments[0];
       previousHook = createHook();
-      result = context.use(previousHook);
+      result = Hook.use(previousHook);
       return Container();
     });
 
@@ -247,9 +244,8 @@ void main() {
 
     when(build.call(any)).thenReturn(42);
     when(builder.call(any)).thenAnswer((invocation) {
-      invocation.positionalArguments[0]
-        ..use(createHook())
-        ..use(HookTest<int>(dispose: dispose2));
+      Hook.use(createHook());
+      Hook.use(HookTest<int>(dispose: dispose2));
       return Container();
     });
 
@@ -271,7 +267,7 @@ void main() {
     final hook = createHook();
 
     when(builder.call(any)).thenAnswer((invocation) {
-      invocation.positionalArguments[0].use(hook);
+      Hook.use(hook);
       return Container();
     });
 
@@ -296,14 +292,14 @@ void main() {
 
   testWidgets('rebuild with different hooks crash', (tester) async {
     when(builder.call(any)).thenAnswer((invocation) {
-      invocation.positionalArguments[0].use(HookTest<int>());
+      Hook.use(HookTest<int>());
       return Container();
     });
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
     when(builder.call(any)).thenAnswer((invocation) {
-      invocation.positionalArguments[0].use(HookTest<String>());
+      Hook.use(HookTest<String>());
       return Container();
     });
 
@@ -314,15 +310,15 @@ void main() {
   });
   testWidgets('rebuild added hooks crash', (tester) async {
     when(builder.call(any)).thenAnswer((invocation) {
-      invocation.positionalArguments[0].use(HookTest<int>());
+      Hook.use(HookTest<int>());
       return Container();
     });
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
     when(builder.call(any)).thenAnswer((invocation) {
-      invocation.positionalArguments[0].use(HookTest<int>());
-      invocation.positionalArguments[0].use(HookTest<String>());
+      Hook.use(HookTest<int>());
+      Hook.use(HookTest<String>());
       return Container();
     });
 
@@ -332,7 +328,7 @@ void main() {
 
   testWidgets('rebuild removed hooks crash', (tester) async {
     when(builder.call(any)).thenAnswer((invocation) {
-      invocation.positionalArguments[0].use(HookTest<int>());
+      Hook.use(HookTest<int>());
       return Container();
     });
 
@@ -356,7 +352,7 @@ void main() {
     final context =
         tester.firstElement(find.byType(HookBuilder)) as HookElement;
 
-    expect(() => context.use(HookTest<int>()), throwsAssertionError);
+    expect(() => Hook.use(HookTest<int>()), throwsAssertionError);
   });
 
   testWidgets('hot-reload triggers a build', (tester) async {
@@ -365,9 +361,8 @@ void main() {
 
     when(build.call(any)).thenReturn(42);
     when(builder.call(any)).thenAnswer((invocation) {
-      HookContext context = invocation.positionalArguments[0];
       previousHook = createHook();
-      result = context.use(previousHook);
+      result = Hook.use(previousHook);
       return Container();
     });
 
@@ -402,11 +397,10 @@ void main() {
     final dispose2 = Func0<void>();
     final initHook2 = Func0<void>();
     final didUpdateHook2 = Func1<HookTest, void>();
-    final build2 = Func1<HookContext, String>();
+    final build2 = Func1<BuildContext, String>();
 
     when(builder.call(any)).thenAnswer((invocation) {
-      (invocation.positionalArguments[0] as HookContext)
-        ..use(hook1 = createHook());
+      Hook.use(hook1 = createHook());
       return Container();
     });
 
@@ -422,14 +416,13 @@ void main() {
     verifyZeroInteractions(didUpdateHook);
 
     when(builder.call(any)).thenAnswer((invocation) {
-      (invocation.positionalArguments[0] as HookContext)
-        ..use(createHook())
-        ..use(HookTest<String>(
-          initHook: initHook2,
-          build: build2,
-          didUpdateHook: didUpdateHook2,
-          dispose: dispose2,
-        ));
+      Hook.use(createHook());
+      Hook.use(HookTest<String>(
+        initHook: initHook2,
+        build: build2,
+        didUpdateHook: didUpdateHook2,
+        dispose: dispose2,
+      ));
       return Container();
     });
 
@@ -453,10 +446,10 @@ void main() {
     final dispose2 = Func0<void>();
     final initHook2 = Func0<void>();
     final didUpdateHook2 = Func1<HookTest, void>();
-    final build2 = Func1<HookContext, String>();
+    final build2 = Func1<BuildContext, String>();
 
     when(builder.call(any)).thenAnswer((invocation) {
-      (invocation.positionalArguments[0] as HookContext)..use(createHook());
+      Hook.use(createHook());
       return Container();
     });
 
@@ -472,14 +465,13 @@ void main() {
     verifyZeroInteractions(didUpdateHook);
 
     when(builder.call(any)).thenAnswer((invocation) {
-      (invocation.positionalArguments[0] as HookContext)
-        ..use(HookTest<String>(
-          initHook: initHook2,
-          build: build2,
-          didUpdateHook: didUpdateHook2,
-          dispose: dispose2,
-        ))
-        ..use(createHook());
+      Hook.use(HookTest<String>(
+        initHook: initHook2,
+        build: build2,
+        didUpdateHook: didUpdateHook2,
+        dispose: dispose2,
+      ));
+      Hook.use(createHook());
       return Container();
     });
 
@@ -502,17 +494,16 @@ void main() {
     final dispose2 = Func0<void>();
     final initHook2 = Func0<void>();
     final didUpdateHook2 = Func1<HookTest, void>();
-    final build2 = Func1<HookContext, int>();
+    final build2 = Func1<BuildContext, int>();
 
     when(builder.call(any)).thenAnswer((invocation) {
-      (invocation.positionalArguments[0] as HookContext)
-        ..use(createHook())
-        ..use(HookTest<int>(
-          initHook: initHook2,
-          build: build2,
-          didUpdateHook: didUpdateHook2,
-          dispose: dispose2,
-        ));
+      Hook.use(createHook());
+      Hook.use(HookTest<int>(
+        initHook: initHook2,
+        build: build2,
+        didUpdateHook: didUpdateHook2,
+        dispose: dispose2,
+      ));
       return Container();
     });
 
@@ -557,24 +548,23 @@ void main() {
     final dispose2 = Func0<void>();
     final initHook2 = Func0<void>();
     final didUpdateHook2 = Func1<HookTest, void>();
-    final build2 = Func1<HookContext, int>();
+    final build2 = Func1<BuildContext, int>();
 
     final dispose3 = Func0<void>();
     final initHook3 = Func0<void>();
     final didUpdateHook3 = Func1<HookTest, void>();
-    final build3 = Func1<HookContext, int>();
+    final build3 = Func1<BuildContext, int>();
 
     final dispose4 = Func0<void>();
     final initHook4 = Func0<void>();
     final didUpdateHook4 = Func1<HookTest, void>();
-    final build4 = Func1<HookContext, int>();
+    final build4 = Func1<BuildContext, int>();
 
     when(builder.call(any)).thenAnswer((invocation) {
-      (invocation.positionalArguments[0] as HookContext)
-        ..use(hook1 = createHook())
-        ..use(HookTest<String>(dispose: dispose2))
-        ..use(HookTest<Object>(dispose: dispose3))
-        ..use(HookTest<void>(dispose: dispose4));
+      Hook.use(hook1 = createHook());
+      Hook.use(HookTest<String>(dispose: dispose2));
+      Hook.use(HookTest<Object>(dispose: dispose3));
+      Hook.use(HookTest<void>(dispose: dispose4));
       return Container();
     });
 
@@ -604,24 +594,23 @@ void main() {
     clearInteractions(build4);
 
     when(builder.call(any)).thenAnswer((invocation) {
-      (invocation.positionalArguments[0] as HookContext)
-        ..use(createHook())
-        // changed type from HookTest<String>
-        ..use(HookTest<int>(
-          initHook: initHook2,
-          build: build2,
-          didUpdateHook: didUpdateHook2,
-        ))
-        ..use(HookTest<int>(
-          initHook: initHook3,
-          build: build3,
-          didUpdateHook: didUpdateHook3,
-        ))
-        ..use(HookTest<int>(
-          initHook: initHook4,
-          build: build4,
-          didUpdateHook: didUpdateHook4,
-        ));
+      Hook.use(createHook());
+      // changed type from HookTest<String>
+      Hook.use(HookTest<int>(
+        initHook: initHook2,
+        build: build2,
+        didUpdateHook: didUpdateHook2,
+      ));
+      Hook.use(HookTest<int>(
+        initHook: initHook3,
+        build: build3,
+        didUpdateHook: didUpdateHook3,
+      ));
+      Hook.use(HookTest<int>(
+        initHook: initHook4,
+        build: build4,
+        didUpdateHook: didUpdateHook4,
+      ));
       return Container();
     });
 
@@ -654,24 +643,23 @@ void main() {
     final dispose2 = Func0<void>();
     final initHook2 = Func0<void>();
     final didUpdateHook2 = Func1<HookTest, void>();
-    final build2 = Func1<HookContext, int>();
+    final build2 = Func1<BuildContext, int>();
 
     final dispose3 = Func0<void>();
     final initHook3 = Func0<void>();
     final didUpdateHook3 = Func1<HookTest, void>();
-    final build3 = Func1<HookContext, int>();
+    final build3 = Func1<BuildContext, int>();
 
     final dispose4 = Func0<void>();
     final initHook4 = Func0<void>();
     final didUpdateHook4 = Func1<HookTest, void>();
-    final build4 = Func1<HookContext, int>();
+    final build4 = Func1<BuildContext, int>();
 
     when(builder.call(any)).thenAnswer((invocation) {
-      (invocation.positionalArguments[0] as HookContext)
-        ..use(hook1 = createHook())
-        ..use(HookTest<String>(dispose: dispose2))
-        ..use(HookTest<Object>(dispose: dispose3))
-        ..use(HookTest<void>(dispose: dispose4));
+      Hook.use(hook1 = createHook());
+      Hook.use(HookTest<String>(dispose: dispose2));
+      Hook.use(HookTest<Object>(dispose: dispose3));
+      Hook.use(HookTest<void>(dispose: dispose4));
       return Container();
     });
 
@@ -701,24 +689,23 @@ void main() {
     clearInteractions(build4);
 
     when(builder.call(any)).thenAnswer((invocation) {
-      (invocation.positionalArguments[0] as HookContext)
-        ..use(createHook())
-        // changed type from HookTest<String>
-        ..use(HookTest<int>(
-          initHook: initHook2,
-          build: build2,
-          didUpdateHook: didUpdateHook2,
-        ))
-        ..use(HookTest<int>(
-          initHook: initHook3,
-          build: build3,
-          didUpdateHook: didUpdateHook3,
-        ))
-        ..use(HookTest<int>(
-          initHook: initHook4,
-          build: build4,
-          didUpdateHook: didUpdateHook4,
-        ));
+      Hook.use(createHook());
+      // changed type from HookTest<String>
+      Hook.use(HookTest<int>(
+        initHook: initHook2,
+        build: build2,
+        didUpdateHook: didUpdateHook2,
+      ));
+      Hook.use(HookTest<int>(
+        initHook: initHook3,
+        build: build3,
+        didUpdateHook: didUpdateHook3,
+      ));
+      Hook.use(HookTest<int>(
+        initHook: initHook4,
+        build: build4,
+        didUpdateHook: didUpdateHook4,
+      ));
       return Container();
     });
 
@@ -764,7 +751,7 @@ class MyHook extends Hook<MyHookState> {
 
 class MyHookState extends HookState<MyHookState, MyHook> {
   @override
-  MyHookState build(HookContext context) {
+  MyHookState build(BuildContext context) {
     return this;
   }
 }

@@ -8,10 +8,10 @@ import 'mock.dart';
 /// port of [StreamBuilder]
 ///
 void main() {
-  Widget Function(HookContext) snapshotText(Stream<String> stream,
+  Widget Function(BuildContext) snapshotText(Stream<String> stream,
       {String initialData}) {
     return (context) {
-      final snapshot = context.useStream(stream, initialData: initialData);
+      final snapshot = useStream(stream, initialData: initialData);
       return Text(snapshot.toString(), textDirection: TextDirection.ltr);
     };
   }

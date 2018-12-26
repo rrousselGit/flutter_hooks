@@ -8,7 +8,7 @@ void main() {
     await expectPump(
         () => tester.pumpWidget(HookBuilder(
               builder: (context) {
-                context.useAnimation<void>(null);
+                useAnimation<void>(null);
                 return Container();
               },
             )),
@@ -21,7 +21,7 @@ void main() {
 
     pump() => tester.pumpWidget(HookBuilder(
           builder: (context) {
-            result = context.useAnimation(listenable);
+            result = useAnimation(listenable);
             return Container();
           },
         ));

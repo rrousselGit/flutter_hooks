@@ -6,10 +6,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'mock.dart';
 
 void main() {
-  Widget Function(HookContext) snapshotText(Future<String> stream,
+  Widget Function(BuildContext) snapshotText(Future<String> stream,
       {String initialData}) {
     return (context) {
-      final snapshot = context.useFuture(stream, initialData: initialData);
+      final snapshot = useFuture(stream, initialData: initialData);
       return Text(snapshot.toString(), textDirection: TextDirection.ltr);
     };
   }
