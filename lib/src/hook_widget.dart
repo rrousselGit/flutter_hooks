@@ -116,11 +116,41 @@ abstract class Hook<R> {
 
   /// A list of objects that specify if a [HookState] should be reused or a new one should be created.
   ///
-  /// The comparison algorithm works this way:
-  /// - `oldHook.keys == hook.keys` ? preserve the state
-  /// - check in order is there's any item that differ from the previous and new list using [operator==].
-  /// If there's a different, call [HookState.dispose] on the previous state. And then call [Hook.createState] followed by [HookState.initHook].
+  /// When a new [Hook] is created, the framework checks if keys matches using [Hook.shouldPreserveState].
+  /// If they don't, the previously created [HookState] is disposed, and a new one is created
+  /// using [Hook.createState], followed by [HookState.initHook].
   final List keys;
+
+  /// The algorithm to determine if a [HookState] should be reused or disposed.
+  ///
+  /// This compares [Hook.keys] to see if they contains any difference.
+  /// A state is preserved when:
+  ///
+  /// - `hook1.keys == hook2.keys` (typically if the list is immutable)
+  /// - If there's any difference in the content of [Hook.keys], using `operator==`.
+  static bool shouldPreserveState(Hook hook1, Hook hook2) {
+    final p1 = hook1.keys;
+    final p2 = hook2.keys;
+
+    if (p1 == p2) {
+      return true;
+    }
+    // is one list is null and the other one isn't, or if they have different size
+    if ((p1 != p2 && (p1 == null || p2 == null)) || p1.length != p2.length) {
+      return false;
+    }
+
+    var i1 = p1.iterator;
+    var i2 = p2.iterator;
+    while (true) {
+      if (!i1.moveNext() || !i2.moveNext()) {
+        return true;
+      }
+      if (i1.current != i2.current) {
+        return false;
+      }
+    }
+  }
 
   /// Creates the mutable state for this hook linked to its widget creator.
   ///
@@ -180,7 +210,7 @@ abstract class HookState<R, T extends Hook<R>> {
 /// An [Element] that uses a [HookWidget] as its configuration.
 class HookElement extends StatefulElement implements HookContext {
   Iterator<HookState> _currentHook;
-  int _debugHooksIndex;
+  int _hookIndex;
   List<HookState> _hooks;
 
   bool _debugIsBuilding;
@@ -199,9 +229,9 @@ class HookElement extends StatefulElement implements HookContext {
     _currentHook = _hooks?.iterator;
     // first iterator always has null
     _currentHook?.moveNext();
+    _hookIndex = 0;
     assert(() {
       _debugShouldDispose = false;
-      _debugHooksIndex = 0;
       _isFirstBuild ??= true;
       _didReassemble ??= false;
       _debugIsBuilding = true;
@@ -212,17 +242,18 @@ class HookElement extends StatefulElement implements HookContext {
     // dispose removed items
     assert(() {
       if (_didReassemble) {
-        while (_currentHook.current != null) {
+        // TODO: test for the _currentHook == null
+        while (_currentHook?.current != null) {
           _currentHook.current.dispose();
           _currentHook.moveNext();
-          _debugHooksIndex++;
+          _hookIndex++;
         }
       }
       return true;
     }());
-    assert(_debugHooksIndex == (_hooks?.length ?? 0), '''
+    assert(_hookIndex == (_hooks?.length ?? 0), '''
 Build for $widget finished with less hooks used than a previous build.
-Used $_debugHooksIndex hooks while a previous build had ${_hooks.length}.
+Used $_hookIndex hooks while a previous build had ${_hooks.length}.
 This may happen if the call to `use` is made under some condition.
 
 ''');
@@ -285,7 +316,7 @@ This may happen if the call to `use` is made under some condition.
           _hooks.remove(_currentHook.current..dispose());
           // has to be done after the dispose call
           hookState = _createHookState(hook);
-          _hooks.insert(_debugHooksIndex, hookState);
+          _hooks.insert(_hookIndex, hookState);
 
           // we move the iterator back to where it was
           _currentHook = _hooks.iterator..moveNext();
@@ -307,20 +338,30 @@ This may happen if the call to `use` is made under some condition.
       }());
       assert(_currentHook.current?.hook?.runtimeType == hook.runtimeType);
 
-      hookState = _currentHook.current as HookState<R, Hook<R>>;
-      _currentHook.moveNext();
-
-      if (hookState._hook != hook) {
+      if (_currentHook.current.hook == hook) {
+        hookState = _currentHook.current as HookState<R, Hook<R>>;
+        _currentHook.moveNext();
+      } else if (Hook.shouldPreserveState(_currentHook.current.hook, hook)) {
+        hookState = _currentHook.current as HookState<R, Hook<R>>;
+        _currentHook.moveNext();
         final previousHook = hookState._hook;
         hookState
           .._hook = hook
           ..didUpdateHook(previousHook);
+      } else {
+        _hooks.removeAt(_hookIndex).dispose();
+        hookState = _createHookState(hook);
+        _hooks.insert(_hookIndex, hookState);
+
+        // we move the iterator back to where it was
+        _currentHook = _hooks.iterator..moveNext();
+        for (var i = 0; i < _hooks.length && _hooks[i] != hookState; i++) {
+          _currentHook.moveNext();
+        }
+        _currentHook.moveNext();
       }
     }
-    assert(() {
-      _debugHooksIndex++;
-      return true;
-    }());
+    _hookIndex++;
     return hookState.build(this);
   }
 
@@ -345,6 +386,7 @@ This may happen if the call to `use` is made under some condition.
     double upperBound = 1,
     TickerProvider vsync,
     AnimationBehavior animationBehavior = AnimationBehavior.normal,
+    List keys,
   }) {
     return use(_AnimationControllerHook(
       duration: duration,
@@ -354,6 +396,7 @@ This may happen if the call to `use` is made under some condition.
       upperBound: upperBound,
       vsync: vsync,
       animationBehavior: animationBehavior,
+      keys: keys,
     ));
   }
 
@@ -385,20 +428,22 @@ This may happen if the call to `use` is made under some condition.
   }
 
   @override
-  TickerProvider useSingleTickerProvider() {
-    return use(const _TickerProviderHook());
+  TickerProvider useSingleTickerProvider({List keys}) {
+    return use(
+      keys != null ? _TickerProviderHook(keys) : const _TickerProviderHook(),
+    );
   }
 
   @override
-  void useEffect(VoidCallback Function() effect, [List parameters]) {
-    use(_EffectHook(effect, parameters));
+  void useEffect(VoidCallback Function() effect, [List keys]) {
+    use(_EffectHook(effect, keys));
   }
 
   @override
-  T useMemoized<T>(T Function() valueBuilder, [List parameters = const []]) {
+  T useMemoized<T>(T Function() valueBuilder, [List keys = const []]) {
     return use(_MemoizedHook(
       valueBuilder,
-      parameters: parameters,
+      keys: keys,
     ));
   }
 
@@ -409,11 +454,15 @@ This may happen if the call to `use` is made under some condition.
 
   @override
   StreamController<T> useStreamController<T>(
-      {bool sync = false, VoidCallback onListen, VoidCallback onCancel}) {
+      {bool sync = false,
+      VoidCallback onListen,
+      VoidCallback onCancel,
+      List keys}) {
     return use(_StreamControllerHook(
       onCancel: onCancel,
       onListen: onListen,
       sync: sync,
+      keys: keys,
     ));
   }
 }
@@ -522,10 +571,10 @@ abstract class HookContext extends BuildContext {
   /// [useMemoized] will immediatly call [valueBuilder] on first call and store its result.
   /// Later calls to [useMemoized] will reuse the created instance.
   ///
-  ///  * [parameters] can be use to specify a list of objects for [useMemoized] to watch.
-  /// So that whenever [operator==] fails on any parameter or if the length of [parameters] changes,
+  ///  * [keys] can be use to specify a list of objects for [useMemoized] to watch.
+  /// So that whenever [operator==] fails on any parameter or if the length of [keys] changes,
   /// [valueBuilder] is called again.
-  T useMemoized<T>(T valueBuilder(), [List parameters = const []]);
+  T useMemoized<T>(T valueBuilder(), [List keys = const []]);
 
   /// Watches a value.
   ///
@@ -537,7 +586,7 @@ abstract class HookContext extends BuildContext {
   ///
   /// See also:
   ///  * [SingleTickerProviderStateMixin]
-  TickerProvider useSingleTickerProvider();
+  TickerProvider useSingleTickerProvider({List keys});
 
   /// Creates an [AnimationController] automatically disposed.
   ///
@@ -560,6 +609,7 @@ abstract class HookContext extends BuildContext {
     double upperBound = 1,
     TickerProvider vsync,
     AnimationBehavior animationBehavior = AnimationBehavior.normal,
+    List keys,
   });
 
   /// Creates a [StreamController] automatically disposed.
@@ -571,6 +621,7 @@ abstract class HookContext extends BuildContext {
     bool sync = false,
     VoidCallback onListen,
     VoidCallback onCancel,
+    List keys,
   });
 
   /// Subscribes to a [Listenable] and mark the widget as needing build

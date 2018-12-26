@@ -1,33 +1,12 @@
 part of 'hook.dart';
 
-bool _areListsEquals(List p1, List p2) {
-  if (p1 == p2) {
-    return true;
-  }
-  // is one list is null and the other one isn't, or if they have different size
-  if ((p1 != p2 && (p1 == null || p2 == null)) || p1.length != p2.length) {
-    return false;
-  }
-
-  var i1 = p1.iterator;
-  var i2 = p2.iterator;
-  while (true) {
-    if (!i1.moveNext() || !i2.moveNext()) {
-      return true;
-    }
-    if (i1.current != i2.current) {
-      return false;
-    }
-  }
-}
-
 class _MemoizedHook<T> extends Hook<T> {
   final T Function() valueBuilder;
-  final List parameters;
 
-  const _MemoizedHook(this.valueBuilder, {this.parameters = const []})
+  const _MemoizedHook(this.valueBuilder, {List keys = const []})
       : assert(valueBuilder != null),
-        assert(parameters != null);
+        assert(keys != null),
+        super(keys: keys);
 
   @override
   _MemoizedHookState<T> createState() => _MemoizedHookState<T>();
@@ -42,13 +21,13 @@ class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
     value = hook.valueBuilder();
   }
 
-  @override
-  void didUpdateHook(_MemoizedHook<T> oldHook) {
-    super.didUpdateHook(oldHook);
-    if (!_areListsEquals(hook.parameters, oldHook.parameters)) {
-      value = hook.valueBuilder();
-    }
-  }
+  // @override
+  // void didUpdateHook(_MemoizedHook<T> oldHook) {
+  //   super.didUpdateHook(oldHook);
+  //   if (!_areListsEquals(hook.parameters, oldHook.parameters)) {
+  //     value = hook.valueBuilder();
+  //   }
+  // }
 
   @override
   T build(HookContext context) {
@@ -88,7 +67,7 @@ class _ValueChangedHookState<T, R>
 class _StateHook<T> extends Hook<ValueNotifier<T>> {
   final T initialData;
 
-  const _StateHook({this.initialData});
+  const _StateHook({this.initialData, List keys}) : super(keys: keys);
 
   @override
   _StateHookState<T> createState() => _StateHookState();
@@ -120,7 +99,7 @@ class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
 }
 
 class _TickerProviderHook extends Hook<TickerProvider> {
-  const _TickerProviderHook();
+  const _TickerProviderHook([List keys]) : super(keys: keys);
 
   @override
   _TickerProviderHookState createState() => _TickerProviderHookState();
@@ -183,7 +162,8 @@ class _AnimationControllerHook extends Hook<AnimationController> {
     this.upperBound,
     this.vsync,
     this.animationBehavior,
-  });
+    List keys,
+  }) : super(keys: keys);
 
   @override
   _AnimationControllerHookState createState() =>
@@ -440,9 +420,10 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
 
 class _EffectHook extends Hook<void> {
   final VoidCallback Function() effect;
-  final List parameters;
 
-  const _EffectHook(this.effect, [this.parameters]) : assert(effect != null);
+  const _EffectHook(this.effect, [List keys])
+      : assert(effect != null),
+        super(keys: keys);
 
   @override
   _EffectHookState createState() => _EffectHookState();
@@ -461,8 +442,7 @@ class _EffectHookState extends HookState<void, _EffectHook> {
   void didUpdateHook(_EffectHook oldHook) {
     super.didUpdateHook(oldHook);
 
-    if (hook.parameters == null ||
-        !_areListsEquals(hook.parameters, oldHook.parameters)) {
+    if (hook.keys == null) {
       if (disposer != null) {
         disposer();
       }
@@ -491,11 +471,9 @@ class _StreamControllerHook<T> extends Hook<StreamController<T>> {
   final VoidCallback onListen;
   final VoidCallback onCancel;
 
-  const _StreamControllerHook({
-    this.sync = false,
-    this.onListen,
-    this.onCancel,
-  });
+  const _StreamControllerHook(
+      {this.sync = false, this.onListen, this.onCancel, List keys})
+      : super(keys: keys);
 
   @override
   _StreamControllerHookState<T> createState() =>
