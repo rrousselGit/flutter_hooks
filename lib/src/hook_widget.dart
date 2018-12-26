@@ -112,7 +112,14 @@ part of 'hook.dart';
 @immutable
 abstract class Hook<R> {
   /// Allows subclasses to have a `const` constructor
-  const Hook();
+  const Hook({this.keys});
+
+  /// A list of objects that specify if a [HookState] should be reused or a new one should be created.
+  ///
+  /// The comparison algorithm works this way:
+  /// - `oldHook.keys == hook.keys` ? preserve the state
+  /// - check in order is there's any item that differ from the previous and new list using [operator==].
+  final List keys;
 
   /// Creates the mutable state for this hook linked to its widget creator.
   ///
