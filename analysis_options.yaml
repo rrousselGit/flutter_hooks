@@ -4,10 +4,8 @@ analyzer:
     implicit-casts: false
     implicit-dynamic: false
   errors:
-    strong_mode_implicit_dynamic_list_literal: ignore
-    strong_mode_implicit_dynamic_map_literal: ignore
-    strong_mode_implicit_dynamic_parameter: ignore
-    strong_mode_implicit_dynamic_variable: ignore
+    todo: error
+    include_file_not_found: ignore
 linter:
   rules:
     - public_member_api_docs

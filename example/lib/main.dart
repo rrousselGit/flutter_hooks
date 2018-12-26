@@ -24,7 +24,6 @@ class _Counter extends HookWidget {
   Widget build(HookContext context) {
     StreamController<int> countController =
         _useLocalStorageInt(context, 'counter');
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Counter app'),
@@ -40,7 +39,7 @@ class _Counter extends HookWidget {
                 ? const CircularProgressIndicator()
                 : GestureDetector(
                     onTap: () => countController.add(count.data + 1),
-                    child: Text('You tapped me ${count.data} times'),
+                    child: Text('You tapped me ${count.data} times.'),
                   );
           },
         ),
@@ -54,7 +53,7 @@ StreamController<int> _useLocalStorageInt(
   String key, {
   int defaultValue = 0,
 }) {
-  final controller = context.useStreamController<int>();
+  final controller = context.useStreamController<int>(keys: <dynamic>[key]);
 
   context
     // We define a callback that will be called on first build
@@ -68,7 +67,7 @@ StreamController<int> _useLocalStorageInt(
       // Unsubscribe when the widget is disposed
       // or on controller/key change
       return sub.cancel;
-    }, [controller, key])
+    }, <dynamic>[controller, key])
     // We load the initial value
     ..useEffect(() {
       SharedPreferences.getInstance().then((prefs) async {
@@ -76,7 +75,7 @@ StreamController<int> _useLocalStorageInt(
         controller.add(valueFromStorage ?? defaultValue);
       }).catchError(controller.addError);
       // ensure the callback is called only on first build
-    }, [controller, key]);
+    }, <dynamic>[controller, key]);
 
   return controller;
 }

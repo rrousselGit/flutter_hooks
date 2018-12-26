@@ -125,7 +125,6 @@ void main() {
 
     await tester.pumpWidget(Container());
 
-
     // the other way around
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
@@ -143,6 +142,29 @@ void main() {
           )),
       throwsAssertionError,
     );
+  });
+
+  testWidgets('useAnimationController pass down keys', (tester) async {
+    List keys;
+    AnimationController controller;
+    await tester.pumpWidget(HookBuilder(
+      builder: (context) {
+        controller = context.useAnimationController(keys: keys);
+        return Container();
+      },
+    ));
+
+    final previous = controller;
+    keys = <dynamic>[];
+
+    await tester.pumpWidget(HookBuilder(
+      builder: (context) {
+        controller = context.useAnimationController(keys: keys);
+        return Container();
+      },
+    ));
+
+    expect(previous, isNot(controller));
   });
 }
 
