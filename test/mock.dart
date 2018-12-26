@@ -30,16 +30,20 @@ class HookTest<R> extends Hook<R> {
   final void Function() dispose;
   final void Function() initHook;
   final void Function(HookTest<R> previousHook) didUpdateHook;
+  final HookStateTest<R> Function() createStateFn;
 
   HookTest({
     this.build,
     this.dispose,
     this.initHook,
     this.didUpdateHook,
-  }) : super();
+    this.createStateFn,
+    List keys,
+  }) : super(keys: keys);
 
   @override
-  HookStateTest<R> createState() => HookStateTest<R>();
+  HookStateTest<R> createState() =>
+      createStateFn != null ? createStateFn() : HookStateTest<R>();
 }
 
 class HookStateTest<R> extends HookState<R, HookTest<R>> {

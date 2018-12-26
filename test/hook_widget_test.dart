@@ -27,6 +27,114 @@ void main() {
     reset(didUpdateHook);
   });
 
+  testWidgets('keys recreate hookstate', (tester) async {
+    List keys;
+
+    final createState = Func0<HookStateTest<int>>();
+    when(createState.call()).thenReturn(HookStateTest<int>());
+
+    when(builder.call(any)).thenAnswer((invocation) {
+      (invocation.positionalArguments[0] as HookContext).use(HookTest<int>(
+        build: build.call,
+        dispose: dispose.call,
+        didUpdateHook: didUpdateHook.call,
+        initHook: initHook.call,
+        keys: keys,
+        createStateFn: createState.call,
+      ));
+      return Container();
+    });
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    final HookElement context = find.byType(HookBuilder).evaluate().first;
+
+    verifyInOrder([
+      createState.call(),
+      initHook.call(),
+      build.call(context),
+    ]);
+    verifyNoMoreInteractions(createState);
+    verifyNoMoreInteractions(initHook);
+    verifyNoMoreInteractions(build);
+    verifyNoMoreInteractions(didUpdateHook);
+    verifyNoMoreInteractions(dispose);
+
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    verifyInOrder([
+      didUpdateHook.call(any),
+      build.call(context),
+    ]);
+    verifyNoMoreInteractions(createState);
+    verifyNoMoreInteractions(initHook);
+    verifyNoMoreInteractions(build);
+    verifyNoMoreInteractions(didUpdateHook);
+    verifyNoMoreInteractions(dispose);
+
+    // from null to array
+    keys = [];
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    verifyInOrder([
+      dispose.call(),
+      createState.call(),
+      initHook.call(),
+      build.call(context)
+    ]);
+    verifyNoMoreInteractions(createState);
+    verifyNoMoreInteractions(initHook);
+    verifyNoMoreInteractions(build);
+    verifyNoMoreInteractions(didUpdateHook);
+    verifyNoMoreInteractions(dispose);
+
+    // array immutable
+    keys.add(42);
+
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    verifyInOrder([
+      didUpdateHook.call(any),
+      build.call(context),
+    ]);
+    verifyNoMoreInteractions(createState);
+    verifyNoMoreInteractions(initHook);
+    verifyNoMoreInteractions(build);
+    verifyNoMoreInteractions(didUpdateHook);
+    verifyNoMoreInteractions(dispose);
+
+    // new array but content equal
+    keys = [42];
+
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    verifyInOrder([
+      didUpdateHook.call(any),
+      build.call(context),
+    ]);
+    verifyNoMoreInteractions(createState);
+    verifyNoMoreInteractions(initHook);
+    verifyNoMoreInteractions(build);
+    verifyNoMoreInteractions(didUpdateHook);
+    verifyNoMoreInteractions(dispose);
+
+    // new array new content
+    keys = [44];
+
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    verifyInOrder([
+      dispose.call(),
+      createState.call(),
+      initHook.call(),
+      build.call(context)
+    ]);
+    verifyNoMoreInteractions(createState);
+    verifyNoMoreInteractions(initHook);
+    verifyNoMoreInteractions(build);
+    verifyNoMoreInteractions(didUpdateHook);
+    verifyNoMoreInteractions(dispose);
+  });
+
   testWidgets('hook & setState', (tester) async {
     final setState = Func0<void>();
     final hook = MyHook();
@@ -319,8 +427,7 @@ void main() {
     final build2 = Func1<HookContext, String>();
 
     when(builder.call(any)).thenAnswer((invocation) {
-      (invocation.positionalArguments[0] as HookContext)
-        ..use(createHook());
+      (invocation.positionalArguments[0] as HookContext)..use(createHook());
       return Container();
     });
 
