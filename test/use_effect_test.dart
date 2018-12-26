@@ -19,9 +19,21 @@ void main() {
     reset(unrelated);
     reset(effect);
   });
+  testWidgets('useEffect null callback throws', (tester) async {
+    await expectPump(
+      () => tester.pumpWidget(HookBuilder(builder: (c) {
+            c.useEffect(null);
+            return Container();
+          })),
+      throwsAssertionError,
+    );
+  });
   testWidgets('useEffect calls callback on every build', (tester) async {
     final effect = Func0<VoidCallback>();
     final unrelated = Func0<void>();
+
+    final dispose = Func0<void>();
+    when(effect.call()).thenReturn(dispose.call);
 
     builder() => HookBuilder(builder: (context) {
           context.useEffect(effect.call);
@@ -35,14 +47,17 @@ void main() {
       effect.call(),
       unrelated.call(),
     ]);
+    verifyNoMoreInteractions(dispose);
     verifyNoMoreInteractions(effect);
 
     await tester.pumpWidget(builder());
 
     verifyInOrder([
+      dispose.call(),
       effect.call(),
       unrelated.call(),
     ]);
+    verifyNoMoreInteractions(dispose);
     verifyNoMoreInteractions(effect);
   });
 

@@ -27,6 +27,34 @@ void main() {
     reset(didUpdateHook);
   });
 
+  testWidgets('hooks can be disposed independently with keys', (tester) async {
+    List keys;
+    List keys2;
+
+    final dispose2 = Func0<void>();
+    when(builder.call(any)).thenAnswer((invocation) {
+      (invocation.positionalArguments[0] as HookContext)
+        ..use(HookTest<int>(dispose: dispose.call, keys: keys))
+        ..use(HookTest<String>(dispose: dispose2.call, keys: keys2));
+      return Container();
+    });
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    verifyZeroInteractions(dispose);
+    verifyZeroInteractions(dispose2);
+
+    keys = [];
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    verify(dispose.call()).called(1);
+    verifyZeroInteractions(dispose2);
+
+    keys2 = [];
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    verify(dispose2.call()).called(1);
+    verifyNoMoreInteractions(dispose);
+  });
   testWidgets('keys recreate hookstate', (tester) async {
     List keys;
 
@@ -34,14 +62,15 @@ void main() {
     when(createState.call()).thenReturn(HookStateTest<int>());
 
     when(builder.call(any)).thenAnswer((invocation) {
-      (invocation.positionalArguments[0] as HookContext).use(HookTest<int>(
-        build: build.call,
-        dispose: dispose.call,
-        didUpdateHook: didUpdateHook.call,
-        initHook: initHook.call,
-        keys: keys,
-        createStateFn: createState.call,
-      ));
+      (invocation.positionalArguments[0] as HookContext)
+        ..use(HookTest<int>(
+          build: build.call,
+          dispose: dispose.call,
+          didUpdateHook: didUpdateHook.call,
+          initHook: initHook.call,
+          keys: keys,
+          createStateFn: createState.call,
+        ));
       return Container();
     });
     await tester.pumpWidget(HookBuilder(builder: builder.call));

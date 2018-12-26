@@ -21,14 +21,6 @@ class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
     value = hook.valueBuilder();
   }
 
-  // @override
-  // void didUpdateHook(_MemoizedHook<T> oldHook) {
-  //   super.didUpdateHook(oldHook);
-  //   if (!_areListsEquals(hook.parameters, oldHook.parameters)) {
-  //     value = hook.valueBuilder();
-  //   }
-  // }
-
   @override
   T build(HookContext context) {
     return value;
@@ -67,7 +59,7 @@ class _ValueChangedHookState<T, R>
 class _StateHook<T> extends Hook<ValueNotifier<T>> {
   final T initialData;
 
-  const _StateHook({this.initialData, List keys}) : super(keys: keys);
+  const _StateHook({this.initialData});
 
   @override
   _StateHookState<T> createState() => _StateHookState();
@@ -191,7 +183,8 @@ Switching between controller and uncontrolled vsync is not allowed.
 
   @override
   AnimationController build(HookContext context) {
-    final vsync = hook.vsync ?? context.useSingleTickerProvider();
+    final vsync =
+        hook.vsync ?? context.useSingleTickerProvider(keys: hook.keys);
 
     _animationController ??= AnimationController(
       vsync: vsync,

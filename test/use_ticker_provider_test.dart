@@ -60,4 +60,24 @@ void main() {
       animationController.dispose();
     }
   });
+
+  testWidgets('useSingleTickerProvider pass down keys', (tester) async {
+    TickerProvider provider;
+    List keys;
+
+    await tester.pumpWidget(HookBuilder(builder: (context) {
+      provider = context.useSingleTickerProvider(keys: keys);
+      return Container();
+    }));
+
+    final previousProvider = provider;
+    keys = [];
+
+    await tester.pumpWidget(HookBuilder(builder: (context) {
+      provider = context.useSingleTickerProvider(keys: keys);
+      return Container();
+    }));
+
+    expect(previousProvider, isNot(provider));
+  });
 }

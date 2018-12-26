@@ -66,7 +66,7 @@ class HookStateTest<R> extends HookState<R, HookTest<R>> {
   @override
   void didUpdateHook(HookTest<R> oldHook) {
     super.didUpdateHook(oldHook);
-    if (hook.dispose != null) {
+    if (hook.didUpdateHook != null) {
       hook.didUpdateHook(oldHook);
     }
   }

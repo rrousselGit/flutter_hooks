@@ -7,6 +7,22 @@ import 'mock.dart';
 
 void main() {
   group('useStreamController', () {
+    testWidgets('keys', (tester) async {
+      StreamController<int> controller;
+
+      await tester.pumpWidget(HookBuilder(builder: (context) {
+        controller = context.useStreamController();
+        return Container();
+      }));
+
+      final previous = controller;
+      await tester.pumpWidget(HookBuilder(builder: (context) {
+        controller = context.useStreamController(keys: []);
+        return Container();
+      }));
+
+      expect(previous, isNot(controller));
+    });
     testWidgets('basics', (tester) async {
       StreamController<int> controller;
 
