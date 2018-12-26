@@ -188,12 +188,12 @@ void main() {
 
   testWidgets('life-cycles in order', (tester) async {
     int result;
-    HookTest<int> previousHook;
+    HookTest<int> hook;
 
     when(build.call(any)).thenReturn(42);
     when(builder.call(any)).thenAnswer((invocation) {
-      previousHook = createHook();
-      result = Hook.use(previousHook);
+      hook = createHook();
+      result = Hook.use(hook);
       return Container();
     });
 
@@ -201,42 +201,45 @@ void main() {
       builder: builder.call,
     ));
 
+    final context = tester.firstElement(find.byType(HookBuilder));
     expect(result, 42);
     verifyInOrder([
       initHook.call(),
-      build.call(any),
+      build.call(context),
     ]);
     verifyZeroInteractions(didUpdateHook);
     verifyZeroInteractions(dispose);
 
-    when(build.call(any)).thenReturn(24);
+    when(build.call(context)).thenReturn(24);
+    var previousHook = hook;
+
     await tester.pumpWidget(HookBuilder(
       builder: builder.call,
     ));
 
     expect(result, 24);
     verifyInOrder([
-      // ignore: todo
-      // TODO: previousHook instead of any
-      didUpdateHook.call(any),
+      didUpdateHook.call(previousHook),
       build.call(any),
     ]);
-    verifyNever(initHook.call());
+    verifyNoMoreInteractions(initHook);
     verifyZeroInteractions(dispose);
 
+    previousHook = hook;
     await tester.pump();
 
-    verifyNever(initHook.call());
-    verifyNever(didUpdateHook.call(any));
-    verifyNever(build.call(any));
+    verifyNoMoreInteractions(initHook);
+    verifyNoMoreInteractions(didUpdateHook);
+    verifyNoMoreInteractions(build);
     verifyZeroInteractions(dispose);
 
     await tester.pumpWidget(const SizedBox());
 
-    verifyNever(initHook.call());
-    verifyNever(didUpdateHook.call(any));
-    verifyNever(build.call(any));
+    verifyNoMoreInteractions(initHook);
+    verifyNoMoreInteractions(didUpdateHook);
+    verifyNoMoreInteractions(build);
     verify(dispose.call());
+    verifyNoMoreInteractions(dispose);
   });
 
   testWidgets('dispose all called even on failed', (tester) async {
@@ -348,9 +351,6 @@ void main() {
     when(builder.call(any)).thenAnswer((invocation) => Container());
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
-
-    final context =
-        tester.firstElement(find.byType(HookBuilder)) as HookElement;
 
     expect(() => Hook.use(HookTest<int>()), throwsAssertionError);
   });
