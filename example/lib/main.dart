@@ -37,7 +37,7 @@ class _Counter extends HookWidget {
 
             final foo = context.useMemoized(() {
               return count.data;
-            }, [(count.data ?? 0) % 4 == 0]);
+            }, <dynamic>[(count.data ?? 0) % 4 == 0]);
 
             print('${foo ?? -1}  ${(count.data ?? 0) / 4} ');
             return !count.hasData
@@ -60,7 +60,7 @@ StreamController<int> _useLocalStorageInt(
   String key, {
   int defaultValue = 0,
 }) {
-  final controller = context.useStreamController<int>(keys: [key]);
+  final controller = context.useStreamController<int>(keys: <dynamic>[key]);
 
   context
     // We define a callback that will be called on first build
@@ -74,7 +74,7 @@ StreamController<int> _useLocalStorageInt(
       // Unsubscribe when the widget is disposed
       // or on controller/key change
       return sub.cancel;
-    }, [controller, key])
+    }, <dynamic>[controller, key])
     // We load the initial value
     ..useEffect(() {
       SharedPreferences.getInstance().then((prefs) async {
@@ -82,7 +82,7 @@ StreamController<int> _useLocalStorageInt(
         controller.add(valueFromStorage ?? defaultValue);
       }).catchError(controller.addError);
       // ensure the callback is called only on first build
-    }, [controller, key]);
+    }, <dynamic>[controller, key]);
 
   return controller;
 }

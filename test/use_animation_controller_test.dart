@@ -155,7 +155,7 @@ void main() {
     ));
 
     final previous = controller;
-    keys = [];
+    keys = <dynamic>[];
 
     await tester.pumpWidget(HookBuilder(
       builder: (context) {

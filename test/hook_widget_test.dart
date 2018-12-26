@@ -43,13 +43,13 @@ void main() {
     verifyZeroInteractions(dispose);
     verifyZeroInteractions(dispose2);
 
-    keys = [];
+    keys = <dynamic>[];
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
     verify(dispose.call()).called(1);
     verifyZeroInteractions(dispose2);
 
-    keys2 = [];
+    keys2 = <dynamic>[];
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
     verify(dispose2.call()).called(1);
@@ -101,7 +101,7 @@ void main() {
     verifyNoMoreInteractions(dispose);
 
     // from null to array
-    keys = [];
+    keys = <dynamic>[];
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
     verifyInOrder([
@@ -132,7 +132,7 @@ void main() {
     verifyNoMoreInteractions(dispose);
 
     // new array but content equal
-    keys = [42];
+    keys = <dynamic>[42];
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
@@ -147,7 +147,7 @@ void main() {
     verifyNoMoreInteractions(dispose);
 
     // new array new content
-    keys = [44];
+    keys = <dynamic>[44];
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 

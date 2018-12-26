@@ -17,7 +17,7 @@ void main() {
 
       final previous = controller;
       await tester.pumpWidget(HookBuilder(builder: (context) {
-        controller = context.useStreamController(keys: []);
+        controller = context.useStreamController(keys: <dynamic>[]);
         return Container();
       }));
 

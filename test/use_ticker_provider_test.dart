@@ -71,7 +71,7 @@ void main() {
     }));
 
     final previousProvider = provider;
-    keys = [];
+    keys = <dynamic>[];
 
     await tester.pumpWidget(HookBuilder(builder: (context) {
       provider = context.useSingleTickerProvider(keys: keys);

@@ -3,7 +3,7 @@ part of 'hook.dart';
 class _MemoizedHook<T> extends Hook<T> {
   final T Function() valueBuilder;
 
-  const _MemoizedHook(this.valueBuilder, {List keys = const []})
+  const _MemoizedHook(this.valueBuilder, {List keys = const <dynamic>[]})
       : assert(valueBuilder != null),
         assert(keys != null),
         super(keys: keys);

@@ -440,7 +440,7 @@ This may happen if the call to `use` is made under some condition.
   }
 
   @override
-  T useMemoized<T>(T Function() valueBuilder, [List keys = const []]) {
+  T useMemoized<T>(T Function() valueBuilder, [List keys = const <dynamic>[]]) {
     return use(_MemoizedHook(
       valueBuilder,
       keys: keys,
@@ -574,7 +574,7 @@ abstract class HookContext extends BuildContext {
   ///  * [keys] can be use to specify a list of objects for [useMemoized] to watch.
   /// So that whenever [operator==] fails on any parameter or if the length of [keys] changes,
   /// [valueBuilder] is called again.
-  T useMemoized<T>(T valueBuilder(), [List keys = const []]);
+  T useMemoized<T>(T valueBuilder(), [List keys = const <dynamic>[]]);
 
   /// Watches a value.
   ///
