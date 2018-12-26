@@ -119,6 +119,7 @@ abstract class Hook<R> {
   /// The comparison algorithm works this way:
   /// - `oldHook.keys == hook.keys` ? preserve the state
   /// - check in order is there's any item that differ from the previous and new list using [operator==].
+  /// If there's a different, call [HookState.dispose] on the previous state. And then call [Hook.createState] followed by [HookState.initHook].
   final List keys;
 
   /// Creates the mutable state for this hook linked to its widget creator.
