@@ -6,12 +6,12 @@ import 'mock.dart';
 void main() {
   testWidgets('useValueChanged basic', (tester) async {
     var value = 42;
-    final useValueChanged = Func2<int, String, String>();
+    final _useValueChanged = Func2<int, String, String>();
     String result;
 
     pump() => tester.pumpWidget(HookBuilder(
           builder: (context) {
-            result = context.useValueChanged(value, useValueChanged.call);
+            result = useValueChanged(value, _useValueChanged.call);
             return Container();
           },
         ));
@@ -20,43 +20,43 @@ void main() {
     final HookElement context = find.byType(HookBuilder).evaluate().first;
 
     expect(result, null);
-    verifyNoMoreInteractions(useValueChanged);
+    verifyNoMoreInteractions(_useValueChanged);
     expect(context.dirty, false);
 
     await pump();
 
     expect(result, null);
-    verifyNoMoreInteractions(useValueChanged);
+    verifyNoMoreInteractions(_useValueChanged);
     expect(context.dirty, false);
 
     value++;
-    when(useValueChanged.call(any, any)).thenReturn('Hello');
+    when(_useValueChanged.call(any, any)).thenReturn('Hello');
     await pump();
 
-    verify(useValueChanged.call(42, null));
+    verify(_useValueChanged.call(42, null));
     expect(result, 'Hello');
-    verifyNoMoreInteractions(useValueChanged);
+    verifyNoMoreInteractions(_useValueChanged);
     expect(context.dirty, false);
 
     await pump();
 
     expect(result, 'Hello');
-    verifyNoMoreInteractions(useValueChanged);
+    verifyNoMoreInteractions(_useValueChanged);
     expect(context.dirty, false);
 
     value++;
-    when(useValueChanged.call(any, any)).thenReturn('Foo');
+    when(_useValueChanged.call(any, any)).thenReturn('Foo');
     await pump();
 
     expect(result, 'Foo');
-    verify(useValueChanged.call(43, 'Hello'));
-    verifyNoMoreInteractions(useValueChanged);
+    verify(_useValueChanged.call(43, 'Hello'));
+    verifyNoMoreInteractions(_useValueChanged);
     expect(context.dirty, false);
 
     await pump();
 
     expect(result, 'Foo');
-    verifyNoMoreInteractions(useValueChanged);
+    verifyNoMoreInteractions(_useValueChanged);
     expect(context.dirty, false);
 
     // dispose
@@ -66,7 +66,7 @@ void main() {
   testWidgets('valueChanged required', (tester) async {
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
-        context.useValueChanged<int, int>(42, null);
+        useValueChanged<int, int>(42, null);
         return Container();
       },
     ));

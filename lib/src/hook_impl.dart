@@ -22,7 +22,7 @@ class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
   }
 
   @override
-  T build(HookContext context) {
+  T build(BuildContext context) {
     return value;
   }
 }
@@ -51,7 +51,7 @@ class _ValueChangedHookState<T, R>
   }
 
   @override
-  R build(HookContext context) {
+  R build(BuildContext context) {
     return _result;
   }
 }
@@ -81,7 +81,7 @@ class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
   }
 
   @override
-  ValueNotifier<T> build(HookContext context) {
+  ValueNotifier<T> build(BuildContext context) {
     return _state;
   }
 
@@ -131,7 +131,7 @@ class _TickerProviderHookState
   }
 
   @override
-  TickerProvider build(HookContext context) {
+  TickerProvider build(BuildContext context) {
     if (_ticker != null) _ticker.muted = !TickerMode.of(context);
     return this;
   }
@@ -182,9 +182,8 @@ Switching between controller and uncontrolled vsync is not allowed.
   }
 
   @override
-  AnimationController build(HookContext context) {
-    final vsync =
-        hook.vsync ?? context.useSingleTickerProvider(keys: hook.keys);
+  AnimationController build(BuildContext context) {
+    final vsync = hook.vsync ?? useSingleTickerProvider(keys: hook.keys);
 
     _animationController ??= AnimationController(
       vsync: vsync,
@@ -232,7 +231,7 @@ class _ListenableStateHook extends HookState<void, _ListenableHook> {
   }
 
   @override
-  void build(HookContext context) {}
+  void build(BuildContext context) {}
 
   void _listener() {
     setState(() {});
@@ -314,7 +313,7 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
   }
 
   @override
-  AsyncSnapshot<T> build(HookContext context) {
+  AsyncSnapshot<T> build(BuildContext context) {
     return _snapshot;
   }
 }
@@ -386,7 +385,7 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
   }
 
   @override
-  AsyncSnapshot<T> build(HookContext context) {
+  AsyncSnapshot<T> build(BuildContext context) {
     return _summary;
   }
 
@@ -444,7 +443,7 @@ class _EffectHookState extends HookState<void, _EffectHook> {
   }
 
   @override
-  void build(HookContext context) {}
+  void build(BuildContext context) {}
 
   @override
   void dispose() {
@@ -499,7 +498,7 @@ class _StreamControllerHookState<T>
   }
 
   @override
-  StreamController<T> build(HookContext context) {
+  StreamController<T> build(BuildContext context) {
     return _controller;
   }
 

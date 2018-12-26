@@ -10,7 +10,7 @@ void main() {
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        controller = context.useAnimationController();
+        controller = useAnimationController();
         return Container();
       }),
     );
@@ -43,7 +43,7 @@ void main() {
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        controller = context.useAnimationController(
+        controller = useAnimationController(
           vsync: provider,
           animationBehavior: AnimationBehavior.preserve,
           duration: const Duration(seconds: 1),
@@ -77,7 +77,7 @@ void main() {
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        controller = context.useAnimationController(
+        controller = useAnimationController(
           vsync: provider,
           animationBehavior: AnimationBehavior.normal,
           duration: const Duration(seconds: 2),
@@ -108,7 +108,7 @@ void main() {
       (tester) async {
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
-        context.useAnimationController();
+        useAnimationController();
         return Container();
       },
     ));
@@ -116,7 +116,7 @@ void main() {
     await expectPump(
       () => tester.pumpWidget(HookBuilder(
             builder: (context) {
-              context.useAnimationController(vsync: tester);
+              useAnimationController(vsync: tester);
               return Container();
             },
           )),
@@ -128,7 +128,7 @@ void main() {
     // the other way around
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
-        context.useAnimationController(vsync: tester);
+        useAnimationController(vsync: tester);
         return Container();
       },
     ));
@@ -136,7 +136,7 @@ void main() {
     await expectPump(
       () => tester.pumpWidget(HookBuilder(
             builder: (context) {
-              context.useAnimationController();
+              useAnimationController();
               return Container();
             },
           )),
@@ -149,7 +149,7 @@ void main() {
     AnimationController controller;
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
-        controller = context.useAnimationController(keys: keys);
+        controller = useAnimationController(keys: keys);
         return Container();
       },
     ));
@@ -159,7 +159,7 @@ void main() {
 
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
-        controller = context.useAnimationController(keys: keys);
+        controller = useAnimationController(keys: keys);
         return Container();
       },
     ));
