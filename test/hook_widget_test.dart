@@ -647,6 +647,114 @@ void main() {
     verifyZeroInteractions(didUpdateHook3);
     verifyZeroInteractions(didUpdateHook4);
   });
+
+  testWidgets('hot-reload disposes hooks when type change', (tester) async {
+    HookTest hook1;
+
+    final dispose2 = Func0<void>();
+    final initHook2 = Func0<void>();
+    final didUpdateHook2 = Func1<HookTest, void>();
+    final build2 = Func1<HookContext, int>();
+
+    final dispose3 = Func0<void>();
+    final initHook3 = Func0<void>();
+    final didUpdateHook3 = Func1<HookTest, void>();
+    final build3 = Func1<HookContext, int>();
+
+    final dispose4 = Func0<void>();
+    final initHook4 = Func0<void>();
+    final didUpdateHook4 = Func1<HookTest, void>();
+    final build4 = Func1<HookContext, int>();
+
+    when(builder.call(any)).thenAnswer((invocation) {
+      (invocation.positionalArguments[0] as HookContext)
+        ..use(hook1 = createHook())
+        ..use(HookTest<String>(dispose: dispose2))
+        ..use(HookTest<Object>(dispose: dispose3))
+        ..use(HookTest<void>(dispose: dispose4));
+      return Container();
+    });
+
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    final HookElement context = find.byType(HookBuilder).evaluate().first;
+
+    // We don't care about datas of the first render
+    clearInteractions(initHook);
+    clearInteractions(didUpdateHook);
+    clearInteractions(dispose);
+    clearInteractions(build);
+
+    clearInteractions(initHook2);
+    clearInteractions(didUpdateHook2);
+    clearInteractions(dispose2);
+    clearInteractions(build2);
+
+    clearInteractions(initHook3);
+    clearInteractions(didUpdateHook3);
+    clearInteractions(dispose3);
+    clearInteractions(build3);
+
+    clearInteractions(initHook4);
+    clearInteractions(didUpdateHook4);
+    clearInteractions(dispose4);
+    clearInteractions(build4);
+
+    when(builder.call(any)).thenAnswer((invocation) {
+      (invocation.positionalArguments[0] as HookContext)
+        ..use(createHook())
+        // changed type from HookTest<String>
+        ..use(HookTest<int>(
+          initHook: initHook2,
+          build: build2,
+          didUpdateHook: didUpdateHook2,
+        ))
+        ..use(HookTest<int>(
+          initHook: initHook3,
+          build: build3,
+          didUpdateHook: didUpdateHook3,
+        ))
+        ..use(HookTest<int>(
+          initHook: initHook4,
+          build: build4,
+          didUpdateHook: didUpdateHook4,
+        ));
+      return Container();
+    });
+
+    hotReload(tester);
+    await tester.pump();
+
+    verifyInOrder([
+      didUpdateHook.call(hook1),
+      build.call(context),
+      dispose2.call(),
+      initHook2.call(),
+      build2.call(context),
+      dispose3.call(),
+      initHook3.call(),
+      build3.call(context),
+      dispose4.call(),
+      initHook4.call(),
+      build4.call(context),
+    ]);
+    verifyZeroInteractions(initHook);
+    verifyZeroInteractions(dispose);
+    verifyZeroInteractions(didUpdateHook2);
+    verifyZeroInteractions(didUpdateHook3);
+    verifyZeroInteractions(didUpdateHook4);
+  });
+
+  testWidgets('hot-reload without hooks do not crash', (tester) async {
+    when(builder.call(any)).thenAnswer((invocation) {
+      return Container();
+    });
+
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    hotReload(tester);
+    await expectPump(() => tester.pump(), completes);
+  });
 }
 
 class MyHook extends Hook<MyHookState> {

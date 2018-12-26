@@ -242,7 +242,6 @@ class HookElement extends StatefulElement implements HookContext {
     // dispose removed items
     assert(() {
       if (_didReassemble) {
-        // TODO: test for the _currentHook == null
         while (_currentHook?.current != null) {
           _currentHook.current.dispose();
           _currentHook.moveNext();
