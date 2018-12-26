@@ -8,7 +8,7 @@ final unrelated = Func0<void>();
 List parameters;
 
 Widget builder() => HookBuilder(builder: (context) {
-      context.useEffect(effect.call, parameters);
+      useEffect(effect.call, parameters);
       unrelated.call();
       return Container();
     });
@@ -22,7 +22,7 @@ void main() {
   testWidgets('useEffect null callback throws', (tester) async {
     await expectPump(
       () => tester.pumpWidget(HookBuilder(builder: (c) {
-            c.useEffect(null);
+            useEffect(null);
             return Container();
           })),
       throwsAssertionError,
@@ -36,7 +36,7 @@ void main() {
     when(effect.call()).thenReturn(dispose.call);
 
     builder() => HookBuilder(builder: (context) {
-          context.useEffect(effect.call);
+          useEffect(effect.call);
           unrelated.call();
           return Container();
         });
@@ -181,7 +181,7 @@ void main() {
     List parameters;
 
     builder() => HookBuilder(builder: (context) {
-          context.useEffect(effect.call, parameters);
+          useEffect(effect.call, parameters);
           return Container();
         });
 

@@ -21,7 +21,7 @@ class _Counter extends HookWidget {
   const _Counter({Key key}) : super(key: key);
 
   @override
-  Widget build(HookContext context) {
+  Widget build(BuildContext context) {
     StreamController<int> countController =
         _useLocalStorageInt(context, 'counter');
     return Scaffold(
@@ -31,8 +31,7 @@ class _Counter extends HookWidget {
       body: Center(
         child: HookBuilder(
           builder: (context) {
-            AsyncSnapshot<int> count =
-                context.useStream(countController.stream);
+            AsyncSnapshot<int> count = useStream(countController.stream);
 
             return !count.hasData
                 // Currently loading value from local storage, or there's an error
@@ -49,33 +48,32 @@ class _Counter extends HookWidget {
 }
 
 StreamController<int> _useLocalStorageInt(
-  HookContext context,
+  BuildContext context,
   String key, {
   int defaultValue = 0,
 }) {
-  final controller = context.useStreamController<int>(keys: <dynamic>[key]);
+  final controller = useStreamController<int>(keys: <dynamic>[key]);
 
-  context
-    // We define a callback that will be called on first build
-    // and whenever the controller/key change
-    ..useEffect(() {
-      // We listen to the data and push new values to local storage
-      final sub = controller.stream.listen((data) async {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setInt(key, data);
-      });
-      // Unsubscribe when the widget is disposed
-      // or on controller/key change
-      return sub.cancel;
-    }, <dynamic>[controller, key])
-    // We load the initial value
-    ..useEffect(() {
-      SharedPreferences.getInstance().then((prefs) async {
-        int valueFromStorage = prefs.getInt(key);
-        controller.add(valueFromStorage ?? defaultValue);
-      }).catchError(controller.addError);
-      // ensure the callback is called only on first build
-    }, <dynamic>[controller, key]);
+  // We define a callback that will be called on first build
+  // and whenever the controller/key change
+  useEffect(() {
+    // We listen to the data and push new values to local storage
+    final sub = controller.stream.listen((data) async {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(key, data);
+    });
+    // Unsubscribe when the widget is disposed
+    // or on controller/key change
+    return sub.cancel;
+  }, <dynamic>[controller, key]);
+  // We load the initial value
+  useEffect(() {
+    SharedPreferences.getInstance().then((prefs) async {
+      int valueFromStorage = prefs.getInt(key);
+      controller.add(valueFromStorage ?? defaultValue);
+    }).catchError(controller.addError);
+    // ensure the callback is called only on first build
+  }, <dynamic>[controller, key]);
 
   return controller;
 }

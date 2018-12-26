@@ -8,7 +8,7 @@ void main() {
     await expectPump(
         () => tester.pumpWidget(HookBuilder(
               builder: (context) {
-                context.useListenable(null);
+                useListenable(null);
                 return Container();
               },
             )),
@@ -19,7 +19,7 @@ void main() {
 
     pump() => tester.pumpWidget(HookBuilder(
           builder: (context) {
-            context.useListenable(listenable);
+            useListenable(listenable);
             return Container();
           },
         ));

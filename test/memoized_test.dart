@@ -4,7 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'mock.dart';
 
 void main() {
-  final builder = Func1<HookContext, Widget>();
+  final builder = Func1<BuildContext, Widget>();
   final parameterBuilder = Func0<List>();
   final valueBuilder = Func0<int>();
 
@@ -16,13 +16,13 @@ void main() {
 
   testWidgets('invalid parameters', (tester) async {
     await tester.pumpWidget(HookBuilder(builder: (context) {
-      context.useMemoized<dynamic>(null);
+      useMemoized<dynamic>(null);
       return Container();
     }));
     expect(tester.takeException(), isAssertionError);
 
     await tester.pumpWidget(HookBuilder(builder: (context) {
-      context.useMemoized<dynamic>(() {}, null);
+      useMemoized<dynamic>(() {}, null);
       return Container();
     }));
     expect(tester.takeException(), isAssertionError);
@@ -35,8 +35,7 @@ void main() {
     when(valueBuilder.call()).thenReturn(42);
 
     when(builder.call(any)).thenAnswer((invocation) {
-      final HookContext context = invocation.positionalArguments.single;
-      result = context.useMemoized<int>(valueBuilder.call);
+      result = useMemoized<int>(valueBuilder.call);
       return Container();
     });
 
@@ -65,9 +64,7 @@ void main() {
     when(parameterBuilder.call()).thenReturn(<dynamic>[]);
 
     when(builder.call(any)).thenAnswer((invocation) {
-      final HookContext context = invocation.positionalArguments.single;
-      result =
-          context.useMemoized<int>(valueBuilder.call, parameterBuilder.call());
+      result = useMemoized<int>(valueBuilder.call, parameterBuilder.call());
       return Container();
     });
 
@@ -131,9 +128,7 @@ void main() {
     int result;
 
     when(builder.call(any)).thenAnswer((invocation) {
-      final HookContext context = invocation.positionalArguments.single;
-      result =
-          context.useMemoized<int>(valueBuilder.call, parameterBuilder.call());
+      result = useMemoized<int>(valueBuilder.call, parameterBuilder.call());
       return Container();
     });
 
@@ -209,9 +204,7 @@ void main() {
     final parameters = <dynamic>[];
 
     when(builder.call(any)).thenAnswer((invocation) {
-      final HookContext context = invocation.positionalArguments.single;
-      result =
-          context.useMemoized<int>(valueBuilder.call, parameterBuilder.call());
+      result = useMemoized<int>(valueBuilder.call, parameterBuilder.call());
       return Container();
     });
 

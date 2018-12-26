@@ -11,7 +11,7 @@ void main() {
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
         element = context as HookElement;
-        state = context.useState(42);
+        state = useState(42);
         return Container();
       },
     ));
@@ -45,7 +45,7 @@ void main() {
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
         element = context as HookElement;
-        state = context.useState();
+        state = useState();
         return Container();
       },
     ));
