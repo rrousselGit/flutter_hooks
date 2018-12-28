@@ -14,7 +14,7 @@ script:
   - set -e
   - flutter packages get
   - flutter format --set-exit-if-changed lib example
-  - flutter analyze --no-current-package lib example
+  - flutter analyze lib example
   - flutter test --no-pub --coverage
   # export coverage
   - bash <(curl -s https://codecov.io/bash)

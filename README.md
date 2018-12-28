@@ -74,8 +74,8 @@ class Example extends HookWidget {
         super(key: key);
 
   @override
-  Widget build(HookContext context) {
-    final controller = context.useAnimationController(duration: duration);
+  Widget build(BuildContext context) {
+    final controller = useAnimationController(duration: duration);
     return Container();
   }
 }
@@ -95,9 +95,9 @@ Hooks are a new kind of objects with some specificities:
   The following code defines two independent `AnimationController`, and they are correctly preserved when the widget rebuild.
 
 ```dart
-Widget build(HookContext context) {
-  final controller = context.useAnimationController();
-  final controller2 = context.useAnimationController();
+Widget build(BuildContext context) {
+  final controller = useAnimationController();
+  final controller2 = useAnimationController();
   return Container();
 }
 ```
@@ -106,7 +106,7 @@ Widget build(HookContext context) {
 
 ## Principle
 
-Similarily to `State`, hooks are stored on the `Element` of a `Widget`. But instead of having one `State`, the `Element` stores a `List<Hook>`. Then to use a `Hook`, one must call `HookContext.use`.
+Similarily to `State`, hooks are stored on the `Element` of a `Widget`. But instead of having one `State`, the `Element` stores a `List<Hook>`. Then to use a `Hook`, one must call `Hook.use`.
 
 The hook returned by `use` is based on the number of times it has been called. The first call returns the first hook; the second call returns the second hook, the third returns the third hook, ...
 
@@ -136,8 +136,8 @@ Due to hooks being obtained from their index, there are some rules that must be 
 ### DO call `use` unconditionally
 
 ```dart
-Widget build(HookContext context) {
-  context.use(MyHook());
+Widget build(BuildContext context) {
+  Hook.use(MyHook());
   // ....
 }
 ```
@@ -145,9 +145,9 @@ Widget build(HookContext context) {
 ### DON'T wrap `use` into a condition
 
 ```dart
-Widget build(HookContext context) {
+Widget build(BuildContext context) {
   if (condition) {
-    context.use(MyHook());
+    Hook.use(MyHook());
   }
   // ....
 }
@@ -158,9 +158,9 @@ Widget build(HookContext context) {
 ### DO always call all the hooks:
 
 ```dart
-Widget build(HookContext context) {
-  context.use(Hook1());
-  context.use(Hook2());
+Widget build(BuildContext context) {
+  Hook.use(Hook1());
+  Hook.use(Hook2());
   // ....
 }
 ```
@@ -168,12 +168,12 @@ Widget build(HookContext context) {
 ### DON'T aborts `build` method before all hooks have been called:
 
 ```dart
-Widget build(HookContext context) {
-  context.use(Hook1());
+Widget build(BuildContext context) {
+  Hook.use(Hook1());
   if (condition) {
     return Container();
   }
-  context.use(Hook2());
+  Hook.use(Hook2());
   // ....
 }
 ```
@@ -189,17 +189,17 @@ But worry not, `HookWidget` overrides the default hot-reload behavior to work wi
 Consider the following list of hooks:
 
 ```dart
-context.use(HookA());
-context.use(HookB(0));
-context.use(HookC(0));
+Hook.use(HookA());
+Hook.use(HookB(0));
+Hook.use(HookC(0));
 ```
 
 Then consider that after a hot-reload, we edited the parameter of `HookB`:
 
 ```dart
-context.use(HookA());
-context.use(HookB(42));
-context.use(HookC());
+Hook.use(HookA());
+Hook.use(HookB(42));
+Hook.use(HookC());
 ```
 
 Here everything works fine; all hooks keep their states.
@@ -207,8 +207,8 @@ Here everything works fine; all hooks keep their states.
 Now consider that we removed `HookB`. We now have:
 
 ```dart
-context.use(HookA());
-context.use(HookC());
+Hook.use(HookA());
+Hook.use(HookC());
 ```
 
 In this situation, `HookA` keeps its state but `HookC` gets a hard reset.
@@ -225,9 +225,9 @@ Functions is by far the most common way to write a hook. Thanks to hooks being c
 The following defines a custom hook that creates a variable and logs its value on the console whenever the value changes:
 
 ```dart
-ValueNotifier<T> useLoggedState<T>(HookContext context, [T initialData]) {
-  final result = context.useState<T>(initialData);
-  context.useValueChanged(result.value, (_, __) {
+ValueNotifier<T> useLoggedState<T>(BuildContext context, [T initialData]) {
+  final result = useState<T>(initialData);
+  useValueChanged(result.value, (_, __) {
     print(result.value);
   });
   return result;
@@ -236,11 +236,11 @@ ValueNotifier<T> useLoggedState<T>(HookContext context, [T initialData]) {
 
 - A class
 
-When a hook becomes too complex, it is possible to convert it into a class that extends `Hook`, which can then be used using `HookContext.use`. As a class, the hook will look very similar to a `State` and have access to life-cycles and methods such as `initHook`, `dispose` and `setState`. It is usually a good practice to hide the class under a function as such:
+When a hook becomes too complex, it is possible to convert it into a class that extends `Hook`, which can then be used using `Hook.use`. As a class, the hook will look very similar to a `State` and have access to life-cycles and methods such as `initHook`, `dispose` and `setState`. It is usually a good practice to hide the class under a function as such:
 
 ```dart
-Result useMyHook(HookContext context) {
-  return context.use(_MyHook());
+Result useMyHook(BuildContext context) {
+  return Hook.use(_MyHook());
 }
 ```
 
@@ -264,7 +264,7 @@ class _TimeAliveState<T> extends HookState<void, _TimeAlive<T>> {
   }
 
   @override
-  void build(HookContext context) {
+  void build(BuildContext context) {
     // this hook doesn't create anything nor uses other hooks
   }
 
@@ -279,7 +279,7 @@ class _TimeAliveState<T> extends HookState<void, _TimeAlive<T>> {
 
 ## Existing hooks
 
-`HookContext` comes with a list of predefined hooks that are commonly used. They can be used directly on the `HookContext` instance. The existing hooks are:
+Flutter_hooks comes with a list of reusable hooks already provided. They are static methods free to use that includes:
 
 - useEffect
 
@@ -291,8 +291,8 @@ The following call to `useEffect` subscribes to a `Stream` and cancel the subscr
 
 ```dart
 Stream stream;
-context.useEffect(() {
-    final subscription = stream.listen(print);
+useEffect(() {
+    final subscribtion = stream.listen(print);
     // This will cancel the subscription when the widget is disposed
     // or if the callback is called again.
     return subscription.cancel;
@@ -311,14 +311,56 @@ The following code uses `useState` to make a counter application:
 ```dart
 class Counter extends HookWidget {
   @override
-  Widget build(HookContext context) {
-    final counter = context.useState(0);
+  Widget build(BuildContext context) {
+    final counter = useState(0);
 
     return GestureDetector(
       // automatically triggers a rebuild of Counter widget
       onTap: () => counter.value++,
       child: Text(counter.value.toString()),
     );
+  }
+}
+```
+
+- useReducer
+
+An alternative to useState for more complex states.
+
+`useReducer` manages an read only state that can be updated by dispatching actions which are interpreted by a `Reducer`.
+
+The following makes a counter app with both a "+1" and "-1" button:
+
+```dart
+class Counter extends HookWidget {
+  @override
+  Widget build(BuildContext context) {
+    final counter = useReducer(_counterReducer, initialState: 0);
+
+    return Column(
+      children: <Widget>[
+        Text(counter.state.toString()),
+        IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: () => counter.dispatch('increment'),
+        ),
+        IconButton(
+          icon: const Icon(Icons.remove),
+          onPressed: () => counter.dispatch('decrement'),
+        ),
+      ],
+    );
+  }
+
+  int _counterReducer(int state, String action) {
+    switch (action) {
+      case 'increment':
+        return state + 1;
+      case 'decrement':
+        return state - 1;
+      default:
+        return state;
+    }
   }
 }
 ```
@@ -333,7 +375,7 @@ The following sample make an http call and return the created `Future`. And if `
 
 ```dart
 String userId;
-final Future<http.Response> response = context.useMemoized(() {
+final Future<http.Response> response = useMemoized(() {
   return http.get('someUrl/$userId');
 }, [userId]);
 ```
@@ -348,7 +390,7 @@ The following example implicitly starts a tween animation whenever `color` chang
 AnimationController controller;
 Color color;
 
-final colorTween = context.useValueChanged(
+final colorTween = useValueChanged(
     color,
     (Color oldColor, Animation<Color> oldAnimation) {
       return ColorTween(
@@ -368,7 +410,7 @@ They are the equivalent of both `initState`, `dispose` and `didUpdateWidget` for
 
 ```dart
 Duration duration;
-AnimationController controller = context.useAnimationController(
+AnimationController controller = useAnimationController(
   // duration is automatically updates when the widget is rebuilt with a different `duration`
   duration: duration,
 );
@@ -381,5 +423,5 @@ A set of hooks that subscribes to an object and calls `setState` accordingly.
 ```dart
 Stream<int> stream;
 // automatically rebuild the widget when a new value is pushed to the stream
-AsyncSnapshot<int> snapshot = context.useStream(stream);
+AsyncSnapshot<int> snapshot = useStream(stream);
 ```

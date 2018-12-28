@@ -6,11 +6,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'mock.dart';
 
 void main() {
-  final build = Func1<HookContext, int>();
+  final build = Func1<BuildContext, int>();
   final dispose = Func0<void>();
   final initHook = Func0<void>();
   final didUpdateHook = Func1<HookTest, void>();
-  final builder = Func1<HookContext, Widget>();
+  final builder = Func1<BuildContext, Widget>();
 
   final createHook = () => HookTest<int>(
         build: build.call,
@@ -27,6 +27,141 @@ void main() {
     reset(didUpdateHook);
   });
 
+  testWidgets('hooks can be disposed independently with keys', (tester) async {
+    List keys;
+    List keys2;
+
+    final dispose2 = Func0<void>();
+    when(builder.call(any)).thenAnswer((invocation) {
+      Hook.use(HookTest<int>(dispose: dispose.call, keys: keys));
+      Hook.use(HookTest<String>(dispose: dispose2.call, keys: keys2));
+      return Container();
+    });
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    verifyZeroInteractions(dispose);
+    verifyZeroInteractions(dispose2);
+
+    keys = <dynamic>[];
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    verify(dispose.call()).called(1);
+    verifyZeroInteractions(dispose2);
+
+    keys2 = <dynamic>[];
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    verify(dispose2.call()).called(1);
+    verifyNoMoreInteractions(dispose);
+  });
+  testWidgets('keys recreate hookstate', (tester) async {
+    List keys;
+
+    final createState = Func0<HookStateTest<int>>();
+    when(createState.call()).thenReturn(HookStateTest<int>());
+
+    when(builder.call(any)).thenAnswer((invocation) {
+      Hook.use(HookTest<int>(
+        build: build.call,
+        dispose: dispose.call,
+        didUpdateHook: didUpdateHook.call,
+        initHook: initHook.call,
+        keys: keys,
+        createStateFn: createState.call,
+      ));
+      return Container();
+    });
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    final HookElement context = find.byType(HookBuilder).evaluate().first;
+
+    verifyInOrder([
+      createState.call(),
+      initHook.call(),
+      build.call(context),
+    ]);
+    verifyNoMoreInteractions(createState);
+    verifyNoMoreInteractions(initHook);
+    verifyNoMoreInteractions(build);
+    verifyNoMoreInteractions(didUpdateHook);
+    verifyNoMoreInteractions(dispose);
+
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    verifyInOrder([
+      didUpdateHook.call(any),
+      build.call(context),
+    ]);
+    verifyNoMoreInteractions(createState);
+    verifyNoMoreInteractions(initHook);
+    verifyNoMoreInteractions(build);
+    verifyNoMoreInteractions(didUpdateHook);
+    verifyNoMoreInteractions(dispose);
+
+    // from null to array
+    keys = <dynamic>[];
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    verifyInOrder([
+      dispose.call(),
+      createState.call(),
+      initHook.call(),
+      build.call(context)
+    ]);
+    verifyNoMoreInteractions(createState);
+    verifyNoMoreInteractions(initHook);
+    verifyNoMoreInteractions(build);
+    verifyNoMoreInteractions(didUpdateHook);
+    verifyNoMoreInteractions(dispose);
+
+    // array immutable
+    keys.add(42);
+
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    verifyInOrder([
+      didUpdateHook.call(any),
+      build.call(context),
+    ]);
+    verifyNoMoreInteractions(createState);
+    verifyNoMoreInteractions(initHook);
+    verifyNoMoreInteractions(build);
+    verifyNoMoreInteractions(didUpdateHook);
+    verifyNoMoreInteractions(dispose);
+
+    // new array but content equal
+    keys = <dynamic>[42];
+
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    verifyInOrder([
+      didUpdateHook.call(any),
+      build.call(context),
+    ]);
+    verifyNoMoreInteractions(createState);
+    verifyNoMoreInteractions(initHook);
+    verifyNoMoreInteractions(build);
+    verifyNoMoreInteractions(didUpdateHook);
+    verifyNoMoreInteractions(dispose);
+
+    // new array new content
+    keys = <dynamic>[44];
+
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    verifyInOrder([
+      dispose.call(),
+      createState.call(),
+      initHook.call(),
+      build.call(context)
+    ]);
+    verifyNoMoreInteractions(createState);
+    verifyNoMoreInteractions(initHook);
+    verifyNoMoreInteractions(build);
+    verifyNoMoreInteractions(didUpdateHook);
+    verifyNoMoreInteractions(dispose);
+  });
+
   testWidgets('hook & setState', (tester) async {
     final setState = Func0<void>();
     final hook = MyHook();
@@ -36,7 +171,7 @@ void main() {
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
         hookContext = context as HookElement;
-        state = context.use(hook);
+        state = Hook.use(hook);
         return Container();
       },
     ));
@@ -53,13 +188,12 @@ void main() {
 
   testWidgets('life-cycles in order', (tester) async {
     int result;
-    HookTest<int> previousHook;
+    HookTest<int> hook;
 
     when(build.call(any)).thenReturn(42);
     when(builder.call(any)).thenAnswer((invocation) {
-      HookContext context = invocation.positionalArguments[0];
-      previousHook = createHook();
-      result = context.use(previousHook);
+      hook = createHook();
+      result = Hook.use(hook);
       return Container();
     });
 
@@ -67,42 +201,45 @@ void main() {
       builder: builder.call,
     ));
 
+    final context = tester.firstElement(find.byType(HookBuilder));
     expect(result, 42);
     verifyInOrder([
       initHook.call(),
-      build.call(any),
+      build.call(context),
     ]);
     verifyZeroInteractions(didUpdateHook);
     verifyZeroInteractions(dispose);
 
-    when(build.call(any)).thenReturn(24);
+    when(build.call(context)).thenReturn(24);
+    var previousHook = hook;
+
     await tester.pumpWidget(HookBuilder(
       builder: builder.call,
     ));
 
     expect(result, 24);
     verifyInOrder([
-      // ignore: todo
-      // TODO: previousHook instead of any
-      didUpdateHook.call(any),
+      didUpdateHook.call(previousHook),
       build.call(any),
     ]);
-    verifyNever(initHook.call());
+    verifyNoMoreInteractions(initHook);
     verifyZeroInteractions(dispose);
 
+    previousHook = hook;
     await tester.pump();
 
-    verifyNever(initHook.call());
-    verifyNever(didUpdateHook.call(any));
-    verifyNever(build.call(any));
+    verifyNoMoreInteractions(initHook);
+    verifyNoMoreInteractions(didUpdateHook);
+    verifyNoMoreInteractions(build);
     verifyZeroInteractions(dispose);
 
     await tester.pumpWidget(const SizedBox());
 
-    verifyNever(initHook.call());
-    verifyNever(didUpdateHook.call(any));
-    verifyNever(build.call(any));
+    verifyNoMoreInteractions(initHook);
+    verifyNoMoreInteractions(didUpdateHook);
+    verifyNoMoreInteractions(build);
     verify(dispose.call());
+    verifyNoMoreInteractions(dispose);
   });
 
   testWidgets('dispose all called even on failed', (tester) async {
@@ -110,9 +247,8 @@ void main() {
 
     when(build.call(any)).thenReturn(42);
     when(builder.call(any)).thenAnswer((invocation) {
-      invocation.positionalArguments[0]
-        ..use(createHook())
-        ..use(HookTest<int>(dispose: dispose2));
+      Hook.use(createHook());
+      Hook.use(HookTest<int>(dispose: dispose2));
       return Container();
     });
 
@@ -134,7 +270,7 @@ void main() {
     final hook = createHook();
 
     when(builder.call(any)).thenAnswer((invocation) {
-      invocation.positionalArguments[0].use(hook);
+      Hook.use(hook);
       return Container();
     });
 
@@ -159,14 +295,14 @@ void main() {
 
   testWidgets('rebuild with different hooks crash', (tester) async {
     when(builder.call(any)).thenAnswer((invocation) {
-      invocation.positionalArguments[0].use(HookTest<int>());
+      Hook.use(HookTest<int>());
       return Container();
     });
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
     when(builder.call(any)).thenAnswer((invocation) {
-      invocation.positionalArguments[0].use(HookTest<String>());
+      Hook.use(HookTest<String>());
       return Container();
     });
 
@@ -177,15 +313,15 @@ void main() {
   });
   testWidgets('rebuild added hooks crash', (tester) async {
     when(builder.call(any)).thenAnswer((invocation) {
-      invocation.positionalArguments[0].use(HookTest<int>());
+      Hook.use(HookTest<int>());
       return Container();
     });
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
     when(builder.call(any)).thenAnswer((invocation) {
-      invocation.positionalArguments[0].use(HookTest<int>());
-      invocation.positionalArguments[0].use(HookTest<String>());
+      Hook.use(HookTest<int>());
+      Hook.use(HookTest<String>());
       return Container();
     });
 
@@ -195,7 +331,7 @@ void main() {
 
   testWidgets('rebuild removed hooks crash', (tester) async {
     when(builder.call(any)).thenAnswer((invocation) {
-      invocation.positionalArguments[0].use(HookTest<int>());
+      Hook.use(HookTest<int>());
       return Container();
     });
 
@@ -216,10 +352,7 @@ void main() {
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
-    final context =
-        tester.firstElement(find.byType(HookBuilder)) as HookElement;
-
-    expect(() => context.use(HookTest<int>()), throwsAssertionError);
+    expect(() => Hook.use(HookTest<int>()), throwsAssertionError);
   });
 
   testWidgets('hot-reload triggers a build', (tester) async {
@@ -228,9 +361,8 @@ void main() {
 
     when(build.call(any)).thenReturn(42);
     when(builder.call(any)).thenAnswer((invocation) {
-      HookContext context = invocation.positionalArguments[0];
       previousHook = createHook();
-      result = context.use(previousHook);
+      result = Hook.use(previousHook);
       return Container();
     });
 
@@ -265,11 +397,10 @@ void main() {
     final dispose2 = Func0<void>();
     final initHook2 = Func0<void>();
     final didUpdateHook2 = Func1<HookTest, void>();
-    final build2 = Func1<HookContext, String>();
+    final build2 = Func1<BuildContext, String>();
 
     when(builder.call(any)).thenAnswer((invocation) {
-      (invocation.positionalArguments[0] as HookContext)
-        ..use(hook1 = createHook());
+      Hook.use(hook1 = createHook());
       return Container();
     });
 
@@ -285,14 +416,13 @@ void main() {
     verifyZeroInteractions(didUpdateHook);
 
     when(builder.call(any)).thenAnswer((invocation) {
-      (invocation.positionalArguments[0] as HookContext)
-        ..use(createHook())
-        ..use(HookTest<String>(
-          initHook: initHook2,
-          build: build2,
-          didUpdateHook: didUpdateHook2,
-          dispose: dispose2,
-        ));
+      Hook.use(createHook());
+      Hook.use(HookTest<String>(
+        initHook: initHook2,
+        build: build2,
+        didUpdateHook: didUpdateHook2,
+        dispose: dispose2,
+      ));
       return Container();
     });
 
@@ -316,11 +446,10 @@ void main() {
     final dispose2 = Func0<void>();
     final initHook2 = Func0<void>();
     final didUpdateHook2 = Func1<HookTest, void>();
-    final build2 = Func1<HookContext, String>();
+    final build2 = Func1<BuildContext, String>();
 
     when(builder.call(any)).thenAnswer((invocation) {
-      (invocation.positionalArguments[0] as HookContext)
-        ..use(createHook());
+      Hook.use(createHook());
       return Container();
     });
 
@@ -336,14 +465,13 @@ void main() {
     verifyZeroInteractions(didUpdateHook);
 
     when(builder.call(any)).thenAnswer((invocation) {
-      (invocation.positionalArguments[0] as HookContext)
-        ..use(HookTest<String>(
-          initHook: initHook2,
-          build: build2,
-          didUpdateHook: didUpdateHook2,
-          dispose: dispose2,
-        ))
-        ..use(createHook());
+      Hook.use(HookTest<String>(
+        initHook: initHook2,
+        build: build2,
+        didUpdateHook: didUpdateHook2,
+        dispose: dispose2,
+      ));
+      Hook.use(createHook());
       return Container();
     });
 
@@ -366,17 +494,16 @@ void main() {
     final dispose2 = Func0<void>();
     final initHook2 = Func0<void>();
     final didUpdateHook2 = Func1<HookTest, void>();
-    final build2 = Func1<HookContext, int>();
+    final build2 = Func1<BuildContext, int>();
 
     when(builder.call(any)).thenAnswer((invocation) {
-      (invocation.positionalArguments[0] as HookContext)
-        ..use(createHook())
-        ..use(HookTest<int>(
-          initHook: initHook2,
-          build: build2,
-          didUpdateHook: didUpdateHook2,
-          dispose: dispose2,
-        ));
+      Hook.use(createHook());
+      Hook.use(HookTest<int>(
+        initHook: initHook2,
+        build: build2,
+        didUpdateHook: didUpdateHook2,
+        dispose: dispose2,
+      ));
       return Container();
     });
 
@@ -421,24 +548,23 @@ void main() {
     final dispose2 = Func0<void>();
     final initHook2 = Func0<void>();
     final didUpdateHook2 = Func1<HookTest, void>();
-    final build2 = Func1<HookContext, int>();
+    final build2 = Func1<BuildContext, int>();
 
     final dispose3 = Func0<void>();
     final initHook3 = Func0<void>();
     final didUpdateHook3 = Func1<HookTest, void>();
-    final build3 = Func1<HookContext, int>();
+    final build3 = Func1<BuildContext, int>();
 
     final dispose4 = Func0<void>();
     final initHook4 = Func0<void>();
     final didUpdateHook4 = Func1<HookTest, void>();
-    final build4 = Func1<HookContext, int>();
+    final build4 = Func1<BuildContext, int>();
 
     when(builder.call(any)).thenAnswer((invocation) {
-      (invocation.positionalArguments[0] as HookContext)
-        ..use(hook1 = createHook())
-        ..use(HookTest<String>(dispose: dispose2))
-        ..use(HookTest<Object>(dispose: dispose3))
-        ..use(HookTest<void>(dispose: dispose4));
+      Hook.use(hook1 = createHook());
+      Hook.use(HookTest<String>(dispose: dispose2));
+      Hook.use(HookTest<Object>(dispose: dispose3));
+      Hook.use(HookTest<void>(dispose: dispose4));
       return Container();
     });
 
@@ -468,24 +594,23 @@ void main() {
     clearInteractions(build4);
 
     when(builder.call(any)).thenAnswer((invocation) {
-      (invocation.positionalArguments[0] as HookContext)
-        ..use(createHook())
-        // changed type from HookTest<String>
-        ..use(HookTest<int>(
-          initHook: initHook2,
-          build: build2,
-          didUpdateHook: didUpdateHook2,
-        ))
-        ..use(HookTest<int>(
-          initHook: initHook3,
-          build: build3,
-          didUpdateHook: didUpdateHook3,
-        ))
-        ..use(HookTest<int>(
-          initHook: initHook4,
-          build: build4,
-          didUpdateHook: didUpdateHook4,
-        ));
+      Hook.use(createHook());
+      // changed type from HookTest<String>
+      Hook.use(HookTest<int>(
+        initHook: initHook2,
+        build: build2,
+        didUpdateHook: didUpdateHook2,
+      ));
+      Hook.use(HookTest<int>(
+        initHook: initHook3,
+        build: build3,
+        didUpdateHook: didUpdateHook3,
+      ));
+      Hook.use(HookTest<int>(
+        initHook: initHook4,
+        build: build4,
+        didUpdateHook: didUpdateHook4,
+      ));
       return Container();
     });
 
@@ -511,6 +636,112 @@ void main() {
     verifyZeroInteractions(didUpdateHook3);
     verifyZeroInteractions(didUpdateHook4);
   });
+
+  testWidgets('hot-reload disposes hooks when type change', (tester) async {
+    HookTest hook1;
+
+    final dispose2 = Func0<void>();
+    final initHook2 = Func0<void>();
+    final didUpdateHook2 = Func1<HookTest, void>();
+    final build2 = Func1<BuildContext, int>();
+
+    final dispose3 = Func0<void>();
+    final initHook3 = Func0<void>();
+    final didUpdateHook3 = Func1<HookTest, void>();
+    final build3 = Func1<BuildContext, int>();
+
+    final dispose4 = Func0<void>();
+    final initHook4 = Func0<void>();
+    final didUpdateHook4 = Func1<HookTest, void>();
+    final build4 = Func1<BuildContext, int>();
+
+    when(builder.call(any)).thenAnswer((invocation) {
+      Hook.use(hook1 = createHook());
+      Hook.use(HookTest<String>(dispose: dispose2));
+      Hook.use(HookTest<Object>(dispose: dispose3));
+      Hook.use(HookTest<void>(dispose: dispose4));
+      return Container();
+    });
+
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    final HookElement context = find.byType(HookBuilder).evaluate().first;
+
+    // We don't care about datas of the first render
+    clearInteractions(initHook);
+    clearInteractions(didUpdateHook);
+    clearInteractions(dispose);
+    clearInteractions(build);
+
+    clearInteractions(initHook2);
+    clearInteractions(didUpdateHook2);
+    clearInteractions(dispose2);
+    clearInteractions(build2);
+
+    clearInteractions(initHook3);
+    clearInteractions(didUpdateHook3);
+    clearInteractions(dispose3);
+    clearInteractions(build3);
+
+    clearInteractions(initHook4);
+    clearInteractions(didUpdateHook4);
+    clearInteractions(dispose4);
+    clearInteractions(build4);
+
+    when(builder.call(any)).thenAnswer((invocation) {
+      Hook.use(createHook());
+      // changed type from HookTest<String>
+      Hook.use(HookTest<int>(
+        initHook: initHook2,
+        build: build2,
+        didUpdateHook: didUpdateHook2,
+      ));
+      Hook.use(HookTest<int>(
+        initHook: initHook3,
+        build: build3,
+        didUpdateHook: didUpdateHook3,
+      ));
+      Hook.use(HookTest<int>(
+        initHook: initHook4,
+        build: build4,
+        didUpdateHook: didUpdateHook4,
+      ));
+      return Container();
+    });
+
+    hotReload(tester);
+    await tester.pump();
+
+    verifyInOrder([
+      didUpdateHook.call(hook1),
+      build.call(context),
+      dispose2.call(),
+      initHook2.call(),
+      build2.call(context),
+      dispose3.call(),
+      initHook3.call(),
+      build3.call(context),
+      dispose4.call(),
+      initHook4.call(),
+      build4.call(context),
+    ]);
+    verifyZeroInteractions(initHook);
+    verifyZeroInteractions(dispose);
+    verifyZeroInteractions(didUpdateHook2);
+    verifyZeroInteractions(didUpdateHook3);
+    verifyZeroInteractions(didUpdateHook4);
+  });
+
+  testWidgets('hot-reload without hooks do not crash', (tester) async {
+    when(builder.call(any)).thenAnswer((invocation) {
+      return Container();
+    });
+
+    await tester.pumpWidget(HookBuilder(builder: builder.call));
+
+    hotReload(tester);
+    await expectPump(() => tester.pump(), completes);
+  });
 }
 
 class MyHook extends Hook<MyHookState> {
@@ -520,7 +751,7 @@ class MyHook extends Hook<MyHookState> {
 
 class MyHookState extends HookState<MyHookState, MyHook> {
   @override
-  MyHookState build(HookContext context) {
+  MyHookState build(BuildContext context) {
     return this;
   }
 }

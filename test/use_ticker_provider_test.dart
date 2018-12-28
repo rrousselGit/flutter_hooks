@@ -1,6 +1,6 @@
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_hooks/src/hook.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'mock.dart';
 
@@ -11,7 +11,7 @@ void main() {
     await tester.pumpWidget(TickerMode(
       enabled: true,
       child: HookBuilder(builder: (context) {
-        provider = context.useSingleTickerProvider();
+        provider = useSingleTickerProvider();
         return Container();
       }),
     ));
@@ -29,7 +29,7 @@ void main() {
 
   testWidgets('useSingleTickerProvider unused', (tester) async {
     await tester.pumpWidget(HookBuilder(builder: (context) {
-      context.useSingleTickerProvider();
+      useSingleTickerProvider();
       return Container();
     }));
 
@@ -42,7 +42,7 @@ void main() {
     await tester.pumpWidget(TickerMode(
       enabled: true,
       child: HookBuilder(builder: (context) {
-        provider = context.useSingleTickerProvider();
+        provider = useSingleTickerProvider();
         return Container();
       }),
     ));
@@ -59,5 +59,25 @@ void main() {
     } finally {
       animationController.dispose();
     }
+  });
+
+  testWidgets('useSingleTickerProvider pass down keys', (tester) async {
+    TickerProvider provider;
+    List keys;
+
+    await tester.pumpWidget(HookBuilder(builder: (context) {
+      provider = useSingleTickerProvider(keys: keys);
+      return Container();
+    }));
+
+    final previousProvider = provider;
+    keys = <dynamic>[];
+
+    await tester.pumpWidget(HookBuilder(builder: (context) {
+      provider = useSingleTickerProvider(keys: keys);
+      return Container();
+    }));
+
+    expect(previousProvider, isNot(provider));
   });
 }

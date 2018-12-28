@@ -6,7 +6,7 @@ import 'mock.dart';
 
 void main() {
   testWidgets('simple build', (tester) async {
-    final fn = Func1<HookContext, Widget>();
+    final fn = Func1<BuildContext, Widget>();
     when(fn.call(any)).thenAnswer((_) {
       return Container();
     });

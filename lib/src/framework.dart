@@ -1,4 +1,4 @@
-part of 'hook.dart';
+import 'package:flutter/widgets.dart';
 
 /// [Hook] is similar to a [StatelessWidget], but is not associated
 /// to an [Element].
@@ -12,8 +12,8 @@ part of 'hook.dart';
 /// ```
 /// class Good extends HookWidget {
 ///   @override
-///   Widget build(HookContext context) {
-///     final name = context.useState("");
+///   Widget build(BuildContext context) {
+///     final name = useState("");
 ///     // ...
 ///   }
 /// }
@@ -23,9 +23,9 @@ part of 'hook.dart';
 /// ```
 /// class Bad extends HookWidget {
 ///   @override
-///   Widget build(HookContext context) {
+///   Widget build(BuildContext context) {
 ///     if (condition) {
-///       final name = context.useState("");
+///       final name = useState("");
 ///       // ...
 ///     }
 ///   }
@@ -96,9 +96,8 @@ part of 'hook.dart';
 /// ```
 /// class Usual extends HookWidget {
 ///   @override
-///   Widget build(HookContext context) {
-///     final animationController =
-///         context.useAnimationController(duration: const Duration(seconds: 1));
+///   Widget build(BuildContext context) {
+///     final animationController = useAnimationController(duration: const Duration(seconds: 1));
 ///     return Container();
 ///   }
 /// }
@@ -112,7 +111,58 @@ part of 'hook.dart';
 @immutable
 abstract class Hook<R> {
   /// Allows subclasses to have a `const` constructor
-  const Hook();
+  const Hook({this.keys});
+
+  /// Register a [Hook] and returns its value
+  ///
+  /// [use] must be called withing [HookWidget.build] and
+  /// all calls to [use] must be made unconditionally, always
+  /// on the same order.
+  ///
+  /// See [Hook] for more explanations.
+  static R use<R>(Hook<R> hook) {
+    assert(HookElement._currentContext != null,
+        '`Hook.use` can only be called from the build method of HookWidget');
+    return HookElement._currentContext._use(hook);
+  }
+
+  /// A list of objects that specify if a [HookState] should be reused or a new one should be created.
+  ///
+  /// When a new [Hook] is created, the framework checks if keys matches using [Hook.shouldPreserveState].
+  /// If they don't, the previously created [HookState] is disposed, and a new one is created
+  /// using [Hook.createState], followed by [HookState.initHook].
+  final List keys;
+
+  /// The algorithm to determine if a [HookState] should be reused or disposed.
+  ///
+  /// This compares [Hook.keys] to see if they contains any difference.
+  /// A state is preserved when:
+  ///
+  /// - `hook1.keys == hook2.keys` (typically if the list is immutable)
+  /// - If there's any difference in the content of [Hook.keys], using `operator==`.
+  static bool shouldPreserveState(Hook hook1, Hook hook2) {
+    final p1 = hook1.keys;
+    final p2 = hook2.keys;
+
+    if (p1 == p2) {
+      return true;
+    }
+    // is one list is null and the other one isn't, or if they have different size
+    if ((p1 != p2 && (p1 == null || p2 == null)) || p1.length != p2.length) {
+      return false;
+    }
+
+    var i1 = p1.iterator;
+    var i2 = p2.iterator;
+    while (true) {
+      if (!i1.moveNext() || !i2.moveNext()) {
+        return true;
+      }
+      if (i1.current != i2.current) {
+        return false;
+      }
+    }
+  }
 
   /// Creates the mutable state for this hook linked to its widget creator.
   ///
@@ -154,7 +204,7 @@ abstract class HookState<R, T extends Hook<R>> {
   ///
   /// [build] is where an [HookState] may use other hooks. This restriction is made to ensure that hooks are unconditionally always requested
   @protected
-  R build(HookContext context);
+  R build(BuildContext context);
 
   /// Equivalent of [State.didUpdateWidget] for [HookState]
   @protected
@@ -170,9 +220,12 @@ abstract class HookState<R, T extends Hook<R>> {
 }
 
 /// An [Element] that uses a [HookWidget] as its configuration.
-class HookElement extends StatefulElement implements HookContext {
+class HookElement extends StatefulElement {
+  /// Creates an element that uses the given widget as its configuration.
+  HookElement(HookWidget widget) : super(widget);
+
   Iterator<HookState> _currentHook;
-  int _debugHooksIndex;
+  int _hookIndex;
   List<HookState> _hooks;
 
   bool _debugIsBuilding;
@@ -180,8 +233,7 @@ class HookElement extends StatefulElement implements HookContext {
   bool _isFirstBuild;
   bool _debugShouldDispose;
 
-  /// Creates an element that uses the given widget as its configuration.
-  HookElement(HookWidget widget) : super(widget);
+  static HookElement _currentContext;
 
   @override
   HookWidget get widget => super.widget as HookWidget;
@@ -191,31 +243,31 @@ class HookElement extends StatefulElement implements HookContext {
     _currentHook = _hooks?.iterator;
     // first iterator always has null
     _currentHook?.moveNext();
+    _hookIndex = 0;
     assert(() {
       _debugShouldDispose = false;
-      _debugHooksIndex = 0;
       _isFirstBuild ??= true;
       _didReassemble ??= false;
       _debugIsBuilding = true;
       return true;
     }());
+    HookElement._currentContext = this;
     super.performRebuild();
+    HookElement._currentContext = null;
 
     // dispose removed items
     assert(() {
-      if (_didReassemble) {
-        while (_currentHook.current != null) {
-          _currentHook.current.dispose();
-          _currentHook.moveNext();
-          _debugHooksIndex++;
+      if (_didReassemble && _hooks != null) {
+        for (var i = _hookIndex; i < _hooks.length;) {
+          _hooks.removeAt(i).dispose();
         }
       }
       return true;
     }());
-    assert(_debugHooksIndex == (_hooks?.length ?? 0), '''
+    assert(_hookIndex == (_hooks?.length ?? 0), '''
 Build for $widget finished with less hooks used than a previous build.
-Used $_debugHooksIndex hooks while a previous build had ${_hooks.length}.
-This may happen if the call to `use` is made under some condition.
+Used $_hookIndex hooks while a previous build had ${_hooks.length}.
+This may happen if the call to `Hook.use` is made under some condition.
 
 ''');
     assert(() {
@@ -245,8 +297,7 @@ This may happen if the call to `use` is made under some condition.
     }
   }
 
-  @override
-  R use<R>(Hook<R> hook) {
+  R _use<R>(Hook<R> hook) {
     assert(_debugIsBuilding == true, '''
     Hooks should only be called within the build method of a widget.
     Calling them outside of build method leads to an unstable state and is therefore prohibited
@@ -277,7 +328,7 @@ This may happen if the call to `use` is made under some condition.
           _hooks.remove(_currentHook.current..dispose());
           // has to be done after the dispose call
           hookState = _createHookState(hook);
-          _hooks.insert(_debugHooksIndex, hookState);
+          _hooks.insert(_hookIndex, hookState);
 
           // we move the iterator back to where it was
           _currentHook = _hooks.iterator..moveNext();
@@ -299,20 +350,30 @@ This may happen if the call to `use` is made under some condition.
       }());
       assert(_currentHook.current?.hook?.runtimeType == hook.runtimeType);
 
-      hookState = _currentHook.current as HookState<R, Hook<R>>;
-      _currentHook.moveNext();
-
-      if (hookState._hook != hook) {
+      if (_currentHook.current.hook == hook) {
+        hookState = _currentHook.current as HookState<R, Hook<R>>;
+        _currentHook.moveNext();
+      } else if (Hook.shouldPreserveState(_currentHook.current.hook, hook)) {
+        hookState = _currentHook.current as HookState<R, Hook<R>>;
+        _currentHook.moveNext();
         final previousHook = hookState._hook;
         hookState
           .._hook = hook
           ..didUpdateHook(previousHook);
+      } else {
+        _hooks.removeAt(_hookIndex).dispose();
+        hookState = _createHookState(hook);
+        _hooks.insert(_hookIndex, hookState);
+
+        // we move the iterator back to where it was
+        _currentHook = _hooks.iterator..moveNext();
+        for (var i = 0; i < _hooks.length && _hooks[i] != hookState; i++) {
+          _currentHook.moveNext();
+        }
+        _currentHook.moveNext();
       }
     }
-    assert(() {
-      _debugHooksIndex++;
-      return true;
-    }());
+    _hookIndex++;
     return hookState.build(this);
   }
 
@@ -321,92 +382,6 @@ This may happen if the call to `use` is made under some condition.
       .._element = state
       .._hook = hook
       ..initHook();
-  }
-
-  @override
-  R useValueChanged<T, R>(T value, R valueChange(T oldValue, R oldResult)) {
-    return use(_ValueChangedHook(value, valueChange));
-  }
-
-  @override
-  AnimationController useAnimationController({
-    Duration duration,
-    String debugLabel,
-    double initialValue = 0,
-    double lowerBound = 0,
-    double upperBound = 1,
-    TickerProvider vsync,
-    AnimationBehavior animationBehavior = AnimationBehavior.normal,
-  }) {
-    return use(_AnimationControllerHook(
-      duration: duration,
-      debugLabel: debugLabel,
-      initialValue: initialValue,
-      lowerBound: lowerBound,
-      upperBound: upperBound,
-      vsync: vsync,
-      animationBehavior: animationBehavior,
-    ));
-  }
-
-  @override
-  void useListenable(Listenable listenable) {
-    use(_ListenableHook(listenable));
-  }
-
-  @override
-  T useAnimation<T>(Animation<T> animation) {
-    useListenable(animation);
-    return animation.value;
-  }
-
-  @override
-  T useValueListenable<T>(ValueListenable<T> valueListenable) {
-    useListenable(valueListenable);
-    return valueListenable.value;
-  }
-
-  @override
-  AsyncSnapshot<T> useStream<T>(Stream<T> stream, {T initialData}) {
-    return use(_StreamHook(stream, initialData: initialData));
-  }
-
-  @override
-  AsyncSnapshot<T> useFuture<T>(Future<T> future, {T initialData}) {
-    return use(_FutureHook(future, initialData: initialData));
-  }
-
-  @override
-  TickerProvider useSingleTickerProvider() {
-    return use(const _TickerProviderHook());
-  }
-
-  @override
-  void useEffect(VoidCallback Function() effect, [List parameters]) {
-    use(_EffectHook(effect, parameters));
-  }
-
-  @override
-  T useMemoized<T>(T Function() valueBuilder, [List parameters = const []]) {
-    return use(_MemoizedHook(
-      valueBuilder,
-      parameters: parameters,
-    ));
-  }
-
-  @override
-  ValueNotifier<T> useState<T>([T initialData]) {
-    return use(_StateHook(initialData: initialData));
-  }
-
-  @override
-  StreamController<T> useStreamController<T>(
-      {bool sync = false, VoidCallback onListen, VoidCallback onCancel}) {
-    return use(_StreamControllerHook(
-      onCancel: onCancel,
-      onListen: onListen,
-      sync: sync,
-    ));
   }
 }
 
@@ -434,7 +409,7 @@ abstract class HookWidget extends StatefulWidget {
   ///
   ///  * [StatelessWidget.build]
   @protected
-  Widget build(covariant HookContext context);
+  Widget build(BuildContext context);
 }
 
 class _HookWidgetState extends State<HookWidget> {
@@ -448,156 +423,7 @@ class _HookWidgetState extends State<HookWidget> {
   }
 
   @override
-  Widget build(covariant HookContext context) {
+  Widget build(BuildContext context) {
     return widget.build(context);
   }
-}
-
-/// A [HookWidget] that defer its [HookWidget.build] to a callback
-class HookBuilder extends HookWidget {
-  /// The callback used by [HookBuilder] to create a widget.
-  ///
-  /// If the passed [HookContext] trigger a rebuild, [builder] will be called again.
-  /// [builder] must not return `null`.
-  final Widget Function(HookContext context) builder;
-
-  /// Creates a widget that delegates its build to a callback.
-  ///
-  /// The [builder] argument must not be null.
-  const HookBuilder({
-    @required this.builder,
-    Key key,
-  })  : assert(builder != null),
-        super(key: key);
-
-  @override
-  Widget build(HookContext context) => builder(context);
-}
-
-/// A [BuildContext] that can use a [Hook].
-///
-/// See also:
-///
-///  * [BuildContext]
-abstract class HookContext extends BuildContext {
-  /// Register a [Hook] and returns its value
-  ///
-  /// [use] must be called withing [HookWidget.build] and
-  /// all calls to [use] must be made unconditionally, always
-  /// on the same order.
-  ///
-  /// See [Hook] for more explanations.
-  R use<R>(Hook<R> hook);
-
-  /// A hook for side-effects
-  ///
-  /// [useEffect] is called synchronously on every [HookWidget.build], unless
-  /// [parameters] is specified. In which case [useEffect] is called again only if
-  /// any value inside [parameters] as changed.
-  void useEffect(VoidCallback effect(), [List parameters]);
-
-  /// Create  value and subscribes to it.
-  ///
-  /// Whenever [ValueNotifier.value] updates, it will mark the caller [HookContext]
-  /// as needing build.
-  /// On first call, inits [ValueNotifier] to [initialData]. [initialData] is ignored
-  /// on subsequent calls.
-  ///
-  /// See also:
-  ///
-  ///  * [ValueNotifier]
-  ///  * [useStreamController], an alternative to [ValueNotifier] for state.
-  ValueNotifier<T> useState<T>([T initialData]);
-
-  /// Create and cache the instance of an object.
-  ///
-  /// [useMemoized] will immediatly call [valueBuilder] on first call and store its result.
-  /// Later calls to [useMemoized] will reuse the created instance.
-  ///
-  ///  * [parameters] can be use to specify a list of objects for [useMemoized] to watch.
-  /// So that whenever [operator==] fails on any parameter or if the length of [parameters] changes,
-  /// [valueBuilder] is called again.
-  T useMemoized<T>(T valueBuilder(), [List parameters = const []]);
-
-  /// Watches a value.
-  ///
-  /// Whenever [useValueChanged] is called with a diffent [value], calls [valueChange].
-  /// The value returned by [useValueChanged] is the latest returned value of [valueChange] or `null`.
-  R useValueChanged<T, R>(T value, R valueChange(T oldValue, R oldResult));
-
-  /// Creates a single usage [TickerProvider].
-  ///
-  /// See also:
-  ///  * [SingleTickerProviderStateMixin]
-  TickerProvider useSingleTickerProvider();
-
-  /// Creates an [AnimationController] automatically disposed.
-  ///
-  /// If no [vsync] is provided, the [TickerProvider] is implicitly obtained using [useSingleTickerProvider].
-  /// If a [vsync] is specified, changing the instance of [vsync] will result in a call to [AnimationController.resync].
-  /// It is not possible to switch between implicit and explicit [vsync].
-  ///
-  /// Changing the [duration] parameter automatically updates [AnimationController.duration].
-  ///
-  /// [initialValue], [lowerBound], [upperBound] and [debugLabel] are ignored after the first call.
-  ///
-  /// See also:
-  ///   * [AnimationController]
-  ///   * [HookContext.useAnimation]
-  AnimationController useAnimationController({
-    Duration duration,
-    String debugLabel,
-    double initialValue = 0,
-    double lowerBound = 0,
-    double upperBound = 1,
-    TickerProvider vsync,
-    AnimationBehavior animationBehavior = AnimationBehavior.normal,
-  });
-
-  /// Creates a [StreamController] automatically disposed.
-  ///
-  /// See also:
-  ///   * [StreamController]
-  ///   * [HookContext.useStream]
-  StreamController<T> useStreamController<T>({
-    bool sync = false,
-    VoidCallback onListen,
-    VoidCallback onCancel,
-  });
-
-  /// Subscribes to a [Listenable] and mark the widget as needing build
-  /// whenever the listener is called.
-  ///
-  /// See also:
-  ///   * [Listenable]
-  ///   * [HookContext.useValueListenable], [HookContext.useAnimation], [HookContext.useStream]
-  void useListenable(Listenable listenable);
-
-  /// Subscribes to a [ValueListenable] and return its value.
-  ///
-  /// See also:
-  ///   * [ValueListenable]
-  ///   * [HookContext.useListenable], [HookContext.useAnimation], [HookContext.useStream]
-  T useValueListenable<T>(ValueListenable<T> valueListenable);
-
-  /// Subscribes to an [Animation] and return its value.
-  ///
-  /// See also:
-  ///   * [Animation]
-  ///   * [HookContext.useValueListenable], [HookContext.useListenable], [HookContext.useStream]
-  T useAnimation<T>(Animation<T> animation);
-
-  /// Subscribes to a [Stream] and return its current state in an [AsyncSnapshot].
-  ///
-  /// See also:
-  ///   * [Stream]
-  ///   * [HookContext.useValueListenable], [HookContext.useListenable], [HookContext.useAnimation]
-  AsyncSnapshot<T> useStream<T>(Stream<T> stream, {T initialData});
-
-  /// Subscribes to a [Future] and return its current state in an [AsyncSnapshot].
-  ///
-  /// See also:
-  ///   * [Future]
-  ///   * [HookContext.useValueListenable], [HookContext.useListenable], [HookContext.useAnimation]
-  AsyncSnapshot<T> useFuture<T>(Future<T> future, {T initialData});
 }
