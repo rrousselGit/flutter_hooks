@@ -323,6 +323,48 @@ class Counter extends HookWidget {
 }
 ```
 
+- useReducer
+
+An alternative to useState for more complex states.
+
+`useReducer` manages an read only state that can be updated by dispatching actions which are interpreted by a `Reducer`.
+
+The following makes a counter app with both a "+1" and "-1" button:
+
+```dart
+class Counter extends HookWidget {
+  @override
+  Widget build(BuildContext context) {
+    final counter = useReducer(_counterReducer, initialState: 0);
+
+    return Column(
+      children: <Widget>[
+        Text(counter.state.toString()),
+        IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: () => counter.dispatch('increment'),
+        ),
+        IconButton(
+          icon: const Icon(Icons.remove),
+          onPressed: () => counter.dispatch('decrement'),
+        ),
+      ],
+    );
+  }
+
+  int _counterReducer(int state, String action) {
+    switch (action) {
+      case 'increment':
+        return state + 1;
+      case 'decrement':
+        return state - 1;
+      default:
+        return state;
+    }
+  }
+}
+```
+
 - useMemoized
 
 Takes a callback, calls it synchronously and returns its result. The result is then stored to that subsequent calls will return the same result without calling the callback.
