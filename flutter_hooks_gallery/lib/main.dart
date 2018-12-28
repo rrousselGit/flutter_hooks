@@ -3,64 +3,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_hooks_gallery/use_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() => runApp(_GalleryApp());
-
-class _GalleryItem {
-  final String title;
-  final WidgetBuilder builder;
-
-  const _GalleryItem(this.title, this.builder);
-}
-
-class _GalleryApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Hooks Gallery',
-      home: _GalleryList(
-        items: [
-          _GalleryItem(
-            'useState',
-            (context) => UseStateExample(),
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class _GalleryList extends StatelessWidget {
-  final List<_GalleryItem> items;
-
-  const _GalleryList({Key key, @required this.items}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Flutter Hooks Gallery'),
-      ),
-      body: ListView(
-        children: items.map((item) {
-          return ListTile(
-            title: Text(item.title),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: item.builder,
-                ),
-              );
-            },
-          );
-        }).toList(),
-      ),
-    );
-  }
-}
+void main() => runApp(_MyApp());
 
 class _MyApp extends StatelessWidget {
   @override
@@ -77,20 +22,26 @@ class _Counter extends HookWidget {
 
   @override
   Widget build(HookContext context) {
-    final countController = _useLocalStorageInt(context, 'counter');
-    final count = context.useStream(countController.stream);
+    StreamController<int> countController =
+        _useLocalStorageInt(context, 'counter');
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Counter app'),
       ),
       body: Center(
-        child: count.hasData
-            ? GestureDetector(
-                onTap: () => countController.add(count.data + 1),
-                child: Text('You tapped me ${count.data} times'),
-              )
-            : const CircularProgressIndicator(),
+        child: HookBuilder(
+          builder: (context) {
+            final count = context.useStream(countController.stream);
+
+            return count.hasData
+                ? GestureDetector(
+                    onTap: () => countController.add(count.data + 1),
+                    child: Text('You tapped me ${count.data} times'),
+                  )
+                : const CircularProgressIndicator();
+          },
+        ),
       ),
     );
   }

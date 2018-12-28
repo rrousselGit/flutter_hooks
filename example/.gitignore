@@ -9,8 +9,6 @@
 .buildlog/
 .history
 .svn/
-/test
-.metadata
 
 # IntelliJ related
 *.iml
