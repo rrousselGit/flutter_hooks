@@ -7,11 +7,27 @@ import 'mock.dart';
 
 void main() {
   group('useStreamController', () {
+    testWidgets('keys', (tester) async {
+      StreamController<int> controller;
+
+      await tester.pumpWidget(HookBuilder(builder: (context) {
+        controller = useStreamController();
+        return Container();
+      }));
+
+      final previous = controller;
+      await tester.pumpWidget(HookBuilder(builder: (context) {
+        controller = useStreamController(keys: <dynamic>[]);
+        return Container();
+      }));
+
+      expect(previous, isNot(controller));
+    });
     testWidgets('basics', (tester) async {
       StreamController<int> controller;
 
       await tester.pumpWidget(HookBuilder(builder: (context) {
-        controller = context.useStreamController();
+        controller = useStreamController();
         return Container();
       }));
 
@@ -25,7 +41,7 @@ void main() {
       final onListen = () {};
       final onCancel = () {};
       await tester.pumpWidget(HookBuilder(builder: (context) {
-        controller = context.useStreamController(
+        controller = useStreamController(
           sync: true,
           onCancel: onCancel,
           onListen: onListen,
@@ -48,7 +64,7 @@ void main() {
       StreamController<int> controller;
 
       await tester.pumpWidget(HookBuilder(builder: (context) {
-        controller = context.useStreamController(sync: true);
+        controller = useStreamController(sync: true);
         return Container();
       }));
 
@@ -62,7 +78,7 @@ void main() {
       final onListen = () {};
       final onCancel = () {};
       await tester.pumpWidget(HookBuilder(builder: (context) {
-        controller = context.useStreamController(
+        controller = useStreamController(
           onCancel: onCancel,
           onListen: onListen,
         );

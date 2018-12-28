@@ -4,7 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'mock.dart';
 
 void main() {
-  final builder = Func1<HookContext, Widget>();
+  final builder = Func1<BuildContext, Widget>();
   final parameterBuilder = Func0<List>();
   final valueBuilder = Func0<int>();
 
@@ -16,13 +16,13 @@ void main() {
 
   testWidgets('invalid parameters', (tester) async {
     await tester.pumpWidget(HookBuilder(builder: (context) {
-      context.useMemoized<dynamic>(null);
+      useMemoized<dynamic>(null);
       return Container();
     }));
     expect(tester.takeException(), isAssertionError);
 
     await tester.pumpWidget(HookBuilder(builder: (context) {
-      context.useMemoized<dynamic>(() {}, null);
+      useMemoized<dynamic>(() {}, null);
       return Container();
     }));
     expect(tester.takeException(), isAssertionError);
@@ -35,8 +35,7 @@ void main() {
     when(valueBuilder.call()).thenReturn(42);
 
     when(builder.call(any)).thenAnswer((invocation) {
-      final HookContext context = invocation.positionalArguments.single;
-      result = context.useMemoized<int>(valueBuilder.call);
+      result = useMemoized<int>(valueBuilder.call);
       return Container();
     });
 
@@ -62,12 +61,10 @@ void main() {
     int result;
 
     when(valueBuilder.call()).thenReturn(0);
-    when(parameterBuilder.call()).thenReturn([]);
+    when(parameterBuilder.call()).thenReturn(<dynamic>[]);
 
     when(builder.call(any)).thenAnswer((invocation) {
-      final HookContext context = invocation.positionalArguments.single;
-      result =
-          context.useMemoized<int>(valueBuilder.call, parameterBuilder.call());
+      result = useMemoized<int>(valueBuilder.call, parameterBuilder.call());
       return Container();
     });
 
@@ -86,7 +83,7 @@ void main() {
 
     /* Add parameter */
 
-    when(parameterBuilder.call()).thenReturn(['foo']);
+    when(parameterBuilder.call()).thenReturn(<dynamic>['foo']);
     when(valueBuilder.call()).thenReturn(1);
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
@@ -104,7 +101,7 @@ void main() {
 
     /* Remove parameter */
 
-    when(parameterBuilder.call()).thenReturn([]);
+    when(parameterBuilder.call()).thenReturn(<dynamic>[]);
     when(valueBuilder.call()).thenReturn(2);
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
@@ -131,14 +128,12 @@ void main() {
     int result;
 
     when(builder.call(any)).thenAnswer((invocation) {
-      final HookContext context = invocation.positionalArguments.single;
-      result =
-          context.useMemoized<int>(valueBuilder.call, parameterBuilder.call());
+      result = useMemoized<int>(valueBuilder.call, parameterBuilder.call());
       return Container();
     });
 
     when(valueBuilder.call()).thenReturn(0);
-    when(parameterBuilder.call()).thenReturn(['foo', 42, 24.0]);
+    when(parameterBuilder.call()).thenReturn(<dynamic>['foo', 42, 24.0]);
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
@@ -148,7 +143,7 @@ void main() {
 
     /* Array reference changed but content didn't */
 
-    when(parameterBuilder.call()).thenReturn(['foo', 42, 24.0]);
+    when(parameterBuilder.call()).thenReturn(<dynamic>['foo', 42, 24.0]);
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
     verifyNoMoreInteractions(valueBuilder);
@@ -157,7 +152,7 @@ void main() {
     /* reoder */
 
     when(valueBuilder.call()).thenReturn(1);
-    when(parameterBuilder.call()).thenReturn([42, 'foo', 24.0]);
+    when(parameterBuilder.call()).thenReturn(<dynamic>[42, 'foo', 24.0]);
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
@@ -166,7 +161,7 @@ void main() {
     expect(result, 1);
 
     when(valueBuilder.call()).thenReturn(2);
-    when(parameterBuilder.call()).thenReturn([42, 24.0, 'foo']);
+    when(parameterBuilder.call()).thenReturn(<dynamic>[42, 24.0, 'foo']);
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
@@ -177,7 +172,7 @@ void main() {
     /* value change */
 
     when(valueBuilder.call()).thenReturn(3);
-    when(parameterBuilder.call()).thenReturn([43, 24.0, 'foo']);
+    when(parameterBuilder.call()).thenReturn(<dynamic>[43, 24.0, 'foo']);
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
@@ -188,7 +183,7 @@ void main() {
     /* Comparison is done using operator== */
 
     // type change
-    when(parameterBuilder.call()).thenReturn([43.0, 24.0, 'foo']);
+    when(parameterBuilder.call()).thenReturn(<dynamic>[43.0, 24.0, 'foo']);
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
@@ -206,12 +201,10 @@ void main() {
       'memoized parameter reference do not change don\'t call valueBuilder',
       (tester) async {
     int result;
-    final parameters = [];
+    final parameters = <dynamic>[];
 
     when(builder.call(any)).thenAnswer((invocation) {
-      final HookContext context = invocation.positionalArguments.single;
-      result =
-          context.useMemoized<int>(valueBuilder.call, parameterBuilder.call());
+      result = useMemoized<int>(valueBuilder.call, parameterBuilder.call());
       return Container();
     });
 
