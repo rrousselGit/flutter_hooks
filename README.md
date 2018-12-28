@@ -293,9 +293,9 @@ The following call to `useEffect` subscribes to a `Stream` and cancel the subscr
 Stream stream;
 useEffect(() {
     final subscribtion = stream.listen(print);
-    // This will cancel the subscribtion when the widget is disposed
+    // This will cancel the subscription when the widget is disposed
     // or if the callback is called again.
-    return subscribtion.cancel;
+    return subscription.cancel;
   },
   // when the stream change, useEffect will call the callback again.
   [stream],
