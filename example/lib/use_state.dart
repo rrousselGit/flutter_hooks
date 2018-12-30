@@ -3,10 +3,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 /// Demonstrates the `useState` hook.
 class UseStateExample extends HookWidget {
+  const UseStateExample({Key key}) : super(key: key);
+
   @override
-  Widget build(HookContext context) {
-    // First, create a stateful
-    final counter = context.useState(0);
+  Widget build(BuildContext context) {
+    final counter = useState(0);
 
     return Scaffold(
       appBar: AppBar(
@@ -17,7 +18,7 @@ class UseStateExample extends HookWidget {
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () => counter.value--,
+        onPressed: () => counter.value++,
       ),
     );
   }
