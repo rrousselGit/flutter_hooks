@@ -1,9 +1,4 @@
-import 'dart:async';
-
-import 'package:flutter/foundation.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_hooks/src/framework.dart';
+part of 'framework.dart';
 
 /// A [HookWidget] that defer its [HookWidget.build] to a callback
 class HookBuilder extends HookWidget {
@@ -124,6 +119,13 @@ T useMemoized<T>(T Function() valueBuilder, [List keys = const <dynamic>[]]) {
     valueBuilder,
     keys: keys,
   ));
+}
+
+/// Obtain the [BuildContext] of the currently builder [HookWidget].
+BuildContext useContext() {
+  assert(HookElement._currentContext != null,
+      '`useContext` can only be called from the build method of HookWidget');
+  return HookElement._currentContext;
 }
 
 class _MemoizedHook<T> extends Hook<T> {
@@ -776,6 +778,50 @@ class _StreamControllerHookState<T>
   @override
   void dispose() {
     _controller.close();
+    super.dispose();
+  }
+}
+
+// TODO: update documentation
+/// Creates a [StreamController] automatically disposed.
+///
+/// See also:
+///   * [StreamController]
+///   * [useStream]
+ValueNotifier<T> useValueNotifier<T>([T intialData, List keys]) {
+  return Hook.use(_ValueNotifierHook(
+    initialData: intialData,
+    keys: keys,
+  ));
+}
+
+class _ValueNotifierHook<T> extends Hook<ValueNotifier<T>> {
+  final T initialData;
+
+  const _ValueNotifierHook({List keys, this.initialData}) : super(keys: keys);
+
+  @override
+  _UseValueNotiferHookState<T> createState() => _UseValueNotiferHookState<T>();
+}
+
+class _UseValueNotiferHookState<T>
+    extends HookState<ValueNotifier<T>, _ValueNotifierHook<T>> {
+  ValueNotifier<T> notifier;
+
+  @override
+  void initHook() {
+    super.initHook();
+    notifier = ValueNotifier(hook.initialData);
+  }
+
+  @override
+  ValueNotifier<T> build(BuildContext context) {
+    return notifier;
+  }
+
+  @override
+  void dispose() {
+    notifier.dispose();
     super.dispose();
   }
 }
