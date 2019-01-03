@@ -106,7 +106,7 @@ Widget build(BuildContext context) {
 
 ## Principle
 
-Similarily to `State`, hooks are stored on the `Element` of a `Widget`. But instead of having one `State`, the `Element` stores a `List<Hook>`. Then to use a `Hook`, one must call `Hook.use`.
+Similarly to `State`, hooks are stored on the `Element` of a `Widget`. But instead of having one `State`, the `Element` stores a `List<Hook>`. Then to use a `Hook`, one must call `Hook.use`.
 
 The hook returned by `use` is based on the number of times it has been called. The first call returns the first hook; the second call returns the second hook, the third returns the third hook, ...
 
@@ -292,7 +292,7 @@ The following call to `useEffect` subscribes to a `Stream` and cancel the subscr
 ```dart
 Stream stream;
 useEffect(() {
-    final subscribtion = stream.listen(print);
+    final subscription = stream.listen(print);
     // This will cancel the subscription when the widget is disposed
     // or if the callback is called again.
     return subscription.cancel;
