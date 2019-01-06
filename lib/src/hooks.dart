@@ -783,7 +783,7 @@ class _StreamControllerHookState<T>
 }
 
 /// Creates a [ValueNotifier] automatically disposed.
-/// 
+///
 /// As opposed to `useState`, this hook do not subscribes to [ValueNotifier].
 /// This allows a more granular rebuild.
 ///
