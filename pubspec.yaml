@@ -3,7 +3,7 @@ description: A flutter implementation of React hooks. It adds a new kind of widg
 homepage: https://github.com/rrousselGit/flutter_hooks
 author: Remi Rousselet <darky12s@gmail.com>
 
-version: 0.2.0
+version: 0.2.1
 
 environment:
   sdk: ">=2.0.0-dev.68.0 <3.0.0"
