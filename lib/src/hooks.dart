@@ -782,12 +782,14 @@ class _StreamControllerHookState<T>
   }
 }
 
-// TODO: update documentation
-/// Creates a [StreamController] automatically disposed.
+/// Creates a [ValueNotifier] automatically disposed.
+///
+/// As opposed to `useState`, this hook do not subscribes to [ValueNotifier].
+/// This allows a more granular rebuild.
 ///
 /// See also:
-///   * [StreamController]
-///   * [useStream]
+///   * [ValueNotifier]
+///   * [useValueListenable]
 ValueNotifier<T> useValueNotifier<T>([T intialData, List keys]) {
   return Hook.use(_ValueNotifierHook(
     initialData: intialData,
