@@ -365,6 +365,17 @@ class Counter extends HookWidget {
 }
 ```
 
+- useContext
+
+Returns the `BuildContext` of the currently building `HookWidget`. This is useful when writing custom hooks that want to manipulate the `BuildContext`. 
+
+```dart
+MyInheritedWidget useMyInheritedWidget() {
+  BuildContext context = useContext();
+  return MyInheritedWidget.of(context);
+}
+```
+
 - useMemoized
 
 Takes a callback, calls it synchronously and returns its result. The result is then stored to that subsequent calls will return the same result without calling the callback.
@@ -402,7 +413,7 @@ final colorTween = useValueChanged(
   AlwaysStoppedAnimation(color);
 ```
 
-- useAnimationController, useStreamController, useSingleTickerProvider
+- useAnimationController, useStreamController, useSingleTickerProvider, useValueNotifier
 
 A set of hooks that handles the whole life-cycle of an object. These hooks will take care of both creating, disposing and updating the object.
 
