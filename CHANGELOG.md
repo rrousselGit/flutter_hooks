@@ -1,4 +1,4 @@
-## 0.3.0:
+## 0.2.1:
 
 - NEW: `useValueNotifier`, which creates a `ValueNotifier` similarly to `useState`. But without listening it.
 This can be useful to have a more granular rebuild when combined to `useValueListenable`.
