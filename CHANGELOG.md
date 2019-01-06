@@ -1,3 +1,9 @@
+## 0.3.0:
+
+- NEW: `useValueNotifier`, which creates a `ValueNotifier` similarly to `useState`. But without listening it.
+This can be useful to have a more granular rebuild when combined to `useValueListenable`.
+- NEW: `useContext`, which exposes the `BuildContext` of the currently building `HookWidget`. 
+
 ## 0.2.0:
 
 - Made all existing hooks as static functions, and removed `HookContext`. The migration is as followed:
