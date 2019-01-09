@@ -106,19 +106,122 @@ class _ReducerdHookState<State, Action>
   }
 }
 
-/// Create and cache the instance of an object.
+/// Memoize the result of a callback based on keys.
 ///
-/// [useMemoized] will immediatly call [valueBuilder] on first call and store its result.
-/// Later calls to [useMemoized] will reuse the created instance.
+/// [useMemoized] takes a callback that will be called only once.
+/// It will stores the callback result, and the next time [HookWidget] builds, [useMemoized]
+/// will return the stored result immediatly without calling the callback.
 ///
-///  * [keys] can be use to specify a list of objects for [useMemoized] to watch.
-/// So that whenever [Object.operator==] fails on any parameter or if the length of [keys] changes,
-/// [valueBuilder] is called again.
-T useMemoized<T>(T Function() valueBuilder, [List keys = const <dynamic>[]]) {
-  return Hook.use(_MemoizedHook(
-    valueBuilder,
-    keys: keys,
-  ));
+/// It is possible to ask for the callback to be called again by specifying
+/// a list of keys as last argument. See [Hook.keys].
+///
+/// By convention, any variable used within [useMemoized] should be passed as keys.
+///
+/// To make following this convention easier, [useMemoized] has multiple prototypes:
+///
+/// - The basic prototype, which takes a callback without any argument
+/// ```dart
+/// final foo = useMemoized(() => 42, ['key']);
+/// ```
+///
+/// - Multiple named versions that takes a callback with parameters.
+/// Where the parameters passed to the callback are passed directly to [useMemoized].
+/// ```dart
+/// num add(num a, num b) => a + b;
+/// final foo = useMemoized.apply2(add, 4, 2);
+/// ```
+/// which is equivalent to:
+/// ```dart
+/// num add(num a, num b) => a + b;
+/// final foo = useMemoized(() => add(4, 2), [4, 2]);
+/// ```
+///
+/// Prefer the named version of [useMemoized] whenever possible. This ensures that all the necessary
+/// keys are passed.
+const useMemoized = _UseMemoized();
+
+class _UseMemoized {
+  const _UseMemoized();
+
+  T call<T>(T valueBuilder(), [List keys]) {
+    return Hook.use(_MemoizedHook(
+      valueBuilder,
+      keys: keys,
+    ));
+  }
+
+  R apply1<T1, R>(
+    R callback(T1 value),
+    T1 value,
+  ) {
+    return call<R>(() => callback(value), <dynamic>[value]);
+  }
+
+  R apply2<T1, T2, R>(
+    R callback(T1 t1, T2 t2),
+    T1 t1,
+    T2 t2,
+  ) {
+    return call<R>(() => callback(t1, t2), <dynamic>[t1, t2]);
+  }
+
+  R apply3<T1, T2, T3, R>(
+    R callback(T1 t1, T2 t2, T3 t3),
+    T1 t1,
+    T2 t2,
+    T3 t3,
+  ) {
+    return call<R>(() => callback(t1, t2, t3), <dynamic>[t1, t2, t3]);
+  }
+
+  R apply4<T1, T2, T3, T4, R>(
+    R callback(T1 t1, T2 t2, T3 t3, T4 t4),
+    T1 t1,
+    T2 t2,
+    T3 t3,
+    T4 t4,
+  ) {
+    return call<R>(() => callback(t1, t2, t3, t4), <dynamic>[t1, t2, t3, t4]);
+  }
+
+  R apply5<T1, T2, T3, T4, T5, R>(
+    R callback(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5),
+    T1 t1,
+    T2 t2,
+    T3 t3,
+    T4 t4,
+    T5 t5,
+  ) {
+    return call<R>(
+        () => callback(t1, t2, t3, t4, t5), <dynamic>[t1, t2, t3, t4, t5]);
+  }
+
+  R apply6<T1, T2, T3, T4, T5, T6, R>(
+    R callback(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6),
+    T1 t1,
+    T2 t2,
+    T3 t3,
+    T4 t4,
+    T5 t5,
+    T6 t6,
+  ) {
+    return call<R>(() => callback(t1, t2, t3, t4, t5, t6),
+        <dynamic>[t1, t2, t3, t4, t5, t6]);
+  }
+
+  R apply7<T1, T2, T3, T4, T5, T6, T7, R>(
+    R callback(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7),
+    T1 t1,
+    T2 t2,
+    T3 t3,
+    T4 t4,
+    T5 t5,
+    T6 t6,
+    T7 t7,
+  ) {
+    return call<R>(() => callback(t1, t2, t3, t4, t5, t6, t7),
+        <dynamic>[t1, t2, t3, t4, t5, t6, t7]);
+  }
 }
 
 /// Obtain the [BuildContext] of the currently builder [HookWidget].
