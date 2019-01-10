@@ -206,6 +206,10 @@ abstract class HookState<R, T extends Hook<R>> {
   @mustCallSuper
   void dispose() {}
 
+  /// Called synchronously after the [HookWidget.build] method finished
+  @protected
+  void didBuild() {}
+
   /// Called everytimes the [HookState] is requested
   ///
   /// [build] is where an [HookState] may use other hooks. This restriction is made to ensure that hooks are unconditionally always requested
@@ -282,6 +286,21 @@ This may happen if the call to `Hook.use` is made under some condition.
       _debugIsBuilding = false;
       return true;
     }());
+
+    if (_hooks != null) {
+      for (final hook in _hooks) {
+        try {
+          hook.didBuild();
+        } catch (exception, stack) {
+          FlutterError.reportError(FlutterErrorDetails(
+            exception: exception,
+            stack: stack,
+            library: 'hooks library',
+            context: 'while calling `didBuild` on ${hook.runtimeType}',
+          ));
+        }
+      }
+    }
   }
 
   @override
