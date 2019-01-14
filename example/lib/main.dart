@@ -1,79 +1,60 @@
 // ignore_for_file: omit_local_variable_types
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_hooks_gallery/use_effect.dart';
+import 'package:flutter_hooks_gallery/use_state.dart';
+import 'package:flutter_hooks_gallery/use_stream.dart';
 
-void main() => runApp(_MyApp());
+void main() => runApp(HooksGalleryApp());
 
-class _MyApp extends StatelessWidget {
+/// An App that demonstrates how to use hooks. It includes examples that cover
+/// the hooks provided by this library as well as examples that demonstrate
+/// how to write custom hooks.
+class HooksGalleryApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Flutter Demo',
-      home: _Counter(),
-    );
-  }
-}
-
-class _Counter extends HookWidget {
-  const _Counter({Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    StreamController<int> countController =
-        _useLocalStorageInt(context, 'counter');
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Counter app'),
-      ),
-      body: Center(
-        child: HookBuilder(
-          builder: (context) {
-            AsyncSnapshot<int> count = useStream(countController.stream);
-
-            return !count.hasData
-                // Currently loading value from local storage, or there's an error
-                ? const CircularProgressIndicator()
-                : GestureDetector(
-                    onTap: () => countController.add(count.data + 1),
-                    child: Text('You tapped me ${count.data} times.'),
-                  );
-          },
+    return MaterialApp(
+      title: 'Flutter Hooks Gallery',
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Flutter Hooks Gallery'),
         ),
+        body: ListView(children: [
+          _GalleryItem(
+            title: 'useState',
+            builder: (context) => UseStateExample(),
+          ),
+          _GalleryItem(
+            title: 'useMemoize + useStream',
+            builder: (context) => UseStreamExample(),
+          ),
+          _GalleryItem(
+            title: 'Custom Hook Function',
+            builder: (context) => CustomHookExample(),
+          ),
+        ]),
       ),
     );
   }
 }
 
-StreamController<int> _useLocalStorageInt(
-  BuildContext context,
-  String key, {
-  int defaultValue = 0,
-}) {
-  final controller = useStreamController<int>(keys: <dynamic>[key]);
+class _GalleryItem extends StatelessWidget {
+  final String title;
+  final WidgetBuilder builder;
 
-  // We define a callback that will be called on first build
-  // and whenever the controller/key change
-  useEffect(() {
-    // We listen to the data and push new values to local storage
-    final sub = controller.stream.listen((data) async {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setInt(key, data);
-    });
-    // Unsubscribe when the widget is disposed
-    // or on controller/key change
-    return sub.cancel;
-  }, <dynamic>[controller, key]);
-  // We load the initial value
-  useEffect(() {
-    SharedPreferences.getInstance().then((prefs) async {
-      int valueFromStorage = prefs.getInt(key);
-      controller.add(valueFromStorage ?? defaultValue);
-    }).catchError(controller.addError);
-    // ensure the callback is called only on first build
-  }, <dynamic>[controller, key]);
+  const _GalleryItem({this.title, this.builder});
 
-  return controller;
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(title),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute<void>(
+            builder: builder,
+          ),
+        );
+      },
+    );
+  }
 }
