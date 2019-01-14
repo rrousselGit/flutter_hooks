@@ -4,72 +4,57 @@ import 'package:flutter_hooks_gallery/use_effect.dart';
 import 'package:flutter_hooks_gallery/use_state.dart';
 import 'package:flutter_hooks_gallery/use_stream.dart';
 
-void main() => runApp(_GalleryApp());
+void main() => runApp(HooksGalleryApp());
 
-class _GalleryItem {
-  final String title;
-  final WidgetBuilder builder;
-
-  const _GalleryItem(this.title, this.builder);
-}
-
-class _GalleryApp extends StatelessWidget {
+/// An App that demonstrates how to use hooks. It includes examples that cover
+/// the hooks provided by this library as well as examples that demonstrate
+/// how to write custom hooks.
+class HooksGalleryApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Hooks Gallery',
-      home: _GalleryList(
-        items: [
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Flutter Hooks Gallery'),
+        ),
+        body: ListView(children: [
           _GalleryItem(
-            'useState',
-            (context) => const UseStateExample(),
+            title: 'useState',
+            builder: (context) => UseStateExample(),
           ),
           _GalleryItem(
-            'useStream',
-            (context) {
-              return UseStreamExample(
-                stream: Stream.periodic(Duration(seconds: 1), (i) => i + 1),
-              );
-            },
+            title: 'useMemoize + useStream',
+            builder: (context) => UseStreamExample(),
           ),
           _GalleryItem(
-            'useEffect',
-            (context) {
-              return const UseEffectExample();
-            },
+            title: 'Custom Hook Function',
+            builder: (context) => CustomHookExample(),
           ),
-        ],
+        ]),
       ),
     );
   }
 }
 
-class _GalleryList extends StatelessWidget {
-  final List<_GalleryItem> items;
+class _GalleryItem extends StatelessWidget {
+  final String title;
+  final WidgetBuilder builder;
 
-  const _GalleryList({Key key, @required this.items}) : super(key: key);
+  const _GalleryItem({this.title, this.builder});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Flutter Hooks Gallery'),
-      ),
-      body: ListView(
-        children: items.map((item) {
-          return ListTile(
-            title: Text(item.title),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: item.builder,
-                ),
-              );
-            },
-          );
-        }).toList(),
-      ),
+    return ListTile(
+      title: Text(title),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute<void>(
+            builder: builder,
+          ),
+        );
+      },
     );
   }
 }
