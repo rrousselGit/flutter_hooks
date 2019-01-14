@@ -1,4 +1,4 @@
-name: example
+name: flutter_hooks_gallery
 description: A new Flutter project.
 
 version: 1.0.0+1
@@ -9,16 +9,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_hooks: 0.0.1
+  flutter_hooks:
+    path: ../
   shared_preferences: ^0.4.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-dependency_overrides:
-  flutter_hooks:
-    path: ../
 
 flutter:
   uses-material-design: true
