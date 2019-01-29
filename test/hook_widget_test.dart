@@ -221,7 +221,7 @@ void main() {
 
   testWidgets('calls didBuild before building children', (tester) async {
     final buildChild = Func1<BuildContext, Widget>();
-    when(buildChild(any)).thenReturn(Container());
+    when(buildChild.call(any)).thenReturn(Container());
 
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
@@ -232,7 +232,7 @@ void main() {
 
     verifyInOrder([
       didBuild(),
-      buildChild(any),
+      buildChild.call(any),
     ]);
   });
 

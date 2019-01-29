@@ -37,7 +37,8 @@ void main() {
     TickerProvider provider;
     provider = _TickerProvider();
     when(provider.createTicker(any)).thenAnswer((_) {
-      return tester.createTicker(_.positionalArguments[0] as void Function(Duration));
+      return tester
+          .createTicker(_.positionalArguments[0] as void Function(Duration));
     });
 
     await tester.pumpWidget(
@@ -70,7 +71,8 @@ void main() {
     var previousController = controller;
     provider = _TickerProvider();
     when(provider.createTicker(any)).thenAnswer((_) {
-      return tester.createTicker(_.positionalArguments[0] as void Function(Duration));
+      return tester
+          .createTicker(_.positionalArguments[0] as void Function(Duration));
     });
 
     await tester.pumpWidget(
