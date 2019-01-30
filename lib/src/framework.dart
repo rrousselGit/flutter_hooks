@@ -206,6 +206,10 @@ abstract class HookState<R, T extends Hook<R>> {
   @mustCallSuper
   void dispose() {}
 
+  /// Called synchronously after the [HookWidget.build] method finished
+  @protected
+  void didBuild() {}
+
   /// Called everytimes the [HookState] is requested
   ///
   /// [build] is where an [HookState] may use other hooks. This restriction is made to ensure that hooks are unconditionally always requested
@@ -245,43 +249,62 @@ class HookElement extends StatefulElement {
   HookWidget get widget => super.widget as HookWidget;
 
   @override
-  void performRebuild() {
-    _currentHook = _hooks?.iterator;
-    // first iterator always has null
-    _currentHook?.moveNext();
-    _hookIndex = 0;
-    assert(() {
-      _debugShouldDispose = false;
-      _isFirstBuild ??= true;
-      _didReassemble ??= false;
-      _debugIsBuilding = true;
-      return true;
-    }());
-    HookElement._currentContext = this;
-    super.performRebuild();
-    HookElement._currentContext = null;
+  Widget build() {
+    try {
+      _currentHook = _hooks?.iterator;
+      // first iterator always has null
+      _currentHook?.moveNext();
+      _hookIndex = 0;
+      assert(() {
+        _debugShouldDispose = false;
+        _isFirstBuild ??= true;
+        _didReassemble ??= false;
+        _debugIsBuilding = true;
+        return true;
+      }());
+      HookElement._currentContext = this;
+      final result = super.build();
+      HookElement._currentContext = null;
 
-    // dispose removed items
-    assert(() {
-      if (_didReassemble && _hooks != null) {
-        for (var i = _hookIndex; i < _hooks.length;) {
-          _hooks.removeAt(i).dispose();
+      // dispose removed items
+      assert(() {
+        if (_didReassemble && _hooks != null) {
+          for (var i = _hookIndex; i < _hooks.length;) {
+            _hooks.removeAt(i).dispose();
+          }
         }
-      }
-      return true;
-    }());
-    assert(_hookIndex == (_hooks?.length ?? 0), '''
+        return true;
+      }());
+      assert(_hookIndex == (_hooks?.length ?? 0), '''
 Build for $widget finished with less hooks used than a previous build.
 Used $_hookIndex hooks while a previous build had ${_hooks.length}.
 This may happen if the call to `Hook.use` is made under some condition.
 
 ''');
-    assert(() {
-      _isFirstBuild = false;
-      _didReassemble = false;
-      _debugIsBuilding = false;
-      return true;
-    }());
+      assert(() {
+        _isFirstBuild = false;
+        _didReassemble = false;
+        _debugIsBuilding = false;
+        return true;
+      }());
+
+      return result;
+    } finally {
+      if (_hooks != null) {
+        for (final hook in _hooks) {
+          try {
+            hook.didBuild();
+          } catch (exception, stack) {
+            FlutterError.reportError(FlutterErrorDetails(
+              exception: exception,
+              stack: stack,
+              library: 'hooks library',
+              context: 'while calling `didBuild` on ${hook.runtimeType}',
+            ));
+          }
+        }
+      }
+    }
   }
 
   @override

@@ -1,3 +1,8 @@
+## 0.3.0:
+
+- NEW: new life-cycle availble on `HookState`: `didBuild`.
+This life-cycle is called synchronously right after `build` method of `HookWidget` finished.
+
 ## 0.2.1:
 
 - NEW: `useValueNotifier`, which creates a `ValueNotifier` similarly to `useState`. But without listening it.

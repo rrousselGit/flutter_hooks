@@ -10,6 +10,7 @@ void main() {
   final dispose = Func0<void>();
   final initHook = Func0<void>();
   final didUpdateHook = Func1<HookTest, void>();
+  final didBuild = Func0<void>();
   final builder = Func1<BuildContext, Widget>();
 
   final createHook = () => HookTest<int>(
@@ -17,11 +18,21 @@ void main() {
         dispose: dispose.call,
         didUpdateHook: didUpdateHook.call,
         initHook: initHook.call,
+        didBuild: didBuild,
       );
+
+  void verifyNoMoreHookInteration() {
+    verifyNoMoreInteractions(build);
+    verifyNoMoreInteractions(didBuild);
+    verifyNoMoreInteractions(dispose);
+    verifyNoMoreInteractions(initHook);
+    verifyNoMoreInteractions(didUpdateHook);
+  }
 
   tearDown(() {
     reset(builder);
     reset(build);
+    reset(didBuild);
     reset(dispose);
     reset(initHook);
     reset(didUpdateHook);
@@ -67,6 +78,7 @@ void main() {
         didUpdateHook: didUpdateHook.call,
         initHook: initHook.call,
         keys: keys,
+        didBuild: didBuild,
         createStateFn: createState.call,
       ));
       return Container();
@@ -79,24 +91,18 @@ void main() {
       createState.call(),
       initHook.call(),
       build.call(context),
+      didBuild.call(),
     ]);
-    verifyNoMoreInteractions(createState);
-    verifyNoMoreInteractions(initHook);
-    verifyNoMoreInteractions(build);
-    verifyNoMoreInteractions(didUpdateHook);
-    verifyNoMoreInteractions(dispose);
+    verifyNoMoreHookInteration();
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
     verifyInOrder([
       didUpdateHook.call(any),
       build.call(context),
+      didBuild.call(),
     ]);
-    verifyNoMoreInteractions(createState);
-    verifyNoMoreInteractions(initHook);
-    verifyNoMoreInteractions(build);
-    verifyNoMoreInteractions(didUpdateHook);
-    verifyNoMoreInteractions(dispose);
+    verifyNoMoreHookInteration();
 
     // from null to array
     keys = <dynamic>[];
@@ -106,13 +112,10 @@ void main() {
       dispose.call(),
       createState.call(),
       initHook.call(),
-      build.call(context)
+      build.call(context),
+      didBuild.call(),
     ]);
-    verifyNoMoreInteractions(createState);
-    verifyNoMoreInteractions(initHook);
-    verifyNoMoreInteractions(build);
-    verifyNoMoreInteractions(didUpdateHook);
-    verifyNoMoreInteractions(dispose);
+    verifyNoMoreHookInteration();
 
     // array immutable
     keys.add(42);
@@ -122,12 +125,9 @@ void main() {
     verifyInOrder([
       didUpdateHook.call(any),
       build.call(context),
+      didBuild.call(),
     ]);
-    verifyNoMoreInteractions(createState);
-    verifyNoMoreInteractions(initHook);
-    verifyNoMoreInteractions(build);
-    verifyNoMoreInteractions(didUpdateHook);
-    verifyNoMoreInteractions(dispose);
+    verifyNoMoreHookInteration();
 
     // new array but content equal
     keys = <dynamic>[42];
@@ -137,12 +137,9 @@ void main() {
     verifyInOrder([
       didUpdateHook.call(any),
       build.call(context),
+      didBuild.call(),
     ]);
-    verifyNoMoreInteractions(createState);
-    verifyNoMoreInteractions(initHook);
-    verifyNoMoreInteractions(build);
-    verifyNoMoreInteractions(didUpdateHook);
-    verifyNoMoreInteractions(dispose);
+    verifyNoMoreHookInteration();
 
     // new array new content
     keys = <dynamic>[44];
@@ -153,13 +150,10 @@ void main() {
       dispose.call(),
       createState.call(),
       initHook.call(),
-      build.call(context)
+      build.call(context),
+      didBuild.call()
     ]);
-    verifyNoMoreInteractions(createState);
-    verifyNoMoreInteractions(initHook);
-    verifyNoMoreInteractions(build);
-    verifyNoMoreInteractions(didUpdateHook);
-    verifyNoMoreInteractions(dispose);
+    verifyNoMoreHookInteration();
   });
 
   testWidgets('hook & setState', (tester) async {
@@ -186,6 +180,62 @@ void main() {
     expect(hookContext.dirty, true);
   });
 
+  testWidgets('didBuild called even if build crashed', (tester) async {
+    when(build.call(any)).thenThrow(42);
+    when(builder.call(any)).thenAnswer((invocation) {
+      Hook.use(createHook());
+      return Container();
+    });
+
+    await expectPump(
+      () => tester.pumpWidget(HookBuilder(
+            builder: builder.call,
+          )),
+      throwsA(42),
+    );
+
+    verify(didBuild.call()).called(1);
+  });
+  testWidgets('all didBuild called even if one crashes', (tester) async {
+    final didBuild2 = Func0<void>();
+
+    when(didBuild.call()).thenThrow(42);
+    when(builder.call(any)).thenAnswer((invocation) {
+      Hook.use(createHook());
+      Hook.use(HookTest<int>(didBuild: didBuild2));
+      return Container();
+    });
+
+    await expectPump(
+      () => tester.pumpWidget(HookBuilder(
+            builder: builder.call,
+          )),
+      throwsA(42),
+    );
+
+    verifyInOrder([
+      didBuild.call(),
+      didBuild2.call(),
+    ]);
+  });
+
+  testWidgets('calls didBuild before building children', (tester) async {
+    final buildChild = Func1<BuildContext, Widget>();
+    when(buildChild.call(any)).thenReturn(Container());
+
+    await tester.pumpWidget(HookBuilder(
+      builder: (context) {
+        Hook.use(createHook());
+        return Builder(builder: buildChild);
+      },
+    ));
+
+    verifyInOrder([
+      didBuild(),
+      buildChild.call(any),
+    ]);
+  });
+
   testWidgets('life-cycles in order', (tester) async {
     int result;
     HookTest<int> hook;
@@ -206,9 +256,9 @@ void main() {
     verifyInOrder([
       initHook.call(),
       build.call(context),
+      didBuild.call(),
     ]);
-    verifyZeroInteractions(didUpdateHook);
-    verifyZeroInteractions(dispose);
+    verifyNoMoreHookInteration();
 
     when(build.call(context)).thenReturn(24);
     var previousHook = hook;
@@ -218,28 +268,19 @@ void main() {
     ));
 
     expect(result, 24);
-    verifyInOrder([
-      didUpdateHook.call(previousHook),
-      build.call(any),
-    ]);
-    verifyNoMoreInteractions(initHook);
-    verifyZeroInteractions(dispose);
+    verifyInOrder(
+        [didUpdateHook.call(previousHook), build.call(any), didBuild.call()]);
+    verifyNoMoreHookInteration();
 
     previousHook = hook;
     await tester.pump();
 
-    verifyNoMoreInteractions(initHook);
-    verifyNoMoreInteractions(didUpdateHook);
-    verifyNoMoreInteractions(build);
-    verifyZeroInteractions(dispose);
+    verifyNoMoreHookInteration();
 
     await tester.pumpWidget(const SizedBox());
 
-    verifyNoMoreInteractions(initHook);
-    verifyNoMoreInteractions(didUpdateHook);
-    verifyNoMoreInteractions(build);
-    verify(dispose.call());
-    verifyNoMoreInteractions(dispose);
+    verify(dispose.call()).called(1);
+    verifyNoMoreHookInteration();
   });
 
   testWidgets('dispose all called even on failed', (tester) async {
