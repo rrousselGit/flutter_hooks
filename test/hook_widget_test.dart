@@ -73,7 +73,7 @@ void main() {
     });
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
-    final HookElement context = find.byType(HookBuilder).evaluate().first;
+    final context = find.byType(HookBuilder).evaluate().first;
 
     verifyInOrder([
       createState.call(),
@@ -406,7 +406,7 @@ void main() {
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
-    final HookElement context = find.byType(HookBuilder).evaluate().first;
+    final context = find.byType(HookBuilder).evaluate().first;
 
     verifyInOrder([
       initHook.call(),
@@ -455,7 +455,7 @@ void main() {
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
-    final HookElement context = find.byType(HookBuilder).evaluate().first;
+    final context = find.byType(HookBuilder).evaluate().first;
 
     verifyInOrder([
       initHook.call(),
@@ -508,7 +508,7 @@ void main() {
     });
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
-    final HookElement context = find.byType(HookBuilder).evaluate().first;
+    final context = find.byType(HookBuilder).evaluate().first;
 
     verifyInOrder([
       initHook.call(),
@@ -570,7 +570,7 @@ void main() {
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
-    final HookElement context = find.byType(HookBuilder).evaluate().first;
+    final context = find.byType(HookBuilder).evaluate().first;
 
     // We don't care about datas of the first render
     clearInteractions(initHook);
@@ -665,7 +665,7 @@ void main() {
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
-    final HookElement context = find.byType(HookBuilder).evaluate().first;
+    final context = find.byType(HookBuilder).evaluate().first;
 
     // We don't care about datas of the first render
     clearInteractions(initHook);
