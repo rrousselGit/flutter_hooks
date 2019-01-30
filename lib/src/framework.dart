@@ -198,12 +198,10 @@ abstract class HookState<R, T extends Hook<R>> {
 
   /// Equivalent of [State.initState] for [HookState]
   @protected
-  @mustCallSuper
   void initHook() {}
 
   /// Equivalent of [State.dispose] for [HookState]
   @protected
-  @mustCallSuper
   void dispose() {}
 
   /// Called everytimes the [HookState] is requested
@@ -214,8 +212,18 @@ abstract class HookState<R, T extends Hook<R>> {
 
   /// Equivalent of [State.didUpdateWidget] for [HookState]
   @protected
-  @mustCallSuper
-  void didUpdateHook(covariant Hook<R> oldHook) {}
+  void didUpdateHook(T oldHook) {}
+
+  /// {@macro flutter.widgets.reassemble}
+  ///
+  /// In addition to this method being invoked, it is guaranteed that the
+  /// [build] method will be invoked when a reassemble is signaled. Most
+  /// widgets therefore do not need to do anything in the [reassemble] method.
+  ///
+  /// See also:
+  ///
+  ///  * [State.reassemble]
+  void reassemble() {}
 
   /// Equivalent of [State.setState] for [HookState]
   @protected
@@ -299,6 +307,17 @@ This may happen if the call to `Hook.use` is made under some condition.
             context: 'while disposing ${hook.runtimeType}',
           ));
         }
+      }
+    }
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    _didReassemble = true;
+    if (_hooks != null) {
+      for (final hook in _hooks) {
+        hook.reassemble();
       }
     }
   }
@@ -419,15 +438,6 @@ abstract class HookWidget extends StatefulWidget {
 }
 
 class _HookWidgetState extends State<HookWidget> {
-  @override
-  void reassemble() {
-    super.reassemble();
-    assert(() {
-      (context as HookElement)._didReassemble = true;
-      return true;
-    }());
-  }
-
   @override
   Widget build(BuildContext context) {
     return widget.build(context);
