@@ -17,7 +17,7 @@ void main() {
         ));
     await pump();
 
-    final HookElement context = find.byType(HookBuilder).evaluate().first;
+    final context = find.byType(HookBuilder).evaluate().first;
 
     expect(result, null);
     verifyNoMoreInteractions(_useValueChanged);
