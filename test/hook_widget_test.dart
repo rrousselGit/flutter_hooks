@@ -214,8 +214,8 @@ void main() {
     );
 
     verifyInOrder([
-      didBuild.call(),
       didBuild2.call(),
+      didBuild.call(),
     ]);
   });
 

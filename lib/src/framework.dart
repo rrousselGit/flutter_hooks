@@ -291,7 +291,7 @@ This may happen if the call to `Hook.use` is made under some condition.
       return result;
     } finally {
       if (_hooks != null) {
-        for (final hook in _hooks) {
+        for (final hook in _hooks.reversed) {
           try {
             hook.didBuild();
           } catch (exception, stack) {
