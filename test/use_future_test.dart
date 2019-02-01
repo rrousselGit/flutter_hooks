@@ -6,6 +6,51 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'mock.dart';
 
 void main() {
+  testWidgets('default preserve state, changing future keeps previous value',
+      (tester) async {
+    AsyncSnapshot<int> value;
+    Widget Function(BuildContext) builder(Future<int> stream) {
+      return (context) {
+        value = useFuture(stream);
+        return Container();
+      };
+    }
+
+    var future = Future.value(0);
+    await tester.pumpWidget(HookBuilder(builder: builder(future)));
+    expect(value.data, null);
+    await tester.pumpWidget(HookBuilder(builder: builder(future)));
+    expect(value.data, 0);
+
+    future = Future.value(42);
+    await tester.pumpWidget(HookBuilder(builder: builder(future)));
+    expect(value.data, 0);
+    await tester.pumpWidget(HookBuilder(builder: builder(future)));
+    expect(value.data, 42);
+  });
+  testWidgets('If preserveState == false, changing future resets value',
+      (tester) async {
+    AsyncSnapshot<int> value;
+    Widget Function(BuildContext) builder(Future<int> stream) {
+      return (context) {
+        value = useFuture(stream, preserveState: false);
+        return Container();
+      };
+    }
+
+    var future = Future.value(0);
+    await tester.pumpWidget(HookBuilder(builder: builder(future)));
+    expect(value.data, null);
+    await tester.pumpWidget(HookBuilder(builder: builder(future)));
+    expect(value.data, 0);
+
+    future = Future.value(42);
+    await tester.pumpWidget(HookBuilder(builder: builder(future)));
+    expect(value.data, null);
+    await tester.pumpWidget(HookBuilder(builder: builder(future)));
+    expect(value.data, 42);
+  });
+
   Widget Function(BuildContext) snapshotText(Future<String> stream,
       {String initialData}) {
     return (context) {
