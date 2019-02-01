@@ -53,8 +53,6 @@ void main() {
     expect(value.data, 42);
   });
 
-
-  
   Widget Function(BuildContext) snapshotText(Stream<String> stream,
       {String initialData}) {
     return (context) {

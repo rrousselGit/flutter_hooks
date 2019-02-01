@@ -1,5 +1,7 @@
 ## 0.3.0:
 
+- NEW: new life-cycle availble on `HookState`: `didBuild`.
+This life-cycle is called synchronously right after `build` method of `HookWidget` finished.
 - NEW: new `reassemble` life-cycle on `HookState`. It is equivalent to `State.ressemble` of statefulwidgets. 
 - NEW: `useStream` and `useFuture` now have an optional `preserveState` flag.
   This toggle how these hooks behaves when changing the stream/future:
