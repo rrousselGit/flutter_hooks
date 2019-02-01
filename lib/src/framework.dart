@@ -204,6 +204,10 @@ abstract class HookState<R, T extends Hook<R>> {
   @protected
   void dispose() {}
 
+  /// Called synchronously after the [HookWidget.build] method finished
+  @protected
+  void didBuild() {}
+
   /// Called everytimes the [HookState] is requested
   ///
   /// [build] is where an [HookState] may use other hooks. This restriction is made to ensure that hooks are unconditionally always requested
@@ -253,7 +257,7 @@ class HookElement extends StatefulElement {
   HookWidget get widget => super.widget as HookWidget;
 
   @override
-  void performRebuild() {
+  Widget build() {
     _currentHook = _hooks?.iterator;
     // first iterator always has null
     _currentHook?.moveNext();
@@ -266,7 +270,7 @@ class HookElement extends StatefulElement {
       return true;
     }());
     HookElement._currentContext = this;
-    super.performRebuild();
+    final result = super.build();
     HookElement._currentContext = null;
 
     // dispose removed items
@@ -290,6 +294,26 @@ This may happen if the call to `Hook.use` is made under some condition.
       _debugIsBuilding = false;
       return true;
     }());
+    return result;
+  }
+
+  @override
+  Element updateChild(Element child, Widget newWidget, dynamic newSlot) {
+    if (_hooks != null) {
+      for (final hook in _hooks.reversed) {
+        try {
+          hook.didBuild();
+        } catch (exception, stack) {
+          FlutterError.reportError(FlutterErrorDetails(
+            exception: exception,
+            stack: stack,
+            library: 'hooks library',
+            context: 'while calling `didBuild` on ${hook.runtimeType}',
+          ));
+        }
+      }
+    }
+    return super.updateChild(child, newWidget, newSlot);
   }
 
   @override

@@ -28,6 +28,7 @@ class Func2<T1, T2, R> extends Mock implements _Func2<T1, T2, R> {}
 class HookTest<R> extends Hook<R> {
   final R Function(BuildContext context) build;
   final void Function() dispose;
+  final void Function() didBuild;
   final void Function() initHook;
   final void Function(HookTest<R> previousHook) didUpdateHook;
   final void Function() reassemble;
@@ -40,6 +41,7 @@ class HookTest<R> extends Hook<R> {
     this.didUpdateHook,
     this.reassemble,
     this.createStateFn,
+    this.didBuild,
     List keys,
   }) : super(keys: keys);
 
@@ -70,6 +72,14 @@ class HookStateTest<R> extends HookState<R, HookTest<R>> {
     super.didUpdateHook(oldHook);
     if (hook.didUpdateHook != null) {
       hook.didUpdateHook(oldHook);
+    }
+  }
+
+  @override
+  void didBuild() {
+    super.didBuild();
+    if (hook.didBuild != null) {
+      hook.didBuild();
     }
   }
 
