@@ -180,6 +180,38 @@ void main() {
     expect(hookContext.dirty, true);
   });
 
+  testWidgets(
+      'didBuild when build crash called after FlutterError.onError report',
+      (tester) async {
+    final onError = FlutterError.onError;
+    FlutterError.onError = Func1<FlutterErrorDetails, void>();
+    final errorBuilder = ErrorWidget.builder;
+    ErrorWidget.builder = Func1<FlutterErrorDetails, Widget>();
+    when(ErrorWidget.builder(any)).thenReturn(Container());
+    try {
+      when(build.call(any)).thenThrow(42);
+      when(builder.call(any)).thenAnswer((invocation) {
+        Hook.use(createHook());
+        return Container();
+      });
+
+      await tester.pumpWidget(HookBuilder(
+        builder: builder.call,
+      ));
+      tester.takeException();
+
+      verifyInOrder([
+        build.call(any),
+        FlutterError.onError(any),
+        ErrorWidget.builder(any),
+        didBuild(),
+      ]);
+    } finally {
+      FlutterError.onError = onError;
+      ErrorWidget.builder = errorBuilder;
+    }
+  });
+
   testWidgets('didBuild called even if build crashed', (tester) async {
     when(build.call(any)).thenThrow(42);
     when(builder.call(any)).thenAnswer((invocation) {
@@ -187,12 +219,10 @@ void main() {
       return Container();
     });
 
-    await expectPump(
-      () => tester.pumpWidget(HookBuilder(
-            builder: builder.call,
-          )),
-      throwsA(42),
-    );
+    await tester.pumpWidget(HookBuilder(
+      builder: builder.call,
+    ));
+    expect(tester.takeException(), 42);
 
     verify(didBuild.call()).called(1);
   });
