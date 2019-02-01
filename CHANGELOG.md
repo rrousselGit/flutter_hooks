@@ -1,12 +1,15 @@
 ## 0.3.0:
 
 - NEW: new `reassemble` life-cycle on `HookState`. It is equivalent to `State.ressemble` of statefulwidgets. 
+- NEW: `useStream` and `useFuture` now have an optional `preserveState` flag.
+  This toggle how these hooks behaves when changing the stream/future:
+  If true (default) they keep the previous value, else they reset to initialState.
 
 ## 0.2.1:
 
 - NEW: `useValueNotifier`, which creates a `ValueNotifier` similarly to `useState`. But without listening it.
-This can be useful to have a more granular rebuild when combined to `useValueListenable`.
-- NEW: `useContext`, which exposes the `BuildContext` of the currently building `HookWidget`. 
+  This can be useful to have a more granular rebuild when combined to `useValueListenable`.
+- NEW: `useContext`, which exposes the `BuildContext` of the currently building `HookWidget`.
 
 ## 0.2.0:
 
