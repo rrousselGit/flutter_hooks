@@ -31,6 +31,7 @@ class HookTest<R> extends Hook<R> {
   final void Function() didBuild;
   final void Function() initHook;
   final void Function(HookTest<R> previousHook) didUpdateHook;
+  final void Function() reassemble;
   final HookStateTest<R> Function() createStateFn;
 
   HookTest({
@@ -38,6 +39,7 @@ class HookTest<R> extends Hook<R> {
     this.dispose,
     this.initHook,
     this.didUpdateHook,
+    this.reassemble,
     this.createStateFn,
     this.didBuild,
     List keys,
@@ -78,6 +80,14 @@ class HookStateTest<R> extends HookState<R, HookTest<R>> {
     super.didBuild();
     if (hook.didBuild != null) {
       hook.didBuild();
+    }
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    if (hook.reassemble != null) {
+      hook.reassemble();
     }
   }
 

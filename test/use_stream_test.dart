@@ -8,6 +8,51 @@ import 'mock.dart';
 /// port of [StreamBuilder]
 ///
 void main() {
+  testWidgets('default preserve state, changing stream keeps previous value',
+      (tester) async {
+    AsyncSnapshot<int> value;
+    Widget Function(BuildContext) builder(Stream<int> stream) {
+      return (context) {
+        value = useStream(stream);
+        return Container();
+      };
+    }
+
+    var stream = Stream.fromFuture(Future.value(0));
+    await tester.pumpWidget(HookBuilder(builder: builder(stream)));
+    expect(value.data, null);
+    await tester.pumpWidget(HookBuilder(builder: builder(stream)));
+    expect(value.data, 0);
+
+    stream = Stream.fromFuture(Future.value(42));
+    await tester.pumpWidget(HookBuilder(builder: builder(stream)));
+    expect(value.data, 0);
+    await tester.pumpWidget(HookBuilder(builder: builder(stream)));
+    expect(value.data, 42);
+  });
+  testWidgets('If preserveState == false, changing stream resets value',
+      (tester) async {
+    AsyncSnapshot<int> value;
+    Widget Function(BuildContext) builder(Stream<int> stream) {
+      return (context) {
+        value = useStream(stream, preserveState: false);
+        return Container();
+      };
+    }
+
+    var stream = Stream.fromFuture(Future.value(0));
+    await tester.pumpWidget(HookBuilder(builder: builder(stream)));
+    expect(value.data, null);
+    await tester.pumpWidget(HookBuilder(builder: builder(stream)));
+    expect(value.data, 0);
+
+    stream = Stream.fromFuture(Future.value(42));
+    await tester.pumpWidget(HookBuilder(builder: builder(stream)));
+    expect(value.data, null);
+    await tester.pumpWidget(HookBuilder(builder: builder(stream)));
+    expect(value.data, 42);
+  });
+
   Widget Function(BuildContext) snapshotText(Stream<String> stream,
       {String initialData}) {
     return (context) {
