@@ -10,12 +10,14 @@ void main() {
   final dispose = Func0<void>();
   final initHook = Func0<void>();
   final didUpdateHook = Func1<HookTest, void>();
+  final reassemble = Func0<void>();
   final builder = Func1<BuildContext, Widget>();
 
   final createHook = () => HookTest<int>(
         build: build.call,
         dispose: dispose.call,
         didUpdateHook: didUpdateHook.call,
+        reassemble: reassemble.call,
         initHook: initHook.call,
       );
 
@@ -25,6 +27,7 @@ void main() {
     reset(dispose);
     reset(initHook);
     reset(didUpdateHook);
+    reset(reassemble);
   });
 
   testWidgets('hooks can be disposed independently with keys', (tester) async {
@@ -388,6 +391,49 @@ void main() {
     ]);
     verifyNever(initHook.call());
     verifyNever(dispose.call());
+  });
+
+  testWidgets('hot-reload calls reassemble', (tester) async {
+    final reassemble2 = Func0<void>();
+    final didUpdateHook2 = Func1<void, Hook<void>>();
+    await tester.pumpWidget(HookBuilder(builder: (context) {
+      Hook.use(createHook());
+      Hook.use(HookTest<void>(
+          reassemble: reassemble2, didUpdateHook: didUpdateHook2));
+      return Container();
+    }));
+
+    verifyNoMoreInteractions(reassemble);
+
+    hotReload(tester);
+    await tester.pump();
+
+    verifyInOrder([
+      reassemble.call(),
+      reassemble2.call(),
+      didUpdateHook.call(any),
+      didUpdateHook2.call(any),
+    ]);
+    verifyNoMoreInteractions(reassemble);
+  });
+
+  testWidgets("hot-reload don't reassemble newly added hooks", (tester) async {
+    await tester.pumpWidget(HookBuilder(builder: (context) {
+      Hook.use(HookTest<int>());
+      return Container();
+    }));
+
+    verifyNoMoreInteractions(reassemble);
+
+    hotReload(tester);
+    await tester.pumpWidget(HookBuilder(builder: (context) {
+      Hook.use(HookTest<int>());
+      Hook.use(createHook());
+      return Container();
+    }));
+
+    verifyNoMoreInteractions(didUpdateHook);
+    verifyNoMoreInteractions(reassemble);
   });
 
   testWidgets('hot-reload can add hooks at the end of the list',
