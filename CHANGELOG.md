@@ -1,3 +1,7 @@
+## 0.3.0:
+
+- NEW: new `reassemble` life-cycle on `HookState`. It is equivalent to `State.ressemble` of statefulwidgets. 
+
 ## 0.2.1:
 
 - NEW: `useValueNotifier`, which creates a `ValueNotifier` similarly to `useState`. But without listening it.
