@@ -1,5 +1,6 @@
 ## 0.3.0:
 
+- NEW: new `reassemble` life-cycle on `HookState`. It is equivalent to `State.ressemble` of statefulwidgets. 
 - NEW: `useStream` and `useFuture` now have an optional `preserveState` flag.
   This toggle how these hooks behaves when changing the stream/future:
   If true (default) they keep the previous value, else they reset to initialState.
