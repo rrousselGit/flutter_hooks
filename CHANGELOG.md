@@ -1,5 +1,6 @@
 ## 0.3.0:
 
+- NEW: If a widget throws on the first build or after a hot-reload, next rebuilds can still add/edit hooks until one `build` finishes entirely.
 - NEW: new life-cycle availble on `HookState`: `didBuild`.
 This life-cycle is called synchronously right after `build` method of `HookWidget` finished.
 - NEW: new `reassemble` life-cycle on `HookState`. It is equivalent to `State.ressemble` of statefulwidgets. 

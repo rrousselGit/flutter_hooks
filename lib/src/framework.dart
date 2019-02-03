@@ -248,7 +248,7 @@ class HookElement extends StatefulElement {
 
   bool _debugIsBuilding;
   bool _didReassemble;
-  bool _isFirstBuild;
+  bool _didNotFinishBuildOnce;
   bool _debugShouldDispose;
 
   static HookElement _currentContext;
@@ -264,7 +264,7 @@ class HookElement extends StatefulElement {
     _hookIndex = 0;
     assert(() {
       _debugShouldDispose = false;
-      _isFirstBuild ??= true;
+      _didNotFinishBuildOnce ??= true;
       _didReassemble ??= false;
       _debugIsBuilding = true;
       return true;
@@ -289,7 +289,7 @@ This may happen if the call to `Hook.use` is made under some condition.
 
 ''');
     assert(() {
-      _isFirstBuild = false;
+      _didNotFinishBuildOnce = false;
       _didReassemble = false;
       _debugIsBuilding = false;
       return true;
@@ -355,7 +355,7 @@ This may happen if the call to `Hook.use` is made under some condition.
     HookState<R, Hook<R>> hookState;
     // first build
     if (_currentHook == null) {
-      assert(_didReassemble || _isFirstBuild);
+      assert(_didReassemble || _didNotFinishBuildOnce);
       hookState = _createHookState(hook);
       _hooks ??= [];
       _hooks.add(hookState);
@@ -376,54 +376,71 @@ This may happen if the call to `Hook.use` is made under some condition.
         if (_currentHook.current != null) {
           _hooks.remove(_currentHook.current..dispose());
           // has to be done after the dispose call
-          hookState = _createHookState(hook);
-          _hooks.insert(_hookIndex, hookState);
-
-          // we move the iterator back to where it was
-          _currentHook = _hooks.iterator..moveNext();
-          for (var i = 0; i < _hooks.length && _hooks[i] != hookState; i++) {
-            _currentHook.moveNext();
-          }
+          hookState = _insertHookAt(_hookIndex, hook);
         } else {
-          // new hooks have been pushed at the end of the list.
-          hookState = _createHookState(hook);
-          _hooks.add(hookState);
-
-          // we put the iterator on added item
-          _currentHook = _hooks.iterator;
-          while (_currentHook.current != hookState) {
-            _currentHook.moveNext();
-          }
+          hookState = _pushHook(hook);
         }
         return true;
       }());
-      assert(_currentHook.current?.hook?.runtimeType == hook.runtimeType);
-
-      if (_currentHook.current.hook == hook) {
-        hookState = _currentHook.current as HookState<R, Hook<R>>;
-        _currentHook.moveNext();
-      } else if (Hook.shouldPreserveState(_currentHook.current.hook, hook)) {
-        hookState = _currentHook.current as HookState<R, Hook<R>>;
-        _currentHook.moveNext();
-        final previousHook = hookState._hook;
-        hookState
-          .._hook = hook
-          ..didUpdateHook(previousHook);
+      if (_didNotFinishBuildOnce && _currentHook.current == null) {
+        hookState = _pushHook(hook);
       } else {
-        _hooks.removeAt(_hookIndex).dispose();
-        hookState = _createHookState(hook);
-        _hooks.insert(_hookIndex, hookState);
+        assert(_currentHook.current != null);
+        assert(_debugTypesAreRight(hook));
 
-        // we move the iterator back to where it was
-        _currentHook = _hooks.iterator..moveNext();
-        for (var i = 0; i < _hooks.length && _hooks[i] != hookState; i++) {
+        if (_currentHook.current.hook == hook) {
+          hookState = _currentHook.current as HookState<R, Hook<R>>;
+          _currentHook.moveNext();
+        } else if (Hook.shouldPreserveState(_currentHook.current.hook, hook)) {
+          hookState = _currentHook.current as HookState<R, Hook<R>>;
+          _currentHook.moveNext();
+          final previousHook = hookState._hook;
+          hookState
+            .._hook = hook
+            ..didUpdateHook(previousHook);
+        } else {
+          hookState = _replaceHookAt(_hookIndex, hook);
+          _resetsIterator(hookState);
           _currentHook.moveNext();
         }
-        _currentHook.moveNext();
       }
     }
     _hookIndex++;
     return hookState.build(this);
+  }
+
+  HookState<R, Hook<R>> _replaceHookAt<R>(int index, Hook<R> hook) {
+    _hooks.removeAt(_hookIndex).dispose();
+    var hookState = _createHookState(hook);
+    _hooks.insert(_hookIndex, hookState);
+    return hookState;
+  }
+
+  HookState<R, Hook<R>> _insertHookAt<R>(int index, Hook<R> hook) {
+    var hookState = _createHookState(hook);
+    _hooks.insert(index, hookState);
+    _resetsIterator(hookState);
+    return hookState;
+  }
+
+  HookState<R, Hook<R>> _pushHook<R>(Hook<R> hook) {
+    var hookState = _createHookState(hook);
+    _hooks.add(hookState);
+    _resetsIterator(hookState);
+    return hookState;
+  }
+
+  bool _debugTypesAreRight(Hook hook) {
+    assert(_currentHook.current.hook.runtimeType == hook.runtimeType);
+    return true;
+  }
+
+  /// we put the iterator on added item
+  void _resetsIterator(HookState hookState) {
+    _currentHook = _hooks.iterator;
+    while (_currentHook.current != hookState) {
+      _currentHook.moveNext();
+    }
   }
 
   HookState<R, Hook<R>> _createHookState<R>(Hook<R> hook) {
