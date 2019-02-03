@@ -677,17 +677,19 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
       current.inState(ConnectionState.none);
 }
 
+typedef Dispose = void Function();
+
 /// A hook for side-effects
 ///
 /// [useEffect] is called synchronously on every [HookWidget.build], unless
 /// [keys] is specified. In which case [useEffect] is called again only if
 /// any value inside [keys] as changed.
-void useEffect(VoidCallback Function() effect, [List keys]) {
+void useEffect(Dispose Function() effect, [List keys]) {
   Hook.use(_EffectHook(effect, keys));
 }
 
 class _EffectHook extends Hook<void> {
-  final VoidCallback Function() effect;
+  final Dispose Function() effect;
 
   const _EffectHook(this.effect, [List keys])
       : assert(effect != null),
@@ -698,7 +700,7 @@ class _EffectHook extends Hook<void> {
 }
 
 class _EffectHookState extends HookState<void, _EffectHook> {
-  VoidCallback disposer;
+  Dispose disposer;
 
   @override
   void initHook() {
