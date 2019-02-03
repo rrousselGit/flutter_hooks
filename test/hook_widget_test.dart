@@ -1,4 +1,4 @@
-// ignore_for_file: invalid_use_of_protected_member
+// ignore_for_file: invalid_use_of_protected_member, only_throw_errors
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -39,6 +39,97 @@ void main() {
     reset(initHook);
     reset(didUpdateHook);
     reset(reassemble);
+  });
+
+  testWidgets(
+      'until one build finishes without crashing, it is possible to add hooks',
+      (tester) async {
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      throw 0;
+    }));
+    expect(tester.takeException(), 0);
+
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      Hook.use(HookTest<int>());
+      throw 1;
+    }));
+    expect(tester.takeException(), 1);
+
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      Hook.use(HookTest<int>());
+      Hook.use(HookTest<int>());
+      throw 2;
+    }));
+    expect(tester.takeException(), 2);
+
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      Hook.use(HookTest<int>());
+      Hook.use(HookTest<int>());
+      Hook.use(HookTest<int>());
+      return Container();
+    }));
+  });
+
+  testWidgets(
+      'After a build suceeded, expections do not allow adding more hooks',
+      (tester) async {
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      return Container();
+    }));
+
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      throw 1;
+    }));
+    expect(tester.takeException(), 1);
+
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      Hook.use(HookTest<int>());
+      return Container();
+    }));
+    expect(tester.takeException(), isAssertionError);
+  });
+
+  testWidgets(
+      "After hot-reload that throws it's still possible to add hooks until one build suceed",
+      (tester) async {
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      return Container();
+    }));
+
+    hotReload(tester);
+
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      throw 0;
+    }));
+    expect(tester.takeException(), 0);
+
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      Hook.use(HookTest<int>());
+      return Container();
+    }));
+  });
+
+  testWidgets(
+      'After hot-reload that throws, hooks are correctly disposed when build suceeeds with less hooks',
+      (tester) async {
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      Hook.use(createHook());
+      return Container();
+    }));
+
+    hotReload(tester);
+
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      throw 0;
+    }));
+    expect(tester.takeException(), 0);
+    verifyNever(dispose());
+
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      return Container();
+    }));
+
+    verify(dispose()).called(1);
   });
 
   testWidgets('hooks can be disposed independently with keys', (tester) async {
