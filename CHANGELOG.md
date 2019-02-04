@@ -1,5 +1,6 @@
 ## 0.3.0:
 
+- NEW: Hooks are now visible on `HookElement` through `debugHooks` in development, for testing purposes.
 - NEW: If a widget throws on the first build or after a hot-reload, next rebuilds can still add/edit hooks until one `build` finishes entirely.
 - NEW: new life-cycle availble on `HookState`: `didBuild`.
 This life-cycle is called synchronously right after `build` method of `HookWidget` finished.
