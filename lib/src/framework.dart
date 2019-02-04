@@ -297,6 +297,14 @@ This may happen if the call to `Hook.use` is made under some condition.
     return result;
   }
 
+  /// A read-only list of all hooks available.
+  ///
+  /// These should not be used directly and are exposed
+  @visibleForTesting
+  List<HookState> get debugHooks {
+    return List<HookState>.unmodifiable(_hooks);
+  }
+
   @override
   Element updateChild(Element child, Widget newWidget, dynamic newSlot) {
     if (_hooks != null) {

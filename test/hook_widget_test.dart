@@ -1,5 +1,4 @@
 // ignore_for_file: invalid_use_of_protected_member, only_throw_errors
-
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -41,6 +40,23 @@ void main() {
     reset(reassemble);
   });
 
+  testWidgets(
+      'until one build finishes without crashing, it is possible to add hooks',
+      (tester) async {
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      Hook.use(HookTest<int>());
+      Hook.use(HookTest<String>());
+      return Container();
+    }));
+
+    final element = tester.element(find.byType(HookBuilder)) as HookElement;
+
+    expect(element.debugHooks.length, 2);
+    expect(element.debugHooks.first, isInstanceOf<HookStateTest<int>>());
+    expect(element.debugHooks.last, isInstanceOf<HookStateTest<String>>());
+    expect(() => element.debugHooks[0] = null, throwsUnsupportedError);
+    expect(() => element.debugHooks.add(null), throwsUnsupportedError);
+  });
   testWidgets(
       'until one build finishes without crashing, it is possible to add hooks',
       (tester) async {
