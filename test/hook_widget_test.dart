@@ -40,9 +40,7 @@ void main() {
     reset(reassemble);
   });
 
-  testWidgets(
-      'until one build finishes without crashing, it is possible to add hooks',
-      (tester) async {
+  testWidgets('HookElement exposes an immutable list of hooks', (tester) async {
     await tester.pumpWidget(HookBuilder(builder: (_) {
       Hook.use(HookTest<int>());
       Hook.use(HookTest<String>());
@@ -73,17 +71,39 @@ void main() {
 
     await tester.pumpWidget(HookBuilder(builder: (_) {
       Hook.use(HookTest<int>());
-      Hook.use(HookTest<int>());
+      Hook.use(HookTest<String>());
       throw 2;
     }));
     expect(tester.takeException(), 2);
 
     await tester.pumpWidget(HookBuilder(builder: (_) {
       Hook.use(HookTest<int>());
-      Hook.use(HookTest<int>());
-      Hook.use(HookTest<int>());
+      Hook.use(HookTest<String>());
+      Hook.use(HookTest<double>());
       return Container();
     }));
+  });
+  testWidgets(
+      'until one build finishes without crashing, it is possible to add hooks #2',
+      (tester) async {
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      throw 0;
+    }));
+    expect(tester.takeException(), 0);
+
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      Hook.use(HookTest<int>());
+      throw 1;
+    }));
+    expect(tester.takeException(), 1);
+
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      Hook.use(HookTest<int>());
+      Hook.use(HookTest<String>());
+      Hook.use(HookTest<double>());
+      throw 2;
+    }));
+    expect(tester.takeException(), 2);
   });
 
   testWidgets(
