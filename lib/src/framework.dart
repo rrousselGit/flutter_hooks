@@ -392,6 +392,7 @@ This may happen if the call to `Hook.use` is made under some condition.
       }());
       if (_didNotFinishBuildOnce && _currentHook.current == null) {
         hookState = _pushHook(hook);
+        _currentHook.moveNext();
       } else {
         assert(_currentHook.current != null);
         assert(_debugTypesAreRight(hook));
