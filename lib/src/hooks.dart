@@ -850,3 +850,119 @@ class _UseValueNotiferHookState<T>
     super.dispose();
   }
 }
+
+/// Creates an [ScrollController] automatically disposed.
+///
+/// [initialScrollOffset], [keepScrollOffset] and [debugLabel] are ignored after the first call.
+///
+/// See also:
+///   * [ScrollController]
+ScrollController useScrollController({
+  String debugLabel,
+  double initialScrollOffset = 0.0,
+  bool keepScrollOffset = true,
+  List keys,
+}) {
+  return Hook.use(_ScrollControllerHook(
+    debugLabel: debugLabel,
+    initialScrollOffset: initialScrollOffset,
+    keepScrollOffset: keepScrollOffset,
+    keys: keys,
+  ));
+}
+
+class _ScrollControllerHook extends Hook<ScrollController> {
+  final String debugLabel;
+  final double initialScrollOffset;
+  final bool keepScrollOffset;
+
+  const _ScrollControllerHook({
+    this.debugLabel,
+    this.initialScrollOffset,
+    this.keepScrollOffset,
+    List keys,
+  }) : super(keys: keys);
+
+  @override
+  _ScrollControllerHookState createState() => _ScrollControllerHookState();
+}
+
+class _ScrollControllerHookState
+    extends HookState<ScrollController, _ScrollControllerHook> {
+  ScrollController _scrollController;
+
+  @override
+  ScrollController build(BuildContext context) {
+    _scrollController ??= ScrollController(
+      initialScrollOffset: hook.initialScrollOffset,
+      keepScrollOffset: hook.keepScrollOffset,
+      debugLabel: hook.debugLabel,
+    );
+
+    return _scrollController;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
+  }
+}
+
+/// Creates an [TextEditingController] automatically disposed.
+///
+/// Changing the [text] parameter automatically updates [TextEditingController.text].
+///
+/// See also:
+///   * [TextEditingController]
+TextEditingController useTextEditingController({
+  String text,
+  List keys,
+}) {
+  return Hook.use(_TextEditingControllerHook(
+    text: text,
+    keys: keys,
+  ));
+}
+
+class _TextEditingControllerHook extends Hook<TextEditingController> {
+  final String text;
+
+  const _TextEditingControllerHook({
+    this.text,
+    List keys,
+  }) : super(keys: keys);
+
+  @override
+  _TextEditingControllerHookState createState() =>
+      _TextEditingControllerHookState();
+}
+
+class _TextEditingControllerHookState
+    extends HookState<TextEditingController, _TextEditingControllerHook> {
+  TextEditingController _textEditingController;
+
+  @override
+  void didUpdateHook(_TextEditingControllerHook oldHook) {
+    super.didUpdateHook(oldHook);
+
+    if (hook.text != oldHook.text) {
+      _textEditingController.text = hook.text;
+    }
+  }
+
+  @override
+  TextEditingController build(BuildContext context) {
+    _textEditingController ??= TextEditingController(
+      text: hook.text,
+    );
+
+    return _textEditingController;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _textEditingController.dispose();
+  }
+}
