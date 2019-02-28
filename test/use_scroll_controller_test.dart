@@ -80,4 +80,81 @@ void main() {
 
     expect(previous, isNot(controller));
   });
+
+   testWidgets('useScrollController.tracking basic', (tester) async {
+    TrackingScrollController controller;
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        controller = useScrollController.tracking();
+        return Container();
+      }),
+    );
+
+    expect(controller.initialScrollOffset, 0.0);
+    expect(controller.keepScrollOffset, true);
+
+    // dispose
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('useScrollController.tracking complex', (tester) async {
+    TrackingScrollController controller;
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        controller = useScrollController.tracking(
+          initialScrollOffset: 50.0,
+          keepScrollOffset: false,
+          debugLabel: 'Foo',
+        );
+        return Container();
+      }),
+    );
+
+    expect(controller.initialScrollOffset, 50.0);
+    expect(controller.keepScrollOffset, false);
+    expect(controller.debugLabel, 'Foo');
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        controller = useScrollController.tracking(
+          initialScrollOffset: 20.0,
+          keepScrollOffset: true,
+          debugLabel: 'Bar',
+        );
+        return Container();
+      }),
+    );
+
+    expect(controller.initialScrollOffset, 50.0);
+    expect(controller.keepScrollOffset, false);
+    expect(controller.debugLabel, 'Foo');
+
+    // dispose
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('useScrollController.tracking pass down keys', (tester) async {
+    List keys;
+    TrackingScrollController controller;
+    await tester.pumpWidget(HookBuilder(
+      builder: (context) {
+        controller = useScrollController.tracking(keys: keys);
+        return Container();
+      },
+    ));
+
+    final previous = controller;
+    keys = <dynamic>[];
+
+    await tester.pumpWidget(HookBuilder(
+      builder: (context) {
+        controller = useScrollController.tracking(keys: keys);
+        return Container();
+      },
+    ));
+
+    expect(previous, isNot(controller));
+  });
 }

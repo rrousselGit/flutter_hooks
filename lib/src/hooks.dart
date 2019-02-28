@@ -851,24 +851,57 @@ class _UseValueNotiferHookState<T>
   }
 }
 
-/// Creates an [ScrollController] automatically disposed.
-///
-/// [initialScrollOffset], [keepScrollOffset] and [debugLabel] are ignored after the first call.
-///
+/// Creates a [ScrollController] automatically disposed.
+/// 
 /// See also:
 ///   * [ScrollController]
-ScrollController useScrollController({
-  String debugLabel,
-  double initialScrollOffset = 0.0,
-  bool keepScrollOffset = true,
-  List keys,
-}) {
-  return Hook.use(_ScrollControllerHook(
-    debugLabel: debugLabel,
-    initialScrollOffset: initialScrollOffset,
-    keepScrollOffset: keepScrollOffset,
-    keys: keys,
-  ));
+final useScrollController = UseScrollController();
+
+/// Using various [ScrollController]s.
+///
+/// See also:
+///   * [call]
+///   * [tracking]
+class UseScrollController {
+  /// Creates an [ScrollController] automatically disposed.
+  ///
+  /// [initialScrollOffset], [keepScrollOffset] and [debugLabel] are ignored after the first call.
+  ///
+  /// See also:
+  ///   * [ScrollController]
+  ScrollController call({
+    String debugLabel,
+    double initialScrollOffset = 0.0,
+    bool keepScrollOffset = true,
+    List keys,
+  }) {
+    return Hook.use(_ScrollControllerHook(
+      debugLabel: debugLabel,
+      initialScrollOffset: initialScrollOffset,
+      keepScrollOffset: keepScrollOffset,
+      keys: keys,
+    ));
+  }
+
+  /// Creates an [TrackingScrollController] automatically disposed.
+  ///
+  /// [initialScrollOffset], [keepScrollOffset] and [debugLabel] are ignored after the first call.
+  ///
+  /// See also:
+  ///   * [TrackingScrollController]
+  TrackingScrollController tracking({
+    String debugLabel,
+    double initialScrollOffset = 0.0,
+    bool keepScrollOffset = true,
+    List keys,
+  }) {
+     return Hook.use(_TrackingScrollControllerHook(
+      debugLabel: debugLabel,
+      initialScrollOffset: initialScrollOffset,
+      keepScrollOffset: keepScrollOffset,
+      keys: keys,
+    ));
+  }
 }
 
 class _ScrollControllerHook extends Hook<ScrollController> {
@@ -905,6 +938,44 @@ class _ScrollControllerHookState
 
   @override
   void dispose() => _scrollController.dispose();
+}
+
+class _TrackingScrollControllerHook extends Hook<TrackingScrollController> {
+  final String debugLabel;
+  final double initialScrollOffset;
+  final bool keepScrollOffset;
+
+  const _TrackingScrollControllerHook({
+    this.debugLabel,
+    this.initialScrollOffset,
+    this.keepScrollOffset,
+    List keys,
+  }) : super(keys: keys);
+
+  @override
+  _TrackingScrollControllerHookState createState() =>
+      _TrackingScrollControllerHookState();
+}
+
+class _TrackingScrollControllerHookState
+    extends HookState<TrackingScrollController, _TrackingScrollControllerHook> {
+  TrackingScrollController _trackingScrollController;
+
+  @override
+  void initHook() {
+    _trackingScrollController = TrackingScrollController(
+      initialScrollOffset: hook.initialScrollOffset,
+      keepScrollOffset: hook.keepScrollOffset,
+      debugLabel: hook.debugLabel,
+    );
+  }
+
+  @override
+  TrackingScrollController build(BuildContext context) =>
+      _trackingScrollController;
+
+  @override
+  void dispose() => _trackingScrollController.dispose();
 }
 
 /// Creates an [TextEditingController] automatically disposed.
@@ -948,13 +1019,67 @@ class _TextEditingControllerHookState
   }
 
   @override
-  void initHook() => _textEditingController ??= TextEditingController(
-      text: hook.text,
-    );
+  void initHook() => _textEditingController = TextEditingController(
+        text: hook.text,
+      );
 
   @override
   TextEditingController build(BuildContext context) => _textEditingController;
 
   @override
   void dispose() => _textEditingController.dispose();
+}
+
+/// Creates an [PageController] automatically disposed.
+///
+/// [initialPage], [viewportFraction] and [keepPage] are ignored after the first call.
+///
+/// See also:
+///   * [PageController]
+PageController usePageController({
+  int initialPage = 0,
+  double viewportFraction = 1.0,
+  bool keepPage = true,
+  List keys,
+}) {
+  return Hook.use(_PageControllerHook(
+    initialPage: initialPage,
+    viewportFraction: viewportFraction,
+    keepPage: keepPage,
+    keys: keys,
+  ));
+}
+
+class _PageControllerHook extends Hook<PageController> {
+  final int initialPage;
+  final double viewportFraction;
+  final bool keepPage;
+
+  const _PageControllerHook({
+    this.initialPage,
+    this.viewportFraction,
+    this.keepPage,
+    List keys,
+  }) : super(keys: keys);
+
+  @override
+  _PageControllerHookState createState() => _PageControllerHookState();
+}
+
+class _PageControllerHookState
+    extends HookState<PageController, _PageControllerHook> {
+  PageController _pageController;
+
+  @override
+  void initHook() => _pageController = PageController(
+      initialPage: hook.initialPage,
+      keepPage:  hook.keepPage,
+      viewportFraction: hook.viewportFraction,
+    );
+
+  @override
+  PageController build(BuildContext context) => _pageController;
+
+  @override
+  void dispose() => _pageController.dispose();
 }
