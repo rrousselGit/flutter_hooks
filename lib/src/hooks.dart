@@ -892,21 +892,19 @@ class _ScrollControllerHookState
   ScrollController _scrollController;
 
   @override
-  ScrollController build(BuildContext context) {
-    _scrollController ??= ScrollController(
+  void initHook() {
+    _scrollController = ScrollController(
       initialScrollOffset: hook.initialScrollOffset,
       keepScrollOffset: hook.keepScrollOffset,
       debugLabel: hook.debugLabel,
     );
-
-    return _scrollController;
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    _scrollController.dispose();
-  }
+  ScrollController build(BuildContext context) => _scrollController;
+
+  @override
+  void dispose() => _scrollController.dispose();
 }
 
 /// Creates an [TextEditingController] automatically disposed.
@@ -944,25 +942,19 @@ class _TextEditingControllerHookState
 
   @override
   void didUpdateHook(_TextEditingControllerHook oldHook) {
-    super.didUpdateHook(oldHook);
-
     if (hook.text != oldHook.text) {
       _textEditingController.text = hook.text;
     }
   }
 
   @override
-  TextEditingController build(BuildContext context) {
-    _textEditingController ??= TextEditingController(
+  void initHook() => _textEditingController ??= TextEditingController(
       text: hook.text,
     );
 
-    return _textEditingController;
-  }
+  @override
+  TextEditingController build(BuildContext context) => _textEditingController;
 
   @override
-  void dispose() {
-    super.dispose();
-    _textEditingController.dispose();
-  }
+  void dispose() => _textEditingController.dispose();
 }
