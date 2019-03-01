@@ -852,7 +852,7 @@ class _UseValueNotiferHookState<T>
 }
 
 /// Creates a [ScrollController] automatically disposed.
-/// 
+///
 /// See also:
 ///   * [ScrollController]
 final useScrollController = UseScrollController();
@@ -895,7 +895,7 @@ class UseScrollController {
     bool keepScrollOffset = true,
     List keys,
   }) {
-     return Hook.use(_TrackingScrollControllerHook(
+    return Hook.use(_TrackingScrollControllerHook(
       debugLabel: debugLabel,
       initialScrollOffset: initialScrollOffset,
       keepScrollOffset: keepScrollOffset,
@@ -1072,14 +1072,83 @@ class _PageControllerHookState
 
   @override
   void initHook() => _pageController = PageController(
-      initialPage: hook.initialPage,
-      keepPage:  hook.keepPage,
-      viewportFraction: hook.viewportFraction,
-    );
+        initialPage: hook.initialPage,
+        keepPage: hook.keepPage,
+        viewportFraction: hook.viewportFraction,
+      );
 
   @override
   PageController build(BuildContext context) => _pageController;
 
   @override
   void dispose() => _pageController.dispose();
+}
+
+/// Defines how a value is interpolated between a [from] value and a [to] value
+/// at the given [time].
+typedef T TweenLerp<T extends dynamic>(T from, T to, double time);
+
+/// Creates a new [Tween] for interpolating a [value] with the previous one according
+/// to a [lerp] function.
+///
+/// Each time the [value] changed, a new [Tween] is returned with its [Tween.begin] affected to
+/// the previous [value] and its [Tween.end] affected to the current [value].
+///
+/// If no [lerp] function is given, a default [Tween] is used.
+///
+/// At first call, [Tween.begin] and [Tween.end] have the initial [value].
+///
+/// See also:
+///   * [Tween]
+///   * [TweenLerp]
+Tween<T> useTween<T extends dynamic>(T value, {TweenLerp<T> lerp}) {
+  return Hook.use(_TweenHook<T>(
+    value: value,
+    lerp: lerp,
+  ));
+}
+
+class _TweenHook<T> extends Hook<Tween<T>> {
+  final T value;
+  final TweenLerp<T> lerp;
+
+  const _TweenHook({
+    this.value,
+    this.lerp,
+    List keys,
+  }) : super(keys: keys);
+
+  @override
+  _TweenHookState<T> createState() => _TweenHookState<T>();
+}
+
+class _CustomTween<T extends dynamic> extends Tween<T> {
+  final TweenLerp<T> _lerp;
+  _CustomTween({T begin, T end, TweenLerp<T> lerp})
+      : _lerp = lerp,
+        super(begin: begin, end: end);
+
+  @override
+  T lerp(double t) => this._lerp(begin, end, t);
+}
+
+class _TweenHookState<T> extends HookState<Tween<T>, _TweenHook<T>> {
+  Tween<T> _tween;
+
+  Tween<T> _createTween(T begin) => hook.lerp == null
+      ? Tween<T>(begin: begin, end: hook.value)
+      : _CustomTween(begin: begin, end: hook.value, lerp: hook.lerp);
+
+  @override
+  void initHook() => _tween = _createTween(hook.value);
+
+  @override
+  void didUpdateHook(_TweenHook<T> oldHook) {
+    if (hook.value != oldHook.value || hook.lerp != oldHook.lerp) {
+      _tween = _createTween(oldHook.value);
+    }
+  }
+
+  @override
+  Tween<T> build(BuildContext context) => _tween;
 }
