@@ -1088,33 +1088,168 @@ class _PageControllerHookState
 /// at the given [time].
 typedef T TweenLerp<T extends dynamic>(T from, T to, double time);
 
-/// Creates a new [Tween] for interpolating a [value] with the previous one according
-/// to a [lerp] function.
-///
-/// Each time the [value] changed, a new [Tween] is returned with its [Tween.begin] affected to
-/// the previous [value] and its [Tween.end] affected to the current [value].
-///
-/// If no [lerp] function is given, a default [Tween] is used.
-///
-/// At first call, [Tween.begin] and [Tween.end] have the initial [value].
+/// Creates a [Tween] for interpolating a value.
 ///
 /// See also:
 ///   * [Tween]
-///   * [TweenLerp]
-Tween<T> useTween<T extends dynamic>(T value, {TweenLerp<T> lerp}) {
-  return Hook.use(_TweenHook<T>(
-    value: value,
-    lerp: lerp,
-  ));
+final useTween = UseTween();
+
+/// Using various [Tween]s.
+///
+/// See also:
+///   * [call]
+///   * [color]
+class UseTween {
+  /// Creates a new [Tween] for interpolating a [value] with the previous one according
+  /// to a [lerp] function.
+  ///
+  /// Each time the [value] changed, a new [Tween] is returned with its [Tween.begin] affected to
+  /// the previous [value] and its [Tween.end] affected to the current [value].
+  ///
+  /// If no [lerp] function is given, a default [Tween] is used.
+  ///
+  /// At first call, [Tween.begin] and [Tween.end] have the initial [value].
+  ///
+  /// See also:
+  ///   * [Tween]
+  ///   * [TweenLerp]
+  Tween<T> call<T extends dynamic>(T value, {TweenLerp<T> lerp}) {
+    return Hook.use(_TweenHook<T>(
+      value: value,
+      builder: lerp == null ? null : (begin,end) => _CustomTween(begin: begin, end: end, lerp: lerp),
+    ));
+  }
+
+  /// Creates a new [Tween] for interpolating a [Color].
+  ///
+  /// See also:
+  ///   * [call]
+  ///   * [Color]
+  Tween<Color> color(Color value) {
+    return Hook.use(_TweenHook<Color>(
+      value: value,
+      builder: (begin, end) => ColorTween(begin: begin, end: end),
+    ));
+  }
+
+  /// Creates a new [Tween] for interpolating an [EdgeInsets].
+  ///
+  /// See also:
+  ///   * [call]
+  ///   * [EdgeInsets]
+  Tween<EdgeInsets> edgeInsets(EdgeInsets value) {
+    return Hook.use(_TweenHook<EdgeInsets>(
+      value: value,
+      builder: (begin, end) => EdgeInsetsTween(begin: begin, end: end),
+    ));
+  }
+
+  /// Creates a new [Tween] for interpolating a [TextStyle].
+  ///
+  /// See also:
+  ///   * [call]
+  ///   * [TextStyle]
+  Tween<TextStyle> textStyle(TextStyle value) {
+    return Hook.use(_TweenHook<TextStyle>(
+      value: value,
+      builder: (begin, end) => TextStyleTween(begin: begin, end: end),
+    ));
+  }
+
+  /// Creates a new [Tween] for interpolating a [Border].
+  ///
+  /// See also:
+  ///   * [call]
+  ///   * [Border]
+  Tween<Border> border(Border value) {
+    return Hook.use(_TweenHook<Border>(
+      value: value,
+      builder: (begin, end) => BorderTween(begin: begin, end: end),
+    ));
+  }
+
+  /// Creates a new [Tween] for interpolating an [Alignment].
+  ///
+  /// See also:
+  ///   * [call]
+  ///   * [Alignment]
+  Tween<Alignment> alignment(Alignment value) {
+    return Hook.use(_TweenHook<Alignment>(
+      value: value,
+      builder: (begin, end) => AlignmentTween(begin: begin, end: end),
+    ));
+  }
+
+  /// Creates a new [Tween] for interpolating an [Alignment].
+  ///
+  /// See also:
+  ///   * [call]
+  ///   * [BorderRadius]
+  Tween<BorderRadius> borderRadius(BorderRadius value) {
+    return Hook.use(_TweenHook<BorderRadius>(
+      value: value,
+      builder: (begin, end) => BorderRadiusTween(begin: begin, end: end),
+    ));
+  }
+
+  /// Creates a new [Tween] for interpolating an [BoxConstraints].
+  ///
+  /// See also:
+  ///   * [call]
+  ///   * [BoxConstraints]
+  Tween<BoxConstraints> boxConstraints(BoxConstraints value) {
+    return Hook.use(_TweenHook<BoxConstraints>(
+      value: value,
+      builder: (begin, end) => BoxConstraintsTween(begin: begin, end: end),
+    ));
+  }
+
+  /// Creates a new [Tween] for interpolating an [Size].
+  ///
+  /// See also:
+  ///   * [call]
+  ///   * [Size]
+  Tween<Size> size(Size value) {
+    return Hook.use(_TweenHook<Size>(
+      value: value,
+      builder: (begin, end) => SizeTween(begin: begin, end: end),
+    ));
+  }
+
+  /// Creates a new [Tween] for interpolating an [Rect].
+  ///
+  /// See also:
+  ///   * [call]
+  ///   * [Rect]
+  Tween<Rect> rect(Rect value) {
+    return Hook.use(_TweenHook<Rect>(
+      value: value,
+      builder: (begin, end) => RectTween(begin: begin, end: end),
+    ));
+  }
+
+  /// Creates a new [Tween] for interpolating an [RelativeRect].
+  ///
+  /// See also:
+  ///   * [call]
+  ///   * [RelativeRect]
+  Tween<RelativeRect> relativeRect(RelativeRect value) {
+    return Hook.use(_TweenHook<RelativeRect>(
+      value: value,
+      builder: (begin, end) => RelativeRectTween(begin: begin, end: end),
+    ));
+  }
 }
+
+typedef Tween<T> _TweenBuilder<T extends dynamic>(T begin, T end);
 
 class _TweenHook<T> extends Hook<Tween<T>> {
   final T value;
-  final TweenLerp<T> lerp;
+  final _TweenBuilder<T> builder;
 
   const _TweenHook({
     this.value,
-    this.lerp,
+    this.builder,
     List keys,
   }) : super(keys: keys);
 
@@ -1135,16 +1270,21 @@ class _CustomTween<T extends dynamic> extends Tween<T> {
 class _TweenHookState<T> extends HookState<Tween<T>, _TweenHook<T>> {
   Tween<T> _tween;
 
-  Tween<T> _createTween(T begin) => hook.lerp == null
-      ? Tween<T>(begin: begin, end: hook.value)
-      : _CustomTween(begin: begin, end: hook.value, lerp: hook.lerp);
+  Tween<T> _createTween(T begin) {
+    if (hook.builder != null) {
+      return hook.builder(begin, hook.value);
+    }
+
+    return Tween<T>(begin: begin, end: hook.value);
+  }
 
   @override
   void initHook() => _tween = _createTween(hook.value);
 
   @override
   void didUpdateHook(_TweenHook<T> oldHook) {
-    if (hook.value != oldHook.value || hook.lerp != oldHook.lerp) {
+    if (hook.value != oldHook.value ||
+        hook.builder != oldHook.builder) {
       _tween = _createTween(oldHook.value);
     }
   }
