@@ -5,7 +5,7 @@ import 'mock.dart';
 
 final effect = Func0<VoidCallback>();
 final unrelated = Func0<void>();
-List parameters;
+List<Object> parameters;
 
 Widget builder() => HookBuilder(builder: (context) {
       useEffect(effect.call, parameters);
@@ -72,7 +72,7 @@ void main() {
     ]);
     verifyNoMoreInteractions(effect);
 
-    parameters = <dynamic>['foo'];
+    parameters = ['foo'];
     await tester.pumpWidget(builder());
 
     verifyInOrder([
@@ -83,7 +83,7 @@ void main() {
   });
 
   testWidgets('useEffect adding parameters call callback', (tester) async {
-    parameters = <dynamic>['foo'];
+    parameters = ['foo'];
     await tester.pumpWidget(builder());
 
     verifyInOrder([
@@ -92,7 +92,7 @@ void main() {
     ]);
     verifyNoMoreInteractions(effect);
 
-    parameters = <dynamic>['foo', 42];
+    parameters = ['foo', 42];
     await tester.pumpWidget(builder());
 
     verifyInOrder([
@@ -103,7 +103,7 @@ void main() {
   });
 
   testWidgets('useEffect removing parameters call callback', (tester) async {
-    parameters = <dynamic>['foo'];
+    parameters = ['foo'];
     await tester.pumpWidget(builder());
 
     verifyInOrder([
@@ -112,7 +112,7 @@ void main() {
     ]);
     verifyNoMoreInteractions(effect);
 
-    parameters = <dynamic>[];
+    parameters = [];
     await tester.pumpWidget(builder());
 
     verifyInOrder([
@@ -122,7 +122,7 @@ void main() {
     verifyNoMoreInteractions(effect);
   });
   testWidgets('useEffect changing parameters call callback', (tester) async {
-    parameters = <dynamic>['foo'];
+    parameters = ['foo'];
     await tester.pumpWidget(builder());
 
     verifyInOrder([
@@ -131,7 +131,7 @@ void main() {
     ]);
     verifyNoMoreInteractions(effect);
 
-    parameters = <dynamic>['bar'];
+    parameters = ['bar'];
     await tester.pumpWidget(builder());
 
     verifyInOrder([
@@ -143,7 +143,7 @@ void main() {
   testWidgets(
       'useEffect with same parameters but different arrays don t call callback',
       (tester) async {
-    parameters = <dynamic>['foo'];
+    parameters = ['foo'];
     await tester.pumpWidget(builder());
 
     verifyInOrder([
@@ -152,7 +152,7 @@ void main() {
     ]);
     verifyNoMoreInteractions(effect);
 
-    parameters = <dynamic>['foo'];
+    parameters = ['foo'];
     await tester.pumpWidget(builder());
 
     verifyNoMoreInteractions(effect);
@@ -160,7 +160,7 @@ void main() {
   testWidgets(
       'useEffect with same array but different parameters don t call callback',
       (tester) async {
-    parameters = <dynamic>['foo'];
+    parameters = ['foo'];
     await tester.pumpWidget(builder());
 
     verifyInOrder([
@@ -178,14 +178,14 @@ void main() {
   testWidgets('useEffect disposer called whenever callback called',
       (tester) async {
     final effect = Func0<VoidCallback>();
-    List parameters;
+    List<Object> parameters;
 
     builder() => HookBuilder(builder: (context) {
           useEffect(effect.call, parameters);
           return Container();
         });
 
-    parameters = <dynamic>['foo'];
+    parameters = ['foo'];
     final disposerA = Func0<void>();
     when(effect.call()).thenReturn(disposerA);
 
@@ -200,7 +200,7 @@ void main() {
     verifyNoMoreInteractions(effect);
     verifyZeroInteractions(disposerA);
 
-    parameters = <dynamic>['bar'];
+    parameters = ['bar'];
     final disposerB = Func0<void>();
     when(effect.call()).thenReturn(disposerB);
 

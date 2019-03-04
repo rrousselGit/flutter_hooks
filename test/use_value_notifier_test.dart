@@ -103,7 +103,7 @@ void main() {
       await tester.pumpWidget(HookBuilder(
         builder: (context) {
           previous = state;
-          state = useValueNotifier(42, <dynamic>[42]);
+          state = useValueNotifier(42, [42]);
           return Container();
         },
       ));
@@ -117,7 +117,7 @@ void main() {
 
       await tester.pumpWidget(HookBuilder(
         builder: (context) {
-          state = useValueNotifier(null, <dynamic>[42]);
+          state = useValueNotifier(null, [42]);
           return Container();
         },
       ));
@@ -125,7 +125,7 @@ void main() {
       await tester.pumpWidget(HookBuilder(
         builder: (context) {
           previous = state;
-          state = useValueNotifier(42, <dynamic>[42]);
+          state = useValueNotifier(42, [42]);
           return Container();
         },
       ));

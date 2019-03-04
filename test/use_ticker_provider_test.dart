@@ -63,7 +63,7 @@ void main() {
 
   testWidgets('useSingleTickerProvider pass down keys', (tester) async {
     TickerProvider provider;
-    List keys;
+    List<Object> keys;
 
     await tester.pumpWidget(HookBuilder(builder: (context) {
       provider = useSingleTickerProvider(keys: keys);
@@ -71,7 +71,7 @@ void main() {
     }));
 
     final previousProvider = provider;
-    keys = <dynamic>[];
+    keys = [];
 
     await tester.pumpWidget(HookBuilder(builder: (context) {
       provider = useSingleTickerProvider(keys: keys);
