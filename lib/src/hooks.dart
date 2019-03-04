@@ -114,7 +114,7 @@ class _ReducerdHookState<State, Action>
 ///  * [keys] can be use to specify a list of objects for [useMemoized] to watch.
 /// So that whenever [Object.operator==] fails on any parameter or if the length of [keys] changes,
 /// [valueBuilder] is called again.
-T useMemoized<T>(T Function() valueBuilder, [List keys = const <dynamic>[]]) {
+T useMemoized<T>(T Function() valueBuilder, [List<Object> keys = const []]) {
   return Hook.use(_MemoizedHook(
     valueBuilder,
     keys: keys,
@@ -131,7 +131,7 @@ BuildContext useContext() {
 class _MemoizedHook<T> extends Hook<T> {
   final T Function() valueBuilder;
 
-  const _MemoizedHook(this.valueBuilder, {List keys = const <dynamic>[]})
+  const _MemoizedHook(this.valueBuilder, {List<Object> keys = const []})
       : assert(valueBuilder != null),
         assert(keys != null),
         super(keys: keys);
@@ -245,7 +245,7 @@ class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
 ///
 /// See also:
 ///  * [SingleTickerProviderStateMixin]
-TickerProvider useSingleTickerProvider({List keys}) {
+TickerProvider useSingleTickerProvider({List<Object> keys}) {
   return Hook.use(
     keys != null
         ? _SingleTickerProviderHook(keys)
@@ -254,7 +254,7 @@ TickerProvider useSingleTickerProvider({List keys}) {
 }
 
 class _SingleTickerProviderHook extends Hook<TickerProvider> {
-  const _SingleTickerProviderHook([List keys]) : super(keys: keys);
+  const _SingleTickerProviderHook([List<Object> keys]) : super(keys: keys);
 
   @override
   _TickerProviderHookState createState() => _TickerProviderHookState();
@@ -321,7 +321,7 @@ AnimationController useAnimationController({
   double upperBound = 1,
   TickerProvider vsync,
   AnimationBehavior animationBehavior = AnimationBehavior.normal,
-  List keys,
+  List<Object> keys,
 }) {
   return Hook.use(_AnimationControllerHook(
     duration: duration,
@@ -352,7 +352,7 @@ class _AnimationControllerHook extends Hook<AnimationController> {
     this.upperBound,
     this.vsync,
     this.animationBehavior,
-    List keys,
+    List<Object> keys,
   }) : super(keys: keys);
 
   @override
@@ -684,14 +684,14 @@ typedef Dispose = void Function();
 /// [useEffect] is called synchronously on every [HookWidget.build], unless
 /// [keys] is specified. In which case [useEffect] is called again only if
 /// any value inside [keys] as changed.
-void useEffect(Dispose Function() effect, [List keys]) {
+void useEffect(Dispose Function() effect, [List<Object> keys]) {
   Hook.use(_EffectHook(effect, keys));
 }
 
 class _EffectHook extends Hook<void> {
   final Dispose Function() effect;
 
-  const _EffectHook(this.effect, [List keys])
+  const _EffectHook(this.effect, [List<Object> keys])
       : assert(effect != null),
         super(keys: keys);
 
@@ -745,7 +745,7 @@ StreamController<T> useStreamController<T>(
     {bool sync = false,
     VoidCallback onListen,
     VoidCallback onCancel,
-    List keys}) {
+    List<Object> keys}) {
   return Hook.use(_StreamControllerHook(
     onCancel: onCancel,
     onListen: onListen,
@@ -760,7 +760,7 @@ class _StreamControllerHook<T> extends Hook<StreamController<T>> {
   final VoidCallback onCancel;
 
   const _StreamControllerHook(
-      {this.sync = false, this.onListen, this.onCancel, List keys})
+      {this.sync = false, this.onListen, this.onCancel, List<Object> keys})
       : super(keys: keys);
 
   @override
@@ -813,7 +813,7 @@ class _StreamControllerHookState<T>
 /// See also:
 ///   * [ValueNotifier]
 ///   * [useValueListenable]
-ValueNotifier<T> useValueNotifier<T>([T intialData, List keys]) {
+ValueNotifier<T> useValueNotifier<T>([T intialData, List<Object> keys]) {
   return Hook.use(_ValueNotifierHook(
     initialData: intialData,
     keys: keys,
@@ -823,7 +823,7 @@ ValueNotifier<T> useValueNotifier<T>([T intialData, List keys]) {
 class _ValueNotifierHook<T> extends Hook<ValueNotifier<T>> {
   final T initialData;
 
-  const _ValueNotifierHook({List keys, this.initialData}) : super(keys: keys);
+  const _ValueNotifierHook({List<Object> keys, this.initialData}) : super(keys: keys);
 
   @override
   _UseValueNotiferHookState<T> createState() => _UseValueNotiferHookState<T>();

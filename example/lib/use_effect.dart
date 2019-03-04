@@ -49,7 +49,7 @@ StreamController<int> _useLocalStorageInt(
   int defaultValue = 0,
 }) {
   // Custom hooks can use additional hooks internally!
-  final controller = useStreamController<int>(keys: <dynamic>[key]);
+  final controller = useStreamController<int>(keys: [key]);
 
   // Pass a callback to the useEffect hook. This function should be called on
   // first build and every time the controller or key changes
@@ -68,7 +68,7 @@ StreamController<int> _useLocalStorageInt(
     // Pass the controller and key to the useEffect hook. This will ensure the
     // useEffect hook is only called the first build or when one of the the
     // values changes.
-    <dynamic>[controller, key],
+    [controller, key],
   );
 
   // Load the initial value from local storage and add it as the initial value
@@ -83,7 +83,7 @@ StreamController<int> _useLocalStorageInt(
     // Pass the controller and key to the useEffect hook. This will ensure the
     // useEffect hook is only called the first build or when one of the the
     // values changes.
-    <dynamic>[controller, key],
+    [controller, key],
   );
 
   // Finally, return the StreamController. This allows users to add values from

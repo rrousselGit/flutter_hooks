@@ -145,7 +145,7 @@ void main() {
   });
 
   testWidgets('useAnimationController pass down keys', (tester) async {
-    List keys;
+    List<Object> keys;
     AnimationController controller;
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
@@ -155,7 +155,7 @@ void main() {
     ));
 
     final previous = controller;
-    keys = <dynamic>[];
+    keys = [];
 
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
