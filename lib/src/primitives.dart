@@ -6,7 +6,8 @@ part of 'hooks.dart';
 /// Later, when [HookWidget] rebuilds, the call to [useMemoized] will return the previously created instance without calling [valueBuilder].
 ///
 /// A later call of [useMemoized] with different [keys] will call [useMemoized] again to create a new instance.
-T useMemoized<T>(T Function() valueBuilder, [List keys = const <dynamic>[]]) {
+T useMemoized<T>(T Function() valueBuilder,
+    [List<Object> keys = const <dynamic>[]]) {
   return Hook.use(_MemoizedHook(
     valueBuilder,
     keys: keys,
@@ -16,7 +17,8 @@ T useMemoized<T>(T Function() valueBuilder, [List keys = const <dynamic>[]]) {
 class _MemoizedHook<T> extends Hook<T> {
   final T Function() valueBuilder;
 
-  const _MemoizedHook(this.valueBuilder, {List keys = const <dynamic>[]})
+  const _MemoizedHook(this.valueBuilder,
+      {List<Object> keys = const <dynamic>[]})
       : assert(valueBuilder != null),
         assert(keys != null),
         super(keys: keys);
@@ -121,14 +123,14 @@ typedef Dispose = void Function();
 ///   [stream],
 /// );
 /// ```
-void useEffect(Dispose Function() effect, [List keys]) {
+void useEffect(Dispose Function() effect, [List<Object> keys]) {
   Hook.use(_EffectHook(effect, keys));
 }
 
 class _EffectHook extends Hook<void> {
   final Dispose Function() effect;
 
-  const _EffectHook(this.effect, [List keys])
+  const _EffectHook(this.effect, [List<Object> keys])
       : assert(effect != null),
         super(keys: keys);
 

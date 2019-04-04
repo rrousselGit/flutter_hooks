@@ -1,10 +1,11 @@
 ## 0.3.0:
 
+- FIX: use List<Object> instead of List<dynamic> for keys. This fixes `implicit-dynamic` rule mistakenly reporting errors.
 - NEW: Hooks are now visible on `HookElement` through `debugHooks` in development, for testing purposes.
 - NEW: If a widget throws on the first build or after a hot-reload, next rebuilds can still add/edit hooks until one `build` finishes entirely.
 - NEW: new life-cycle availble on `HookState`: `didBuild`.
-This life-cycle is called synchronously right after `build` method of `HookWidget` finished.
-- NEW: new `reassemble` life-cycle on `HookState`. It is equivalent to `State.ressemble` of statefulwidgets. 
+  This life-cycle is called synchronously right after `build` method of `HookWidget` finished.
+- NEW: new `reassemble` life-cycle on `HookState`. It is equivalent to `State.ressemble` of statefulwidgets.
 - NEW: `useStream` and `useFuture` now have an optional `preserveState` flag.
   This toggle how these hooks behaves when changing the stream/future:
   If true (default) they keep the previous value, else they reset to initialState.

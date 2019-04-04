@@ -133,7 +133,7 @@ abstract class Hook<R> {
   /// When a new [Hook] is created, the framework checks if keys matches using [Hook.shouldPreserveState].
   /// If they don't, the previously created [HookState] is disposed, and a new one is created
   /// using [Hook.createState], followed by [HookState.initHook].
-  final List keys;
+  final List<Object> keys;
 
   /// The algorithm to determine if a [HookState] should be reused or disposed.
   ///

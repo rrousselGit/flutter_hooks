@@ -169,8 +169,8 @@ void main() {
   });
 
   testWidgets('hooks can be disposed independently with keys', (tester) async {
-    List keys;
-    List keys2;
+    List<Object> keys;
+    List<Object> keys2;
 
     final dispose2 = Func0<void>();
     when(builder.call(any)).thenAnswer((invocation) {
@@ -183,20 +183,20 @@ void main() {
     verifyZeroInteractions(dispose);
     verifyZeroInteractions(dispose2);
 
-    keys = <dynamic>[];
+    keys = [];
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
     verify(dispose.call()).called(1);
     verifyZeroInteractions(dispose2);
 
-    keys2 = <dynamic>[];
+    keys2 = [];
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
     verify(dispose2.call()).called(1);
     verifyNoMoreInteractions(dispose);
   });
   testWidgets('keys recreate hookstate', (tester) async {
-    List keys;
+    List<Object> keys;
 
     final createState = Func0<HookStateTest<int>>();
     when(createState.call()).thenReturn(HookStateTest<int>());
@@ -235,7 +235,7 @@ void main() {
     verifyNoMoreHookInteration();
 
     // from null to array
-    keys = <dynamic>[];
+    keys = [];
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
     verifyInOrder([
@@ -260,7 +260,7 @@ void main() {
     verifyNoMoreHookInteration();
 
     // new array but content equal
-    keys = <dynamic>[42];
+    keys = [42];
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
@@ -272,7 +272,7 @@ void main() {
     verifyNoMoreHookInteration();
 
     // new array new content
-    keys = <dynamic>[44];
+    keys = [44];
 
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
