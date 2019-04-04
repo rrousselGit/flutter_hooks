@@ -3,11 +3,10 @@ part of 'hooks.dart';
 /// Subscribes to a [ValueListenable] and return its value.
 ///
 /// See also:
-///   * [ValueListenable]
-///   * [useListenable], [useAnimation], [useStream]
+///   * [ValueListenable], the created object
+///   * [useListenable]
 T useValueListenable<T>(ValueListenable<T> valueListenable) {
-  useListenable(valueListenable);
-  return valueListenable.value;
+  return useListenable(valueListenable).value;
 }
 
 /// Subscribes to a [Listenable] and mark the widget as needing build
@@ -15,9 +14,10 @@ T useValueListenable<T>(ValueListenable<T> valueListenable) {
 ///
 /// See also:
 ///   * [Listenable]
-///   * [useValueListenable], [useAnimation], [useStream]
-void useListenable(Listenable listenable) {
+///   * [useValueListenable], [useAnimation]
+T useListenable<T extends Listenable>(T listenable) {
   Hook.use(_ListenableHook(listenable));
+  return listenable;
 }
 
 class _ListenableHook extends Hook<void> {

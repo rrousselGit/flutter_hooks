@@ -21,8 +21,8 @@ T useAnimation<T>(Animation<T> animation) {
 /// [initialValue], [lowerBound], [upperBound] and [debugLabel] are ignored after the first call.
 ///
 /// See also:
-///   * [AnimationController]
-///   * [useAnimation]
+///   * [AnimationController], the created object.
+///   * [useAnimation], to listen to the created [AnimationController].
 AnimationController useAnimationController({
   Duration duration,
   String debugLabel,

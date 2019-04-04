@@ -6,8 +6,8 @@ part of 'hooks.dart';
 /// the [Future] instance.
 ///
 /// See also:
-///   * [Future]
-///   * [useValueListenable], [useListenable], [useAnimation]
+///   * [Future], the listened object.
+///   * [useStream], similar to [useFuture] but for [Stream].
 AsyncSnapshot<T> useFuture<T>(Future<T> future,
     {T initialData, bool preserveState = true}) {
   return Hook.use(_FutureHook(future,
@@ -97,8 +97,8 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
 /// Subscribes to a [Stream] and return its current state in an [AsyncSnapshot].
 ///
 /// See also:
-///   * [Stream]
-///   * [useValueListenable], [useListenable], [useAnimation]
+///   * [Stream], the object listened.
+///   * [useFuture], similar to [useStream] but for [Future].
 AsyncSnapshot<T> useStream<T>(Stream<T> stream,
     {T initialData, bool preserveState = true}) {
   return Hook.use(_StreamHook(
@@ -208,8 +208,8 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
 /// Creates a [StreamController] automatically disposed.
 ///
 /// See also:
-///   * [StreamController]
-///   * [useStream]
+///   * [StreamController], the created object
+///   * [useStream], to listen to the created [StreamController]
 StreamController<T> useStreamController<T>(
     {bool sync = false,
     VoidCallback onListen,
