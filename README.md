@@ -304,30 +304,36 @@ They will take care of creating/updating/disposing an object.
 
 | name                                                                                                                      | description                                                                  |
 | ------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| [useStream](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useStream.html)                     | Subscribes to a [Stream] and return its current state in an [AsyncSnapshot]. |
-| [useStreamController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useStreamController.html) | Creates a [StreamController] automatically disposed.                         |
-| [useFuture](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useFuture.html)                     | Subscribes to a [Future] and return its current state in an [AsyncSnapshot]. |
+| [useStream](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useStream.html)                     | Subscribes to a `Stream` and return its current state in an `AsyncSnapshot`. |
+| [useStreamController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useStreamController.html) | Creates a `StreamController` automatically disposed.                         |
+| [useFuture](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useFuture.html)                     | Subscribes to a `Future` and return its current state in an `AsyncSnapshot`. |
 
 #### Animation related:
 
 | name                                                                                                                              | description                                              |
 | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| [useSingleTickerProvider](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useSingleTickerProvider.html) | Creates a single usage [TickerProvider].                 |
-| [useAnimationController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useAnimationController.html)   | Creates an [AnimationController] automatically disposed. |
-| [useAnimation](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useAnimation.html)                       | Subscribes to an [Animation] and return its value.       |
+| [useSingleTickerProvider](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useSingleTickerProvider.html) | Creates a single usage `TickerProvider`.                 |
+| [useAnimationController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useAnimationController.html)   | Creates an `AnimationController` automatically disposed. |
+| [useAnimation](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useAnimation.html)                       | Subscribes to an `Animation` and return its value.       |
 
 #### Listenable related:
 
 | name                                                                                                                    | description                                                                                        |
 | ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| [useListenable](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useListenable.html)           | Subscribes to a [Listenable] and mark the widget as needing build whenever the listener is called. |
-| [useValueNotifier](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useValueNotifier.html)     | Creates a [ValueNotifier] automatically disposed.                                                  |
-| [useValueListenable](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useValueListenable.html) | Subscribes to a [ValueListenable] and return its value.                                            |
+| [useListenable](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useListenable.html)           | Subscribes to a `Listenable` and mark the widget as needing build whenever the listener is called. |
+| [useValueNotifier](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useValueNotifier.html)     | Creates a `ValueNotifier` automatically disposed.                                                  |
+| [useValueListenable](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useValueListenable.html) | Subscribes to a `ValueListenable` and return its value.                                            |
 
-### Misc
+#### Form related:
+
+| name | description |
+| ---- | ----------- |
+| foo  | bar         |
+
+#### Misc
 
 A series of hooks with no particular theme.
 
 | name                                                                                                    | description                                           |
 | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| [useReducer](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useReducer.html) | An alternative to [useState] for more complex states. |
+| [useReducer](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useReducer.html) | An alternative to `useState` for more complex states. |
