@@ -42,7 +42,7 @@ class HookTest<R> extends Hook<R> {
     this.reassemble,
     this.createStateFn,
     this.didBuild,
-    List keys,
+    List<Object> keys,
   }) : super(keys: keys);
 
   @override

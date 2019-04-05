@@ -1,10 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
-
-part 'hooks.dart';
 
 /// [Hook] is similar to a [StatelessWidget], but is not associated
 /// to an [Element].
@@ -492,4 +488,32 @@ class _HookWidgetState extends State<HookWidget> {
   Widget build(BuildContext context) {
     return widget.build(context);
   }
+}
+
+/// Obtain the [BuildContext] of the building [HookWidget].
+BuildContext useContext() {
+  assert(HookElement._currentContext != null,
+      '`useContext` can only be called from the build method of HookWidget');
+  return HookElement._currentContext;
+}
+
+/// A [HookWidget] that defer its [HookWidget.build] to a callback
+class HookBuilder extends HookWidget {
+  /// The callback used by [HookBuilder] to create a widget.
+  ///
+  /// If a [Hook] asks for a rebuild, [builder] will be called again.
+  /// [builder] must not return `null`.
+  final Widget Function(BuildContext context) builder;
+
+  /// Creates a widget that delegates its build to a callback.
+  ///
+  /// The [builder] argument must not be null.
+  const HookBuilder({
+    @required this.builder,
+    Key key,
+  })  : assert(builder != null),
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) => builder(context);
 }
