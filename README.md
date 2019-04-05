@@ -279,160 +279,55 @@ class _TimeAliveState<T> extends HookState<void, _TimeAlive<T>> {
 
 ## Existing hooks
 
-Flutter_hooks comes with a list of reusable hooks already provided. They are static methods free to use that includes:
+Flutter_hooks comes with a list of reusable hooks already provided.
 
-- useEffect
+They are divided in different kinds:
 
-Useful to trigger side effects in a widget and dispose objects. It takes a callback and calls it immediately. That callback may optionally return a function, which will be called when the widget is disposed.
+### Primitives
 
-By default, the callback is called on every `build`, but it is possible to override that behavior by passing a list of objects as the second parameter. The callback will then be called only when something inside the list has changed.
+A set of low level hooks that interacts with the different life-cycles of a widget
 
-The following call to `useEffect` subscribes to a `Stream` and cancel the subscription when the widget is disposed:
+| name                                                                                                              | description                                                      |
+| ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| [useEffect](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useEffect.html)             | Useful for side-effects and optionally canceling them.           |
+| [useState](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useState.html)               | Create variable and subscribes to it.                            |
+| [useMemoized](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useMemoized.html)         | Cache the instance of a complex object.                          |
+| [useContext](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useContext.html)           | Obtain the `BuildContext` of the building `HookWidget`.          |
+| [useValueChanged](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useValueChanged.html) | Watches a value and calls a callback whenever the value changed. |
 
-```dart
-Stream stream;
-useEffect(() {
-    final subscription = stream.listen(print);
-    // This will cancel the subscription when the widget is disposed
-    // or if the callback is called again.
-    return subscription.cancel;
-  },
-  // when the stream change, useEffect will call the callback again.
-  [stream],
-);
-```
+### Object binding
 
-- useState
+This category of hooks allows manipulating existing Flutter/Dart objects with hooks.
+They will take care of creating/updating/disposing an object.
 
-Defines + watch a variable and whenever the value change, calls `setState`.
+#### dart:async related:
 
-The following code uses `useState` to make a counter application:
+| name                                                                                                                      | description                                                                  |
+| ------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| [useStream](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useStream.html)                     | Subscribes to a [Stream] and return its current state in an [AsyncSnapshot]. |
+| [useStreamController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useStreamController.html) | Creates a [StreamController] automatically disposed.                         |
+| [useFuture](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useFuture.html)                     | Subscribes to a [Future] and return its current state in an [AsyncSnapshot]. |
 
-```dart
-class Counter extends HookWidget {
-  @override
-  Widget build(BuildContext context) {
-    final counter = useState(0);
+#### Animation related:
 
-    return GestureDetector(
-      // automatically triggers a rebuild of Counter widget
-      onTap: () => counter.value++,
-      child: Text(counter.value.toString()),
-    );
-  }
-}
-```
+| name                                                                                                                              | description                                              |
+| --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| [useSingleTickerProvider](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useSingleTickerProvider.html) | Creates a single usage [TickerProvider].                 |
+| [useAnimationController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useAnimationController.html)   | Creates an [AnimationController] automatically disposed. |
+| [useAnimation](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useAnimation.html)                       | Subscribes to an [Animation] and return its value.       |
 
-- useReducer
+#### Listenable related:
 
-An alternative to useState for more complex states.
+| name                                                                                                                    | description                                                                                        |
+| ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| [useListenable](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useListenable.html)           | Subscribes to a [Listenable] and mark the widget as needing build whenever the listener is called. |
+| [useValueNotifier](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useValueNotifier.html)     | Creates a [ValueNotifier] automatically disposed.                                                  |
+| [useValueListenable](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useValueListenable.html) | Subscribes to a [ValueListenable] and return its value.                                            |
 
-`useReducer` manages an read only state that can be updated by dispatching actions which are interpreted by a `Reducer`.
+### Misc
 
-The following makes a counter app with both a "+1" and "-1" button:
+A series of hooks with no particular theme.
 
-```dart
-class Counter extends HookWidget {
-  @override
-  Widget build(BuildContext context) {
-    final counter = useReducer(_counterReducer, initialState: 0);
-
-    return Column(
-      children: <Widget>[
-        Text(counter.state.toString()),
-        IconButton(
-          icon: const Icon(Icons.add),
-          onPressed: () => counter.dispatch('increment'),
-        ),
-        IconButton(
-          icon: const Icon(Icons.remove),
-          onPressed: () => counter.dispatch('decrement'),
-        ),
-      ],
-    );
-  }
-
-  int _counterReducer(int state, String action) {
-    switch (action) {
-      case 'increment':
-        return state + 1;
-      case 'decrement':
-        return state - 1;
-      default:
-        return state;
-    }
-  }
-}
-```
-
-- useContext
-
-Returns the `BuildContext` of the currently building `HookWidget`. This is useful when writing custom hooks that want to manipulate the `BuildContext`. 
-
-```dart
-MyInheritedWidget useMyInheritedWidget() {
-  BuildContext context = useContext();
-  return MyInheritedWidget.of(context);
-}
-```
-
-- useMemoized
-
-Takes a callback, calls it synchronously and returns its result. The result is then stored to that subsequent calls will return the same result without calling the callback.
-
-By default, the callback is called only on the first build. But it is optionally possible to specify a list of objects as the second parameter. The callback will then be called again whenever something inside the list has changed.
-
-The following sample make an http call and return the created `Future`. And if `userId` changes, a new call will be made:
-
-```dart
-String userId;
-final Future<http.Response> response = useMemoized(() {
-  return http.get('someUrl/$userId');
-}, [userId]);
-```
-
-- useValueChanged
-
-Takes a value and a callback, and call the callback whenever the value changed. The callback can optionally return an object, which will be stored and returned as the result of `useValueChanged`.
-
-The following example implicitly starts a tween animation whenever `color` changes:
-
-```dart
-AnimationController controller;
-Color color;
-
-final colorTween = useValueChanged(
-    color,
-    (Color oldColor, Animation<Color> oldAnimation) {
-      return ColorTween(
-        begin: oldAnimation?.value ?? oldColor,
-        end: color,
-      ).animate(controller..forward(from: 0));
-    },
-  ) ??
-  AlwaysStoppedAnimation(color);
-```
-
-- useAnimationController, useStreamController, useSingleTickerProvider, useValueNotifier
-
-A set of hooks that handles the whole life-cycle of an object. These hooks will take care of both creating, disposing and updating the object.
-
-They are the equivalent of both `initState`, `dispose` and `didUpdateWidget` for that specific object.
-
-```dart
-Duration duration;
-AnimationController controller = useAnimationController(
-  // duration is automatically updates when the widget is rebuilt with a different `duration`
-  duration: duration,
-);
-```
-
-- useStream, useFuture, useAnimation, useValueListenable, useListenable
-
-A set of hooks that subscribes to an object and calls `setState` accordingly.
-
-```dart
-Stream<int> stream;
-// automatically rebuild the widget when a new value is pushed to the stream
-AsyncSnapshot<int> snapshot = useStream(stream);
-```
+| name                                                                                                    | description                                           |
+| ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| [useReducer](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useReducer.html) | An alternative to [useState] for more complex states. |
