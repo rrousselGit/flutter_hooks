@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 /// Wether to behave like in release mode or allow hot-reload for hooks.
 ///
 /// `true` by default. It has no impact on release builds.
-bool debugHotRelaadHooksEnabled = true;
+bool debugHotReloadHooksEnabled = true;
 
 /// [Hook] is similar to a [StatelessWidget], but is not associated
 /// to an [Element].
@@ -276,7 +276,7 @@ class HookElement extends StatefulElement {
 
     // dispose removed items
     assert(() {
-      if (!debugHotRelaadHooksEnabled) return true;
+      if (!debugHotReloadHooksEnabled) return true;
       if (_debugDidReassemble && _hooks != null) {
         for (var i = _hookIndex; i < _hooks.length;) {
           _hooks.removeAt(i).dispose();
@@ -291,7 +291,7 @@ This may happen if the call to `Hook.use` is made under some condition.
 
 ''');
     assert(() {
-      if (!debugHotRelaadHooksEnabled) return true;
+      if (!debugHotReloadHooksEnabled) return true;
       _debugDidReassemble = false;
       return true;
     }());
@@ -370,7 +370,7 @@ This may happen if the call to `Hook.use` is made under some condition.
     } else {
       // recreate states on hot-reload of the order changed
       assert(() {
-        if (!debugHotRelaadHooksEnabled) return true;
+        if (!debugHotReloadHooksEnabled) return true;
         if (!_debugDidReassemble) {
           return true;
         }
