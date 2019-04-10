@@ -79,8 +79,8 @@ void main() {
   });
   testWidgets("release mode don't crash", (tester) async {
     ValueNotifier<int> notifier;
-    debugHotRelaadHooksEnabled = false;
-    addTearDown(() => debugHotRelaadHooksEnabled = true);
+    debugHotReloadHooksEnabled = false;
+    addTearDown(() => debugHotReloadHooksEnabled = true);
 
     await tester.pumpWidget(HookBuilder(builder: (_) {
       notifier = useState(0);
