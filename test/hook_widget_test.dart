@@ -4,6 +4,21 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'mock.dart';
 
+class InheritedInitHook extends Hook<void> {
+  @override
+  InheritedInitHookState createState() => InheritedInitHookState();
+}
+
+class InheritedInitHookState extends HookState<void, InheritedInitHook> {
+  @override
+  void initHook() {
+    context.inheritFromWidgetOfExactType(InheritedWidget);
+  }
+
+  @override
+  void build(BuildContext context) {}
+}
+
 void main() {
   final build = Func1<BuildContext, int>();
   final dispose = Func0<void>();
@@ -38,6 +53,29 @@ void main() {
     reset(initHook);
     reset(didUpdateHook);
     reset(reassemble);
+  });
+
+  testWidgets('should not allow using inheritedwidgets inside initHook',
+      (tester) async {
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      Hook.use(InheritedInitHook());
+      return Container();
+    }));
+
+    expect(tester.takeException(), isAssertionError);
+  });
+
+  testWidgets('allows using inherited widgets outside of initHook',
+      (tester) async {
+    when(build(any)).thenAnswer((invocation) {
+      invocation.positionalArguments.first as BuildContext
+        ..inheritFromWidgetOfExactType(InheritedWidget);
+    });
+
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      Hook.use(HookTest<void>(build: build));
+      return Container();
+    }));
   });
 
   testWidgets('HookElement exposes an immutable list of hooks', (tester) async {

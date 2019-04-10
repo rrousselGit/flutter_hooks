@@ -1,5 +1,6 @@
 ## 0.3.0:
 
+- NEW: it is now impossible to call `inheritFromWidgetOfExactType` inside `initHook` of hooks. This forces authors to handle values updates.
 - FIX: use List<Object> instead of List<dynamic> for keys. This fixes `implicit-dynamic` rule mistakenly reporting errors.
 - NEW: Hooks are now visible on `HookElement` through `debugHooks` in development, for testing purposes.
 - NEW: If a widget throws on the first build or after a hot-reload, next rebuilds can still add/edit hooks until one `build` finishes entirely.

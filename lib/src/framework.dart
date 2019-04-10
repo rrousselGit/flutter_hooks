@@ -246,6 +246,7 @@ class HookElement extends StatefulElement {
   bool _didReassemble;
   bool _didNotFinishBuildOnce;
   bool _debugShouldDispose;
+  bool _debugIsInitHook;
 
   static HookElement _currentContext;
 
@@ -263,6 +264,7 @@ class HookElement extends StatefulElement {
       _didNotFinishBuildOnce ??= true;
       _didReassemble ??= false;
       _debugIsBuilding = true;
+      _debugIsInitHook = false;
       return true;
     }());
     HookElement._currentContext = this;
@@ -297,8 +299,13 @@ This may happen if the call to `Hook.use` is made under some condition.
   ///
   /// These should not be used directly and are exposed
   @visibleForTesting
-  List<HookState> get debugHooks {
-    return List<HookState>.unmodifiable(_hooks);
+  List<HookState> get debugHooks => List<HookState>.unmodifiable(_hooks);
+
+  @override
+  InheritedWidget inheritFromWidgetOfExactType(Type targetType,
+      {Object aspect}) {
+    assert(!_debugIsInitHook);
+    return super.inheritFromWidgetOfExactType(targetType, aspect: aspect);
   }
 
   @override
@@ -449,10 +456,21 @@ This may happen if the call to `Hook.use` is made under some condition.
   }
 
   HookState<R, Hook<R>> _createHookState<R>(Hook<R> hook) {
-    return hook.createState()
-      .._element = state
+    assert(() {
+      _debugIsInitHook = true;
+      return true;
+    }());
+    final state = hook.createState()
+      .._element = this.state
       .._hook = hook
       ..initHook();
+
+    assert(() {
+      _debugIsInitHook = false;
+      return true;
+    }());
+
+    return state;
   }
 }
 
