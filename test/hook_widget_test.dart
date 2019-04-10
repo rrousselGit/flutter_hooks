@@ -77,6 +77,24 @@ void main() {
       return Container();
     }));
   });
+  testWidgets("release mode don't crash", (tester) async {
+    ValueNotifier<int> notifier;
+    debugHotRelaadHooksEnabled = false;
+    addTearDown(() => debugHotRelaadHooksEnabled = true);
+
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      notifier = useState(0);
+
+      return Text(notifier.value.toString(), textDirection: TextDirection.ltr);
+    }));
+
+    expect(find.text('0'), findsOneWidget);
+
+    notifier.value++;
+    await tester.pump();
+
+    expect(find.text('1'), findsOneWidget);
+  });
 
   testWidgets('HookElement exposes an immutable list of hooks', (tester) async {
     await tester.pumpWidget(HookBuilder(builder: (_) {

@@ -2,6 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
+/// Wether to behave like in release mode or allow hot-reload for hooks.
+///
+/// `true` by default. It has no impact on release builds.
+bool debugHotRelaadHooksEnabled = true;
+
 /// [Hook] is similar to a [StatelessWidget], but is not associated
 /// to an [Element].
 ///
@@ -123,8 +128,11 @@ abstract class Hook<R> {
   ///
   /// See [Hook] for more explanations.
   static R use<R>(Hook<R> hook) {
-    assert(HookElement._currentContext != null,
-        '`Hook.use` can only be called from the build method of HookWidget');
+    assert(HookElement._currentContext != null, '''
+`Hook.use` can only be called from the build method of HookWidget.
+Hooks should only be called within the build method of a widget.
+Calling them outside of build method leads to an unstable state and is therefore prohibited.
+''');
     return HookElement._currentContext._use(hook);
   }
 
@@ -235,20 +243,19 @@ abstract class HookState<R, T extends Hook<R>> {
 
 /// An [Element] that uses a [HookWidget] as its configuration.
 class HookElement extends StatefulElement {
+  static HookElement _currentContext;
+
   /// Creates an element that uses the given widget as its configuration.
   HookElement(HookWidget widget) : super(widget);
 
   Iterator<HookState> _currentHook;
   int _hookIndex;
   List<HookState> _hooks;
+  bool _didFinishBuildOnce = false;
 
-  bool _debugIsBuilding;
-  bool _didReassemble;
-  bool _didNotFinishBuildOnce;
+  bool _debugDidReassemble;
   bool _debugShouldDispose;
   bool _debugIsInitHook;
-
-  static HookElement _currentContext;
 
   @override
   HookWidget get widget => super.widget as HookWidget;
@@ -261,10 +268,8 @@ class HookElement extends StatefulElement {
     _hookIndex = 0;
     assert(() {
       _debugShouldDispose = false;
-      _didNotFinishBuildOnce ??= true;
-      _didReassemble ??= false;
-      _debugIsBuilding = true;
       _debugIsInitHook = false;
+      _debugDidReassemble ??= false;
       return true;
     }());
     HookElement._currentContext = this;
@@ -273,7 +278,8 @@ class HookElement extends StatefulElement {
 
     // dispose removed items
     assert(() {
-      if (_didReassemble && _hooks != null) {
+      if (!debugHotRelaadHooksEnabled) return true;
+      if (_debugDidReassemble && _hooks != null) {
         for (var i = _hookIndex; i < _hooks.length;) {
           _hooks.removeAt(i).dispose();
         }
@@ -287,11 +293,11 @@ This may happen if the call to `Hook.use` is made under some condition.
 
 ''');
     assert(() {
-      _didNotFinishBuildOnce = false;
-      _didReassemble = false;
-      _debugIsBuilding = false;
+      if (!debugHotRelaadHooksEnabled) return true;
+      _debugDidReassemble = false;
       return true;
     }());
+    _didFinishBuildOnce = true;
     return result;
   }
 
@@ -349,31 +355,30 @@ This may happen if the call to `Hook.use` is made under some condition.
   @override
   void reassemble() {
     super.reassemble();
-    _didReassemble = true;
-    if (_hooks != null) {
-      for (final hook in _hooks) {
-        hook.reassemble();
+    assert(() {
+      _debugDidReassemble = true;
+      if (_hooks != null) {
+        for (final hook in _hooks) {
+          hook.reassemble();
+        }
       }
-    }
+      return true;
+    }());
   }
 
   R _use<R>(Hook<R> hook) {
-    assert(_debugIsBuilding == true, '''
-    Hooks should only be called within the build method of a widget.
-    Calling them outside of build method leads to an unstable state and is therefore prohibited
-    ''');
-
     HookState<R, Hook<R>> hookState;
     // first build
     if (_currentHook == null) {
-      assert(_didReassemble || _didNotFinishBuildOnce);
+      assert(_debugDidReassemble || !_didFinishBuildOnce);
       hookState = _createHookState(hook);
       _hooks ??= [];
       _hooks.add(hookState);
     } else {
       // recreate states on hot-reload of the order changed
       assert(() {
-        if (!_didReassemble) {
+        if (!debugHotRelaadHooksEnabled) return true;
+        if (!_debugDidReassemble) {
           return true;
         }
         if (!_debugShouldDispose &&
@@ -393,7 +398,7 @@ This may happen if the call to `Hook.use` is made under some condition.
         }
         return true;
       }());
-      if (_didNotFinishBuildOnce && _currentHook.current == null) {
+      if (!_didFinishBuildOnce && _currentHook.current == null) {
         hookState = _pushHook(hook);
         _currentHook.moveNext();
       } else {
