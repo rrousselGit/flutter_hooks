@@ -84,3 +84,29 @@ class _ReducerdHookState<State, Action>
     return this;
   }
 }
+
+/// Returns the previous argument called to [usePrevious].
+T usePrevious<T>(T val) {
+  return Hook.use(_PreviousHook(val));
+}
+
+class _PreviousHook<T> extends Hook<T> {
+  _PreviousHook(this.value);
+
+  final T value;
+
+  @override
+  _PreviousHookState<T> createState() => _PreviousHookState();
+}
+
+class _PreviousHookState<T> extends HookState<T, _PreviousHook<T>> {
+  T previous;
+
+  @override
+  void didUpdateHook(_PreviousHook<T> old) {
+    previous = old.value;
+  }
+
+  @override
+  T build(BuildContext context) => previous;
+}
