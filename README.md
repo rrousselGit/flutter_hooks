@@ -324,12 +324,6 @@ They will take care of creating/updating/disposing an object.
 | [useValueNotifier](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useValueNotifier.html)     | Creates a `ValueNotifier` automatically disposed.                                                  |
 | [useValueListenable](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useValueListenable.html) | Subscribes to a `ValueListenable` and return its value.                                            |
 
-#### Form related:
-
-| name | description |
-| ---- | ----------- |
-| foo  | bar         |
-
 #### Misc
 
 A series of hooks with no particular theme.
