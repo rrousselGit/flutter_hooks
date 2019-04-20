@@ -1,5 +1,6 @@
 ## 0.3.0:
 
+- NEW: `usePrevious`, a hook that returns the previous argument it received.
 - NEW: it is now impossible to call `inheritFromWidgetOfExactType` inside `initHook` of hooks. This forces authors to handle values updates.
 - FIX: use List<Object> instead of List<dynamic> for keys. This fixes `implicit-dynamic` rule mistakenly reporting errors.
 - NEW: Hooks are now visible on `HookElement` through `debugHooks` in development, for testing purposes.
