@@ -71,6 +71,7 @@ bool debugHotReloadHooksEnabled = true;
 ///
 ///   @override
 ///   void initState() {
+///     super.initState();
 ///     _controller = AnimationController(
 ///       vsync: this,
 ///       duration: const Duration(seconds: 1),
@@ -80,6 +81,7 @@ bool debugHotReloadHooksEnabled = true;
 ///   @override
 ///   void dispose() {
 ///     _controller.dispose();
+///     super.dispose();
 ///   }
 ///
 ///   @override
