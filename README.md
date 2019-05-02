@@ -43,8 +43,8 @@ class _ExampleState extends State<Example> with SingleTickerProviderStateMixin {
 
   @override
   void dispose() {
-    super.dispose();
     _controller.dispose();
+    super.dispose();
   }
 
   @override
