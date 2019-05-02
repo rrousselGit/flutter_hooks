@@ -29,13 +29,11 @@ class _ExampleState extends State<Example> with SingleTickerProviderStateMixin {
 
   @override
   void initState() {
-    super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration);
   }
 
   @override
   void didUpdateWidget(Example oldWidget) {
-    super.didUpdateWidget(oldWidget);
     if (widget.duration != oldWidget.duration) {
       _controller.duration = widget.duration;
     }
@@ -43,7 +41,6 @@ class _ExampleState extends State<Example> with SingleTickerProviderStateMixin {
 
   @override
   void dispose() {
-    super.dispose();
     _controller.dispose();
   }
 
