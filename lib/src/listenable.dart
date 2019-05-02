@@ -54,7 +54,6 @@ class _ListenableStateHook extends HookState<void, _ListenableHook> {
 
   @override
   void dispose() {
-    super.dispose();
     hook.listenable.removeListener(_listener);
   }
 }
@@ -102,6 +101,5 @@ class _UseValueNotiferHookState<T>
   @override
   void dispose() {
     notifier.dispose();
-    super.dispose();
   }
 }

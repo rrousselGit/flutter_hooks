@@ -108,7 +108,6 @@ Switching between controller and uncontrolled vsync is not allowed.
 
   @override
   void dispose() {
-    super.dispose();
     _animationController.dispose();
   }
 }
@@ -162,7 +161,6 @@ class _TickerProviderHookState
           ' by AnimationControllers should be disposed by calling dispose() on '
           ' the AnimationController itself. Otherwise, the ticker will leak.\n');
     }());
-    super.dispose();
   }
 
   @override
