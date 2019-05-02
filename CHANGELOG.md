@@ -1,3 +1,7 @@
+## 0.4.0:
+
+- Make hooks compatible with newer flutter version. (see https://groups.google.com/forum/#!topic/flutter-announce/hp1RNIgej38)
+
 ## 0.3.0:
 
 - NEW: `usePrevious`, a hook that returns the previous argument it received.
