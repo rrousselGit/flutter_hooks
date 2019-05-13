@@ -337,7 +337,7 @@ This may happen if the call to `Hook.use` is made under some condition.
   void unmount() {
     super.unmount();
     if (_hooks != null) {
-      for (final hook in _hooks) {
+      for (final hook in _hooks.reversed) {
         try {
           hook.dispose();
         } catch (exception, stack) {

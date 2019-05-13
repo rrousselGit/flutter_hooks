@@ -96,6 +96,24 @@ void main() {
     expect(find.text('1'), findsOneWidget);
   });
 
+  testWidgets('hooks are disposed in reverse order when widget is unmounted',
+      (tester) async {
+    final dispose = Func0<void>();
+    final dispose2 = Func0<void>();
+    await tester.pumpWidget(HookBuilder(builder: (_) {
+      Hook.use(HookTest<int>(dispose: dispose));
+      Hook.use(HookTest<String>(dispose: dispose2));
+      return Container();
+    }));
+
+    await tester.pumpWidget(Container());
+
+    verifyInOrder([
+      dispose2(),
+      dispose(),
+    ]);
+  });
+
   testWidgets('HookElement exposes an immutable list of hooks', (tester) async {
     await tester.pumpWidget(HookBuilder(builder: (_) {
       Hook.use(HookTest<int>());
@@ -516,10 +534,8 @@ void main() {
 
     expect(tester.takeException(), 24);
 
-    verifyInOrder([
-      dispose.call(),
-      dispose2.call(),
-    ]);
+    verify(dispose()).called(1);
+    verify(dispose2()).called(1);
   });
 
   testWidgets('hook update with same instance do not call didUpdateHook',
