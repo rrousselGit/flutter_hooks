@@ -325,8 +325,7 @@ This may happen if the call to `Hook.use` is made under some condition.
             exception: exception,
             stack: stack,
             library: 'hooks library',
-            context: ErrorDescription(
-                'while calling `didBuild` on ${hook.runtimeType}'),
+            context: 'while calling `didBuild` on ${hook.runtimeType}',
           ));
         }
       }
@@ -346,7 +345,7 @@ This may happen if the call to `Hook.use` is made under some condition.
             exception: exception,
             stack: stack,
             library: 'hooks library',
-            context: ErrorDescription('while disposing ${hook.runtimeType}'),
+            context: 'while disposing ${hook.runtimeType}',
           ));
         }
       }
