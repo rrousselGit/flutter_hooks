@@ -3,11 +3,11 @@ description: A flutter implementation of React hooks. It adds a new kind of widg
 homepage: https://github.com/rrousselGit/flutter_hooks
 author: Remi Rousselet <darky12s@gmail.com>
 
-version: 0.5.0
+version: 0.6.0
 
 environment:
   sdk: ">=2.0.0 <3.0.0"
-  flutter: ">=1.0.0 < 1.5.8"
+  flutter: ">=1.0.0 <= 1.7.8+hotfix.2"
 
 dependencies:
   flutter:
