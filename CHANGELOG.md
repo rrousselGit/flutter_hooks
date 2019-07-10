@@ -1,3 +1,7 @@
+## 0.6.0:
+
+- Make hooks compatible with newer flutter stable version 1.7.8-hotfix.2.
+
 ## 0.4.0:
 
 - Make hooks compatible with newer flutter version. (see https://groups.google.com/forum/#!topic/flutter-announce/hp1RNIgej38)

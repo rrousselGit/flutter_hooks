@@ -70,6 +70,7 @@ void main() {
     when(build(any)).thenAnswer((invocation) {
       invocation.positionalArguments.first as BuildContext
         ..inheritFromWidgetOfExactType(InheritedWidget);
+      return null;
     });
 
     await tester.pumpWidget(HookBuilder(builder: (_) {
@@ -424,8 +425,8 @@ void main() {
 
     await expectPump(
       () => tester.pumpWidget(HookBuilder(
-            builder: builder.call,
-          )),
+        builder: builder.call,
+      )),
       throwsA(42),
     );
 

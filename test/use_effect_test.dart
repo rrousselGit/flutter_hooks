@@ -22,9 +22,9 @@ void main() {
   testWidgets('useEffect null callback throws', (tester) async {
     await expectPump(
       () => tester.pumpWidget(HookBuilder(builder: (c) {
-            useEffect(null);
-            return Container();
-          })),
+        useEffect(null);
+        return Container();
+      })),
       throwsAssertionError,
     );
   });

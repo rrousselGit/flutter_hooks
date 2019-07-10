@@ -79,6 +79,7 @@ StreamController<int> _useLocalStorageInt(
         int valueFromStorage = prefs.getInt(key);
         controller.add(valueFromStorage ?? defaultValue);
       }).catchError(controller.addError);
+      return null;
     },
     // Pass the controller and key to the useEffect hook. This will ensure the
     // useEffect hook is only called the first build or when one of the the
