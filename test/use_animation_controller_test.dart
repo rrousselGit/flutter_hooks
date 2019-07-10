@@ -115,11 +115,11 @@ void main() {
 
     await expectPump(
       () => tester.pumpWidget(HookBuilder(
-            builder: (context) {
-              useAnimationController(vsync: tester);
-              return Container();
-            },
-          )),
+        builder: (context) {
+          useAnimationController(vsync: tester);
+          return Container();
+        },
+      )),
       throwsAssertionError,
     );
 
@@ -135,11 +135,11 @@ void main() {
 
     await expectPump(
       () => tester.pumpWidget(HookBuilder(
-            builder: (context) {
-              useAnimationController();
-              return Container();
-            },
-          )),
+        builder: (context) {
+          useAnimationController();
+          return Container();
+        },
+      )),
       throwsAssertionError,
     );
   });
