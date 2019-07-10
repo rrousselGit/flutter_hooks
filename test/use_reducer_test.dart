@@ -51,11 +51,11 @@ void main() {
     testWidgets('reducer required', (tester) async {
       await expectPump(
         () => tester.pumpWidget(HookBuilder(
-              builder: (context) {
-                useReducer<void, void>(null);
-                return Container();
-              },
-            )),
+          builder: (context) {
+            useReducer<void, void>(null);
+            return Container();
+          },
+        )),
         throwsAssertionError,
       );
     });
@@ -65,11 +65,11 @@ void main() {
 
       await expectPump(
         () => tester.pumpWidget(HookBuilder(
-              builder: (context) {
-                useReducer(reducer.call).dispatch('Foo');
-                return Container();
-              },
-            )),
+          builder: (context) {
+            useReducer(reducer.call).dispatch('Foo');
+            return Container();
+          },
+        )),
         throwsAssertionError,
       );
     });
@@ -80,15 +80,15 @@ void main() {
       when(reducer.call(0, 'Foo')).thenReturn(0);
       await expectPump(
         () => tester.pumpWidget(HookBuilder(
-              builder: (context) {
-                useReducer(
-                  reducer.call,
-                  initialAction: 'Foo',
-                  initialState: 0,
-                );
-                return Container();
-              },
-            )),
+          builder: (context) {
+            useReducer(
+              reducer.call,
+              initialAction: 'Foo',
+              initialState: 0,
+            );
+            return Container();
+          },
+        )),
         completes,
       );
     });
@@ -119,11 +119,11 @@ void main() {
 
       await expectPump(
         () => tester.pumpWidget(HookBuilder(
-              builder: (context) {
-                useReducer(reducer.call);
-                return Container();
-              },
-            )),
+          builder: (context) {
+            useReducer(reducer.call);
+            return Container();
+          },
+        )),
         throwsAssertionError,
       );
     });
