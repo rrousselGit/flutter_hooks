@@ -54,7 +54,7 @@ class _ExampleState extends State<Example> with SingleTickerProviderStateMixin {
 }
 ```
 
-All widgets that desire to use an `AnimationController` will have to reimplement almost of all this from scratch, which is of course undesired.
+All widgets that desire to use an `AnimationController` will have to reimplement almost all of this from scratch, which is of course undesired.
 
 Dart mixins can partially solve this issue, but they suffer from other problems:
 
@@ -220,7 +220,7 @@ There are two ways to create a hook:
 
 - A function
 
-Functions is by far the most common way to write a hook. Thanks to hooks being composable by nature, a function will be able to combine other hooks to create a custom hook. By convention these functions will be prefixed by `use`.
+Functions are by far the most common way to write a hook. Thanks to hooks being composable by nature, a function will be able to combine other hooks to create a custom hook. By convention, these functions will be prefixed by `use`.
 
 The following defines a custom hook that creates a variable and logs its value on the console whenever the value changes:
 
