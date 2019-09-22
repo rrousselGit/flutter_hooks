@@ -110,3 +110,31 @@ class _PreviousHookState<T> extends HookState<T, _PreviousHook<T>> {
   @override
   T build(BuildContext context) => previous;
 }
+
+/// Runs the callback on every hot reload
+/// similar to reassemble in the Stateful widgets
+/// See also:
+///
+///  * [State.reassemble]
+void useReassemble(VoidCallback callback) =>
+    Hook.use(_ReassembleHook(callback));
+
+class _ReassembleHook extends Hook<void> {
+  final VoidCallback callback;
+
+  _ReassembleHook(this.callback) : assert(callback != null);
+
+  @override
+  _ReassembleHookState createState() => _ReassembleHookState();
+}
+
+class _ReassembleHookState extends HookState<void, _ReassembleHook> {
+  @override
+  void reassemble() {
+    super.reassemble();
+    hook.callback();
+  }
+
+  @override
+  void build(BuildContext context) {}
+}
