@@ -3,18 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'mock.dart';
 
-final callback = Func0<VoidCallback>();
-
-Widget builder() => HookBuilder(builder: (context) {
-      useReassemble(callback);
-      return Container();
-    });
-
 void main() {
-  tearDown(() {
-    reset(callback);
-  });
-
   testWidgets('useReassemble null callback throws', (tester) async {
     await expectPump(
       () => tester.pumpWidget(HookBuilder(builder: (c) {
