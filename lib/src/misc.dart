@@ -113,6 +113,7 @@ class _PreviousHookState<T> extends HookState<T, _PreviousHook<T>> {
 
 /// Runs the callback on every hot reload
 /// similar to reassemble in the Stateful widgets
+///
 /// See also:
 ///
 ///  * [State.reassemble]
