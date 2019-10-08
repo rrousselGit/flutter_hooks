@@ -28,7 +28,7 @@ void main() {
 
     verifyInOrder([
       reassemble.call(),
-    ]);
+    verify(reassemble()).called(1);
     verifyNoMoreInteractions(reassemble);
   });
 
