@@ -117,8 +117,12 @@ class _PreviousHookState<T> extends HookState<T, _PreviousHook<T>> {
 /// See also:
 ///
 ///  * [State.reassemble]
-void useReassemble(VoidCallback callback) =>
+void useReassemble(VoidCallback callback) {
+  assert(() {
     Hook.use(_ReassembleHook(callback));
+    return true;
+  }());
+}
 
 class _ReassembleHook extends Hook<void> {
   final VoidCallback callback;
