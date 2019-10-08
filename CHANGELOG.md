@@ -1,3 +1,7 @@
+## 0.6.1:
+
+- Added `useReassemble` hook, thanks to @SahandAkbarzadeh
+
 ## 0.6.0:
 
 - Make hooks compatible with newer flutter stable version 1.7.8-hotfix.2.
