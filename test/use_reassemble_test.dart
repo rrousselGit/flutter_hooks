@@ -26,8 +26,6 @@ void main() {
     hotReload(tester);
     await tester.pump();
 
-    verifyInOrder([
-      reassemble.call(),
     verify(reassemble()).called(1);
     verifyNoMoreInteractions(reassemble);
   });
