@@ -6,21 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'mock.dart';
 
 void main() {
-  testWidgets('throws when both initial text and value is set', (tester) {
-    return expectPump(
-      () => tester.pumpWidget(HookBuilder(
-        builder: (context) {
-          useTextEditingController(
-            initialText: 'foo',
-            initialValue: TextEditingValue.empty,
-          );
-          return Container();
-        },
-      )),
-      throwsAssertionError,
-    );
-  });
-
   testWidgets('useTextEditingController returns a controller', (tester) async {
     TextEditingController controller;
 
@@ -42,12 +27,12 @@ void main() {
     }));
   });
 
-  testWidgets('respects initialText property', (tester) async {
+  testWidgets('respects initial text property', (tester) async {
     TextEditingController controller;
 
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
-        controller = useTextEditingController(initialText: 'hello hooks');
+        controller = useTextEditingController(text: 'hello hooks');
         return Container();
       },
     ));
@@ -55,14 +40,14 @@ void main() {
     expect(controller.text, 'hello hooks');
   });
 
-  testWidgets('respects initialValue property', (tester) async {
+  testWidgets('respects initial value property', (tester) async {
     const value = TextEditingValue(
         text: 'foo', selection: TextSelection.collapsed(offset: 2));
     TextEditingController controller;
 
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
-        controller = useTextEditingController(initialValue: value);
+        controller = useTextEditingController.fromValue(value);
         return Container();
       },
     ));

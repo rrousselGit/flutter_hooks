@@ -1,20 +1,39 @@
 part of 'hooks.dart';
 
-/// Creates an [TextEditingController] that will be disposed automatically.
-///
-/// The optional [initialText] parameter can be used to set the initial
-/// [TextEditingController.text]. Similarly, [initialValue] can be used to set
-/// the initial [TextEditingController.value]. It is invalid to set both
-/// [initialText] and [initialValue].
-/// When this hook is re-used with different values of [initialText] or
-/// [initialValue], the underlying [TextEditingController] will _not_ be
-/// updated. Set values on [TextEditingController.text] or
-/// [TextEditingController.value] directly to change the text or selection,
-/// respectively.
-TextEditingController useTextEditingController(
-    {String initialText, TextEditingValue initialValue, List<Object> keys}) {
-  return Hook.use(_TextEditingControllerHook(initialText, initialValue, keys));
+class _TextEditingControllerHookCreator {
+  const _TextEditingControllerHookCreator();
+
+  /// Creates a [TextEditingController] that will be disposed automatically.
+  ///
+  /// The [text] parameter can be used to set the initial value of the
+  /// controller.
+  TextEditingController call({String text, List<Object> keys}) {
+    return Hook.use(_TextEditingControllerHook(text, null, keys));
+  }
+
+  /// Creates a [TextEditingController] from the initial [value] that will
+  /// be disposed automatically.
+  TextEditingController fromValue(TextEditingValue value, [List<Object> keys]) {
+    return Hook.use(_TextEditingControllerHook(null, value, keys));
+  }
 }
+
+/// Functions to create a text editing controller, either via an initial
+/// text or an initial [TextEditingValue].
+///
+/// To use a [TextEditingController] with an optional initial text, use
+/// [_TextEditingControllerHookCreator.call]:
+/// ```dart
+/// final controller = useTextEditingController(text: 'initial text');
+/// ```
+///
+/// To use a [TextEditingController] with an optional inital value, use
+/// [_TextEditingControllerHookCreator.fromValue]:
+/// ```dart
+/// final controller = useTextEditingController
+///   .fromValue(TextEditingValue.empty);
+/// ```
+const useTextEditingController = _TextEditingControllerHookCreator();
 
 class _TextEditingControllerHook extends Hook<TextEditingController> {
   final String initialText;
