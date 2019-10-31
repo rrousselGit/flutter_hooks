@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_hooks_gallery/star_wars/app_state.dart';
 import 'package:flutter_hooks_gallery/star_wars/hooks.dart';
 import 'package:flutter_hooks_gallery/star_wars/redux.dart';
 import 'package:flutter_hooks_gallery/star_wars/star_wars_api.dart';

@@ -1,5 +1,3 @@
-// ignore_for_file: public_member_api_docs
-
 import 'dart:convert';
 
 import 'package:flutter_hooks_gallery/star_wars/models.dart';
