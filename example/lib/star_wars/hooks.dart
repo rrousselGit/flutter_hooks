@@ -1,9 +1,9 @@
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_hooks_gallery/star_wars/app_state.dart';
 import 'package:flutter_hooks_gallery/star_wars/redux.dart';
 import 'package:flutter_hooks_gallery/star_wars/star_wars_api.dart';
 import 'package:provider/provider.dart';
 
+/// fetch planets and update store
 typedef FetchAndDispatchPlanets = Future<void> Function(String);
 
 /// return the redux store created by [useReducer}

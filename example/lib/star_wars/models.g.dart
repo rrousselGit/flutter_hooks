@@ -93,20 +93,6 @@ class _$PlanetModelSerializer implements StructuredSerializer<PlanetModel> {
     final result = <Object>[
       'name',
       serializers.serialize(object.name, specifiedType: const FullType(String)),
-      'diameter',
-      serializers.serialize(object.diameter,
-          specifiedType: const FullType(String)),
-      'climate',
-      serializers.serialize(object.climate,
-          specifiedType: const FullType(String)),
-      'terrain',
-      serializers.serialize(object.terrain,
-          specifiedType: const FullType(String)),
-      'population',
-      serializers.serialize(object.population,
-          specifiedType: const FullType(String)),
-      'url',
-      serializers.serialize(object.url, specifiedType: const FullType(String)),
     ];
 
     return result;
@@ -125,26 +111,6 @@ class _$PlanetModelSerializer implements StructuredSerializer<PlanetModel> {
       switch (key) {
         case 'name':
           result.name = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
-          break;
-        case 'diameter':
-          result.diameter = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
-          break;
-        case 'climate':
-          result.climate = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
-          break;
-        case 'terrain':
-          result.terrain = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
-          break;
-        case 'population':
-          result.population = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
-          break;
-        case 'url':
-          result.url = serializers.deserialize(value,
               specifiedType: const FullType(String)) as String;
           break;
       }
@@ -272,45 +238,13 @@ class PlanetPageModelBuilder
 class _$PlanetModel extends PlanetModel {
   @override
   final String name;
-  @override
-  final String diameter;
-  @override
-  final String climate;
-  @override
-  final String terrain;
-  @override
-  final String population;
-  @override
-  final String url;
 
   factory _$PlanetModel([void Function(PlanetModelBuilder) updates]) =>
       (new PlanetModelBuilder()..update(updates)).build();
 
-  _$PlanetModel._(
-      {this.name,
-      this.diameter,
-      this.climate,
-      this.terrain,
-      this.population,
-      this.url})
-      : super._() {
+  _$PlanetModel._({this.name}) : super._() {
     if (name == null) {
       throw new BuiltValueNullFieldError('PlanetModel', 'name');
-    }
-    if (diameter == null) {
-      throw new BuiltValueNullFieldError('PlanetModel', 'diameter');
-    }
-    if (climate == null) {
-      throw new BuiltValueNullFieldError('PlanetModel', 'climate');
-    }
-    if (terrain == null) {
-      throw new BuiltValueNullFieldError('PlanetModel', 'terrain');
-    }
-    if (population == null) {
-      throw new BuiltValueNullFieldError('PlanetModel', 'population');
-    }
-    if (url == null) {
-      throw new BuiltValueNullFieldError('PlanetModel', 'url');
     }
   }
 
@@ -324,36 +258,17 @@ class _$PlanetModel extends PlanetModel {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is PlanetModel &&
-        name == other.name &&
-        diameter == other.diameter &&
-        climate == other.climate &&
-        terrain == other.terrain &&
-        population == other.population &&
-        url == other.url;
+    return other is PlanetModel && name == other.name;
   }
 
   @override
   int get hashCode {
-    return $jf($jc(
-        $jc(
-            $jc(
-                $jc($jc($jc(0, name.hashCode), diameter.hashCode),
-                    climate.hashCode),
-                terrain.hashCode),
-            population.hashCode),
-        url.hashCode));
+    return $jf($jc(0, name.hashCode));
   }
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper('PlanetModel')
-          ..add('name', name)
-          ..add('diameter', diameter)
-          ..add('climate', climate)
-          ..add('terrain', terrain)
-          ..add('population', population)
-          ..add('url', url))
+    return (newBuiltValueToStringHelper('PlanetModel')..add('name', name))
         .toString();
   }
 }
@@ -365,36 +280,11 @@ class PlanetModelBuilder implements Builder<PlanetModel, PlanetModelBuilder> {
   String get name => _$this._name;
   set name(String name) => _$this._name = name;
 
-  String _diameter;
-  String get diameter => _$this._diameter;
-  set diameter(String diameter) => _$this._diameter = diameter;
-
-  String _climate;
-  String get climate => _$this._climate;
-  set climate(String climate) => _$this._climate = climate;
-
-  String _terrain;
-  String get terrain => _$this._terrain;
-  set terrain(String terrain) => _$this._terrain = terrain;
-
-  String _population;
-  String get population => _$this._population;
-  set population(String population) => _$this._population = population;
-
-  String _url;
-  String get url => _$this._url;
-  set url(String url) => _$this._url = url;
-
   PlanetModelBuilder();
 
   PlanetModelBuilder get _$this {
     if (_$v != null) {
       _name = _$v.name;
-      _diameter = _$v.diameter;
-      _climate = _$v.climate;
-      _terrain = _$v.terrain;
-      _population = _$v.population;
-      _url = _$v.url;
       _$v = null;
     }
     return this;
@@ -415,14 +305,7 @@ class PlanetModelBuilder implements Builder<PlanetModel, PlanetModelBuilder> {
 
   @override
   _$PlanetModel build() {
-    final _$result = _$v ??
-        new _$PlanetModel._(
-            name: name,
-            diameter: diameter,
-            climate: climate,
-            terrain: terrain,
-            population: population,
-            url: url);
+    final _$result = _$v ?? new _$PlanetModel._(name: name);
     replace(_$result);
     return _$result;
   }
