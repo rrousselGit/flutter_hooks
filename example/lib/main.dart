@@ -1,6 +1,6 @@
 // ignore_for_file: omit_local_variable_types
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks_gallery/star_wars/planet_list.dart';
+import 'package:flutter_hooks_gallery/star_wars/planet_screen.dart';
 import 'package:flutter_hooks_gallery/use_effect.dart';
 import 'package:flutter_hooks_gallery/use_state.dart';
 import 'package:flutter_hooks_gallery/use_stream.dart';
@@ -34,7 +34,7 @@ class HooksGalleryApp extends StatelessWidget {
           ),
           _GalleryItem(
             title: 'Star Wars Planets',
-            builder: (context) => PlanetList(),
+            builder: (context) => PlanetScreen(),
           )
         ]),
       ),
