@@ -1,3 +1,5 @@
+// ignore_for_file: public_member_api_docs
+
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -18,23 +20,18 @@ abstract class PlanetPageModel
     implements Built<PlanetPageModel, PlanetPageModelBuilder> {
   PlanetPageModel._();
 
-  /// default factory
   factory PlanetPageModel([void Function(PlanetPageModelBuilder) updates]) =
       _$PlanetPageModel;
 
-  /// serialize the model
   static Serializer<PlanetPageModel> get serializer =>
       _$planetPageModelSerializer;
 
-  /// url to next page
   @nullable
   String get next;
 
-  /// url to prev page
   @nullable
   String get previous;
 
-  /// all planets
   BuiltList<PlanetModel> get results;
 }
 
@@ -42,13 +39,10 @@ abstract class PlanetPageModel
 abstract class PlanetModel implements Built<PlanetModel, PlanetModelBuilder> {
   PlanetModel._();
 
-  /// default factory
   factory PlanetModel([void Function(PlanetModelBuilder) updates]) =
       _$PlanetModel;
 
-  /// serialize the model
   static Serializer<PlanetModel> get serializer => _$planetModelSerializer;
 
-  /// planet name
   String get name;
 }
