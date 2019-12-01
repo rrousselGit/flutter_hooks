@@ -41,17 +41,13 @@ class PlanetScreen extends HookWidget {
     );
 
     final planetHandler = useMemoized(
-      () => _PlanetHandler(store, api),
-      [store, api],
-    );
-
-    /// load the first planet page but only once
-    useEffect(
       () {
-        planetHandler.fetchAndDispatch(null);
-        return () {};
+        /// Create planet handler and load the first page.
+        /// The first page will only be loaded once, after the handler was created
+        final handler = _PlanetHandler(store, api)..fetchAndDispatch(null);
+        return handler;
       },
-      [planetHandler],
+      [store, api],
     );
 
     return MultiProvider(
@@ -71,65 +67,46 @@ class PlanetScreen extends HookWidget {
   }
 }
 
-class _PlanetScreenBody extends StatelessWidget {
+class _PlanetScreenBody extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<AppState>(
-      builder: (context, state, _) {
-        if (null != state.errorFetchingPlanets) {
-          return _Error(
-            errorMsg: state.errorFetchingPlanets,
-          );
-        }
+    final state = Provider.of<AppState>(context);
+    final index = useMemoized(() {
+      if (state.isFetchingPlanets) {
+        return 0;
+      }
 
-        return CustomScrollView(
-          slivers: <Widget>[
-            if (state.isFetchingPlanets)
-              SliverFillViewport(
-                delegate: SliverChildListDelegate.fixed(
-                  [
-                    Center(
-                      child: const CircularProgressIndicator(),
-                    ),
-                  ],
-                ),
-              ),
-            if (!state.isFetchingPlanets)
-              SliverToBoxAdapter(
-                child: HookBuilder(builder: (context) {
-                  final buttonAlignment = useMemoized(
-                    () {
-                      if (null == state.planetPage.previous) {
-                        return MainAxisAlignment.end;
-                      }
-                      if (null == state.planetPage.next) {
-                        return MainAxisAlignment.start;
-                      }
-                      return MainAxisAlignment.spaceBetween;
-                    },
-                    [state],
-                  );
+      if (state.planetPage.results.isEmpty) {
+        return 1;
+      }
 
-                  return Row(
-                    mainAxisAlignment: buttonAlignment,
-                    children: <Widget>[
-                      if (null != state.planetPage.previous)
-                        _LoadPageButton(
-                          next: false,
-                        ),
-                      if (null != state.planetPage.next)
-                        _LoadPageButton(
-                          next: true,
-                        )
-                    ],
-                  );
-                }),
-              ),
-            if (!state.isFetchingPlanets && state.planetPage.results.isNotEmpty)
-              _PlanetList(),
-          ],
-        );
-      },
+      if (state.errorFetchingPlanets != null) {
+        return 2;
+      }
+
+      return 3;
+    }, [
+      state.isFetchingPlanets,
+      state.planetPage.results.isEmpty,
+      state.errorFetchingPlanets
+    ]);
+
+    return IndexedStack(
+      children: <Widget>[
+        Container(
+          alignment: Alignment.center,
+          child: const CircularProgressIndicator(),
+        ),
+        Container(
+          alignment: Alignment.center,
+          child: const Text('No planets found'),
+        ),
+        _Error(
+          errorMsg: state.errorFetchingPlanets,
+        ),
+        _PlanetList(),
+      ],
+      index: index,
     );
   }
 }
@@ -141,24 +118,23 @@ class _Error extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<_PlanetHandler>(builder: (context, handler, _) {
-      return Container(
-        alignment: Alignment.center,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            if (null != errorMsg) Text(errorMsg),
-            RaisedButton(
-              color: Colors.redAccent,
-              child: const Text('Try again'),
-              onPressed: () async {
-                await handler.fetchAndDispatch();
-              },
-            ),
-          ],
-        ),
-      );
-    });
+    final handler = Provider.of<_PlanetHandler>(context);
+    return Container(
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          if (errorMsg != null) Text(errorMsg),
+          RaisedButton(
+            color: Colors.redAccent,
+            child: const Text('Try again'),
+            onPressed: () async {
+              await handler.fetchAndDispatch();
+            },
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -169,20 +145,13 @@ class _LoadPageButton extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<_PlanetHandler>(
-      builder: (context, handler, _) {
-        return Consumer<AppState>(
-          builder: (context, state, _) {
-            return RaisedButton(
-              child: next ? const Text('Next Page') : const Text('Prev Page'),
-              onPressed: () async {
-                final url =
-                    next ? state.planetPage.next : state.planetPage.previous;
-                await handler.fetchAndDispatch(url);
-              },
-            );
-          },
-        );
+    final handler = Provider.of<_PlanetHandler>(context);
+    final state = Provider.of<AppState>(context);
+    return RaisedButton(
+      child: next ? const Text('Next Page') : const Text('Prev Page'),
+      onPressed: () async {
+        final url = next ? state.planetPage.next : state.planetPage.previous;
+        await handler.fetchAndDispatch(url);
       },
     );
   }
@@ -191,16 +160,48 @@ class _LoadPageButton extends HookWidget {
 class _PlanetList extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<AppState>(builder: (context, state, _) {
-      return SliverList(
-          delegate: SliverChildListDelegate(
-        <Widget>[
-          for (var planet in state.planetPage.results)
-            ListTile(
-              title: Text(planet.name),
-            )
+    final state = Provider.of<AppState>(context);
+    return ListView.builder(
+      itemCount: 1 + state.planetPage.results.length,
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          return _PlanetListHeader();
+        }
+
+        final planet = state.planetPage.results[index - 1];
+        return ListTile(
+          title: Text(planet.name),
+        );
+      },
+    );
+  }
+}
+
+class _PlanetListHeader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final state = Provider.of<AppState>(context);
+    return HookBuilder(builder: (context) {
+      final buttonAlignment = useMemoized(
+        () {
+          if (state.planetPage.previous == null) {
+            return MainAxisAlignment.end;
+          }
+          if (state.planetPage.next == null) {
+            return MainAxisAlignment.start;
+          }
+          return MainAxisAlignment.spaceBetween;
+        },
+        [state],
+      );
+
+      return Row(
+        mainAxisAlignment: buttonAlignment,
+        children: <Widget>[
+          if (state.planetPage.previous != null) _LoadPageButton(next: false),
+          if (state.planetPage.next != null) _LoadPageButton(next: true)
         ],
-      ));
+      );
     });
   }
 }
