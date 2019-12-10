@@ -92,7 +92,7 @@ class _PlanetScreenBody extends HookWidget {
 
     return IndexedStack(
       children: <Widget>[
-        Container(
+        Center(
           alignment: Alignment.center,
           child: const CircularProgressIndicator(),
         ),
