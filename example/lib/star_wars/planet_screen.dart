@@ -43,7 +43,7 @@ class PlanetScreen extends HookWidget {
       () {
         /// Create planet handler and load the first page.
         /// The first page will only be loaded once, after the handler was created
-        final handler = _PlanetHandler(store, api)..fetchAndDispatch(null);
+        return _PlanetHandler(store, api)..fetchAndDispatch();
         return handler;
       },
       [store, api],
