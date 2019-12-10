@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 /// This handler will take care of async api interactions
 /// and updating the store afterwards.
 class _PlanetHandler {
-  /// constructor
   _PlanetHandler(this._store, this._starWarsApi);
 
   final Store<AppState, ReduxAction> _store;
