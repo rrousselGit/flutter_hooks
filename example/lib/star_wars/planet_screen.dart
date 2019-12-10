@@ -149,7 +149,7 @@ class _LoadPageButton extends HookWidget {
       child: next ? const Text('Next Page') : const Text('Prev Page'),
       onPressed: () async {
         final url = next ? state.planetPage.next : state.planetPage.previous;
-        await handler.fetchAndDispatch(url);
+         Provider.of<_PlanetHandler>(context, listen: false).fetchAndDispatch(url);
       },
     );
   }
