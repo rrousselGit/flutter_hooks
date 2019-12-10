@@ -60,7 +60,7 @@ class PlanetScreen extends HookWidget {
             'Star Wars Planets',
           ),
         ),
-        body: _PlanetScreenBody(),
+        body: const _PlanetScreenBody(),
       ),
     );
   }
