@@ -96,7 +96,7 @@ class _PlanetScreenBody extends HookWidget {
           alignment: Alignment.center,
           child: const CircularProgressIndicator(),
         ),
-        Container(
+        Center(
           alignment: Alignment.center,
           child: const Text('No planets found'),
         ),
