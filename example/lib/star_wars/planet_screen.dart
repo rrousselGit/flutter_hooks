@@ -143,7 +143,6 @@ class _LoadPageButton extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final handler = Provider.of<_PlanetHandler>(context);
     final state = Provider.of<AppState>(context);
     return RaisedButton(
       child: next ? const Text('Next Page') : const Text('Prev Page'),
