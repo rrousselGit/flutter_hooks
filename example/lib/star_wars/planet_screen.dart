@@ -117,7 +117,6 @@ class _Error extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final handler = Provider.of<_PlanetHandler>(context);
     return Container(
       alignment: Alignment.center,
       child: Column(
