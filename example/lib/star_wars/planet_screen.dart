@@ -44,7 +44,6 @@ class PlanetScreen extends HookWidget {
         /// Create planet handler and load the first page.
         /// The first page will only be loaded once, after the handler was created
         return _PlanetHandler(store, api)..fetchAndDispatch();
-        return handler;
       },
       [store, api],
     );
@@ -67,46 +66,25 @@ class PlanetScreen extends HookWidget {
 }
 
 class _PlanetScreenBody extends HookWidget {
+  const _PlanetScreenBody();
+
   @override
   Widget build(BuildContext context) {
     final state = Provider.of<AppState>(context);
-    final index = useMemoized(() {
-      if (state.isFetchingPlanets) {
-        return 0;
-      }
 
-      if (state.planetPage.results.isEmpty) {
-        return 1;
-      }
-
-      if (state.errorFetchingPlanets != null) {
-        return 2;
-      }
-
-      return 3;
-    }, [
-      state.isFetchingPlanets,
-      state.planetPage.results.isEmpty,
-      state.errorFetchingPlanets
-    ]);
-
-    return IndexedStack(
-      children: <Widget>[
-        Center(
-          alignment: Alignment.center,
-          child: const CircularProgressIndicator(),
-        ),
-        Center(
-          alignment: Alignment.center,
-          child: const Text('No planets found'),
-        ),
-        _Error(
+    if (state.isFetchingPlanets) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (state.planetPage.results.isEmpty) {
+      return const Center(child: Text('No planets found'));
+    } else if (state.errorFetchingPlanets != null) {
+      return Center(
+        child: _Error(
           errorMsg: state.errorFetchingPlanets,
         ),
-        _PlanetList(),
-      ],
-      index: index,
-    );
+      );
+    } else {
+      return _PlanetList();
+    }
   }
 }
 
@@ -117,21 +95,19 @@ class _Error extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      alignment: Alignment.center,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          if (errorMsg != null) Text(errorMsg),
-          RaisedButton(
-            color: Colors.redAccent,
-            child: const Text('Try again'),
-            onPressed: () async {
-              await handler.fetchAndDispatch();
-            },
-          ),
-        ],
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        if (errorMsg != null) Text(errorMsg),
+        RaisedButton(
+          color: Colors.redAccent,
+          child: const Text('Try again'),
+          onPressed: () async {
+            await Provider.of<_PlanetHandler>(context, listen: false)
+                .fetchAndDispatch();
+          },
+        ),
+      ],
     );
   }
 }
@@ -148,7 +124,8 @@ class _LoadPageButton extends HookWidget {
       child: next ? const Text('Next Page') : const Text('Prev Page'),
       onPressed: () async {
         final url = next ? state.planetPage.next : state.planetPage.previous;
-         Provider.of<_PlanetHandler>(context, listen: false).fetchAndDispatch(url);
+        await Provider.of<_PlanetHandler>(context, listen: false)
+            .fetchAndDispatch(url);
       },
     );
   }
@@ -166,9 +143,7 @@ class _PlanetList extends HookWidget {
         }
 
         final planet = state.planetPage.results[index - 1];
-        return ListTile(
-          title: Text(planet.name),
-        );
+        return ListTile(title: Text(planet.name));
       },
     );
   }
@@ -178,27 +153,21 @@ class _PlanetListHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = Provider.of<AppState>(context);
-    return HookBuilder(builder: (context) {
-      final buttonAlignment = useMemoized(
-        () {
-          if (state.planetPage.previous == null) {
-            return MainAxisAlignment.end;
-          }
-          if (state.planetPage.next == null) {
-            return MainAxisAlignment.start;
-          }
-          return MainAxisAlignment.spaceBetween;
-        },
-        [state],
-      );
+    MainAxisAlignment buttonAlignment;
+    if (state.planetPage.previous == null) {
+      buttonAlignment = MainAxisAlignment.end;
+    } else if (state.planetPage.next == null) {
+      buttonAlignment = MainAxisAlignment.start;
+    } else {
+      buttonAlignment = MainAxisAlignment.spaceBetween;
+    }
 
-      return Row(
-        mainAxisAlignment: buttonAlignment,
-        children: <Widget>[
-          if (state.planetPage.previous != null) _LoadPageButton(next: false),
-          if (state.planetPage.next != null) _LoadPageButton(next: true)
-        ],
-      );
-    });
+    return Row(
+      mainAxisAlignment: buttonAlignment,
+      children: <Widget>[
+        if (state.planetPage.previous != null) _LoadPageButton(next: false),
+        if (state.planetPage.next != null) _LoadPageButton(next: true)
+      ],
+    );
   }
 }
