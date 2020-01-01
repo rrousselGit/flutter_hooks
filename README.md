@@ -328,7 +328,8 @@ They will take care of creating/updating/disposing an object.
 
 A series of hooks with no particular theme.
 
-| name                                                                                                      | description                                            |
-| --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| [useReducer](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useReducer.html)   | An alternative to `useState` for more complex states.  |
-| [usePrevious](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/usePrevious.html) | Returns the previous argument called to [usePrevious]. |
+| name                                                                                                                                | description                                            |
+| ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| [useReducer](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useReducer.html)                             | An alternative to `useState` for more complex states.  |
+| [usePrevious](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/usePrevious.html)                           | Returns the previous argument called to [usePrevious]. |
+| [useTextEditingController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useTextEditingController.html) | Create a `TextEditingController`                       |
