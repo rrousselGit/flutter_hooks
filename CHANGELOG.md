@@ -1,3 +1,7 @@
+## 0.7.0:
+
+- Added `useTextEditingController`, thanks to simolus3!
+
 ## 0.6.1:
 
 - Added `useReassemble` hook, thanks to @SahandAkbarzadeh
