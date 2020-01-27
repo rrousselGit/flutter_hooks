@@ -308,10 +308,10 @@ This may happen if the call to `Hook.use` is made under some condition.
   List<HookState> get debugHooks => List<HookState>.unmodifiable(_hooks);
 
   @override
-  InheritedWidget inheritFromWidgetOfExactType(Type targetType,
+  T dependOnInheritedWidgetOfExactType<T extends InheritedWidget>(
       {Object aspect}) {
     assert(!_debugIsInitHook);
-    return super.inheritFromWidgetOfExactType(targetType, aspect: aspect);
+    return super.dependOnInheritedWidgetOfExactType<T>(aspect: aspect);
   }
 
   @override
