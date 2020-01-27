@@ -24,7 +24,8 @@ class UseStreamExample extends StatelessWidget {
             // Future) the first time this builder function is invoked without
             // recreating it on each subsequent build!
             final stream = useMemoized(
-              () => Stream<int>.periodic(Duration(seconds: 1), (i) => i + 1),
+              () => Stream<int>.periodic(
+                  const Duration(seconds: 1), (i) => i + 1),
             );
             // Next, invoke the `useStream` hook to listen for updates to the
             // Stream. This triggers a rebuild whenever a new value is emitted.

@@ -12,7 +12,7 @@ class InheritedInitHook extends Hook<void> {
 class InheritedInitHookState extends HookState<void, InheritedInitHook> {
   @override
   void initHook() {
-    context.inheritFromWidgetOfExactType(InheritedWidget);
+    context.dependOnInheritedWidgetOfExactType<InheritedWidget>();
   }
 
   @override
@@ -69,7 +69,7 @@ void main() {
       (tester) async {
     when(build(any)).thenAnswer((invocation) {
       invocation.positionalArguments.first as BuildContext
-        ..inheritFromWidgetOfExactType(InheritedWidget);
+        ..dependOnInheritedWidgetOfExactType<InheritedWidget>();
       return null;
     });
 

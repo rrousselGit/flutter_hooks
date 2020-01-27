@@ -29,5 +29,4 @@ void main() {
     verify(reassemble()).called(1);
     verifyNoMoreInteractions(reassemble);
   });
-
 }

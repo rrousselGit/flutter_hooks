@@ -35,7 +35,7 @@ class _TextEditingControllerHookCreator {
 /// Changing the text or initial value after the widget has been built has no
 /// effect whatsoever. To update the value in a callback, for instance after a
 /// button was pressed, use the [TextEditingController.text] or
-/// [TextEditingController.value] setters. To have the [TextEditingController]
+/// [TextEditingController.text] setters. To have the [TextEditingController]
 /// reflect changing values, you can use [useEffect]. This example will update
 /// the [TextEditingController.text] whenever a provided [ValueListenable]
 /// changes:
