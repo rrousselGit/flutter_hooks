@@ -222,6 +222,9 @@ abstract class HookState<R, T extends Hook<R>> {
   @protected
   void didUpdateHook(T oldHook) {}
 
+  /// Equivalent of [State.deactivate] for [HookState]
+  void deactivate() {}
+
   /// {@macro flutter.widgets.reassemble}
   ///
   /// In addition to this method being invoked, it is guaranteed that the
@@ -348,6 +351,26 @@ This may happen if the call to `Hook.use` is made under some condition.
             library: 'hooks library',
             context:
                 DiagnosticsNode.message('while disposing ${hook.runtimeType}'),
+          ));
+        }
+      }
+    }
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    if (_hooks != null) {
+      for (final hook in _hooks) {
+        try {
+          hook.deactivate();
+        } catch (exception, stack) {
+          FlutterError.reportError(FlutterErrorDetails(
+            exception: exception,
+            stack: stack,
+            library: 'hooks library',
+            context:
+            DiagnosticsNode.message('while deactivating ${hook.runtimeType}'),
           ));
         }
       }

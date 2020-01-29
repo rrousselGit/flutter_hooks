@@ -22,6 +22,7 @@ class InheritedInitHookState extends HookState<void, InheritedInitHook> {
 void main() {
   final build = Func1<BuildContext, int>();
   final dispose = Func0<void>();
+  final deactivate = Func0<void>();
   final initHook = Func0<void>();
   final didUpdateHook = Func1<HookTest, void>();
   final didBuild = Func0<void>();
@@ -35,6 +36,7 @@ void main() {
         reassemble: reassemble.call,
         initHook: initHook.call,
         didBuild: didBuild,
+        deactivate: deactivate,
       );
 
   void verifyNoMoreHookInteration() {
@@ -50,6 +52,7 @@ void main() {
     reset(build);
     reset(didBuild);
     reset(dispose);
+    reset(deactivate);
     reset(initHook);
     reset(didUpdateHook);
     reset(reassemble);
