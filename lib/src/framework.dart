@@ -359,7 +359,6 @@ This may happen if the call to `Hook.use` is made under some condition.
 
   @override
   void deactivate() {
-    super.deactivate();
     if (_hooks != null) {
       for (final hook in _hooks) {
         try {
@@ -375,6 +374,7 @@ This may happen if the call to `Hook.use` is made under some condition.
         }
       }
     }
+    super.deactivate();
   }
 
   @override
