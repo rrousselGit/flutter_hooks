@@ -157,7 +157,8 @@ void useAutomaticKeepAliveClient({bool wantKeepAlive = true}) {
 class _AutomaticKeepAliveClientHook extends Hook<void> {
   final bool wantKeepAlive;
 
-  _AutomaticKeepAliveClientHook(this.wantKeepAlive);
+  _AutomaticKeepAliveClientHook(this.wantKeepAlive)
+      : assert(wantKeepAlive != null);
 
   @override
   _AutomaticKeepAliveClientHookState createState() =>
