@@ -368,8 +368,9 @@ This may happen if the call to `Hook.use` is made under some condition.
             exception: exception,
             stack: stack,
             library: 'hooks library',
-            context:
-            DiagnosticsNode.message('while deactivating ${hook.runtimeType}'),
+            context: DiagnosticsNode.message(
+              'while deactivating ${hook.runtimeType}',
+            ),
           ));
         }
       }
