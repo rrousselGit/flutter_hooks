@@ -58,6 +58,44 @@ void main() {
     reset(reassemble);
   });
 
+  testWidgets('should call deactivate when removed from and inserted into another place', (tester) async {
+    final _key = GlobalKey();
+    final state = ValueNotifier(false);
+    await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.rtl,
+          child: ValueListenableBuilder(
+              valueListenable: state,
+              builder: (context, bool value, _) => Stack(
+                  children: [
+                    HookBuilder(
+                        key: value ? null : _key,
+                        builder: (context) {
+                          Hook.use(createHook());
+                          return Container();
+                        },
+                    ),
+                    HookBuilder(
+                      key: !value ? null : _key,
+                      builder: (context) {
+                        Hook.use(createHook());
+                        return Container();
+                      },
+                    ),
+                  ]
+              )
+          ),
+        )
+    );
+    await tester.pump();
+    verifyNever(deactivate());
+    state.value = true;
+    await tester.pump();
+    verify(deactivate()).called(1);
+    await tester.pump();
+    verifyNoMoreInteractions(deactivate);
+  });
+
   testWidgets('should not allow using inheritedwidgets inside initHook',
       (tester) async {
     await tester.pumpWidget(HookBuilder(builder: (_) {
