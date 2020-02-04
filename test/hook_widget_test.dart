@@ -58,42 +58,50 @@ void main() {
     reset(reassemble);
   });
 
-  testWidgets('should call deactivate when removed from and inserted into another place', (tester) async {
-    final _key = GlobalKey();
+  testWidgets(
+      'should call deactivate when removed from and inserted into another place',
+      (tester) async {
+    final _key1 = GlobalKey();
+    final _key2 = GlobalKey();
     final state = ValueNotifier(false);
-    await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.rtl,
-          child: ValueListenableBuilder(
-              valueListenable: state,
-              builder: (context, bool value, _) => Stack(
-                  children: [
-                    HookBuilder(
-                        key: value ? null : _key,
-                        builder: (context) {
-                          Hook.use(createHook());
-                          return Container();
-                        },
-                    ),
-                    HookBuilder(
-                      key: !value ? null : _key,
-                      builder: (context) {
-                        Hook.use(createHook());
-                        return Container();
-                      },
-                    ),
-                  ]
-              )
-          ),
-        )
-    );
+    final deactivate1 = Func0<void>();
+    final deactivate2 = Func0<void>();
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.rtl,
+      child: ValueListenableBuilder(
+          valueListenable: state,
+          builder: (context, bool value, _) => Stack(children: [
+                Container(
+                  key: const Key('1'),
+                  child: HookBuilder(
+                    key: value ? _key2 : _key1,
+                    builder: (context) {
+                      Hook.use(HookTest<int>(deactivate: deactivate1));
+                      return Container();
+                    },
+                  ),
+                ),
+                HookBuilder(
+                  key: !value ? _key2 : _key1,
+                  builder: (context) {
+                    Hook.use(HookTest<int>(deactivate: deactivate2));
+                    return Container();
+                  },
+                ),
+              ])),
+    ));
     await tester.pump();
-    verifyNever(deactivate());
+    verifyNever(deactivate1());
+    verifyNever(deactivate2());
     state.value = true;
     await tester.pump();
-    verify(deactivate()).called(1);
+    verifyInOrder([
+      deactivate1.call(),
+      deactivate2.call(),
+    ]);
     await tester.pump();
-    verifyNoMoreInteractions(deactivate);
+    verifyNoMoreInteractions(deactivate1);
+    verifyNoMoreInteractions(deactivate2);
   });
 
   testWidgets('should not allow using inheritedwidgets inside initHook',
