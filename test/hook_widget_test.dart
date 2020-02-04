@@ -104,6 +104,42 @@ void main() {
     verifyNoMoreInteractions(deactivate2);
   });
 
+  testWidgets('should call other deactivates even if one fails',
+      (tester) async {
+    final deactivate2 = Func0<void>();
+    final _key = GlobalKey();
+
+    when(didBuild.call()).thenThrow(42);
+    when(builder.call(any)).thenAnswer((invocation) {
+      Hook.use(createHook());
+      Hook.use(HookTest<int>(didBuild: deactivate2));
+      return Container();
+    });
+
+    await expectPump(
+          () => tester.pumpWidget(HookBuilder(
+            key: _key,
+        builder: builder.call,
+      )),
+      throwsA(42),
+    );
+
+    await expectPump(
+          () => tester.pumpWidget(Container(
+            child: HookBuilder(
+              key: _key,
+              builder: builder.call,
+            ),
+          )),
+      throwsA(42),
+    );
+
+    verifyInOrder([
+      deactivate2.call(),
+      deactivate.call(),
+    ]);
+  });
+
   testWidgets('should not allow using inheritedwidgets inside initHook',
       (tester) async {
     await tester.pumpWidget(HookBuilder(builder: (_) {
