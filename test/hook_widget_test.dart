@@ -112,7 +112,7 @@ void main() {
     when(didBuild.call()).thenThrow(42);
     when(builder.call(any)).thenAnswer((invocation) {
       Hook.use(createHook());
-      Hook.use(HookTest<int>(didBuild: deactivate2));
+      Hook.use(HookTest<int>(deactivate: deactivate2));
       return Container();
     });
 
@@ -135,8 +135,8 @@ void main() {
     );
 
     verifyInOrder([
-      deactivate2.call(),
       deactivate.call(),
+      deactivate2.call(),
     ]);
   });
 
