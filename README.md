@@ -6,11 +6,11 @@
 
 A flutter implementation of React hooks: https://medium.com/@dan_abramov/making-sense-of-react-hooks-fdbde8803889
 
-Hooks are a new kind of object that manages a `Widget` life-cycles. They exist for one reason: increase the code sharing _between_ widgets and as a complete replacement for `StatefulWidget`.
+Hooks are a new kind of object that manages a `Widget` life-cycles. They exist for one reason: increase the code-sharing _between_ widgets and as a complete replacement for `StatefulWidget`.
 
 ## Motivation
 
-`StatefulWidget` suffer from a big problem: it is very difficult to reuse the logic of say `initState` or `dispose`. An obvious example is `AnimationController`:
+`StatefulWidget` suffers from a big problem: it is very difficult to reuse the logic of say `initState` or `dispose`. An obvious example is `AnimationController`:
 
 ```dart
 class Example extends StatefulWidget {
@@ -59,11 +59,11 @@ All widgets that desire to use an `AnimationController` will have to reimplement
 Dart mixins can partially solve this issue, but they suffer from other problems:
 
 - A given mixin can only be used once per class.
-- Mixins and the class shares the same object. This means that if two mixins define a variable under the same name, the end result may vary between compilation fail to unknown behavior.
+- Mixins and the class shares the same object. This means that if two mixins define a variable under the same name, the result may vary between compilation fail to unknown behavior.
 
 ---
 
-This library propose a third solution:
+This library proposes a third solution:
 
 ```dart
 class Example extends HookWidget {
@@ -102,7 +102,7 @@ Widget build(BuildContext context) {
 }
 ```
 
-- Hooks are entirely independent of each other and from the widget. Which means they can easily be extracted into a package and published on [pub](https://pub.dartlang.org/) for others to use.
+- Hooks are entirely independent of each other and from the widget. This means they can easily be extracted into a package and published on [pub](https://pub.dartlang.org/) for others to use.
 
 ## Principle
 
@@ -131,7 +131,7 @@ For more explanation of how they are implemented, here's a great article about h
 
 ## Rules
 
-Due to hooks being obtained from their index, there are some rules that must be respected:
+Due to hooks being obtained from their index, some rules must be respected:
 
 ### DO call `use` unconditionally
 
@@ -212,7 +212,8 @@ Hook.use(HookC());
 ```
 
 In this situation, `HookA` keeps its state but `HookC` gets a hard reset.
-This happens because when a refactoring is done, all hooks _after_ the first line impacted are disposed. Since `HookC` was placed after `HookB`, is got disposed.
+This happens because when a refactoring is done, all hooks _after_ the first line impacted are disposed of.
+Since `HookC` was placed after `HookB`, is got disposed of.
 
 ## How to use
 
@@ -281,11 +282,11 @@ class _TimeAliveState<T> extends HookState<void, _TimeAlive<T>> {
 
 Flutter_hooks comes with a list of reusable hooks already provided.
 
-They are divided in different kinds:
+They are divided into different kinds:
 
 ### Primitives
 
-A set of low level hooks that interacts with the different life-cycles of a widget
+A set of low-level hooks that interacts with the different life-cycles of a widget
 
 | name                                                                                                              | description                                                      |
 | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
@@ -333,3 +334,4 @@ A series of hooks with no particular theme.
 | [useReducer](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useReducer.html)                             | An alternative to `useState` for more complex states.  |
 | [usePrevious](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/usePrevious.html)                           | Returns the previous argument called to [usePrevious]. |
 | [useTextEditingController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useTextEditingController.html) | Create a `TextEditingController`                       |
+| [useFocusNode](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useFocusNode.html)                         | Create a `FocusNode`                                   |
