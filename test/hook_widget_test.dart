@@ -108,36 +108,59 @@ void main() {
       (tester) async {
     final deactivate2 = Func0<void>();
     final _key = GlobalKey();
+    final onError = Func1<FlutterErrorDetails, void>();
+    final oldOnError = FlutterError.onError;
+    FlutterError.onError = onError;
+    final errorBuilder = ErrorWidget.builder;
+    ErrorWidget.builder = Func1<FlutterErrorDetails, Widget>();
+    when(ErrorWidget.builder(any)).thenReturn(Container());
+    try {
+      when(deactivate2.call()).thenThrow(42);
+      when(builder.call(any)).thenAnswer((invocation) {
+        Hook.use(createHook());
+        Hook.use(HookTest<int>(deactivate: deactivate2));
+        return Container();
+      });
+      await tester.pumpWidget(Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              HookBuilder(
+                key: _key,
+                builder: builder.call,
+              )
+            ],
+          ),
+          Container(
+            child: const SizedBox(),
+          ),
+        ],
+      ));
 
-    when(didBuild.call()).thenThrow(42);
-    when(builder.call(any)).thenAnswer((invocation) {
-      Hook.use(createHook());
-      Hook.use(HookTest<int>(deactivate: deactivate2));
-      return Container();
-    });
-
-    await expectPump(
-          () => tester.pumpWidget(HookBuilder(
-            key: _key,
-        builder: builder.call,
-      )),
-      throwsA(42),
-    );
-
-    await expectPump(
-          () => tester.pumpWidget(Container(
+      await tester.pumpWidget(Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[],
+          ),
+          Container(
             child: HookBuilder(
               key: _key,
               builder: builder.call,
             ),
-          )),
-      throwsA(42),
-    );
+          ),
+        ],
+      ));
 
-    verifyInOrder([
-      deactivate.call(),
-      deactivate2.call(),
-    ]);
+      // reset the exception because after the test
+      // flutter tries to deactivate the widget and it causes
+      // and exception
+      when(deactivate2.call()).thenAnswer((_) {});
+      verify(onError.call(any)).called((int x) => x > 1);
+      verify(deactivate.call()).called(1);
+    } finally {
+      FlutterError.onError = oldOnError;
+      ErrorWidget.builder = errorBuilder;
+    }
   });
 
   testWidgets('should not allow using inheritedwidgets inside initHook',
