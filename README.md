@@ -86,7 +86,7 @@ But you're probably thinking:
 
 > Where did all the logic go?
 
-That logic moved into `useAnimationController`, a function included directly in this library (see https://github.com/rrousselGit/flutter_hooks#existing-hooks). It is what we call a _Hook_.
+That logic moved into `useAnimationController`, a function included directly in this library (see [Existing hooks](https://github.com/rrousselGit/flutter_hooks#existing-hooks)). It is what we call a _Hook_.
 
 Hooks are a new kind of objects with some specificities:
 
