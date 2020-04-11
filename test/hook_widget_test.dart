@@ -22,6 +22,7 @@ class InheritedInitHookState extends HookState<void, InheritedInitHook> {
 void main() {
   final build = Func1<BuildContext, int>();
   final dispose = Func0<void>();
+  final deactivate = Func0<void>();
   final initHook = Func0<void>();
   final didUpdateHook = Func1<HookTest, void>();
   final didBuild = Func0<void>();
@@ -35,6 +36,7 @@ void main() {
         reassemble: reassemble.call,
         initHook: initHook.call,
         didBuild: didBuild,
+        deactivate: deactivate,
       );
 
   void verifyNoMoreHookInteration() {
@@ -50,9 +52,115 @@ void main() {
     reset(build);
     reset(didBuild);
     reset(dispose);
+    reset(deactivate);
     reset(initHook);
     reset(didUpdateHook);
     reset(reassemble);
+  });
+
+  testWidgets(
+      'should call deactivate when removed from and inserted into another place',
+      (tester) async {
+    final _key1 = GlobalKey();
+    final _key2 = GlobalKey();
+    final state = ValueNotifier(false);
+    final deactivate1 = Func0<void>();
+    final deactivate2 = Func0<void>();
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.rtl,
+      child: ValueListenableBuilder(
+          valueListenable: state,
+          builder: (context, bool value, _) => Stack(children: [
+                Container(
+                  key: const Key('1'),
+                  child: HookBuilder(
+                    key: value ? _key2 : _key1,
+                    builder: (context) {
+                      Hook.use(HookTest<int>(deactivate: deactivate1));
+                      return Container();
+                    },
+                  ),
+                ),
+                HookBuilder(
+                  key: !value ? _key2 : _key1,
+                  builder: (context) {
+                    Hook.use(HookTest<int>(deactivate: deactivate2));
+                    return Container();
+                  },
+                ),
+              ])),
+    ));
+    await tester.pump();
+    verifyNever(deactivate1());
+    verifyNever(deactivate2());
+    state.value = true;
+    await tester.pump();
+    verifyInOrder([
+      deactivate1.call(),
+      deactivate2.call(),
+    ]);
+    await tester.pump();
+    verifyNoMoreInteractions(deactivate1);
+    verifyNoMoreInteractions(deactivate2);
+  });
+
+  testWidgets('should call other deactivates even if one fails',
+      (tester) async {
+    final deactivate2 = Func0<void>();
+    final _key = GlobalKey();
+    final onError = Func1<FlutterErrorDetails, void>();
+    final oldOnError = FlutterError.onError;
+    FlutterError.onError = onError;
+    final errorBuilder = ErrorWidget.builder;
+    ErrorWidget.builder = Func1<FlutterErrorDetails, Widget>();
+    when(ErrorWidget.builder(any)).thenReturn(Container());
+    try {
+      when(deactivate2.call()).thenThrow(42);
+      when(builder.call(any)).thenAnswer((invocation) {
+        Hook.use(createHook());
+        Hook.use(HookTest<int>(deactivate: deactivate2));
+        return Container();
+      });
+      await tester.pumpWidget(Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              HookBuilder(
+                key: _key,
+                builder: builder.call,
+              )
+            ],
+          ),
+          Container(
+            child: const SizedBox(),
+          ),
+        ],
+      ));
+
+      await tester.pumpWidget(Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[],
+          ),
+          Container(
+            child: HookBuilder(
+              key: _key,
+              builder: builder.call,
+            ),
+          ),
+        ],
+      ));
+
+      // reset the exception because after the test
+      // flutter tries to deactivate the widget and it causes
+      // and exception
+      when(deactivate2.call()).thenAnswer((_) {});
+      verify(onError.call(any)).called((int x) => x > 1);
+      verify(deactivate.call()).called(1);
+    } finally {
+      FlutterError.onError = oldOnError;
+      ErrorWidget.builder = errorBuilder;
+    }
   });
 
   testWidgets('should not allow using inheritedwidgets inside initHook',
