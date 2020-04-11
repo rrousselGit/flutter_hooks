@@ -1,3 +1,7 @@
+## 0.9.0
+
+- Added a `deactivate` life-cycle to `HookState`
+
 ## 0.8.0+1
 
 - Fixed link to "Existing hooks" in `README.md`.
