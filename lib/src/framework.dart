@@ -448,7 +448,8 @@ This may happen if the call to `Hook.use` is made under some condition.
     HookState<R, Hook<R>> hookState;
     // first build
     if (_currentHook == null) {
-      assert(_debugDidReassemble || !_didFinishBuildOnce, 'No previous hook found at $_hookIndex, is a hook wrapped in a `if`?');
+      assert(_debugDidReassemble || !_didFinishBuildOnce,
+          'No previous hook found at $_hookIndex, is a hook wrapped in a `if`?');
       hookState = _createHookState(hook);
       _hooks ??= [];
       _hooks.add(hookState);
@@ -482,7 +483,8 @@ This may happen if the call to `Hook.use` is made under some condition.
         hookState = _pushHook(hook);
         _currentHook.moveNext();
       } else {
-        assert(_currentHook.current != null, 'No previous hook found at $_hookIndex, is a hook wrapped in a `if`?');
+        assert(_currentHook.current != null,
+            'No previous hook found at $_hookIndex, is a hook wrapped in a `if`?');
         assert(_debugTypesAreRight(hook), '');
 
         if (_currentHook.current.hook == hook) {
@@ -528,7 +530,8 @@ This may happen if the call to `Hook.use` is made under some condition.
   }
 
   bool _debugTypesAreRight(Hook hook) {
-    assert(_currentHook.current.hook.runtimeType == hook.runtimeType, 'The previous and new hooks at index $_hookIndex do not match');
+    assert(_currentHook.current.hook.runtimeType == hook.runtimeType,
+        'The previous and new hooks at index $_hookIndex do not match');
     return true;
   }
 

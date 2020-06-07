@@ -124,7 +124,8 @@ void useReassemble(VoidCallback callback) {
 }
 
 class _ReassembleHook extends Hook<void> {
-  const _ReassembleHook(this.callback) : assert(callback != null, 'callback cannot be null');
+  const _ReassembleHook(this.callback)
+      : assert(callback != null, 'callback cannot be null');
 
   final VoidCallback callback;
 
