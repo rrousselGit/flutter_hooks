@@ -9,12 +9,14 @@ void main() {
       final reducer = Func2<int, String, int>();
 
       Store<int, String> store;
-      pump() => tester.pumpWidget(HookBuilder(
-            builder: (context) {
-              store = useReducer(reducer.call);
-              return Container();
-            },
-          ));
+      Future<void> pump() {
+        return tester.pumpWidget(HookBuilder(
+          builder: (context) {
+            store = useReducer(reducer.call);
+            return Container();
+          },
+        ));
+      }
 
       when(reducer.call(null, null)).thenReturn(0);
       await pump();
@@ -96,12 +98,14 @@ void main() {
       final reducer = Func2<int, String, int>();
 
       Store<int, String> store;
-      pump() => tester.pumpWidget(HookBuilder(
-            builder: (context) {
-              store = useReducer(reducer.call);
-              return Container();
-            },
-          ));
+      Future<void> pump() {
+        return tester.pumpWidget(HookBuilder(
+          builder: (context) {
+            store = useReducer(reducer.call);
+            return Container();
+          },
+        ));
+      }
 
       when(reducer.call(null, null)).thenReturn(42);
 

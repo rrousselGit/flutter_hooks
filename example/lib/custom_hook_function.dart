@@ -21,11 +21,11 @@ class CustomHookFunctionExample extends HookWidget {
         child: Text('Button tapped ${counter.value} times'),
       ),
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
         // When the button is pressed, update the value of the counter! This
         // will trigger a rebuild as well as printing the latest value to the
         // console!
         onPressed: () => counter.value++,
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -39,7 +39,7 @@ ValueNotifier<T> useLoggedState<T>([T initialData]) {
   final result = useState<T>(initialData);
 
   // Next, call the useValueChanged hook to print the state whenever it changes
-  useValueChanged(result.value, (T _, T __) {
+  useValueChanged<T, void>(result.value, (_, __) {
     print(result.value);
   });
 
