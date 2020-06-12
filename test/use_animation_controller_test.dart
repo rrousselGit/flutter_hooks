@@ -68,7 +68,7 @@ void main() {
     expect(controller.animationBehavior, AnimationBehavior.preserve);
     expect(controller.debugLabel, 'Foo');
 
-    var previousController = controller;
+    final previousController = controller;
     provider = _TickerProvider();
     when(provider.createTicker(any)).thenAnswer((_) {
       return tester
@@ -79,11 +79,7 @@ void main() {
       HookBuilder(builder: (context) {
         controller = useAnimationController(
           vsync: provider,
-          animationBehavior: AnimationBehavior.normal,
           duration: const Duration(seconds: 2),
-          initialValue: 0,
-          lowerBound: 0,
-          upperBound: 0,
           debugLabel: 'Bar',
         );
         return Container();
