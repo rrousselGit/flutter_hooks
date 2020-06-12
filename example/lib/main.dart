@@ -1,9 +1,10 @@
 // ignore_for_file: omit_local_variable_types
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks_gallery/star_wars/planet_screen.dart';
-import 'package:flutter_hooks_gallery/use_effect.dart';
-import 'package:flutter_hooks_gallery/use_state.dart';
-import 'package:flutter_hooks_gallery/use_stream.dart';
+
+import 'star_wars/planet_screen.dart';
+import 'use_effect.dart';
+import 'use_state.dart';
+import 'use_stream.dart';
 
 void main() => runApp(HooksGalleryApp());
 
@@ -43,10 +44,10 @@ class HooksGalleryApp extends StatelessWidget {
 }
 
 class _GalleryItem extends StatelessWidget {
+  const _GalleryItem({this.title, this.builder});
+
   final String title;
   final WidgetBuilder builder;
-
-  const _GalleryItem({this.title, this.builder});
 
   @override
   Widget build(BuildContext context) {
