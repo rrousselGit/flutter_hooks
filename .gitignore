@@ -9,4 +9,3 @@ build/
 android/
 ios/
 /coverage
-.pubspec.lock

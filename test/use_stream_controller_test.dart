@@ -38,8 +38,8 @@ void main() {
       expect(() => controller.onResume, throwsUnsupportedError);
 
       final previousController = controller;
-      void onListen() {}
-      void onCancel() {}
+      final onListen = () {};
+      final onCancel = () {};
       await tester.pumpWidget(HookBuilder(builder: (context) {
         controller = useStreamController(
           sync: true,
@@ -75,8 +75,8 @@ void main() {
       expect(() => controller.onResume, throwsUnsupportedError);
 
       final previousController = controller;
-      void onListen() {}
-      void onCancel() {}
+      final onListen = () {};
+      final onCancel = () {};
       await tester.pumpWidget(HookBuilder(builder: (context) {
         controller = useStreamController(
           onCancel: onCancel,

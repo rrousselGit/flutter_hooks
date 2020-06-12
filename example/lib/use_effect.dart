@@ -15,9 +15,7 @@ class CustomHookExample extends HookWidget {
     // To update the stored value, `add` data to the StreamController. To get
     // the latest value from the StreamController, listen to the Stream with
     // the useStream hook.
-    // ignore: close_sinks
-    final StreamController<int> countController =
-        _useLocalStorageInt('counter');
+    StreamController<int> countController = _useLocalStorageInt('counter');
 
     return Scaffold(
       appBar: AppBar(
@@ -29,7 +27,7 @@ class CustomHookExample extends HookWidget {
         // new value
         child: HookBuilder(
           builder: (context) {
-            final AsyncSnapshot<int> count = useStream(countController.stream);
+            AsyncSnapshot<int> count = useStream(countController.stream);
 
             return !count.hasData
                 ? const CircularProgressIndicator()
@@ -78,7 +76,7 @@ StreamController<int> _useLocalStorageInt(
   useEffect(
     () {
       SharedPreferences.getInstance().then((prefs) async {
-        final int valueFromStorage = prefs.getInt(key);
+        int valueFromStorage = prefs.getInt(key);
         controller.add(valueFromStorage ?? defaultValue);
       }).catchError(controller.addError);
       return null;
