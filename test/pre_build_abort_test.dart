@@ -6,6 +6,26 @@ import 'package:flutter_test/flutter_test.dart';
 import 'mock.dart';
 
 void main() {
+  testWidgets('shouldRebuild defaults to true', (tester) async {
+    MayRebuildState first;
+    var buildCount = 0;
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (c) {
+        buildCount++;
+        first = Hook.use(const MayRebuild());
+
+        return Container();
+      }),
+    );
+
+    expect(buildCount, 1);
+
+    first.markMayNeedRebuild();
+    await tester.pump();
+
+    expect(buildCount, 2);
+  });
   testWidgets('can queue multiple mayRebuilds at once', (tester) async {
     final firstSpy = ShouldRebuildMock();
     final secondSpy = ShouldRebuildMock();
@@ -243,7 +263,7 @@ class IsPositiveHookState extends HookState<bool, IsPositiveHook> {
 }
 
 class MayRebuild extends Hook<MayRebuildState> {
-  const MayRebuild(this.shouldRebuild);
+  const MayRebuild([this.shouldRebuild]);
 
   final ShouldRebuildMock shouldRebuild;
 
@@ -255,7 +275,12 @@ class MayRebuild extends Hook<MayRebuildState> {
 
 class MayRebuildState extends HookState<MayRebuildState, MayRebuild> {
   @override
-  bool shouldRebuild() => hook.shouldRebuild();
+  bool shouldRebuild() {
+    if (hook.shouldRebuild == null) {
+      return super.shouldRebuild();
+    }
+    return hook.shouldRebuild();
+  }
 
   @override
   MayRebuildState build(BuildContext context) => this;
