@@ -9,5 +9,3 @@ analyzer:
 linter:
   rules:
     public_member_api_docs: false
-    avoid_print: false
-    use_key_in_widget_constructors: false

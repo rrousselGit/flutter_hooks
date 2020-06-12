@@ -9,7 +9,7 @@ void main() {
     final _useValueChanged = Func2<int, String, String>();
     String result;
 
-    Future<void> pump() => tester.pumpWidget(HookBuilder(
+    pump() => tester.pumpWidget(HookBuilder(
           builder: (context) {
             result = useValueChanged(value, _useValueChanged.call);
             return Container();

@@ -29,17 +29,15 @@ void main() {
   final reassemble = Func0<void>();
   final builder = Func1<BuildContext, Widget>();
 
-  HookTest<int> createHook() {
-    return HookTest<int>(
-      build: build.call,
-      dispose: dispose.call,
-      didUpdateHook: didUpdateHook.call,
-      reassemble: reassemble.call,
-      initHook: initHook.call,
-      didBuild: didBuild,
-      deactivate: deactivate,
-    );
-  }
+  final createHook = () => HookTest<int>(
+        build: build.call,
+        dispose: dispose.call,
+        didUpdateHook: didUpdateHook.call,
+        reassemble: reassemble.call,
+        initHook: initHook.call,
+        didBuild: didBuild,
+        deactivate: deactivate,
+      );
 
   void verifyNoMoreHookInteration() {
     verifyNoMoreInteractions(build);
@@ -68,102 +66,98 @@ void main() {
     final state = ValueNotifier(false);
     final deactivate1 = Func0<void>();
     final deactivate2 = Func0<void>();
-
-    await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.rtl,
-        child: ValueListenableBuilder<bool>(
+    await tester.pumpWidget(Directionality(
+      textDirection: TextDirection.rtl,
+      child: ValueListenableBuilder(
           valueListenable: state,
-          builder: (context, value, _) {
-            return Stack(children: [
-              Container(
-                key: const Key('1'),
-                child: HookBuilder(
-                  key: value ? _key2 : _key1,
+          builder: (context, bool value, _) => Stack(children: [
+                Container(
+                  key: const Key('1'),
+                  child: HookBuilder(
+                    key: value ? _key2 : _key1,
+                    builder: (context) {
+                      Hook.use(HookTest<int>(deactivate: deactivate1));
+                      return Container();
+                    },
+                  ),
+                ),
+                HookBuilder(
+                  key: !value ? _key2 : _key1,
                   builder: (context) {
-                    Hook.use(HookTest<int>(deactivate: deactivate1));
+                    Hook.use(HookTest<int>(deactivate: deactivate2));
                     return Container();
                   },
                 ),
-              ),
-              HookBuilder(
-                key: !value ? _key2 : _key1,
-                builder: (context) {
-                  Hook.use(HookTest<int>(deactivate: deactivate2));
-                  return Container();
-                },
-              ),
-            ]);
-          },
-        ),
-      ),
-    );
-
+              ])),
+    ));
     await tester.pump();
-
     verifyNever(deactivate1());
     verifyNever(deactivate2());
     state.value = true;
-
     await tester.pump();
-
     verifyInOrder([
       deactivate1.call(),
       deactivate2.call(),
     ]);
-
     await tester.pump();
-
     verifyNoMoreInteractions(deactivate1);
     verifyNoMoreInteractions(deactivate2);
   });
 
   testWidgets('should call other deactivates even if one fails',
       (tester) async {
+    final deactivate2 = Func0<void>();
+    final _key = GlobalKey();
     final onError = Func1<FlutterErrorDetails, void>();
     final oldOnError = FlutterError.onError;
     FlutterError.onError = onError;
-
     final errorBuilder = ErrorWidget.builder;
     ErrorWidget.builder = Func1<FlutterErrorDetails, Widget>();
     when(ErrorWidget.builder(any)).thenReturn(Container());
-
-    final deactivate = Func0<void>();
-    when(deactivate.call()).thenThrow(42);
-    final deactivate2 = Func0<void>();
-
-    final _key = GlobalKey();
-
-    final widget = HookBuilder(
-      key: _key,
-      builder: (context) {
-        Hook.use(HookTest<int>(deactivate: deactivate));
+    try {
+      when(deactivate2.call()).thenThrow(42);
+      when(builder.call(any)).thenAnswer((invocation) {
+        Hook.use(createHook());
         Hook.use(HookTest<int>(deactivate: deactivate2));
         return Container();
-      },
-    );
+      });
+      await tester.pumpWidget(Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              HookBuilder(
+                key: _key,
+                builder: builder.call,
+              )
+            ],
+          ),
+          Container(
+            child: const SizedBox(),
+          ),
+        ],
+      ));
 
-    try {
-      await tester.pumpWidget(SizedBox(child: widget));
+      await tester.pumpWidget(Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[],
+          ),
+          Container(
+            child: HookBuilder(
+              key: _key,
+              builder: builder.call,
+            ),
+          ),
+        ],
+      ));
 
-      verifyNoMoreInteractions(deactivate);
-      verifyNoMoreInteractions(deactivate2);
-
-      await tester.pumpWidget(widget);
-
-      verifyInOrder([
-        deactivate(),
-        deactivate2(),
-      ]);
-
-      verify(onError.call(any)).called(1);
-      verifyNoMoreInteractions(deactivate);
-      verifyNoMoreInteractions(deactivate2);
-    } finally {
       // reset the exception because after the test
       // flutter tries to deactivate the widget and it causes
       // and exception
-      when(deactivate.call()).thenAnswer((_) {});
+      when(deactivate2.call()).thenAnswer((_) {});
+      verify(onError.call(any)).called((int x) => x > 1);
+      verify(deactivate.call()).called(1);
+    } finally {
       FlutterError.onError = oldOnError;
       ErrorWidget.builder = errorBuilder;
     }
@@ -182,8 +176,8 @@ void main() {
   testWidgets('allows using inherited widgets outside of initHook',
       (tester) async {
     when(build(any)).thenAnswer((invocation) {
-      final context = invocation.positionalArguments.first as BuildContext;
-      context.dependOnInheritedWidgetOfExactType<InheritedWidget>();
+      invocation.positionalArguments.first as BuildContext
+        ..dependOnInheritedWidgetOfExactType<InheritedWidget>();
       return null;
     });
 
