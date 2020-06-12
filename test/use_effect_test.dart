@@ -3,17 +3,17 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'mock.dart';
 
-final effect = Func0<VoidCallback>();
-final unrelated = Func0<void>();
-List<Object> parameters;
-
-Widget builder() => HookBuilder(builder: (context) {
-      useEffect(effect.call, parameters);
-      unrelated.call();
-      return Container();
-    });
-
 void main() {
+  final effect = Func0<VoidCallback>();
+  final unrelated = Func0<void>();
+  List<Object> parameters;
+
+  Widget builder() => HookBuilder(builder: (context) {
+        useEffect(effect.call, parameters);
+        unrelated.call();
+        return Container();
+      });
+
   tearDown(() {
     parameters = null;
     reset(unrelated);
