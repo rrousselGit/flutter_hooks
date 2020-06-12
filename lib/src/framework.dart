@@ -239,10 +239,26 @@ abstract class HookState<R, T extends Hook<R>> {
   ///  * [State.reassemble]
   void reassemble() {}
 
+  /// Called before a [build] triggered by [markMayNeedRebuild].
+  ///
+  /// If [shouldRebuild] returns `false` on all the hooks that called [markMayNeedRebuild]
+  /// then this aborts the rebuild of the associated [HookWidget].
+  ///
+  /// There is no guarantee that this method will be called after [markMayNeedRebuild]
+  /// was called.
+  /// Some situations where [shouldRebuild] will not be called:
+  ///
+  /// - [setState] was called
+  /// - a previous hook's [shouldRebuild] returned `true`
+  /// - the associated [HookWidget] changed.
   bool shouldRebuild() => true;
 
+  /// Mark the associated [HookWidget] as **potentially** needing to rebuild.
+  ///
+  /// As opposed to [setState], the rebuild is optional and can be cancelled right
+  /// before [HookWidget.build] is called, by having [shouldRebuild] return false.
   void markMayNeedRebuild() {
-    if (_element._isOptionalRebuild == null) {
+    if (_element._isOptionalRebuild != false) {
       _element
         .._isOptionalRebuild = true
         .._shouldRebuildQueue ??= LinkedList()

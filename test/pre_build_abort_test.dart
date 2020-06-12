@@ -3,7 +3,57 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'mock.dart';
+
 void main() {
+  testWidgets('can queue multiple mayRebuilds at once', (tester) async {
+    final firstSpy = ShouldRebuildMock();
+    final secondSpy = ShouldRebuildMock();
+    MayRebuildState first;
+    MayRebuildState second;
+    var buildCount = 0;
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (c) {
+        buildCount++;
+        first = Hook.use(MayRebuild(firstSpy));
+        second = Hook.use(MayRebuild(secondSpy));
+
+        return Container();
+      }),
+    );
+
+    verifyNoMoreInteractions(firstSpy);
+    verifyNoMoreInteractions(secondSpy);
+    expect(buildCount, 1);
+
+    first.markMayNeedRebuild();
+    when(firstSpy()).thenReturn(false);
+    second.markMayNeedRebuild();
+    when(secondSpy()).thenReturn(false);
+
+    await tester.pump();
+
+    expect(buildCount, 1);
+    verifyInOrder([
+      firstSpy(),
+      secondSpy(),
+    ]);
+    verifyNoMoreInteractions(firstSpy);
+    verifyNoMoreInteractions(secondSpy);
+
+    first.markMayNeedRebuild();
+    when(firstSpy()).thenReturn(true);
+    second.markMayNeedRebuild();
+    when(secondSpy()).thenReturn(false);
+
+    await tester.pump();
+
+    expect(buildCount, 2);
+    verify(firstSpy()).called(1);
+    verifyNoMoreInteractions(firstSpy);
+    verifyNoMoreInteractions(secondSpy);
+  });
   testWidgets('pre-build-abort', (tester) async {
     var buildCount = 0;
     final notifier = ValueNotifier(0);
@@ -190,4 +240,27 @@ class IsPositiveHookState extends HookState<bool, IsPositiveHook> {
     hook.notifier.removeListener(listener);
     super.dispose();
   }
+}
+
+class MayRebuild extends Hook<MayRebuildState> {
+  const MayRebuild(this.shouldRebuild);
+
+  final ShouldRebuildMock shouldRebuild;
+
+  @override
+  MayRebuildState createState() {
+    return MayRebuildState();
+  }
+}
+
+class MayRebuildState extends HookState<MayRebuildState, MayRebuild> {
+  @override
+  bool shouldRebuild() => hook.shouldRebuild();
+
+  @override
+  MayRebuildState build(BuildContext context) => this;
+}
+
+class ShouldRebuildMock extends Mock {
+  bool call();
 }
