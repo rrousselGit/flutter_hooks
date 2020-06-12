@@ -11,8 +11,7 @@ void main() {
       return Container();
     });
 
-    Widget createBuilder() => HookBuilder(builder: fn.call);
-
+    final createBuilder = () => HookBuilder(builder: fn.call);
     final _builder = createBuilder();
 
     await tester.pumpWidget(_builder);

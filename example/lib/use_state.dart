@@ -22,11 +22,11 @@ class UseStateExample extends HookWidget {
         child: Text('Button tapped ${counter.value} times'),
       ),
       floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
         // When the button is pressed, update the value of the counter! This
         // will trigger a rebuild, displaying the latest value in the Text
         // Widget above!
         onPressed: () => counter.value++,
-        child: const Icon(Icons.add),
       ),
     );
   }

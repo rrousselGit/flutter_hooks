@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_hooks_gallery/star_wars/redux.dart';
+import 'package:flutter_hooks_gallery/star_wars/star_wars_api.dart';
 import 'package:provider/provider.dart';
-
-import 'redux.dart';
-import 'star_wars_api.dart';
 
 /// This handler will take care of async api interactions
 /// and updating the store afterwards.
@@ -90,9 +89,9 @@ class _PlanetScreenBody extends HookWidget {
 }
 
 class _Error extends StatelessWidget {
-  const _Error({Key key, this.errorMsg}) : super(key: key);
-
   final String errorMsg;
+
+  const _Error({Key key, this.errorMsg}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -102,13 +101,11 @@ class _Error extends StatelessWidget {
         if (errorMsg != null) Text(errorMsg),
         RaisedButton(
           color: Colors.redAccent,
-          onPressed: () async {
-            await Provider.of<_PlanetHandler>(
-              context,
-              listen: false,
-            ).fetchAndDispatch();
-          },
           child: const Text('Try again'),
+          onPressed: () async {
+            await Provider.of<_PlanetHandler>(context, listen: false)
+                .fetchAndDispatch();
+          },
         ),
       ],
     );
@@ -116,8 +113,7 @@ class _Error extends StatelessWidget {
 }
 
 class _LoadPageButton extends HookWidget {
-  const _LoadPageButton({this.next = true})
-      : assert(next != null, 'next cannot be null');
+  _LoadPageButton({this.next = true}) : assert(next != null);
 
   final bool next;
 
@@ -125,12 +121,12 @@ class _LoadPageButton extends HookWidget {
   Widget build(BuildContext context) {
     final state = Provider.of<AppState>(context);
     return RaisedButton(
+      child: next ? const Text('Next Page') : const Text('Prev Page'),
       onPressed: () async {
         final url = next ? state.planetPage.next : state.planetPage.previous;
         await Provider.of<_PlanetHandler>(context, listen: false)
             .fetchAndDispatch(url);
       },
-      child: next ? const Text('Next Page') : const Text('Prev Page'),
     );
   }
 }
@@ -169,9 +165,8 @@ class _PlanetListHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: buttonAlignment,
       children: <Widget>[
-        if (state.planetPage.previous != null)
-          const _LoadPageButton(next: false),
-        if (state.planetPage.next != null) const _LoadPageButton()
+        if (state.planetPage.previous != null) _LoadPageButton(next: false),
+        if (state.planetPage.next != null) _LoadPageButton(next: true)
       ],
     );
   }

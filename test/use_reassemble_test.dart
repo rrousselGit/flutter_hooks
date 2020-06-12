@@ -14,7 +14,7 @@ void main() {
     );
   });
 
-  testWidgets("hot-reload calls useReassemble's callback", (tester) async {
+  testWidgets('hot-reload calls useReassemble\'s callback', (tester) async {
     final reassemble = Func0<void>();
     await tester.pumpWidget(HookBuilder(builder: (context) {
       useReassemble(reassemble);

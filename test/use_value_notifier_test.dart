@@ -110,7 +110,8 @@ void main() {
 
       expect(state, isNot(previous));
     });
-    testWidgets("instance stays the same when key don' change", (tester) async {
+    testWidgets('instance stays the same when key don\' change',
+        (tester) async {
       ValueNotifier<int> state;
       ValueNotifier<int> previous;
 

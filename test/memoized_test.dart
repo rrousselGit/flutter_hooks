@@ -16,7 +16,7 @@ void main() {
 
   testWidgets('invalid parameters', (tester) async {
     await tester.pumpWidget(HookBuilder(builder: (context) {
-      useMemoized<void>(null);
+      useMemoized<Null>(null);
       return Container();
     }));
     expect(tester.takeException(), isAssertionError);
@@ -198,7 +198,7 @@ void main() {
   });
 
   testWidgets(
-      "memoized parameter reference do not change don't call valueBuilder",
+      'memoized parameter reference do not change don\'t call valueBuilder',
       (tester) async {
     int result;
     final parameters = <Object>[];

@@ -4,7 +4,6 @@ import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 import 'package:built_value/standard_json_plugin.dart';
-import 'package:meta/meta.dart';
 
 part 'models.g.dart';
 
@@ -16,14 +15,13 @@ part 'models.g.dart';
 final Serializers serializers =
     (_$serializers.toBuilder()..addPlugin(StandardJsonPlugin())).build();
 
-@immutable
+/// equals one page
 abstract class PlanetPageModel
     implements Built<PlanetPageModel, PlanetPageModelBuilder> {
-  factory PlanetPageModel([
-    void Function(PlanetPageModelBuilder) updates,
-  ]) = _$PlanetPageModel;
+  PlanetPageModel._();
 
-  const PlanetPageModel._();
+  factory PlanetPageModel([void Function(PlanetPageModelBuilder) updates]) =
+      _$PlanetPageModel;
 
   static Serializer<PlanetPageModel> get serializer =>
       _$planetPageModelSerializer;
@@ -37,13 +35,12 @@ abstract class PlanetPageModel
   BuiltList<PlanetModel> get results;
 }
 
-@immutable
+/// equals one planet
 abstract class PlanetModel implements Built<PlanetModel, PlanetModelBuilder> {
-  factory PlanetModel([
-    void Function(PlanetModelBuilder) updates,
-  ]) = _$PlanetModel;
+  PlanetModel._();
 
-  const PlanetModel._();
+  factory PlanetModel([void Function(PlanetModelBuilder) updates]) =
+      _$PlanetModel;
 
   static Serializer<PlanetModel> get serializer => _$planetModelSerializer;
 
