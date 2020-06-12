@@ -160,15 +160,20 @@ class IsPositiveHookState extends HookState<bool, IsPositiveHook> {
 
   void listener() {
     dirty = true;
-    markMayNeedRebuild(() {
+    markMayNeedRebuild();
+  }
+
+  @override
+  bool shouldRebuild() {
+    if (dirty) {
       dirty = false;
       final newValue = hook.notifier.value >= 0;
       if (newValue != value) {
         value = newValue;
         return true;
       }
-      return false;
-    });
+    }
+    return false;
   }
 
   @override
