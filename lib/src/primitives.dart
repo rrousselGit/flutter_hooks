@@ -15,14 +15,13 @@ T useMemoized<T>(T Function() valueBuilder,
 }
 
 class _MemoizedHook<T> extends Hook<T> {
-  const _MemoizedHook(
-    this.valueBuilder, {
-    List<Object> keys = const <dynamic>[],
-  })  : assert(valueBuilder != null, 'valueBuilder cannot be null'),
-        assert(keys != null, 'keys cannot be null'),
-        super(keys: keys);
-
   final T Function() valueBuilder;
+
+  const _MemoizedHook(this.valueBuilder,
+      {List<Object> keys = const <dynamic>[]})
+      : assert(valueBuilder != null),
+        assert(keys != null),
+        super(keys: keys);
 
   @override
   _MemoizedHookState<T> createState() => _MemoizedHookState<T>();
@@ -62,19 +61,16 @@ class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
 ///     controller.forward();
 /// });
 /// ```
-R useValueChanged<T, R>(
-  T value,
-  R Function(T oldValue, R oldResult) valueChange,
-) {
+R useValueChanged<T, R>(T value, R valueChange(T oldValue, R oldResult)) {
   return Hook.use(_ValueChangedHook(value, valueChange));
 }
 
 class _ValueChangedHook<T, R> extends Hook<R> {
-  const _ValueChangedHook(this.value, this.valueChanged)
-      : assert(valueChanged != null, 'valueChanged cannot be null');
-
   final R Function(T oldValue, R oldResult) valueChanged;
   final T value;
+
+  const _ValueChangedHook(this.value, this.valueChanged)
+      : assert(valueChanged != null);
 
   @override
   _ValueChangedHookState<T, R> createState() => _ValueChangedHookState<T, R>();
@@ -132,11 +128,11 @@ void useEffect(Dispose Function() effect, [List<Object> keys]) {
 }
 
 class _EffectHook extends Hook<void> {
-  const _EffectHook(this.effect, [List<Object> keys])
-      : assert(effect != null, 'effect cannot be null'),
-        super(keys: keys);
-
   final Dispose Function() effect;
+
+  const _EffectHook(this.effect, [List<Object> keys])
+      : assert(effect != null),
+        super(keys: keys);
 
   @override
   _EffectHookState createState() => _EffectHookState();
@@ -211,9 +207,9 @@ ValueNotifier<T> useState<T>([T initialData]) {
 }
 
 class _StateHook<T> extends Hook<ValueNotifier<T>> {
-  const _StateHook({this.initialData});
-
   final T initialData;
+
+  const _StateHook({this.initialData});
 
   @override
   _StateHookState<T> createState() => _StateHookState();

@@ -21,10 +21,9 @@ T useListenable<T extends Listenable>(T listenable) {
 }
 
 class _ListenableHook extends Hook<void> {
-  const _ListenableHook(this.listenable)
-      : assert(listenable != null, 'listenable cannot be null');
-
   final Listenable listenable;
+
+  const _ListenableHook(this.listenable) : assert(listenable != null);
 
   @override
   _ListenableStateHook createState() => _ListenableStateHook();
@@ -75,10 +74,10 @@ ValueNotifier<T> useValueNotifier<T>([T intialData, List<Object> keys]) {
 }
 
 class _ValueNotifierHook<T> extends Hook<ValueNotifier<T>> {
+  final T initialData;
+
   const _ValueNotifierHook({List<Object> keys, this.initialData})
       : super(keys: keys);
-
-  final T initialData;
 
   @override
   _UseValueNotiferHookState<T> createState() => _UseValueNotiferHookState<T>();

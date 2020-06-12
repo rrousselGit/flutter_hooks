@@ -17,14 +17,12 @@ void main() {
   testWidgets('useListenable', (tester) async {
     var listenable = ValueNotifier(0);
 
-    Future<void> pump() {
-      return tester.pumpWidget(HookBuilder(
-        builder: (context) {
-          useListenable(listenable);
-          return Container();
-        },
-      ));
-    }
+    pump() => tester.pumpWidget(HookBuilder(
+          builder: (context) {
+            useListenable(listenable);
+            return Container();
+          },
+        ));
 
     await pump();
 

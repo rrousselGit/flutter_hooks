@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
@@ -164,9 +162,8 @@ Calling them outside of build method leads to an unstable state and is therefore
       return false;
     }
 
-    final i1 = p1.iterator;
-    final i2 = p2.iterator;
-    // ignore: literal_only_boolean_expressions, returns will abort the loop
+    var i1 = p1.iterator;
+    var i2 = p2.iterator;
     while (true) {
       if (!i1.moveNext() || !i2.moveNext()) {
         return true;
@@ -196,8 +193,8 @@ Calling them outside of build method leads to an unstable state and is therefore
 abstract class HookState<R, T extends Hook<R>> {
   /// Equivalent of [State.context] for [HookState]
   @protected
-  BuildContext get context => _element;
-  HookElement _element;
+  BuildContext get context => _element.context;
+  State _element;
 
   /// Equivalent of [State.widget] for [HookState]
   T get hook => _hook;
@@ -239,61 +236,24 @@ abstract class HookState<R, T extends Hook<R>> {
   ///  * [State.reassemble]
   void reassemble() {}
 
-  /// Called before a [build] triggered by [markMayNeedRebuild].
-  ///
-  /// If [shouldRebuild] returns `false` on all the hooks that called [markMayNeedRebuild]
-  /// then this aborts the rebuild of the associated [HookWidget].
-  ///
-  /// There is no guarantee that this method will be called after [markMayNeedRebuild]
-  /// was called.
-  /// Some situations where [shouldRebuild] will not be called:
-  ///
-  /// - [setState] was called
-  /// - a previous hook's [shouldRebuild] returned `true`
-  /// - the associated [HookWidget] changed.
-  bool shouldRebuild() => true;
-
-  /// Mark the associated [HookWidget] as **potentially** needing to rebuild.
-  ///
-  /// As opposed to [setState], the rebuild is optional and can be cancelled right
-  /// before [HookWidget.build] is called, by having [shouldRebuild] return false.
-  void markMayNeedRebuild() {
-    if (_element._isOptionalRebuild != false) {
-      _element
-        .._isOptionalRebuild = true
-        .._shouldRebuildQueue ??= LinkedList()
-        .._shouldRebuildQueue.add(_Entry(shouldRebuild))
-        ..markNeedsBuild();
-    }
-  }
-
   /// Equivalent of [State.setState] for [HookState]
   @protected
   void setState(VoidCallback fn) {
-    fn();
-    _element
-      .._isOptionalRebuild = false
-      ..markNeedsBuild();
+    // ignore: invalid_use_of_protected_member
+    _element.setState(fn);
   }
-}
-
-class _Entry<T> extends LinkedListEntry<_Entry<T>> {
-  _Entry(this.value);
-  final T value;
 }
 
 /// An [Element] that uses a [HookWidget] as its configuration.
 class HookElement extends StatefulElement {
+  static HookElement _currentContext;
+
   /// Creates an element that uses the given widget as its configuration.
   HookElement(HookWidget widget) : super(widget);
-  static HookElement _currentContext;
 
   Iterator<HookState> _currentHook;
   int _hookIndex;
   List<HookState> _hooks;
-  LinkedList<_Entry<bool Function()>> _shouldRebuildQueue;
-  bool _isOptionalRebuild = false;
-  Widget _buildCache;
   bool _didFinishBuildOnce = false;
 
   bool _debugDidReassemble;
@@ -301,32 +261,10 @@ class HookElement extends StatefulElement {
   bool _debugIsInitHook;
 
   @override
-  void update(StatefulWidget newWidget) {
-    _isOptionalRebuild = false;
-    super.update(newWidget);
-  }
-
-  @override
-  void didChangeDependencies() {
-    _isOptionalRebuild = false;
-    super.didChangeDependencies();
-  }
-
-  @override
   HookWidget get widget => super.widget as HookWidget;
 
   @override
   Widget build() {
-    final mustRebuild = _isOptionalRebuild != true ||
-        _shouldRebuildQueue.any((cb) => cb.value());
-
-    _isOptionalRebuild = null;
-    _shouldRebuildQueue?.clear();
-
-    if (!mustRebuild) {
-      return _buildCache;
-    }
-
     _currentHook = _hooks?.iterator;
     // first iterator always has null
     _currentHook?.moveNext();
@@ -336,23 +274,21 @@ class HookElement extends StatefulElement {
       _debugIsInitHook = false;
       _debugDidReassemble ??= false;
       return true;
-    }(), '');
+    }());
     HookElement._currentContext = this;
-    _buildCache = super.build();
+    final result = super.build();
     HookElement._currentContext = null;
 
     // dispose removed items
     assert(() {
-      if (!debugHotReloadHooksEnabled) {
-        return true;
-      }
+      if (!debugHotReloadHooksEnabled) return true;
       if (_debugDidReassemble && _hooks != null) {
-        while (_hookIndex < _hooks.length) {
-          _hooks.removeAt(_hookIndex).dispose();
+        for (var i = _hookIndex; i < _hooks.length;) {
+          _hooks.removeAt(i).dispose();
         }
       }
       return true;
-    }(), '');
+    }());
     assert(_hookIndex == (_hooks?.length ?? 0), '''
 Build for $widget finished with less hooks used than a previous build.
 Used $_hookIndex hooks while a previous build had ${_hooks.length}.
@@ -360,14 +296,12 @@ This may happen if the call to `Hook.use` is made under some condition.
 
 ''');
     assert(() {
-      if (!debugHotReloadHooksEnabled) {
-        return true;
-      }
+      if (!debugHotReloadHooksEnabled) return true;
       _debugDidReassemble = false;
       return true;
-    }(), '');
+    }());
     _didFinishBuildOnce = true;
-    return _buildCache;
+    return result;
   }
 
   /// A read-only list of all hooks available.
@@ -377,13 +311,9 @@ This may happen if the call to `Hook.use` is made under some condition.
   List<HookState> get debugHooks => List<HookState>.unmodifiable(_hooks);
 
   @override
-  T dependOnInheritedWidgetOfExactType<T extends InheritedWidget>({
-    Object aspect,
-  }) {
-    assert(
-      !_debugIsInitHook,
-      'Cannot listen to inherited widgets inside HookState.initState. Use HookState.build instead',
-    );
+  T dependOnInheritedWidgetOfExactType<T extends InheritedWidget>(
+      {Object aspect}) {
+    assert(!_debugIsInitHook);
     return super.dependOnInheritedWidgetOfExactType<T>(aspect: aspect);
   }
 
@@ -459,24 +389,21 @@ This may happen if the call to `Hook.use` is made under some condition.
         }
       }
       return true;
-    }(), '');
+    }());
   }
 
   R _use<R>(Hook<R> hook) {
     HookState<R, Hook<R>> hookState;
     // first build
     if (_currentHook == null) {
-      assert(_debugDidReassemble || !_didFinishBuildOnce,
-          'No previous hook found at $_hookIndex, is a hook wrapped in a `if`?');
+      assert(_debugDidReassemble || !_didFinishBuildOnce);
       hookState = _createHookState(hook);
       _hooks ??= [];
       _hooks.add(hookState);
     } else {
       // recreate states on hot-reload of the order changed
       assert(() {
-        if (!debugHotReloadHooksEnabled) {
-          return true;
-        }
+        if (!debugHotReloadHooksEnabled) return true;
         if (!_debugDidReassemble) {
           return true;
         }
@@ -496,14 +423,13 @@ This may happen if the call to `Hook.use` is made under some condition.
           hookState = _pushHook(hook);
         }
         return true;
-      }(), '');
+      }());
       if (!_didFinishBuildOnce && _currentHook.current == null) {
         hookState = _pushHook(hook);
         _currentHook.moveNext();
       } else {
-        assert(_currentHook.current != null,
-            'No previous hook found at $_hookIndex, is a hook wrapped in a `if`?');
-        assert(_debugTypesAreRight(hook), '');
+        assert(_currentHook.current != null);
+        assert(_debugTypesAreRight(hook));
 
         if (_currentHook.current.hook == hook) {
           hookState = _currentHook.current as HookState<R, Hook<R>>;
@@ -528,28 +454,27 @@ This may happen if the call to `Hook.use` is made under some condition.
 
   HookState<R, Hook<R>> _replaceHookAt<R>(int index, Hook<R> hook) {
     _hooks.removeAt(_hookIndex).dispose();
-    final hookState = _createHookState(hook);
+    var hookState = _createHookState(hook);
     _hooks.insert(_hookIndex, hookState);
     return hookState;
   }
 
   HookState<R, Hook<R>> _insertHookAt<R>(int index, Hook<R> hook) {
-    final hookState = _createHookState(hook);
+    var hookState = _createHookState(hook);
     _hooks.insert(index, hookState);
     _resetsIterator(hookState);
     return hookState;
   }
 
   HookState<R, Hook<R>> _pushHook<R>(Hook<R> hook) {
-    final hookState = _createHookState(hook);
+    var hookState = _createHookState(hook);
     _hooks.add(hookState);
     _resetsIterator(hookState);
     return hookState;
   }
 
   bool _debugTypesAreRight(Hook hook) {
-    assert(_currentHook.current.hook.runtimeType == hook.runtimeType,
-        'The previous and new hooks at index $_hookIndex do not match');
+    assert(_currentHook.current.hook.runtimeType == hook.runtimeType);
     return true;
   }
 
@@ -565,16 +490,16 @@ This may happen if the call to `Hook.use` is made under some condition.
     assert(() {
       _debugIsInitHook = true;
       return true;
-    }(), '');
+    }());
     final state = hook.createState()
-      .._element = this
+      .._element = this.state
       .._hook = hook
       ..initHook();
 
     assert(() {
       _debugIsInitHook = false;
       return true;
-    }(), '');
+    }());
 
     return state;
   }
@@ -623,20 +548,20 @@ BuildContext useContext() {
 
 /// A [HookWidget] that defer its [HookWidget.build] to a callback
 class HookBuilder extends HookWidget {
+  /// The callback used by [HookBuilder] to create a widget.
+  ///
+  /// If a [Hook] asks for a rebuild, [builder] will be called again.
+  /// [builder] must not return `null`.
+  final Widget Function(BuildContext context) builder;
+
   /// Creates a widget that delegates its build to a callback.
   ///
   /// The [builder] argument must not be null.
   const HookBuilder({
     @required this.builder,
     Key key,
-  })  : assert(builder != null, '`builder` cannot be null'),
+  })  : assert(builder != null),
         super(key: key);
-
-  /// The callback used by [HookBuilder] to create a widget.
-  ///
-  /// If a [Hook] asks for a rebuild, [builder] will be called again.
-  /// [builder] must not return `null`.
-  final Widget Function(BuildContext context) builder;
 
   @override
   Widget build(BuildContext context) => builder(context);

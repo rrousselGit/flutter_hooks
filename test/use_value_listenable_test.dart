@@ -18,14 +18,12 @@ void main() {
     var listenable = ValueNotifier(0);
     int result;
 
-    Future<void> pump() {
-      return tester.pumpWidget(HookBuilder(
-        builder: (context) {
-          result = useValueListenable(listenable);
-          return Container();
-        },
-      ));
-    }
+    pump() => tester.pumpWidget(HookBuilder(
+          builder: (context) {
+            result = useValueListenable(listenable);
+            return Container();
+          },
+        ));
 
     await pump();
 

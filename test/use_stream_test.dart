@@ -1,5 +1,3 @@
-// ignore_for_file: close_sinks
-
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
@@ -63,7 +61,8 @@ void main() {
     };
   }
 
-  testWidgets('gracefully handles transition from null stream', (tester) async {
+  testWidgets('gracefully handles transition from null stream',
+      (WidgetTester tester) async {
     await tester.pumpWidget(HookBuilder(builder: snapshotText(null)));
     expect(find.text('AsyncSnapshot<String>(ConnectionState.none, null, null)'),
         findsOneWidget);
@@ -74,7 +73,8 @@ void main() {
         find.text('AsyncSnapshot<String>(ConnectionState.waiting, null, null)'),
         findsOneWidget);
   });
-  testWidgets('gracefully handles transition to null stream', (tester) async {
+  testWidgets('gracefully handles transition to null stream',
+      (WidgetTester tester) async {
     final controller = StreamController<String>();
     await tester
         .pumpWidget(HookBuilder(builder: snapshotText(controller.stream)));
@@ -85,7 +85,8 @@ void main() {
     expect(find.text('AsyncSnapshot<String>(ConnectionState.none, null, null)'),
         findsOneWidget);
   });
-  testWidgets('gracefully handles transition to other stream', (tester) async {
+  testWidgets('gracefully handles transition to other stream',
+      (WidgetTester tester) async {
     final controllerA = StreamController<String>();
     final controllerB = StreamController<String>();
     await tester
@@ -102,7 +103,7 @@ void main() {
         findsOneWidget);
   });
   testWidgets('tracks events and errors of stream until completion',
-      (tester) async {
+      (WidgetTester tester) async {
     final controller = StreamController<String>();
     await tester
         .pumpWidget(HookBuilder(builder: snapshotText(controller.stream)));
@@ -126,7 +127,8 @@ void main() {
     expect(find.text('AsyncSnapshot<String>(ConnectionState.done, 4, null)'),
         findsOneWidget);
   });
-  testWidgets('runs the builder using given initial data', (tester) async {
+  testWidgets('runs the builder using given initial data',
+      (WidgetTester tester) async {
     final controller = StreamController<String>();
     await tester.pumpWidget(HookBuilder(
       builder: snapshotText(controller.stream, initialData: 'I'),
@@ -134,7 +136,8 @@ void main() {
     expect(find.text('AsyncSnapshot<String>(ConnectionState.waiting, I, null)'),
         findsOneWidget);
   });
-  testWidgets('ignores initialData when reconfiguring', (tester) async {
+  testWidgets('ignores initialData when reconfiguring',
+      (WidgetTester tester) async {
     await tester.pumpWidget(HookBuilder(
       builder: snapshotText(null, initialData: 'I'),
     ));

@@ -32,11 +32,9 @@ void main() {
     // pump another widget so that the old one gets disposed
     await tester.pumpWidget(Container());
 
-    expect(
-      () => controller.addListener(null),
-      throwsA(isFlutterError.having(
-          (e) => e.message, 'message', contains('disposed'))),
-    );
+    expect(() => controller.addListener(null), throwsA((FlutterError error) {
+      return error.message.contains('disposed');
+    }));
   });
 
   testWidgets('respects initial text property', (tester) async {

@@ -17,7 +17,7 @@ void main() {
     // ignore: invalid_use_of_protected_member
     expect(focusNode.hasListeners, isFalse);
 
-    final previousValue = focusNode;
+    var previous = focusNode;
 
     await tester.pumpWidget(
       HookBuilder(builder: (_) {
@@ -26,7 +26,7 @@ void main() {
       }),
     );
 
-    expect(previousValue, focusNode);
+    expect(previous, focusNode);
     // ignore: invalid_use_of_protected_member
     expect(focusNode.hasListeners, isFalse);
 
