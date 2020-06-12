@@ -239,7 +239,9 @@ abstract class HookState<R, T extends Hook<R>> {
   ///  * [State.reassemble]
   void reassemble() {}
 
-  void markMayNeedRebuild(bool Function() shouldRebuild) {
+  bool shouldRebuild() => true;
+
+  void markMayNeedRebuild() {
     if (_element._isOptionalRebuild == null) {
       _element
         .._isOptionalRebuild = true
@@ -299,13 +301,13 @@ class HookElement extends StatefulElement {
 
   @override
   Widget build() {
-    final canAbortBuild = _isOptionalRebuild == true &&
-        _shouldRebuildQueue.any((cb) => !cb.value());
+    final mustRebuild = _isOptionalRebuild != true ||
+        _shouldRebuildQueue.any((cb) => cb.value());
 
     _isOptionalRebuild = null;
     _shouldRebuildQueue?.clear();
 
-    if (canAbortBuild) {
+    if (!mustRebuild) {
       return _buildCache;
     }
 
