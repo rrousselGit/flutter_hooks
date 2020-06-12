@@ -15,11 +15,11 @@ AsyncSnapshot<T> useFuture<T>(Future<T> future,
 }
 
 class _FutureHook<T> extends Hook<AsyncSnapshot<T>> {
+  const _FutureHook(this.future, {this.initialData, this.preserveState = true});
+
   final Future<T> future;
   final bool preserveState;
   final T initialData;
-
-  const _FutureHook(this.future, {this.initialData, this.preserveState = true});
 
   @override
   _FutureStateHook<T> createState() => _FutureStateHook<T>();
@@ -66,13 +66,13 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
     if (hook.future != null) {
       final callbackIdentity = Object();
       _activeCallbackIdentity = callbackIdentity;
-      hook.future.then<void>((T data) {
+      hook.future.then<void>((data) {
         if (_activeCallbackIdentity == callbackIdentity) {
           setState(() {
             _snapshot = AsyncSnapshot<T>.withData(ConnectionState.done, data);
           });
         }
-      }, onError: (Object error) {
+      }, onError: (dynamic error) {
         if (_activeCallbackIdentity == callbackIdentity) {
           setState(() {
             _snapshot = AsyncSnapshot<T>.withError(ConnectionState.done, error);
@@ -108,11 +108,11 @@ AsyncSnapshot<T> useStream<T>(Stream<T> stream,
 }
 
 class _StreamHook<T> extends Hook<AsyncSnapshot<T>> {
+  const _StreamHook(this.stream, {this.initialData, this.preserveState = true});
+
   final Stream<T> stream;
   final T initialData;
   final bool preserveState;
-
-  _StreamHook(this.stream, {this.initialData, this.preserveState = true});
 
   @override
   _StreamHookState<T> createState() => _StreamHookState<T>();
@@ -153,11 +153,11 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
 
   void _subscribe() {
     if (hook.stream != null) {
-      _subscription = hook.stream.listen((T data) {
+      _subscription = hook.stream.listen((data) {
         setState(() {
           _summary = afterData(_summary, data);
         });
-      }, onError: (Object error) {
+      }, onError: (dynamic error) {
         setState(() {
           _summary = afterError(_summary, error);
         });
@@ -222,13 +222,13 @@ StreamController<T> useStreamController<T>(
 }
 
 class _StreamControllerHook<T> extends Hook<StreamController<T>> {
-  final bool sync;
-  final VoidCallback onListen;
-  final VoidCallback onCancel;
-
   const _StreamControllerHook(
       {this.sync = false, this.onListen, this.onCancel, List<Object> keys})
       : super(keys: keys);
+
+  final bool sync;
+  final VoidCallback onListen;
+  final VoidCallback onCancel;
 
   @override
   _StreamControllerHookState<T> createState() =>

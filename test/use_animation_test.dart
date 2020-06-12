@@ -19,12 +19,14 @@ void main() {
     var listenable = AnimationController(vsync: tester);
     double result;
 
-    pump() => tester.pumpWidget(HookBuilder(
-          builder: (context) {
-            result = useAnimation(listenable);
-            return Container();
-          },
-        ));
+    Future<void> pump() {
+      return tester.pumpWidget(HookBuilder(
+        builder: (context) {
+          result = useAnimation(listenable);
+          return Container();
+        },
+      ));
+    }
 
     await pump();
 
