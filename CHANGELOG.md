@@ -1,3 +1,7 @@
+## 0.10.0
+
+- Added a way for hooks to potentially abort a widget rebuild.
+
 ## 0.9.0
 
 - Added a `deactivate` life-cycle to `HookState`
