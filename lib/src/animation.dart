@@ -46,14 +46,6 @@ AnimationController useAnimationController({
 }
 
 class _AnimationControllerHook extends Hook<AnimationController> {
-  final Duration duration;
-  final String debugLabel;
-  final double initialValue;
-  final double lowerBound;
-  final double upperBound;
-  final TickerProvider vsync;
-  final AnimationBehavior animationBehavior;
-
   const _AnimationControllerHook({
     this.duration,
     this.debugLabel,
@@ -64,6 +56,14 @@ class _AnimationControllerHook extends Hook<AnimationController> {
     this.animationBehavior,
     List<Object> keys,
   }) : super(keys: keys);
+
+  final Duration duration;
+  final String debugLabel;
+  final double initialValue;
+  final double lowerBound;
+  final double upperBound;
+  final TickerProvider vsync;
+  final AnimationBehavior animationBehavior;
 
   @override
   _AnimationControllerHookState createState() =>
@@ -93,7 +93,7 @@ Switching between controller and uncontrolled vsync is not allowed.
   AnimationController build(BuildContext context) {
     final vsync = hook.vsync ?? useSingleTickerProvider(keys: hook.keys);
 
-    _animationController ??= AnimationController(
+    return _animationController ??= AnimationController(
       vsync: vsync,
       duration: hook.duration,
       debugLabel: hook.debugLabel,
@@ -102,8 +102,6 @@ Switching between controller and uncontrolled vsync is not allowed.
       animationBehavior: hook.animationBehavior,
       value: hook.initialValue,
     );
-
-    return _animationController;
   }
 
   @override
@@ -139,33 +137,38 @@ class _TickerProviderHookState
   @override
   Ticker createTicker(TickerCallback onTick) {
     assert(() {
-      if (_ticker == null) return true;
+      if (_ticker == null) {
+        return true;
+      }
       throw FlutterError(
           '${context.widget.runtimeType} attempted to use a useSingleTickerProvider multiple times.\n'
           'A SingleTickerProviderStateMixin can only be used as a TickerProvider once. If a '
           'TickerProvider is used for multiple AnimationController objects, or if it is passed to other '
           'objects and those objects might use it more than one time in total, then instead of '
           'using useSingleTickerProvider, use a regular useTickerProvider.');
-    }());
-    _ticker = Ticker(onTick, debugLabel: 'created by $context');
-    return _ticker;
+    }(), '');
+    return _ticker = Ticker(onTick, debugLabel: 'created by $context');
   }
 
   @override
   void dispose() {
     assert(() {
-      if (_ticker == null || !_ticker.isActive) return true;
+      if (_ticker == null || !_ticker.isActive) {
+        return true;
+      }
       throw FlutterError(
           'useSingleTickerProvider created a Ticker, but at the time '
           'dispose() was called on the Hook, that Ticker was still active. Tickers used '
           ' by AnimationControllers should be disposed by calling dispose() on '
           ' the AnimationController itself. Otherwise, the ticker will leak.\n');
-    }());
+    }(), '');
   }
 
   @override
   TickerProvider build(BuildContext context) {
-    if (_ticker != null) _ticker.muted = !TickerMode.of(context);
+    if (_ticker != null) {
+      _ticker.muted = !TickerMode.of(context);
+    }
     return this;
   }
 }
