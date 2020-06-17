@@ -10,7 +10,7 @@ abstract class Store<State, Action> {
   /// Dispatches an action.
   ///
   /// Actions are dispatched synchronously.
-  /// It is impossible to try to dispatch actions during [HookWidget.build].
+  /// It is impossible to try to dispatch actions during `build`.
   void dispatch(Action action);
 }
 
