@@ -100,7 +100,7 @@ class _ValueChangedHookState<T, R>
 
 /// Useful for side-effects and optionally canceling them.
 ///
-/// [useEffect] is called synchronously on every [HookWidget.build], unless
+/// [useEffect] is called synchronously on every `build`, unless
 typedef Dispose = void Function();
 
 /// [keys] is specified. In which case [useEffect] is called again only if
@@ -109,7 +109,7 @@ typedef Dispose = void Function();
 /// It takes an [effect] callback and calls it synchronously.
 /// That [effect] may optionally return a function, which will be called when the [effect] is called again or if the widget is disposed.
 ///
-/// By default [effect] is called on every [HookWidget.build] call, unless [keys] is specified.
+/// By default [effect] is called on every `build` call, unless [keys] is specified.
 /// In which case, [effect] is called once on the first [useEffect] call and whenever something within [keys] change/
 ///
 /// The following example call [useEffect] to subscribes to a [Stream] and cancel the subscription when the widget is disposed.
