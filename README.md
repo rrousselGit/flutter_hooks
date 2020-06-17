@@ -2,38 +2,6 @@
 
 <img src="https://raw.githubusercontent.com/rrousselGit/flutter_hooks/master/flutter-hook.svg?sanitize=true" width="200">
 
-# Migration to v0.10.0
-
-With the 0.10.0 release, `HookWidget` has been deprecated.
-
-What was previously written as:
-
-```dart
-class Example extends HookWidget {
-  const Example({Key key}): super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final state = useState(0);
-    ...
-  }
-}
-```
-
-Should now be written as:
-
-```dart
-class Example extends StatelessWidget with Hooks {
-  const Example({Key key}): super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final state = useState(0);
-    ...
-  }
-}
-```
-
 # Flutter Hooks
 
 A Flutter implementation of React hooks: https://medium.com/@dan_abramov/making-sense-of-react-hooks-fdbde8803889
@@ -103,7 +71,7 @@ Dart mixins can partially solve this issue, but they suffer from other problems:
 This library proposes a third solution:
 
 ```dart
-class Example extends StatelessWidget with Hooks {
+class Example extends HookWidget {
   const Example({Key key, @required this.duration})
       : assert(duration != null),
         super(key: key);

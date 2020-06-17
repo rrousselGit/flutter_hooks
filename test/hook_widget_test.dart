@@ -60,6 +60,23 @@ void main() {
     reset(reassemble);
   });
 
+  testWidgets('StatefulHookWidget', (tester) async {
+    final notifier = ValueNotifier(0);
+
+    await tester.pumpWidget(MyStatefulHook(value: 0, notifier: notifier));
+
+    expect(find.text('0 0'), findsOneWidget);
+
+    await tester.pumpWidget(MyStatefulHook(value: 1, notifier: notifier));
+
+    expect(find.text('1 0'), findsOneWidget);
+
+    notifier.value++;
+    await tester.pump();
+
+    expect(find.text('1 1'), findsOneWidget);
+  });
+
   testWidgets(
       'should call deactivate when removed from and inserted into another place',
       (tester) async {
@@ -1168,5 +1185,40 @@ class MyHookState extends HookState<MyHookState, MyHook> {
   @override
   MyHookState build(BuildContext context) {
     return this;
+  }
+}
+
+class MyStatefulHook extends StatefulHookWidget {
+  const MyStatefulHook({Key key, this.value, this.notifier}) : super(key: key);
+
+  final int value;
+  final ValueNotifier<int> notifier;
+
+  @override
+  _MyStatefulHookState createState() => _MyStatefulHookState();
+}
+
+class _MyStatefulHookState extends State<MyStatefulHook> {
+  int value;
+
+  @override
+  void initState() {
+    super.initState();
+    // voluntarily ues widget.value to verify that state life-cycles are called
+    value = widget.value;
+  }
+
+  @override
+  void didUpdateWidget(MyStatefulHook oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    value = widget.value;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      '$value ${useValueListenable(widget.notifier)}',
+      textDirection: TextDirection.ltr,
+    );
   }
 }

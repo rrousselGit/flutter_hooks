@@ -1,6 +1,7 @@
 ## 0.10.0
 
 - Added a way for hooks to potentially abort a widget rebuild.
+- Added `StatefulHookWidget`, a `StatefulWidget` that can use hooks inside its `build` method.
 
 ## 0.9.0
 
