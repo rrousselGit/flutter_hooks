@@ -54,17 +54,19 @@ class _TextEditingControllerHookCreator {
 const useTextEditingController = _TextEditingControllerHookCreator();
 
 class _TextEditingControllerHook extends Hook<TextEditingController> {
-  final String initialText;
-  final TextEditingValue initialValue;
-
-  _TextEditingControllerHook(this.initialText, this.initialValue,
-      [List<Object> keys])
-      : assert(
+  const _TextEditingControllerHook(
+    this.initialText,
+    this.initialValue, [
+    List<Object> keys,
+  ])  : assert(
           initialText == null || initialValue == null,
           "initialText and intialValue can't both be set on a call to "
           'useTextEditingController!',
         ),
         super(keys: keys);
+
+  final String initialText;
+  final TextEditingValue initialValue;
 
   @override
   _TextEditingControllerHookState createState() {
