@@ -60,6 +60,31 @@ void main() {
     reset(reassemble);
   });
 
+  testWidgets('hooks are disposed in reverse order on unmount', (tester) async {
+    final first = MockDispose();
+    final second = MockDispose();
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (c) {
+        useEffect(() => first);
+        useEffect(() => second);
+        return Container();
+      }),
+    );
+
+    verifyNoMoreInteractions(first);
+    verifyNoMoreInteractions(second);
+
+    await tester.pumpWidget(Container());
+
+    verifyInOrder([
+      second(),
+      first(),
+    ]);
+    verifyNoMoreInteractions(first);
+    verifyNoMoreInteractions(second);
+  });
+
   testWidgets('StatefulHookWidget', (tester) async {
     final notifier = ValueNotifier(0);
 
@@ -649,8 +674,8 @@ void main() {
     expect(tester.takeException(), 24);
 
     verifyInOrder([
-      dispose.call(),
       dispose2.call(),
+      dispose.call(),
     ]);
   });
 
@@ -1174,6 +1199,10 @@ void main() {
     hotReload(tester);
     await expectPump(() => tester.pump(), completes);
   });
+}
+
+class MockDispose extends Mock {
+  void call();
 }
 
 class MyHook extends Hook<MyHookState> {

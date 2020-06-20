@@ -1,5 +1,34 @@
 ## 0.10.0
 
+**Breaking change**:
+
+- The order in which hooks are disposed has been reversed.
+
+  Consider:
+
+  ```dart
+  useSomething();
+  useSomethingElse();
+  ```
+
+  Before, the `useSomething` was disposed before `useSomethingElse`.
+  Now, `useSomethingElse` is disposed before the `useSomething`.
+
+  The reason for this change is for cases like:
+
+  ```dart
+  // Creates an AnimationController
+  final animationController = useAnimationController();
+  // Immediatly listen to the AnimationController
+  useListenable(animationController);
+  ```
+
+  Before, when the widget was disposed, this caused an exception as
+  `useListenable` unsubscribed to the `AnimationController` _after_ its `dispose`
+  method was called.
+
+**Non-breaking changes**:
+
 - Added a way for hooks to potentially abort a widget rebuild.
 - Added `StatefulHookWidget`, a `StatefulWidget` that can use hooks inside its `build` method.
 
