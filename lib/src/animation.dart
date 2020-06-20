@@ -33,16 +33,20 @@ AnimationController useAnimationController({
   AnimationBehavior animationBehavior = AnimationBehavior.normal,
   List<Object> keys,
 }) {
-  return Hook.use(_AnimationControllerHook(
-    duration: duration,
-    debugLabel: debugLabel,
-    initialValue: initialValue,
-    lowerBound: lowerBound,
-    upperBound: upperBound,
-    vsync: vsync,
-    animationBehavior: animationBehavior,
-    keys: keys,
-  ));
+  vsync ??= useSingleTickerProvider(keys: keys);
+
+  return Hook.use(
+    _AnimationControllerHook(
+      duration: duration,
+      debugLabel: debugLabel,
+      initialValue: initialValue,
+      lowerBound: lowerBound,
+      upperBound: upperBound,
+      vsync: vsync,
+      animationBehavior: animationBehavior,
+      keys: keys,
+    ),
+  );
 }
 
 class _AnimationControllerHook extends Hook<AnimationController> {
@@ -75,12 +79,23 @@ class _AnimationControllerHookState
   AnimationController _animationController;
 
   @override
+  void initHook() {
+    super.initHook();
+    _animationController = AnimationController(
+      vsync: hook.vsync,
+      duration: hook.duration,
+      debugLabel: hook.debugLabel,
+      lowerBound: hook.lowerBound,
+      upperBound: hook.upperBound,
+      animationBehavior: hook.animationBehavior,
+      value: hook.initialValue,
+    );
+  }
+
+  @override
   void didUpdateHook(_AnimationControllerHook oldHook) {
     super.didUpdateHook(oldHook);
     if (hook.vsync != oldHook.vsync) {
-      assert(hook.vsync != null && oldHook.vsync != null, '''
-Switching between controller and uncontrolled vsync is not allowed.
-''');
       _animationController.resync(hook.vsync);
     }
 
@@ -91,17 +106,7 @@ Switching between controller and uncontrolled vsync is not allowed.
 
   @override
   AnimationController build(BuildContext context) {
-    final vsync = hook.vsync ?? useSingleTickerProvider(keys: hook.keys);
-
-    return _animationController ??= AnimationController(
-      vsync: vsync,
-      duration: hook.duration,
-      debugLabel: hook.debugLabel,
-      lowerBound: hook.lowerBound,
-      upperBound: hook.upperBound,
-      animationBehavior: hook.animationBehavior,
-      value: hook.initialValue,
-    );
+    return _animationController;
   }
 
   @override
