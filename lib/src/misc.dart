@@ -10,7 +10,7 @@ abstract class Store<State, Action> {
   /// Dispatches an action.
   ///
   /// Actions are dispatched synchronously.
-  /// It is impossible to try to dispatch actions during [HookWidget.build].
+  /// It is impossible to try to dispatch actions during `build`.
   void dispatch(Action action);
 }
 
@@ -43,12 +43,12 @@ Store<State, Action> useReducer<State extends Object, Action>(
 }
 
 class _ReducerdHook<State, Action> extends Hook<Store<State, Action>> {
+  const _ReducerdHook(this.reducer, {this.initialState, this.initialAction})
+      : assert(reducer != null, 'reducer cannot be null');
+
   final Reducer<State, Action> reducer;
   final State initialState;
   final Action initialAction;
-
-  const _ReducerdHook(this.reducer, {this.initialState, this.initialAction})
-      : assert(reducer != null);
 
   @override
   _ReducerdHookState<State, Action> createState() =>
@@ -65,17 +65,16 @@ class _ReducerdHookState<State, Action>
   void initHook() {
     super.initHook();
     state = hook.reducer(hook.initialState, hook.initialAction);
-    assert(state != null);
+    // TODO support null
+    assert(state != null, 'reducers cannot return null');
   }
 
   @override
   void dispatch(Action action) {
-    final res = hook.reducer(state, action);
-    assert(res != null);
-    if (state != res) {
-      setState(() {
-        state = res;
-      });
+    final newState = hook.reducer(state, action);
+    assert(newState != null, 'recuders cannot return null');
+    if (state != newState) {
+      setState(() => state = newState);
     }
   }
 
@@ -91,7 +90,7 @@ T usePrevious<T>(T val) {
 }
 
 class _PreviousHook<T> extends Hook<T> {
-  _PreviousHook(this.value);
+  const _PreviousHook(this.value);
 
   final T value;
 
@@ -121,13 +120,14 @@ void useReassemble(VoidCallback callback) {
   assert(() {
     Hook.use(_ReassembleHook(callback));
     return true;
-  }());
+  }(), '');
 }
 
 class _ReassembleHook extends Hook<void> {
-  final VoidCallback callback;
+  const _ReassembleHook(this.callback)
+      : assert(callback != null, 'callback cannot be null');
 
-  _ReassembleHook(this.callback) : assert(callback != null);
+  final VoidCallback callback;
 
   @override
   _ReassembleHookState createState() => _ReassembleHookState();

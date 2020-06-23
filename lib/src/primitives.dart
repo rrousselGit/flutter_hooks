@@ -15,13 +15,14 @@ T useMemoized<T>(T Function() valueBuilder,
 }
 
 class _MemoizedHook<T> extends Hook<T> {
-  final T Function() valueBuilder;
-
-  const _MemoizedHook(this.valueBuilder,
-      {List<Object> keys = const <dynamic>[]})
-      : assert(valueBuilder != null),
-        assert(keys != null),
+  const _MemoizedHook(
+    this.valueBuilder, {
+    List<Object> keys = const <dynamic>[],
+  })  : assert(valueBuilder != null, 'valueBuilder cannot be null'),
+        assert(keys != null, 'keys cannot be null'),
         super(keys: keys);
+
+  final T Function() valueBuilder;
 
   @override
   _MemoizedHookState<T> createState() => _MemoizedHookState<T>();
@@ -61,16 +62,19 @@ class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
 ///     controller.forward();
 /// });
 /// ```
-R useValueChanged<T, R>(T value, R valueChange(T oldValue, R oldResult)) {
+R useValueChanged<T, R>(
+  T value,
+  R Function(T oldValue, R oldResult) valueChange,
+) {
   return Hook.use(_ValueChangedHook(value, valueChange));
 }
 
 class _ValueChangedHook<T, R> extends Hook<R> {
+  const _ValueChangedHook(this.value, this.valueChanged)
+      : assert(valueChanged != null, 'valueChanged cannot be null');
+
   final R Function(T oldValue, R oldResult) valueChanged;
   final T value;
-
-  const _ValueChangedHook(this.value, this.valueChanged)
-      : assert(valueChanged != null);
 
   @override
   _ValueChangedHookState<T, R> createState() => _ValueChangedHookState<T, R>();
@@ -96,7 +100,7 @@ class _ValueChangedHookState<T, R>
 
 /// Useful for side-effects and optionally canceling them.
 ///
-/// [useEffect] is called synchronously on every [HookWidget.build], unless
+/// [useEffect] is called synchronously on every `build`, unless
 typedef Dispose = void Function();
 
 /// [keys] is specified. In which case [useEffect] is called again only if
@@ -105,7 +109,7 @@ typedef Dispose = void Function();
 /// It takes an [effect] callback and calls it synchronously.
 /// That [effect] may optionally return a function, which will be called when the [effect] is called again or if the widget is disposed.
 ///
-/// By default [effect] is called on every [HookWidget.build] call, unless [keys] is specified.
+/// By default [effect] is called on every `build` call, unless [keys] is specified.
 /// In which case, [effect] is called once on the first [useEffect] call and whenever something within [keys] change/
 ///
 /// The following example call [useEffect] to subscribes to a [Stream] and cancel the subscription when the widget is disposed.
@@ -128,11 +132,11 @@ void useEffect(Dispose Function() effect, [List<Object> keys]) {
 }
 
 class _EffectHook extends Hook<void> {
-  final Dispose Function() effect;
-
   const _EffectHook(this.effect, [List<Object> keys])
-      : assert(effect != null),
+      : assert(effect != null, 'effect cannot be null'),
         super(keys: keys);
+
+  final Dispose Function() effect;
 
   @override
   _EffectHookState createState() => _EffectHookState();
@@ -207,9 +211,9 @@ ValueNotifier<T> useState<T>([T initialData]) {
 }
 
 class _StateHook<T> extends Hook<ValueNotifier<T>> {
-  final T initialData;
-
   const _StateHook({this.initialData});
+
+  final T initialData;
 
   @override
   _StateHookState<T> createState() => _StateHookState();

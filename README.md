@@ -4,13 +4,15 @@
 
 # Flutter Hooks
 
-A flutter implementation of React hooks: https://medium.com/@dan_abramov/making-sense-of-react-hooks-fdbde8803889
+A Flutter implementation of React hooks: https://medium.com/@dan_abramov/making-sense-of-react-hooks-fdbde8803889
 
-Hooks are a new kind of object that manages a `Widget` life-cycles. They exist for one reason: increase the code-sharing _between_ widgets and as a complete replacement for `StatefulWidget`.
+Hooks are a new kind of object that manages a `Widget` life-cycles. They exist
+for one reason: increase the code-sharing _between_ widgets by removing duplicates.
 
 ## Motivation
 
-`StatefulWidget` suffers from a big problem: it is very difficult to reuse the logic of say `initState` or `dispose`. An obvious example is `AnimationController`:
+`StatefulWidget` suffers from a big problem: it is very difficult to reuse the
+logic of say `initState` or `dispose`. An obvious example is `AnimationController`:
 
 ```dart
 class Example extends StatefulWidget {
@@ -54,12 +56,15 @@ class _ExampleState extends State<Example> with SingleTickerProviderStateMixin {
 }
 ```
 
-All widgets that desire to use an `AnimationController` will have to reimplement almost all of this from scratch, which is of course undesired.
+All widgets that desire to use an `AnimationController` will have to reimplement
+almost all of this from scratch, which is of course undesired.
 
 Dart mixins can partially solve this issue, but they suffer from other problems:
 
 - A given mixin can only be used once per class.
-- Mixins and the class shares the same object. This means that if two mixins define a variable under the same name, the result may vary between compilation fail to unknown behavior.
+- Mixins and the class shares the same object.\
+  This means that if two mixins define a variable under the same name, the result
+  may vary between compilation fails to unknown behavior.
 
 ---
 
@@ -67,11 +72,11 @@ This library proposes a third solution:
 
 ```dart
 class Example extends HookWidget {
-  final Duration duration;
-
   const Example({Key key, @required this.duration})
       : assert(duration != null),
         super(key: key);
+
+  final Duration duration;
 
   @override
   Widget build(BuildContext context) {
@@ -81,34 +86,44 @@ class Example extends HookWidget {
 }
 ```
 
-This code is strictly equivalent to the previous example. It still disposes the `AnimationController` and still updates its `duration` when `Example.duration` changes.
+This code is strictly equivalent to the previous example. It still disposes the
+`AnimationController` and still updates its `duration` when `Example.duration` changes.
 But you're probably thinking:
 
 > Where did all the logic go?
 
-That logic moved into `useAnimationController`, a function included directly in this library (see [Existing hooks](https://github.com/rrousselGit/flutter_hooks#existing-hooks)). It is what we call a _Hook_.
+That logic moved into `useAnimationController`, a function included directly in
+this library (see [Existing hooks](https://github.com/rrousselGit/flutter_hooks#existing-hooks)).
+It is what we call a _Hook_.
 
 Hooks are a new kind of objects with some specificities:
 
-- They can only be used in the `build` method of a `HookWidget`.
+- They can only be used in the `build` method of a widget that mix-in `Hooks`.
 - The same hook is reusable an infinite number of times
-  The following code defines two independent `AnimationController`, and they are correctly preserved when the widget rebuild.
+  The following code defines two independent `AnimationController`, and they are
+  correctly preserved when the widget rebuild.
 
-```dart
-Widget build(BuildContext context) {
-  final controller = useAnimationController();
-  final controller2 = useAnimationController();
-  return Container();
-}
-```
+  ```dart
+  Widget build(BuildContext context) {
+    final controller = useAnimationController();
+    final controller2 = useAnimationController();
+    return Container();
+  }
+  ```
 
-- Hooks are entirely independent of each other and from the widget. This means they can easily be extracted into a package and published on [pub](https://pub.dartlang.org/) for others to use.
+- Hooks are entirely independent of each other and from the widget.\
+  This means they can easily be extracted into a package and published on
+  [pub](https://pub.dartlang.org/) for others to use.
 
 ## Principle
 
-Similarly to `State`, hooks are stored on the `Element` of a `Widget`. But instead of having one `State`, the `Element` stores a `List<Hook>`. Then to use a `Hook`, one must call `Hook.use`.
+Similarly to `State`, hooks are stored on the `Element` of a `Widget`. But instead
+of having one `State`, the `Element` stores a `List<Hook>`. Then to use a `Hook`,
+one must call `Hook.use`.
 
-The hook returned by `use` is based on the number of times it has been called. The first call returns the first hook; the second call returns the second hook, the third returns the third hook, ...
+The hook returned by `use` is based on the number of times it has been called.
+The first call returns the first hook; the second call returns the second hook,
+the third returns the third hook, ...
 
 If this is still unclear, a naive implementation of hooks is the following:
 
@@ -127,17 +142,31 @@ class HookElement extends Element {
 }
 ```
 
-For more explanation of how they are implemented, here's a great article about how they did it in React: https://medium.com/@ryardley/react-hooks-not-magic-just-arrays-cd4f1857236e
+For more explanation of how they are implemented, here's a great article about
+how they did it in React: https://medium.com/@ryardley/react-hooks-not-magic-just-arrays-cd4f1857236e
 
 ## Rules
 
 Due to hooks being obtained from their index, some rules must be respected:
 
-### DO call `use` unconditionally
+### DO always prefer your hooks with `use`:
 
 ```dart
 Widget build(BuildContext context) {
-  Hook.use(MyHook());
+  // starts with `use`, good name
+  useMyHook();
+  // doesn't that with `use`, could confuse people into thinking that this isn't a hook
+  myHook();
+  // ....
+}
+```
+
+
+### DO call hooks unconditionally
+
+```dart
+Widget build(BuildContext context) {
+  useMyHook();
   // ....
 }
 ```
@@ -147,7 +176,7 @@ Widget build(BuildContext context) {
 ```dart
 Widget build(BuildContext context) {
   if (condition) {
-    Hook.use(MyHook());
+    useMyHook();
   }
   // ....
 }
@@ -159,8 +188,8 @@ Widget build(BuildContext context) {
 
 ```dart
 Widget build(BuildContext context) {
-  Hook.use(Hook1());
-  Hook.use(Hook2());
+  useMyHook();
+  useAnotherHook();
   // ....
 }
 ```
@@ -169,11 +198,11 @@ Widget build(BuildContext context) {
 
 ```dart
 Widget build(BuildContext context) {
-  Hook.use(Hook1());
+  useMyHook();
   if (condition) {
     return Container();
   }
-  Hook.use(Hook2());
+  useAnotherHook();
   // ....
 }
 ```
@@ -189,17 +218,17 @@ But worry not, `HookWidget` overrides the default hot-reload behavior to work wi
 Consider the following list of hooks:
 
 ```dart
-Hook.use(HookA());
-Hook.use(HookB(0));
-Hook.use(HookC(0));
+useA();
+useB(0);
+useC();
 ```
 
 Then consider that after a hot-reload, we edited the parameter of `HookB`:
 
 ```dart
-Hook.use(HookA());
-Hook.use(HookB(42));
-Hook.use(HookC());
+useA();
+useB(42);
+useC();
 ```
 
 Here everything works fine; all hooks keep their states.
@@ -207,8 +236,8 @@ Here everything works fine; all hooks keep their states.
 Now consider that we removed `HookB`. We now have:
 
 ```dart
-Hook.use(HookA());
-Hook.use(HookC());
+useA();
+useC();
 ```
 
 In this situation, `HookA` keeps its state but `HookC` gets a hard reset.
@@ -221,62 +250,65 @@ There are two ways to create a hook:
 
 - A function
 
-Functions are by far the most common way to write a hook. Thanks to hooks being composable by nature, a function will be able to combine other hooks to create a custom hook. By convention, these functions will be prefixed by `use`.
+  Functions are by far the most common way to write a hook. Thanks to hooks being
+  composable by nature, a function will be able to combine other hooks to create
+  a custom hook. By convention, these functions will be prefixed by `use`.
 
-The following defines a custom hook that creates a variable and logs its value on the console whenever the value changes:
+  The following defines a custom hook that creates a variable and logs its value
+  on the console whenever the value changes:
 
-```dart
-ValueNotifier<T> useLoggedState<T>(BuildContext context, [T initialData]) {
-  final result = useState<T>(initialData);
-  useValueChanged(result.value, (_, __) {
-    print(result.value);
-  });
-  return result;
-}
-```
+  ```dart
+  ValueNotifier<T> useLoggedState<T>(BuildContext context, [T initialData]) {
+    final result = useState<T>(initialData);
+    useValueChanged(result.value, (_, __) {
+      print(result.value);
+    });
+    return result;
+  }
+  ```
 
 - A class
 
-When a hook becomes too complex, it is possible to convert it into a class that extends `Hook`, which can then be used using `Hook.use`. As a class, the hook will look very similar to a `State` and have access to life-cycles and methods such as `initHook`, `dispose` and `setState`. It is usually a good practice to hide the class under a function as such:
+  When a hook becomes too complex, it is possible to convert it into a class that extends `Hook`, which can then be used using `Hook.use`.\
+  As a class, the hook will look very similar to a `State` and have access to
+  life-cycles and methods such as `initHook`, `dispose` and `setState`
+  It is usually a good practice to hide the class under a function as such:
 
-```dart
-Result useMyHook(BuildContext context) {
-  return Hook.use(_MyHook());
-}
-```
+  ```dart
+  Result useMyHook(BuildContext context) {
+    return Hook.use(const _TimeAlive());
+  }
+  ```
 
-The following defines a hook that prints the time a `State` has been alive.
+  The following defines a hook that prints the time a `State` has been alive.
 
-```dart
-class _TimeAlive<T> extends Hook<void> {
-  const _TimeAlive();
+  ```dart
+  class _TimeAlive extends Hook<void> {
+    const _TimeAlive();
 
-  @override
-  _TimeAliveState<T> createState() => _TimeAliveState<T>();
-}
-
-class _TimeAliveState<T> extends HookState<void, _TimeAlive<T>> {
-  DateTime start;
-
-  @override
-  void initHook() {
-    super.initHook();
-    start = DateTime.now();
+    @override
+    _TimeAliveState createState() => _TimeAliveState();
   }
 
-  @override
-  void build(BuildContext context) {
-    // this hook doesn't create anything nor uses other hooks
-  }
+  class _TimeAliveState extends HookState<void, _TimeAlive> {
+    DateTime start;
 
-  @override
-  void dispose() {
-    print(DateTime.now().difference(start));
-    super.dispose();
-  }
-}
+    @override
+    void initHook() {
+      super.initHook();
+      start = DateTime.now();
+    }
 
-```
+    @override
+    void build(BuildContext context) {}
+
+    @override
+    void dispose() {
+      print(DateTime.now().difference(start));
+      super.dispose();
+    }
+  }
+  ```
 
 ## Existing hooks
 
@@ -335,3 +367,29 @@ A series of hooks with no particular theme.
 | [usePrevious](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/usePrevious.html)                           | Returns the previous argument called to [usePrevious]. |
 | [useTextEditingController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useTextEditingController.html) | Create a `TextEditingController`                       |
 | [useFocusNode](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useFocusNode.html)                         | Create a `FocusNode`                                   |
+
+
+## Contributions
+
+Contributions are welcomed!
+
+If you feel that a hook is missing, feel free to open a pull-request.
+
+For a custom-hook to be merged, you will need to do the following:
+
+- Describe the use-case.
+
+  Open an issue explaining why we need this hook, how to use it, ...
+  This is important as a hook will not get merged if the hook doens't appeal to
+  a large number of people.
+
+  If your hook is rejected, don't worry! A rejection doesn't mean that it won't
+  be merged later in the future if more people shows an interest in it.
+  In the mean-time, feel free to publish your hook as a package on https://pub.dev.
+
+- Write tests for your hook
+
+  A hook will not be merged unles fully tested, to avoid breaking it inadvertendly
+  in the future.
+
+- Add it to the Readme & write documentation for it.

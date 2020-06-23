@@ -3,17 +3,17 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'mock.dart';
 
-final effect = Func0<VoidCallback>();
-final unrelated = Func0<void>();
-List<Object> parameters;
-
-Widget builder() => HookBuilder(builder: (context) {
-      useEffect(effect.call, parameters);
-      unrelated.call();
-      return Container();
-    });
-
 void main() {
+  final effect = Func0<VoidCallback>();
+  final unrelated = Func0<void>();
+  List<Object> parameters;
+
+  Widget builder() => HookBuilder(builder: (context) {
+        useEffect(effect.call, parameters);
+        unrelated.call();
+        return Container();
+      });
+
   tearDown(() {
     parameters = null;
     reset(unrelated);
@@ -35,11 +35,13 @@ void main() {
     final dispose = Func0<void>();
     when(effect.call()).thenReturn(dispose.call);
 
-    builder() => HookBuilder(builder: (context) {
-          useEffect(effect.call);
-          unrelated.call();
-          return Container();
-        });
+    Widget builder() {
+      return HookBuilder(builder: (context) {
+        useEffect(effect.call);
+        unrelated.call();
+        return Container();
+      });
+    }
 
     await tester.pumpWidget(builder());
 
@@ -180,10 +182,12 @@ void main() {
     final effect = Func0<VoidCallback>();
     List<Object> parameters;
 
-    builder() => HookBuilder(builder: (context) {
-          useEffect(effect.call, parameters);
-          return Container();
-        });
+    Widget builder() {
+      return HookBuilder(builder: (context) {
+        useEffect(effect.call, parameters);
+        return Container();
+      });
+    }
 
     parameters = ['foo'];
     final disposerA = Func0<void>();

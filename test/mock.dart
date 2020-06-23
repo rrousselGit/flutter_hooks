@@ -1,3 +1,5 @@
+// ignore_for_file: one_member_abstracts
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,15 +28,7 @@ abstract class _Func2<T1, T2, R> {
 class Func2<T1, T2, R> extends Mock implements _Func2<T1, T2, R> {}
 
 class HookTest<R> extends Hook<R> {
-  final R Function(BuildContext context) build;
-  final void Function() dispose;
-  final void Function() didBuild;
-  final void Function() initHook;
-  final void Function() deactivate;
-  final void Function(HookTest<R> previousHook) didUpdateHook;
-  final void Function() reassemble;
-  final HookStateTest<R> Function() createStateFn;
-
+  // ignore: prefer_const_constructors_in_immutables
   HookTest({
     this.build,
     this.dispose,
@@ -46,6 +40,15 @@ class HookTest<R> extends Hook<R> {
     this.deactivate,
     List<Object> keys,
   }) : super(keys: keys);
+
+  final R Function(BuildContext context) build;
+  final void Function() dispose;
+  final void Function() didBuild;
+  final void Function() initHook;
+  final void Function() deactivate;
+  final void Function(HookTest<R> previousHook) didUpdateHook;
+  final void Function() reassemble;
+  final HookStateTest<R> Function() createStateFn;
 
   @override
   HookStateTest<R> createState() =>
@@ -123,11 +126,11 @@ Element _rootOf(Element element) {
 void hotReload(WidgetTester tester) {
   final root = _rootOf(tester.allElements.first);
 
-  TestWidgetsFlutterBinding.ensureInitialized().buildOwner..reassemble(root);
+  TestWidgetsFlutterBinding.ensureInitialized().buildOwner.reassemble(root);
 }
 
 Future<void> expectPump(
-  Future pump(),
+  Future Function() pump,
   dynamic matcher, {
   String reason,
   dynamic skip,
