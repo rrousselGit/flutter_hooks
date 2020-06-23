@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
@@ -122,14 +124,14 @@ abstract class Hook<R> {
 
   /// Register a [Hook] and returns its value
   ///
-  /// [use] must be called withing [HookWidget.build] and
-  /// all calls to [use] must be made unconditionally, always
-  /// on the same order.
+  /// [use] must be called withing `build` of either [HookWidget] or [StatefulHookWidget],
+  /// and all calls to [use] must be made unconditionally, always on the same order.
   ///
   /// See [Hook] for more explanations.
   static R use<R>(Hook<R> hook) {
     assert(HookElement._currentContext != null, '''
-`Hook.use` can only be called from the build method of HookWidget.
+Hooks can only be called from the build method of a widget that mix-in `Hooks`.
+
 Hooks should only be called within the build method of a widget.
 Calling them outside of build method leads to an unstable state and is therefore prohibited.
 ''');
@@ -162,8 +164,9 @@ Calling them outside of build method leads to an unstable state and is therefore
       return false;
     }
 
-    var i1 = p1.iterator;
-    var i2 = p2.iterator;
+    final i1 = p1.iterator;
+    final i2 = p2.iterator;
+    // ignore: literal_only_boolean_expressions, returns will abort the loop
     while (true) {
       if (!i1.moveNext() || !i2.moveNext()) {
         return true;
@@ -193,8 +196,8 @@ Calling them outside of build method leads to an unstable state and is therefore
 abstract class HookState<R, T extends Hook<R>> {
   /// Equivalent of [State.context] for [HookState]
   @protected
-  BuildContext get context => _element.context;
-  State _element;
+  BuildContext get context => _element;
+  HookElement _element;
 
   /// Equivalent of [State.widget] for [HookState]
   T get hook => _hook;
@@ -208,7 +211,7 @@ abstract class HookState<R, T extends Hook<R>> {
   @protected
   void dispose() {}
 
-  /// Called synchronously after the [HookWidget.build] method finished
+  /// Called synchronously after the `build` method finished
   @protected
   void didBuild() {}
 
@@ -236,24 +239,60 @@ abstract class HookState<R, T extends Hook<R>> {
   ///  * [State.reassemble]
   void reassemble() {}
 
+  /// Called before a [build] triggered by [markMayNeedRebuild].
+  ///
+  /// If [shouldRebuild] returns `false` on all the hooks that called [markMayNeedRebuild]
+  /// then this aborts the rebuild of the associated [HookWidget].
+  ///
+  /// There is no guarantee that this method will be called after [markMayNeedRebuild]
+  /// was called.
+  /// Some situations where [shouldRebuild] will not be called:
+  ///
+  /// - [setState] was called
+  /// - a previous hook's [shouldRebuild] returned `true`
+  /// - the associated [HookWidget] changed.
+  bool shouldRebuild() => true;
+
+  /// Mark the associated [HookWidget] as **potentially** needing to rebuild.
+  ///
+  /// As opposed to [setState], the rebuild is optional and can be cancelled right
+  /// before `build` is called, by having [shouldRebuild] return false.
+  void markMayNeedRebuild() {
+    if (_element._isOptionalRebuild != false) {
+      _element
+        .._isOptionalRebuild = true
+        .._shouldRebuildQueue ??= LinkedList()
+        .._shouldRebuildQueue.add(_Entry(shouldRebuild))
+        ..markNeedsBuild();
+    }
+  }
+
   /// Equivalent of [State.setState] for [HookState]
   @protected
   void setState(VoidCallback fn) {
-    // ignore: invalid_use_of_protected_member
-    _element.setState(fn);
+    fn();
+    _element
+      .._isOptionalRebuild = false
+      ..markNeedsBuild();
   }
 }
 
-/// An [Element] that uses a [HookWidget] as its configuration.
-class HookElement extends StatefulElement {
-  static HookElement _currentContext;
+class _Entry<T> extends LinkedListEntry<_Entry<T>> {
+  _Entry(this.value);
+  final T value;
+}
 
-  /// Creates an element that uses the given widget as its configuration.
-  HookElement(HookWidget widget) : super(widget);
+/// An [Element] that uses a [HookWidget] as its configuration.
+@visibleForTesting
+mixin HookElement on ComponentElement {
+  static HookElement _currentContext;
 
   Iterator<HookState> _currentHook;
   int _hookIndex;
   List<HookState> _hooks;
+  LinkedList<_Entry<bool Function()>> _shouldRebuildQueue;
+  bool _isOptionalRebuild = false;
+  Widget _buildCache;
   bool _didFinishBuildOnce = false;
 
   bool _debugDidReassemble;
@@ -261,10 +300,29 @@ class HookElement extends StatefulElement {
   bool _debugIsInitHook;
 
   @override
-  HookWidget get widget => super.widget as HookWidget;
+  void update(Widget newWidget) {
+    _isOptionalRebuild = false;
+    super.update(newWidget);
+  }
+
+  @override
+  void didChangeDependencies() {
+    _isOptionalRebuild = false;
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build() {
+    final mustRebuild = _isOptionalRebuild != true ||
+        _shouldRebuildQueue.any((cb) => cb.value());
+
+    _isOptionalRebuild = null;
+    _shouldRebuildQueue?.clear();
+
+    if (!mustRebuild) {
+      return _buildCache;
+    }
+
     _currentHook = _hooks?.iterator;
     // first iterator always has null
     _currentHook?.moveNext();
@@ -274,21 +332,23 @@ class HookElement extends StatefulElement {
       _debugIsInitHook = false;
       _debugDidReassemble ??= false;
       return true;
-    }());
+    }(), '');
     HookElement._currentContext = this;
-    final result = super.build();
+    _buildCache = super.build();
     HookElement._currentContext = null;
 
     // dispose removed items
     assert(() {
-      if (!debugHotReloadHooksEnabled) return true;
+      if (!debugHotReloadHooksEnabled) {
+        return true;
+      }
       if (_debugDidReassemble && _hooks != null) {
-        for (var i = _hookIndex; i < _hooks.length;) {
-          _hooks.removeAt(i).dispose();
+        while (_hookIndex < _hooks.length) {
+          _hooks.removeAt(_hookIndex).dispose();
         }
       }
       return true;
-    }());
+    }(), '');
     assert(_hookIndex == (_hooks?.length ?? 0), '''
 Build for $widget finished with less hooks used than a previous build.
 Used $_hookIndex hooks while a previous build had ${_hooks.length}.
@@ -296,12 +356,14 @@ This may happen if the call to `Hook.use` is made under some condition.
 
 ''');
     assert(() {
-      if (!debugHotReloadHooksEnabled) return true;
+      if (!debugHotReloadHooksEnabled) {
+        return true;
+      }
       _debugDidReassemble = false;
       return true;
-    }());
+    }(), '');
     _didFinishBuildOnce = true;
-    return result;
+    return _buildCache;
   }
 
   /// A read-only list of all hooks available.
@@ -311,9 +373,13 @@ This may happen if the call to `Hook.use` is made under some condition.
   List<HookState> get debugHooks => List<HookState>.unmodifiable(_hooks);
 
   @override
-  T dependOnInheritedWidgetOfExactType<T extends InheritedWidget>(
-      {Object aspect}) {
-    assert(!_debugIsInitHook);
+  T dependOnInheritedWidgetOfExactType<T extends InheritedWidget>({
+    Object aspect,
+  }) {
+    assert(
+      !_debugIsInitHook,
+      'Cannot listen to inherited widgets inside HookState.initState. Use HookState.build instead',
+    );
     return super.dependOnInheritedWidgetOfExactType<T>(aspect: aspect);
   }
 
@@ -324,13 +390,16 @@ This may happen if the call to `Hook.use` is made under some condition.
         try {
           hook.didBuild();
         } catch (exception, stack) {
-          FlutterError.reportError(FlutterErrorDetails(
-            exception: exception,
-            stack: stack,
-            library: 'hooks library',
-            context: DiagnosticsNode.message(
-                'while calling `didBuild` on ${hook.runtimeType}'),
-          ));
+          FlutterError.reportError(
+            FlutterErrorDetails(
+              exception: exception,
+              stack: stack,
+              library: 'hooks library',
+              context: DiagnosticsNode.message(
+                'while calling `didBuild` on ${hook.runtimeType}',
+              ),
+            ),
+          );
         }
       }
     }
@@ -341,17 +410,20 @@ This may happen if the call to `Hook.use` is made under some condition.
   void unmount() {
     super.unmount();
     if (_hooks != null) {
-      for (final hook in _hooks) {
+      for (final hook in _hooks.reversed) {
         try {
           hook.dispose();
         } catch (exception, stack) {
-          FlutterError.reportError(FlutterErrorDetails(
-            exception: exception,
-            stack: stack,
-            library: 'hooks library',
-            context:
-                DiagnosticsNode.message('while disposing ${hook.runtimeType}'),
-          ));
+          FlutterError.reportError(
+            FlutterErrorDetails(
+              exception: exception,
+              stack: stack,
+              library: 'hooks library',
+              context: DiagnosticsNode.message(
+                'while disposing ${hook.runtimeType}',
+              ),
+            ),
+          );
         }
       }
     }
@@ -364,14 +436,16 @@ This may happen if the call to `Hook.use` is made under some condition.
         try {
           hook.deactivate();
         } catch (exception, stack) {
-          FlutterError.reportError(FlutterErrorDetails(
-            exception: exception,
-            stack: stack,
-            library: 'hooks library',
-            context: DiagnosticsNode.message(
-              'while deactivating ${hook.runtimeType}',
+          FlutterError.reportError(
+            FlutterErrorDetails(
+              exception: exception,
+              stack: stack,
+              library: 'hooks library',
+              context: DiagnosticsNode.message(
+                'while deactivating ${hook.runtimeType}',
+              ),
             ),
-          ));
+          );
         }
       }
     }
@@ -389,21 +463,26 @@ This may happen if the call to `Hook.use` is made under some condition.
         }
       }
       return true;
-    }());
+    }(), '');
   }
 
   R _use<R>(Hook<R> hook) {
     HookState<R, Hook<R>> hookState;
     // first build
     if (_currentHook == null) {
-      assert(_debugDidReassemble || !_didFinishBuildOnce);
+      assert(
+        _debugDidReassemble || !_didFinishBuildOnce,
+        'No previous hook found at $_hookIndex, is a hook wrapped in a `if`?',
+      );
       hookState = _createHookState(hook);
       _hooks ??= [];
       _hooks.add(hookState);
     } else {
       // recreate states on hot-reload of the order changed
       assert(() {
-        if (!debugHotReloadHooksEnabled) return true;
+        if (!debugHotReloadHooksEnabled) {
+          return true;
+        }
         if (!_debugDidReassemble) {
           return true;
         }
@@ -423,13 +502,14 @@ This may happen if the call to `Hook.use` is made under some condition.
           hookState = _pushHook(hook);
         }
         return true;
-      }());
+      }(), '');
       if (!_didFinishBuildOnce && _currentHook.current == null) {
         hookState = _pushHook(hook);
         _currentHook.moveNext();
       } else {
-        assert(_currentHook.current != null);
-        assert(_debugTypesAreRight(hook));
+        assert(_currentHook.current != null,
+            'No previous hook found at $_hookIndex, is a hook wrapped in a `if`?');
+        assert(_debugTypesAreRight(hook), '');
 
         if (_currentHook.current.hook == hook) {
           hookState = _currentHook.current as HookState<R, Hook<R>>;
@@ -454,27 +534,28 @@ This may happen if the call to `Hook.use` is made under some condition.
 
   HookState<R, Hook<R>> _replaceHookAt<R>(int index, Hook<R> hook) {
     _hooks.removeAt(_hookIndex).dispose();
-    var hookState = _createHookState(hook);
+    final hookState = _createHookState(hook);
     _hooks.insert(_hookIndex, hookState);
     return hookState;
   }
 
   HookState<R, Hook<R>> _insertHookAt<R>(int index, Hook<R> hook) {
-    var hookState = _createHookState(hook);
+    final hookState = _createHookState(hook);
     _hooks.insert(index, hookState);
     _resetsIterator(hookState);
     return hookState;
   }
 
   HookState<R, Hook<R>> _pushHook<R>(Hook<R> hook) {
-    var hookState = _createHookState(hook);
+    final hookState = _createHookState(hook);
     _hooks.add(hookState);
     _resetsIterator(hookState);
     return hookState;
   }
 
   bool _debugTypesAreRight(Hook hook) {
-    assert(_currentHook.current.hook.runtimeType == hook.runtimeType);
+    assert(_currentHook.current.hook.runtimeType == hook.runtimeType,
+        'The previous and new hooks at index $_hookIndex do not match');
     return true;
   }
 
@@ -490,16 +571,17 @@ This may happen if the call to `Hook.use` is made under some condition.
     assert(() {
       _debugIsInitHook = true;
       return true;
-    }());
+    }(), '');
+
     final state = hook.createState()
-      .._element = this.state
+      .._element = this
       .._hook = hook
       ..initHook();
 
     assert(() {
       _debugIsInitHook = false;
       return true;
-    }());
+    }(), '');
 
     return state;
   }
@@ -513,30 +595,34 @@ This may happen if the call to `Hook.use` is made under some condition.
 ///
 /// The difference is that it can use [Hook], which allows
 /// [HookWidget] to store mutable data without implementing a [State].
-abstract class HookWidget extends StatefulWidget {
+abstract class HookWidget extends StatelessWidget {
   /// Initializes [key] for subclasses.
   const HookWidget({Key key}) : super(key: key);
 
   @override
-  HookElement createElement() => HookElement(this);
-
-  @override
-  _HookWidgetState createState() => _HookWidgetState();
-
-  /// Describes the part of the user interface represented by this widget.
-  ///
-  /// See also:
-  ///
-  ///  * [StatelessWidget.build]
-  @protected
-  Widget build(BuildContext context);
+  _StatelessHookElement createElement() => _StatelessHookElement(this);
 }
 
-class _HookWidgetState extends State<HookWidget> {
+class _StatelessHookElement extends StatelessElement with HookElement {
+  _StatelessHookElement(HookWidget hooks) : super(hooks);
+}
+
+/// A [StatefulWidget] that can use [Hook]
+///
+/// It's usage is very similar to [StatefulWidget], but use hooks inside [State.build].
+///
+/// The difference is that it can use [Hook], which allows
+/// [HookWidget] to store mutable data without implementing a [State].
+abstract class StatefulHookWidget extends StatefulWidget {
+  /// Initializes [key] for subclasses.
+  const StatefulHookWidget({Key key}) : super(key: key);
+
   @override
-  Widget build(BuildContext context) {
-    return widget.build(context);
-  }
+  _StatefulHookElement createElement() => _StatefulHookElement(this);
+}
+
+class _StatefulHookElement extends StatefulElement with HookElement {
+  _StatefulHookElement(StatefulHookWidget hooks) : super(hooks);
 }
 
 /// Obtain the [BuildContext] of the building [HookWidget].
@@ -546,22 +632,22 @@ BuildContext useContext() {
   return HookElement._currentContext;
 }
 
-/// A [HookWidget] that defer its [HookWidget.build] to a callback
+/// A [HookWidget] that defer its `build` to a callback
 class HookBuilder extends HookWidget {
-  /// The callback used by [HookBuilder] to create a widget.
-  ///
-  /// If a [Hook] asks for a rebuild, [builder] will be called again.
-  /// [builder] must not return `null`.
-  final Widget Function(BuildContext context) builder;
-
   /// Creates a widget that delegates its build to a callback.
   ///
   /// The [builder] argument must not be null.
   const HookBuilder({
     @required this.builder,
     Key key,
-  })  : assert(builder != null),
+  })  : assert(builder != null, '`builder` cannot be null'),
         super(key: key);
+
+  /// The callback used by [HookBuilder] to create a widget.
+  ///
+  /// If a [Hook] asks for a rebuild, [builder] will be called again.
+  /// [builder] must not return `null`.
+  final Widget Function(BuildContext context) builder;
 
   @override
   Widget build(BuildContext context) => builder(context);
