@@ -4,7 +4,7 @@ part of 'hooks.dart';
 ///
 /// See also:
 /// - [FocusNode]
-FocusNode useFocusNode() => Hook.use(const _FocusNodeHook());
+FocusNode useFocusNode() => use(const _FocusNodeHook());
 
 class _FocusNodeHook extends Hook<FocusNode> {
   const _FocusNodeHook();

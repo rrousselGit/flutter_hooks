@@ -250,7 +250,7 @@ There are two ways to create a hook:
 
   ```dart
   Result useMyHook(BuildContext context) {
-    return Hook.use(const _TimeAlive());
+    return use(const _TimeAlive());
   }
   ```
 
