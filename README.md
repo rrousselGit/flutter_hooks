@@ -161,7 +161,6 @@ Widget build(BuildContext context) {
 }
 ```
 
-
 ### DO call hooks unconditionally
 
 ```dart
@@ -178,31 +177,6 @@ Widget build(BuildContext context) {
   if (condition) {
     useMyHook();
   }
-  // ....
-}
-```
-
----
-
-### DO always call all the hooks:
-
-```dart
-Widget build(BuildContext context) {
-  useMyHook();
-  useAnotherHook();
-  // ....
-}
-```
-
-### DON'T aborts `build` method before all hooks have been called:
-
-```dart
-Widget build(BuildContext context) {
-  useMyHook();
-  if (condition) {
-    return Container();
-  }
-  useAnotherHook();
   // ....
 }
 ```
@@ -367,7 +341,6 @@ A series of hooks with no particular theme.
 | [usePrevious](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/usePrevious.html)                           | Returns the previous argument called to [usePrevious]. |
 | [useTextEditingController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useTextEditingController.html) | Create a `TextEditingController`                       |
 | [useFocusNode](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useFocusNode.html)                         | Create a `FocusNode`                                   |
-
 
 ## Contributions
 

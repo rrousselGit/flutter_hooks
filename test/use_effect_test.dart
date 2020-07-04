@@ -4,15 +4,17 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'mock.dart';
 
 void main() {
-  final effect = Func0<VoidCallback>();
-  final unrelated = Func0<void>();
+  final effect = MockEffect();
+  final unrelated = MockWidgetBuild();
   List<Object> parameters;
 
-  Widget builder() => HookBuilder(builder: (context) {
-        useEffect(effect.call, parameters);
-        unrelated.call();
-        return Container();
-      });
+  Widget builder() {
+    return HookBuilder(builder: (context) {
+      useEffect(effect, parameters);
+      unrelated();
+      return Container();
+    });
+  }
 
   tearDown(() {
     parameters = null;
@@ -20,25 +22,25 @@ void main() {
     reset(effect);
   });
   testWidgets('useEffect null callback throws', (tester) async {
-    await expectPump(
-      () => tester.pumpWidget(HookBuilder(builder: (c) {
+    await tester.pumpWidget(
+      HookBuilder(builder: (c) {
         useEffect(null);
         return Container();
-      })),
-      throwsAssertionError,
+      }),
     );
+
+    expect(tester.takeException(), isAssertionError);
   });
   testWidgets('useEffect calls callback on every build', (tester) async {
-    final effect = Func0<VoidCallback>();
-    final unrelated = Func0<void>();
+    final effect = MockEffect();
+    final dispose = MockDispose();
 
-    final dispose = Func0<void>();
-    when(effect.call()).thenReturn(dispose.call);
+    when(effect()).thenReturn(dispose);
 
     Widget builder() {
       return HookBuilder(builder: (context) {
-        useEffect(effect.call);
-        unrelated.call();
+        useEffect(effect);
+        unrelated();
         return Container();
       });
     }
@@ -46,8 +48,8 @@ void main() {
     await tester.pumpWidget(builder());
 
     verifyInOrder([
-      effect.call(),
-      unrelated.call(),
+      effect(),
+      unrelated(),
     ]);
     verifyNoMoreInteractions(dispose);
     verifyNoMoreInteractions(effect);
@@ -55,9 +57,9 @@ void main() {
     await tester.pumpWidget(builder());
 
     verifyInOrder([
-      dispose.call(),
-      effect.call(),
-      unrelated.call(),
+      dispose(),
+      effect(),
+      unrelated(),
     ]);
     verifyNoMoreInteractions(dispose);
     verifyNoMoreInteractions(effect);
@@ -69,8 +71,8 @@ void main() {
     await tester.pumpWidget(builder());
 
     verifyInOrder([
-      effect.call(),
-      unrelated.call(),
+      effect(),
+      unrelated(),
     ]);
     verifyNoMoreInteractions(effect);
 
@@ -78,8 +80,8 @@ void main() {
     await tester.pumpWidget(builder());
 
     verifyInOrder([
-      effect.call(),
-      unrelated.call(),
+      effect(),
+      unrelated(),
     ]);
     verifyNoMoreInteractions(effect);
   });
@@ -89,8 +91,8 @@ void main() {
     await tester.pumpWidget(builder());
 
     verifyInOrder([
-      effect.call(),
-      unrelated.call(),
+      effect(),
+      unrelated(),
     ]);
     verifyNoMoreInteractions(effect);
 
@@ -98,8 +100,8 @@ void main() {
     await tester.pumpWidget(builder());
 
     verifyInOrder([
-      effect.call(),
-      unrelated.call(),
+      effect(),
+      unrelated(),
     ]);
     verifyNoMoreInteractions(effect);
   });
@@ -109,8 +111,8 @@ void main() {
     await tester.pumpWidget(builder());
 
     verifyInOrder([
-      effect.call(),
-      unrelated.call(),
+      effect(),
+      unrelated(),
     ]);
     verifyNoMoreInteractions(effect);
 
@@ -118,8 +120,8 @@ void main() {
     await tester.pumpWidget(builder());
 
     verifyInOrder([
-      effect.call(),
-      unrelated.call(),
+      effect(),
+      unrelated(),
     ]);
     verifyNoMoreInteractions(effect);
   });
@@ -128,8 +130,8 @@ void main() {
     await tester.pumpWidget(builder());
 
     verifyInOrder([
-      effect.call(),
-      unrelated.call(),
+      effect(),
+      unrelated(),
     ]);
     verifyNoMoreInteractions(effect);
 
@@ -137,8 +139,8 @@ void main() {
     await tester.pumpWidget(builder());
 
     verifyInOrder([
-      effect.call(),
-      unrelated.call(),
+      effect(),
+      unrelated(),
     ]);
     verifyNoMoreInteractions(effect);
   });
@@ -149,8 +151,8 @@ void main() {
     await tester.pumpWidget(builder());
 
     verifyInOrder([
-      effect.call(),
-      unrelated.call(),
+      effect(),
+      unrelated(),
     ]);
     verifyNoMoreInteractions(effect);
 
@@ -166,8 +168,8 @@ void main() {
     await tester.pumpWidget(builder());
 
     verifyInOrder([
-      effect.call(),
-      unrelated.call(),
+      effect(),
+      unrelated(),
     ]);
     verifyNoMoreInteractions(effect);
 
@@ -179,23 +181,23 @@ void main() {
 
   testWidgets('useEffect disposer called whenever callback called',
       (tester) async {
-    final effect = Func0<VoidCallback>();
+    final effect = MockEffect();
     List<Object> parameters;
 
     Widget builder() {
       return HookBuilder(builder: (context) {
-        useEffect(effect.call, parameters);
+        useEffect(effect, parameters);
         return Container();
       });
     }
 
     parameters = ['foo'];
-    final disposerA = Func0<void>();
-    when(effect.call()).thenReturn(disposerA);
+    final disposerA = MockDispose();
+    when(effect()).thenReturn(disposerA);
 
     await tester.pumpWidget(builder());
 
-    verify(effect.call()).called(1);
+    verify(effect()).called(1);
     verifyNoMoreInteractions(effect);
     verifyZeroInteractions(disposerA);
 
@@ -205,14 +207,14 @@ void main() {
     verifyZeroInteractions(disposerA);
 
     parameters = ['bar'];
-    final disposerB = Func0<void>();
-    when(effect.call()).thenReturn(disposerB);
+    final disposerB = MockDispose();
+    when(effect()).thenReturn(disposerB);
 
     await tester.pumpWidget(builder());
 
     verifyInOrder([
-      effect.call(),
-      disposerA.call(),
+      effect(),
+      disposerA(),
     ]);
     verifyNoMoreInteractions(disposerA);
     verifyNoMoreInteractions(effect);
@@ -226,9 +228,17 @@ void main() {
 
     await tester.pumpWidget(Container());
 
-    verify(disposerB.call()).called(1);
+    verify(disposerB()).called(1);
     verifyNoMoreInteractions(disposerB);
     verifyNoMoreInteractions(disposerA);
     verifyNoMoreInteractions(effect);
   });
+}
+
+class MockEffect extends Mock {
+  VoidCallback call();
+}
+
+class MockWidgetBuild extends Mock {
+  void call();
 }

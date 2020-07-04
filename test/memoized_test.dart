@@ -4,27 +4,28 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'mock.dart';
 
 void main() {
-  final builder = Func1<BuildContext, Widget>();
-  final parameterBuilder = Func0<List<Object>>();
-  final valueBuilder = Func0<int>();
+  final valueBuilder = MockValueBuilder();
 
   tearDown(() {
-    reset(builder);
     reset(valueBuilder);
-    reset(parameterBuilder);
   });
 
   testWidgets('invalid parameters', (tester) async {
-    await tester.pumpWidget(HookBuilder(builder: (context) {
-      useMemoized<void>(null);
-      return Container();
-    }));
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        useMemoized<void>(null);
+        return Container();
+      }),
+    );
+
     expect(tester.takeException(), isAssertionError);
 
-    await tester.pumpWidget(HookBuilder(builder: (context) {
-      useMemoized(() {}, null);
-      return Container();
-    }));
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        useMemoized(() {}, null);
+        return Container();
+      }),
+    );
     expect(tester.takeException(), isAssertionError);
   });
 
@@ -32,20 +33,25 @@ void main() {
       (tester) async {
     int result;
 
-    when(valueBuilder.call()).thenReturn(42);
+    when(valueBuilder()).thenReturn(42);
 
-    when(builder.call(any)).thenAnswer((invocation) {
-      result = useMemoized<int>(valueBuilder.call);
-      return Container();
-    });
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        result = useMemoized<int>(valueBuilder);
+        return Container();
+      }),
+    );
 
-    await tester.pumpWidget(HookBuilder(builder: builder.call));
-
-    verify(valueBuilder.call()).called(1);
+    verify(valueBuilder()).called(1);
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 42);
 
-    await tester.pumpWidget(HookBuilder(builder: builder.call));
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        result = useMemoized<int>(valueBuilder);
+        return Container();
+      }),
+    );
 
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 42);
@@ -60,59 +66,81 @@ void main() {
       (tester) async {
     int result;
 
-    when(valueBuilder.call()).thenReturn(0);
-    when(parameterBuilder.call()).thenReturn([]);
+    when(valueBuilder()).thenReturn(0);
 
-    when(builder.call(any)).thenAnswer((invocation) {
-      result = useMemoized<int>(valueBuilder.call, parameterBuilder.call());
-      return Container();
-    });
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        result = useMemoized<int>(valueBuilder, []);
+        return Container();
+      }),
+    );
 
-    await tester.pumpWidget(HookBuilder(builder: builder.call));
-
-    verify(valueBuilder.call()).called(1);
+    verify(valueBuilder()).called(1);
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 0);
 
     /* No change */
 
-    await tester.pumpWidget(HookBuilder(builder: builder.call));
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        result = useMemoized<int>(valueBuilder, []);
+        return Container();
+      }),
+    );
 
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 0);
 
     /* Add parameter */
 
-    when(parameterBuilder.call()).thenReturn(['foo']);
-    when(valueBuilder.call()).thenReturn(1);
+    when(valueBuilder()).thenReturn(1);
 
-    await tester.pumpWidget(HookBuilder(builder: builder.call));
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        result = useMemoized<int>(valueBuilder, ['foo']);
+        return Container();
+      }),
+    );
 
     expect(result, 1);
-    verify(valueBuilder.call()).called(1);
+    verify(valueBuilder()).called(1);
     verifyNoMoreInteractions(valueBuilder);
 
     /* No change */
 
-    await tester.pumpWidget(HookBuilder(builder: builder.call));
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        result = useMemoized<int>(valueBuilder, ['foo']);
+        return Container();
+      }),
+    );
 
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 1);
 
     /* Remove parameter */
 
-    when(parameterBuilder.call()).thenReturn([]);
-    when(valueBuilder.call()).thenReturn(2);
+    when(valueBuilder()).thenReturn(2);
 
-    await tester.pumpWidget(HookBuilder(builder: builder.call));
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        result = useMemoized<int>(valueBuilder, []);
+        return Container();
+      }),
+    );
 
     expect(result, 2);
-    verify(valueBuilder.call()).called(1);
+    verify(valueBuilder()).called(1);
     verifyNoMoreInteractions(valueBuilder);
 
     /* No change */
 
-    await tester.pumpWidget(HookBuilder(builder: builder.call));
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        result = useMemoized<int>(valueBuilder, []);
+        return Container();
+      }),
+    );
 
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 2);
@@ -127,65 +155,83 @@ void main() {
   testWidgets('memoized parameters compared in order', (tester) async {
     int result;
 
-    when(builder.call(any)).thenAnswer((invocation) {
-      result = useMemoized<int>(valueBuilder.call, parameterBuilder.call());
-      return Container();
-    });
+    when(valueBuilder()).thenReturn(0);
 
-    when(valueBuilder.call()).thenReturn(0);
-    when(parameterBuilder.call()).thenReturn(['foo', 42, 24.0]);
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        result = useMemoized<int>(valueBuilder, ['foo', 42, 24.0]);
+        return Container();
+      }),
+    );
 
-    await tester.pumpWidget(HookBuilder(builder: builder.call));
-
-    verify(valueBuilder.call()).called(1);
+    verify(valueBuilder()).called(1);
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 0);
 
     /* Array reference changed but content didn't */
 
-    when(parameterBuilder.call()).thenReturn(['foo', 42, 24.0]);
-    await tester.pumpWidget(HookBuilder(builder: builder.call));
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        result = useMemoized<int>(valueBuilder, ['foo', 42, 24.0]);
+        return Container();
+      }),
+    );
 
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 0);
 
     /* reoder */
 
-    when(valueBuilder.call()).thenReturn(1);
-    when(parameterBuilder.call()).thenReturn([42, 'foo', 24.0]);
+    when(valueBuilder()).thenReturn(1);
 
-    await tester.pumpWidget(HookBuilder(builder: builder.call));
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        result = useMemoized<int>(valueBuilder, [42, 'foo', 24.0]);
+        return Container();
+      }),
+    );
 
-    verify(valueBuilder.call()).called(1);
+    verify(valueBuilder()).called(1);
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 1);
 
-    when(valueBuilder.call()).thenReturn(2);
-    when(parameterBuilder.call()).thenReturn([42, 24.0, 'foo']);
+    when(valueBuilder()).thenReturn(2);
 
-    await tester.pumpWidget(HookBuilder(builder: builder.call));
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        result = useMemoized<int>(valueBuilder, [42, 24.0, 'foo']);
+        return Container();
+      }),
+    );
 
-    verify(valueBuilder.call()).called(1);
+    verify(valueBuilder()).called(1);
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 2);
 
     /* value change */
 
-    when(valueBuilder.call()).thenReturn(3);
-    when(parameterBuilder.call()).thenReturn([43, 24.0, 'foo']);
+    when(valueBuilder()).thenReturn(3);
 
-    await tester.pumpWidget(HookBuilder(builder: builder.call));
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        result = useMemoized<int>(valueBuilder, [43, 24.0, 'foo']);
+        return Container();
+      }),
+    );
 
-    verify(valueBuilder.call()).called(1);
+    verify(valueBuilder()).called(1);
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 3);
 
     /* Comparison is done using operator== */
 
     // type change
-    when(parameterBuilder.call()).thenReturn([43.0, 24.0, 'foo']);
-
-    await tester.pumpWidget(HookBuilder(builder: builder.call));
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        result = useMemoized<int>(valueBuilder, [43, 24.0, 'foo']);
+        return Container();
+      }),
+    );
 
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 3);
@@ -203,24 +249,28 @@ void main() {
     int result;
     final parameters = <Object>[];
 
-    when(builder.call(any)).thenAnswer((invocation) {
-      result = useMemoized<int>(valueBuilder.call, parameterBuilder.call());
-      return Container();
-    });
+    when(valueBuilder()).thenReturn(0);
 
-    when(valueBuilder.call()).thenReturn(0);
-    when(parameterBuilder.call()).thenReturn(parameters);
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        result = useMemoized<int>(valueBuilder, parameters);
+        return Container();
+      }),
+    );
 
-    await tester.pumpWidget(HookBuilder(builder: builder.call));
-
-    verify(valueBuilder.call()).called(1);
+    verify(valueBuilder()).called(1);
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 0);
 
     /* Array content but reference didn't */
     parameters.add(42);
 
-    await tester.pumpWidget(HookBuilder(builder: builder.call));
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        result = useMemoized<int>(valueBuilder, parameters);
+        return Container();
+      }),
+    );
 
     verifyNoMoreInteractions(valueBuilder);
 
@@ -230,4 +280,8 @@ void main() {
 
     verifyNoMoreInteractions(valueBuilder);
   });
+}
+
+class MockValueBuilder extends Mock {
+  int call();
 }

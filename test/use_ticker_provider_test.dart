@@ -52,10 +52,10 @@ void main() {
 
     try {
       animationController.forward();
-      await expectPump(
-        () => tester.pumpWidget(const SizedBox()),
-        throwsFlutterError,
-      );
+
+      await tester.pumpWidget(const SizedBox());
+
+      expect(tester.takeException(), isFlutterError);
     } finally {
       animationController.dispose();
     }

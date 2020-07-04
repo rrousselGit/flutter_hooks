@@ -1,6 +1,26 @@
-## 0.10.1
+## 0.11.0
+
+**Breaking change**:
+
+- Removed `HookState.didBuild`.  
+  If you still need it, use `addPostFrameCallback` or `Future.microtask`.
+
+**Non-breaking changes**:
 
 - Fix a bug where the order in which hooks are disposed is incorrect.
+- It is now allowed to rebuild a `HookWidget` with more/less hooks than previously.
+  Example:
+
+  ```dart
+  Widget build(context) {
+    useSomething();
+    if (condition) {
+      return Container();
+    }
+    useSomething()
+    return Container();
+  }
+  ```
 
 ## 0.10.0
 
