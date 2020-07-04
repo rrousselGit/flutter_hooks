@@ -15,15 +15,8 @@ bool debugHotReloadHooksEnabled = true;
 /// and all calls to [use] must be made unconditionally, always on the same order.
 ///
 /// See [Hook] for more explanations.
-R use<R>(Hook<R> hook) {
-  assert(HookElement._currentHookElement != null, '''
-Hooks can only be called from the build method of a widget that mix-in `Hooks`.
-
-Hooks should only be called within the build method of a widget.
-Calling them outside of build method leads to an unstable state and is therefore prohibited.
-''');
-  return HookElement._currentHookElement._use(hook);
-}
+// ignore: deprecated_member_use_from_same_package
+R use<R>(Hook<R> hook) => Hook.use(hook);
 
 /// [Hook] is similar to a [StatelessWidget], but is not associated
 /// to an [Element].
