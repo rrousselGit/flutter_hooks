@@ -211,8 +211,8 @@ void main() {
     await tester.pumpWidget(builder());
 
     verifyInOrder([
-      disposerA.call(),
       effect.call(),
+      disposerA.call(),
     ]);
     verifyNoMoreInteractions(disposerA);
     verifyNoMoreInteractions(effect);
