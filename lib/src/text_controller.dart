@@ -8,13 +8,13 @@ class _TextEditingControllerHookCreator {
   /// The [text] parameter can be used to set the initial value of the
   /// controller.
   TextEditingController call({String text, List<Object> keys}) {
-    return Hook.use(_TextEditingControllerHook(text, null, keys));
+    return use(_TextEditingControllerHook(text, null, keys));
   }
 
   /// Creates a [TextEditingController] from the initial [value] that will
   /// be disposed automatically.
   TextEditingController fromValue(TextEditingValue value, [List<Object> keys]) {
-    return Hook.use(_TextEditingControllerHook(null, value, keys));
+    return use(_TextEditingControllerHook(null, value, keys));
   }
 }
 

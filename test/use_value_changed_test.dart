@@ -6,15 +6,18 @@ import 'mock.dart';
 void main() {
   testWidgets('useValueChanged basic', (tester) async {
     var value = 42;
-    final _useValueChanged = Func2<int, String, String>();
+    final _useValueChanged = MockValueChanged();
     String result;
 
-    Future<void> pump() => tester.pumpWidget(HookBuilder(
-          builder: (context) {
-            result = useValueChanged(value, _useValueChanged.call);
-            return Container();
-          },
-        ));
+    Future<void> pump() {
+      return tester.pumpWidget(
+        HookBuilder(builder: (context) {
+          result = useValueChanged(value, _useValueChanged);
+          return Container();
+        }),
+      );
+    }
+
     await pump();
 
     final context = find.byType(HookBuilder).evaluate().first;
@@ -30,10 +33,10 @@ void main() {
     expect(context.dirty, false);
 
     value++;
-    when(_useValueChanged.call(any, any)).thenReturn('Hello');
+    when(_useValueChanged(any, any)).thenReturn('Hello');
     await pump();
 
-    verify(_useValueChanged.call(42, null));
+    verify(_useValueChanged(42, null));
     expect(result, 'Hello');
     verifyNoMoreInteractions(_useValueChanged);
     expect(context.dirty, false);
@@ -45,11 +48,11 @@ void main() {
     expect(context.dirty, false);
 
     value++;
-    when(_useValueChanged.call(any, any)).thenReturn('Foo');
+    when(_useValueChanged(any, any)).thenReturn('Foo');
     await pump();
 
     expect(result, 'Foo');
-    verify(_useValueChanged.call(43, 'Hello'));
+    verify(_useValueChanged(43, 'Hello'));
     verifyNoMoreInteractions(_useValueChanged);
     expect(context.dirty, false);
 
@@ -73,4 +76,8 @@ void main() {
 
     expect(tester.takeException(), isAssertionError);
   });
+}
+
+class MockValueChanged extends Mock {
+  String call(int value, String previous);
 }

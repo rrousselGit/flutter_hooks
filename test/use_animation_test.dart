@@ -5,14 +5,14 @@ import 'mock.dart';
 
 void main() {
   testWidgets('useAnimation throws with null', (tester) async {
-    await expectPump(
-        () => tester.pumpWidget(HookBuilder(
-              builder: (context) {
-                useAnimation<void>(null);
-                return Container();
-              },
-            )),
-        throwsAssertionError);
+    await tester.pumpWidget(HookBuilder(
+      builder: (context) {
+        useAnimation<void>(null);
+        return Container();
+      },
+    ));
+
+    expect(tester.takeException(), isAssertionError);
   });
 
   testWidgets('useAnimation', (tester) async {

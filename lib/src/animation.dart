@@ -35,7 +35,7 @@ AnimationController useAnimationController({
 }) {
   vsync ??= useSingleTickerProvider(keys: keys);
 
-  return Hook.use(
+  return use(
     _AnimationControllerHook(
       duration: duration,
       debugLabel: debugLabel,
@@ -120,7 +120,7 @@ class _AnimationControllerHookState
 /// See also:
 ///  * [SingleTickerProviderStateMixin]
 TickerProvider useSingleTickerProvider({List<Object> keys}) {
-  return Hook.use(
+  return use(
     keys != null
         ? _SingleTickerProviderHook(keys)
         : const _SingleTickerProviderHook(),
