@@ -339,7 +339,7 @@ A series of hooks with no particular theme.
 | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
 | [useReducer](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useReducer.html)                             | An alternative to `useState` for more complex states.  |
 | [usePrevious](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/usePrevious.html)                           | Returns the previous argument called to [usePrevious]. |
-| [useTextEditingController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useTextEditingController.html) | Create a `TextEditingController`                       |
+| [useTextEditingController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTextEditingController-constant.html) | Create a `TextEditingController`                       |
 | [useFocusNode](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useFocusNode.html)                         | Create a `FocusNode`                                   |
 
 ## Contributions
