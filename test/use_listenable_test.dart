@@ -5,14 +5,16 @@ import 'mock.dart';
 
 void main() {
   testWidgets('useListenable throws with null', (tester) async {
-    await expectPump(
-        () => tester.pumpWidget(HookBuilder(
-              builder: (context) {
-                useListenable(null);
-                return Container();
-              },
-            )),
-        throwsAssertionError);
+    await tester.pumpWidget(
+      HookBuilder(
+        builder: (context) {
+          useListenable(null);
+          return Container();
+        },
+      ),
+    );
+
+    expect(tester.takeException(), isAssertionError);
   });
   testWidgets('useListenable', (tester) async {
     var listenable = ValueNotifier(0);

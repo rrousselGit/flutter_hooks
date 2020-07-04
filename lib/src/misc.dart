@@ -38,7 +38,7 @@ Store<State, Action> useReducer<State extends Object, Action>(
   State initialState,
   Action initialAction,
 }) {
-  return Hook.use(_ReducerdHook(reducer,
+  return use(_ReducerdHook(reducer,
       initialAction: initialAction, initialState: initialState));
 }
 
@@ -86,7 +86,7 @@ class _ReducerdHookState<State, Action>
 
 /// Returns the previous argument called to [usePrevious].
 T usePrevious<T>(T val) {
-  return Hook.use(_PreviousHook(val));
+  return use(_PreviousHook(val));
 }
 
 class _PreviousHook<T> extends Hook<T> {
@@ -118,7 +118,7 @@ class _PreviousHookState<T> extends HookState<T, _PreviousHook<T>> {
 ///  * [State.reassemble]
 void useReassemble(VoidCallback callback) {
   assert(() {
-    Hook.use(_ReassembleHook(callback));
+    use(_ReassembleHook(callback));
     return true;
   }(), '');
 }

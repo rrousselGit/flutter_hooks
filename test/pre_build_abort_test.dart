@@ -13,7 +13,7 @@ void main() {
     await tester.pumpWidget(
       HookBuilder(builder: (c) {
         buildCount++;
-        first = Hook.use(const MayRebuild());
+        first = use(const MayRebuild());
 
         return Container();
       }),
@@ -36,8 +36,8 @@ void main() {
     await tester.pumpWidget(
       HookBuilder(builder: (c) {
         buildCount++;
-        first = Hook.use(MayRebuild(firstSpy));
-        second = Hook.use(MayRebuild(secondSpy));
+        first = use(MayRebuild(firstSpy));
+        second = use(MayRebuild(secondSpy));
 
         return Container();
       }),
@@ -81,7 +81,7 @@ void main() {
     await tester.pumpWidget(
       HookBuilder(builder: (c) {
         buildCount++;
-        final value = Hook.use(IsPositiveHook(notifier));
+        final value = use(IsPositiveHook(notifier));
 
         return Text('$value', textDirection: TextDirection.ltr);
       }),
@@ -124,7 +124,7 @@ void main() {
       HookBuilder(builder: (c) {
         buildCount++;
         useListenable(notifier);
-        final value = Hook.use(IsPositiveHook(notifier));
+        final value = use(IsPositiveHook(notifier));
 
         return Text('$value', textDirection: TextDirection.ltr);
       }),
@@ -149,7 +149,7 @@ void main() {
     Widget build() {
       return HookBuilder(builder: (c) {
         buildCount++;
-        final value = Hook.use(IsPositiveHook(notifier));
+        final value = use(IsPositiveHook(notifier));
 
         return Text('$value', textDirection: TextDirection.ltr);
       });
@@ -176,7 +176,7 @@ void main() {
     final child = HookBuilder(builder: (c) {
       buildCount++;
       Directionality.of(c);
-      final value = Hook.use(IsPositiveHook(notifier));
+      final value = use(IsPositiveHook(notifier));
 
       return Text('$value', textDirection: TextDirection.ltr);
     });

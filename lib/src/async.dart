@@ -10,7 +10,7 @@ part of 'hooks.dart';
 ///   * [useStream], similar to [useFuture] but for [Stream].
 AsyncSnapshot<T> useFuture<T>(Future<T> future,
     {T initialData, bool preserveState = true}) {
-  return Hook.use(_FutureHook(future,
+  return use(_FutureHook(future,
       initialData: initialData, preserveState: preserveState));
 }
 
@@ -100,7 +100,7 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
 ///   * [useFuture], similar to [useStream] but for [Future].
 AsyncSnapshot<T> useStream<T>(Stream<T> stream,
     {T initialData, bool preserveState = true}) {
-  return Hook.use(_StreamHook(
+  return use(_StreamHook(
     stream,
     initialData: initialData,
     preserveState: preserveState,
@@ -213,7 +213,7 @@ StreamController<T> useStreamController<T>(
     VoidCallback onListen,
     VoidCallback onCancel,
     List<Object> keys}) {
-  return Hook.use(_StreamControllerHook(
+  return use(_StreamControllerHook(
     onCancel: onCancel,
     onListen: onListen,
     sync: sync,

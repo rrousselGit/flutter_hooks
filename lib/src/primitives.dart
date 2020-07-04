@@ -8,7 +8,7 @@ part of 'hooks.dart';
 /// A later call of [useMemoized] with different [keys] will call [useMemoized] again to create a new instance.
 T useMemoized<T>(T Function() valueBuilder,
     [List<Object> keys = const <dynamic>[]]) {
-  return Hook.use(_MemoizedHook(
+  return use(_MemoizedHook(
     valueBuilder,
     keys: keys,
   ));
@@ -66,7 +66,7 @@ R useValueChanged<T, R>(
   T value,
   R Function(T oldValue, R oldResult) valueChange,
 ) {
-  return Hook.use(_ValueChangedHook(value, valueChange));
+  return use(_ValueChangedHook(value, valueChange));
 }
 
 class _ValueChangedHook<T, R> extends Hook<R> {
@@ -128,7 +128,7 @@ typedef Dispose = void Function();
 /// );
 /// ```
 void useEffect(Dispose Function() effect, [List<Object> keys]) {
-  Hook.use(_EffectHook(effect, keys));
+  use(_EffectHook(effect, keys));
 }
 
 class _EffectHook extends Hook<void> {
@@ -207,7 +207,7 @@ class _EffectHookState extends HookState<void, _EffectHook> {
 ///  * [ValueNotifier]
 ///  * [useStreamController], an alternative to [ValueNotifier] for state.
 ValueNotifier<T> useState<T>([T initialData]) {
-  return Hook.use(_StateHook(initialData: initialData));
+  return use(_StateHook(initialData: initialData));
 }
 
 class _StateHook<T> extends Hook<ValueNotifier<T>> {

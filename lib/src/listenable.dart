@@ -16,7 +16,7 @@ T useValueListenable<T>(ValueListenable<T> valueListenable) {
 ///   * [Listenable]
 ///   * [useValueListenable], [useAnimation]
 T useListenable<T extends Listenable>(T listenable) {
-  Hook.use(_ListenableHook(listenable));
+  use(_ListenableHook(listenable));
   return listenable;
 }
 
@@ -68,7 +68,7 @@ class _ListenableStateHook extends HookState<void, _ListenableHook> {
 ///   * [ValueNotifier]
 ///   * [useValueListenable]
 ValueNotifier<T> useValueNotifier<T>([T intialData, List<Object> keys]) {
-  return Hook.use(_ValueNotifierHook(
+  return use(_ValueNotifierHook(
     initialData: intialData,
     keys: keys,
   ));

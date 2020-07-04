@@ -100,8 +100,7 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
-  testWidgets('switch between controlled and  uncontrolled throws',
-      (tester) async {
+  testWidgets('switch from uncontrolled to controlled throws', (tester) async {
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
         useAnimationController();
@@ -109,19 +108,6 @@ void main() {
       },
     ));
 
-    await expectPump(
-      () => tester.pumpWidget(HookBuilder(
-        builder: (context) {
-          useAnimationController(vsync: tester);
-          return Container();
-        },
-      )),
-      throwsAssertionError,
-    );
-
-    await tester.pumpWidget(Container());
-
-    // the other way around
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
         useAnimationController(vsync: tester);
@@ -129,15 +115,24 @@ void main() {
       },
     ));
 
-    await expectPump(
-      () => tester.pumpWidget(HookBuilder(
-        builder: (context) {
-          useAnimationController();
-          return Container();
-        },
-      )),
-      throwsAssertionError,
-    );
+    expect(tester.takeException(), isStateError);
+  });
+  testWidgets('switch from controlled to uncontrolled throws', (tester) async {
+    await tester.pumpWidget(HookBuilder(
+      builder: (context) {
+        useAnimationController(vsync: tester);
+        return Container();
+      },
+    ));
+
+    await tester.pumpWidget(HookBuilder(
+      builder: (context) {
+        useAnimationController();
+        return Container();
+      },
+    ));
+
+    expect(tester.takeException(), isStateError);
   });
 
   testWidgets('useAnimationController pass down keys', (tester) async {
