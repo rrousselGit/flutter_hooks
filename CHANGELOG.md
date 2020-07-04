@@ -1,3 +1,7 @@
+## 0.10.1
+
+- Fix a bug where the order in which hooks are disposed is incorrect.
+
 ## 0.10.0
 
 **Breaking change**:

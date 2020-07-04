@@ -291,6 +291,7 @@ mixin HookElement on ComponentElement {
   int _hookIndex;
   List<HookState> _hooks;
   LinkedList<_Entry<bool Function()>> _shouldRebuildQueue;
+  LinkedList<_Entry<HookState>> _needDispose;
   bool _isOptionalRebuild = false;
   Widget _buildCache;
   bool _didFinishBuildOnce = false;
@@ -334,8 +335,19 @@ mixin HookElement on ComponentElement {
       return true;
     }(), '');
     HookElement._currentContext = this;
-    _buildCache = super.build();
-    HookElement._currentContext = null;
+    try {
+      _buildCache = super.build();
+    } finally {
+      HookElement._currentContext = null;
+      if (_needDispose != null) {
+        for (var toDispose = _needDispose.last;
+            toDispose != null;
+            toDispose = toDispose.previous) {
+          toDispose.value.dispose();
+        }
+        _needDispose = null;
+      }
+    }
 
     // dispose removed items
     assert(() {
@@ -507,8 +519,10 @@ This may happen if the call to `Hook.use` is made under some condition.
         hookState = _pushHook(hook);
         _currentHook.moveNext();
       } else {
-        assert(_currentHook.current != null,
-            'No previous hook found at $_hookIndex, is a hook wrapped in a `if`?');
+        assert(
+          _currentHook.current != null,
+          'No previous hook found at $_hookIndex, is a hook wrapped in a `if`?',
+        );
         assert(_debugTypesAreRight(hook), '');
 
         if (_currentHook.current.hook == hook) {
@@ -533,7 +547,9 @@ This may happen if the call to `Hook.use` is made under some condition.
   }
 
   HookState<R, Hook<R>> _replaceHookAt<R>(int index, Hook<R> hook) {
-    _hooks.removeAt(_hookIndex).dispose();
+    _needDispose ??= LinkedList();
+    _needDispose.add(_Entry(_hooks.removeAt(_hookIndex)));
+    // _hooks.removeAt(_hookIndex).dispose();
     final hookState = _createHookState(hook);
     _hooks.insert(_hookIndex, hookState);
     return hookState;

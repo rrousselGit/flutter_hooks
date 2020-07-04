@@ -60,6 +60,46 @@ void main() {
     reset(reassemble);
   });
 
+  testWidgets('hooks are disposed in reverse order when their keys changes',
+      (tester) async {
+    final first = MockDispose();
+    final second = MockDispose();
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (c) {
+        useEffect(() => first, [0]);
+        useEffect(() => second, [0]);
+        return Container();
+      }),
+    );
+
+    verifyZeroInteractions(first);
+    verifyZeroInteractions(second);
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (c) {
+        useEffect(() => first, [1]);
+        useEffect(() => second, [1]);
+        return Container();
+      }),
+    );
+
+    verifyInOrder([
+      second(),
+      first(),
+    ]);
+    verifyNoMoreInteractions(first);
+    verifyNoMoreInteractions(second);
+
+    await tester.pumpWidget(Container());
+
+    verifyInOrder([
+      second(),
+      first(),
+    ]);
+    verifyNoMoreInteractions(first);
+    verifyNoMoreInteractions(second);
+  });
   testWidgets('hooks are disposed in reverse order on unmount', (tester) async {
     final first = MockDispose();
     final second = MockDispose();
@@ -452,10 +492,10 @@ void main() {
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
     verifyInOrder([
-      dispose.call(),
       createState.call(),
       initHook.call(),
       build.call(context),
+      dispose.call(),
       didBuild.call(),
     ]);
     verifyNoMoreHookInteration();
@@ -490,10 +530,10 @@ void main() {
     await tester.pumpWidget(HookBuilder(builder: builder.call));
 
     verifyInOrder([
-      dispose.call(),
       createState.call(),
       initHook.call(),
       build.call(context),
+      dispose.call(),
       didBuild.call()
     ]);
     verifyNoMoreHookInteration();
