@@ -22,6 +22,19 @@
   }
   ```
 
+- Deprecated `Hook.use` in favor of a new short-hand `use`.
+  Before:
+
+  ```dart
+  Hook.use(MyHook());
+  ```
+
+  After:
+
+  ```dart
+  use(MyHook());
+  ```
+
 ## 0.10.0
 
 **Breaking change**:
