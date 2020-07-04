@@ -9,24 +9,6 @@ export 'package:flutter_test/flutter_test.dart'
     hide Func0, Func1, Func2, Func3, Func4, Func5, Func6;
 export 'package:mockito/mockito.dart';
 
-abstract class _Func0<R> {
-  R call();
-}
-
-class Func0<R> extends Mock implements _Func0<R> {}
-
-abstract class _Func1<T1, R> {
-  R call(T1 value);
-}
-
-class Func1<T1, R> extends Mock implements _Func1<T1, R> {}
-
-abstract class _Func2<T1, T2, R> {
-  R call(T1 value, T2 value2);
-}
-
-class Func2<T1, T2, R> extends Mock implements _Func2<T1, T2, R> {}
-
 class HookTest<R> extends Hook<R> {
   // ignore: prefer_const_constructors_in_immutables
   HookTest({
@@ -80,14 +62,6 @@ class HookStateTest<R> extends HookState<R, HookTest<R>> {
   }
 
   @override
-  void didBuild() {
-    super.didBuild();
-    if (hook.didBuild != null) {
-      hook.didBuild();
-    }
-  }
-
-  @override
   void reassemble() {
     super.reassemble();
     if (hook.reassemble != null) {
@@ -129,28 +103,42 @@ void hotReload(WidgetTester tester) {
   TestWidgetsFlutterBinding.ensureInitialized().buildOwner.reassemble(root);
 }
 
-Future<void> expectPump(
-  Future Function() pump,
-  dynamic matcher, {
-  String reason,
-  dynamic skip,
-}) async {
-  FlutterErrorDetails details;
-  if (skip == null || skip != false) {
-    final previousErrorHandler = FlutterError.onError;
-    FlutterError.onError = (d) {
-      details = d;
-    };
-    await pump();
-    FlutterError.onError = previousErrorHandler;
-  }
+class MockSetState extends Mock {
+  void call();
+}
 
-  await expectLater(
-    details != null
-        ? Future<void>.error(details.exception, details.stack)
-        : Future<void>.value(),
-    matcher,
-    reason: reason,
-    skip: skip,
-  );
+class MockInitHook extends Mock {
+  void call();
+}
+
+class MockCreateState<T extends HookState<dynamic, Hook>> extends Mock {
+  T call();
+}
+
+class MockBuild<T> extends Mock {
+  T call(BuildContext context);
+}
+
+class MockDeactivate extends Mock {
+  void call();
+}
+
+class MockErrorBuilder extends Mock {
+  Widget call(FlutterErrorDetails error);
+}
+
+class MockOnError extends Mock {
+  void call(FlutterErrorDetails error);
+}
+
+class MockReassemble extends Mock {
+  void call();
+}
+
+class MockDidUpdateHook extends Mock {
+  void call(HookTest hook);
+}
+
+class MockDispose extends Mock {
+  void call();
 }

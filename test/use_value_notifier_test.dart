@@ -8,7 +8,7 @@ void main() {
     testWidgets('useValueNotifier basic', (tester) async {
       ValueNotifier<int> state;
       HookElement element;
-      final listener = Func0<void>();
+      final listener = MockListener();
 
       await tester.pumpWidget(HookBuilder(
         builder: (context) {
@@ -18,7 +18,7 @@ void main() {
         },
       ));
 
-      state.addListener(listener.call);
+      state.addListener(listener);
 
       expect(state.value, 42);
       expect(element.dirty, false);
@@ -31,7 +31,7 @@ void main() {
       expect(element.dirty, false);
 
       state.value++;
-      verify(listener.call()).called(1);
+      verify(listener()).called(1);
       verifyNoMoreInteractions(listener);
       expect(element.dirty, false);
       await tester.pump();
@@ -50,7 +50,7 @@ void main() {
     testWidgets('no initial data', (tester) async {
       ValueNotifier<int> state;
       HookElement element;
-      final listener = Func0<void>();
+      final listener = MockListener();
 
       await tester.pumpWidget(HookBuilder(
         builder: (context) {
@@ -60,7 +60,7 @@ void main() {
         },
       ));
 
-      state.addListener(listener.call);
+      state.addListener(listener);
 
       expect(state.value, null);
       expect(element.dirty, false);
@@ -74,7 +74,7 @@ void main() {
 
       state.value = 43;
       expect(element.dirty, false);
-      verify(listener.call()).called(1);
+      verify(listener()).called(1);
       verifyNoMoreInteractions(listener);
       await tester.pump();
 
@@ -132,4 +132,8 @@ void main() {
       expect(state, previous);
     });
   });
+}
+
+class MockListener extends Mock {
+  void call();
 }

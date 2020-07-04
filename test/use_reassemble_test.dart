@@ -5,17 +5,19 @@ import 'mock.dart';
 
 void main() {
   testWidgets('useReassemble null callback throws', (tester) async {
-    await expectPump(
-      () => tester.pumpWidget(HookBuilder(builder: (c) {
+    await tester.pumpWidget(
+      HookBuilder(builder: (c) {
         useReassemble(null);
         return Container();
-      })),
-      throwsAssertionError,
+      }),
     );
+
+    expect(tester.takeException(), isAssertionError);
   });
 
   testWidgets("hot-reload calls useReassemble's callback", (tester) async {
-    final reassemble = Func0<void>();
+    final reassemble = MockReassemble();
+
     await tester.pumpWidget(HookBuilder(builder: (context) {
       useReassemble(reassemble);
       return Container();
