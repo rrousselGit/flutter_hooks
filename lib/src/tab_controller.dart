@@ -5,7 +5,7 @@ part of 'hooks.dart';
 /// See also:
 /// - [TabController]
 TabController useTabController({
-  @required int length,
+  @required int initialLength,
   TickerProvider vsync,
   int initialIndex = 0,
   List<Object> keys,
@@ -14,7 +14,7 @@ TabController useTabController({
 
   return use(_TabControllerHook(
     vsync: vsync,
-    length: length,
+    length: initialLength,
     initialIndex: initialIndex,
     keys: keys,
   ));
