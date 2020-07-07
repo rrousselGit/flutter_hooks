@@ -8,6 +8,21 @@ import 'mock.dart';
 
 void main() {
   group('useTabController', () {
+    testWidgets('initial values matches with real constructor', (tester) async {
+      TabController controller;
+      TabController controller2;
+
+      await tester.pumpWidget(
+        HookBuilder(builder: (context) {
+          final vsync = useSingleTickerProvider();
+          controller2 = TabController(length: 4, vsync: vsync);
+          controller = useTabController(initialLength: 4);
+          return Container();
+        }),
+      );
+
+      expect(controller.index, controller2.index);
+    });
     testWidgets("returns a TabController that doesn't change", (tester) async {
       TabController controller;
       TabController controller2;
