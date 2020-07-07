@@ -11,8 +11,7 @@ void main() {
 
       await tester.pumpWidget(HookBuilder(
         builder: (context) {
-          final ticker = useSingleTickerProvider();
-          controller = useTabController(length: 1, vsync: ticker);
+          controller = useTabController(length: 1);
 
           useValueNotifier(rebuilder);
 
@@ -34,11 +33,9 @@ void main() {
 
       await tester.pumpWidget(HookBuilder(
         builder: (context) {
-          final ticker = useSingleTickerProvider();
           controller = useTabController(
             initialIndex: 2,
             length: 4,
-            vsync: ticker,
           );
 
           return const SizedBox();

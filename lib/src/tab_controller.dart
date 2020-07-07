@@ -5,11 +5,13 @@ part of 'hooks.dart';
 /// See also:
 /// - [TabController]
 TabController useTabController({
-  @required TickerProvider vsync,
   @required int length,
+  TickerProvider vsync,
   int initialIndex = 0,
   List<Object> keys,
 }) {
+  vsync ??= useSingleTickerProvider(keys: keys);
+
   return use(_TabControllerHook(
     vsync: vsync,
     length: length,
@@ -20,14 +22,14 @@ TabController useTabController({
 
 class _TabControllerHook extends Hook<TabController> {
   const _TabControllerHook({
-    @required this.vsync,
     @required this.length,
+    @required this.vsync,
     this.initialIndex = 0,
     List<Object> keys,
   }) : super(keys: keys);
 
-  final TickerProvider vsync;
   final int length;
+  final TickerProvider vsync;
   final int initialIndex;
 
   @override
