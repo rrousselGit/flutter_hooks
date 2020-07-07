@@ -1,3 +1,8 @@
+## 0.12.0
+
+- Added `useScrollController` to create a `ScrollController`
+- added `useTabController` to create a `TabController` (thanks to @Albert221)
+
 ## 0.11.0
 
 **Breaking change**:
