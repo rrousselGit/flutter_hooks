@@ -341,6 +341,7 @@ A series of hooks with no particular theme.
 | [usePrevious](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/usePrevious.html)                           | Returns the previous argument called to [usePrevious]. |
 | [useTextEditingController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTextEditingController-constant.html) | Create a `TextEditingController`                       |
 | [useFocusNode](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useFocusNode.html)                         | Create a `FocusNode`                                   |
+| [useTabController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useTabController.html)                 | Creates and disposes a `TabController`.                |
 
 ## Contributions
 
