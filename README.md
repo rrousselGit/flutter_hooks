@@ -155,7 +155,7 @@ Due to hooks being obtained from their index, some rules must be respected:
 Widget build(BuildContext context) {
   // starts with `use`, good name
   useMyHook();
-  // doesn't that with `use`, could confuse people into thinking that this isn't a hook
+  // doesn't start with `use`, could confuse people into thinking that this isn't a hook
   myHook();
   // ....
 }
@@ -216,7 +216,7 @@ useC();
 
 In this situation, `HookA` keeps its state but `HookC` gets a hard reset.
 This happens because when a refactoring is done, all hooks _after_ the first line impacted are disposed of.
-Since `HookC` was placed after `HookB`, is got disposed of.
+Since `HookC` was placed after `HookB`, it got disposed of.
 
 ## How to use
 
