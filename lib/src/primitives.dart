@@ -98,11 +98,11 @@ class _ValueChangedHookState<T, R>
   }
 }
 
+typedef Dispose = void Function();
+
 /// Useful for side-effects and optionally canceling them.
 ///
 /// [useEffect] is called synchronously on every `build`, unless
-typedef Dispose = void Function();
-
 /// [keys] is specified. In which case [useEffect] is called again only if
 /// any value inside [keys] as changed.
 ///
