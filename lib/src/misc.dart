@@ -173,7 +173,6 @@ class _IsMountedHook extends Hook<IsMounted> {
 }
 
 class _IsMountedHookState extends HookState<IsMounted, _IsMountedHook> {
-
   final _isMounted = IsMounted();
 
   @override
