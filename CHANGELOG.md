@@ -1,3 +1,7 @@
+## 0.13.0
+
+- Added `useIsMounted` to determine whether a widget was destroyed or not (thanks to @davidmartos96)
+
 ## 0.12.0
 
 - Added `useScrollController` to create a `ScrollController`
