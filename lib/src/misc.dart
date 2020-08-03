@@ -143,3 +143,56 @@ class _ReassembleHookState extends HookState<void, _ReassembleHook> {
   @override
   void build(BuildContext context) {}
 }
+
+/// Returns an [IsMounted] object that you can use
+/// to check if the [State] is mounted.
+///
+/// ```dart
+/// final isMounted = useIsMounted();
+/// useEffect((){
+///   myFuture.then((){
+///     if (isMounted()) {
+///       // Do something
+///     }
+///   });
+///   return null;
+/// }, []);
+/// ```
+///
+/// See also:
+///   * The [State.mounted] property.
+IsMounted useIsMounted() {
+  return use(const _IsMountedHook());
+}
+
+class _IsMountedHook extends Hook<IsMounted> {
+  const _IsMountedHook();
+
+  @override
+  _IsMountedHookState createState() => _IsMountedHookState();
+}
+
+class _IsMountedHookState extends HookState<IsMounted, _IsMountedHook> {
+  final _isMounted = IsMounted();
+
+  @override
+  IsMounted build(BuildContext context) => _isMounted;
+
+  @override
+  void dispose() {
+    _isMounted._mounted = false;
+    super.dispose();
+  }
+}
+
+/// Mutable class that holds the current mounted value.
+/// See also:
+///   * The [State.mounted] property
+class IsMounted {
+  bool _mounted = true;
+
+  /// Returns whether or not the state is mounted.
+  bool call() {
+    return _mounted;
+  }
+}
