@@ -170,7 +170,7 @@ Calling them outside of build method leads to an unstable state and is therefore
       return true;
     }
     // is one list is null and the other one isn't, or if they have different size
-    if ((p1 != p2 && (p1 == null || p2 == null)) || p1.length != p2.length) {
+    if (p1 == null || p2 == null || p1.length != p2.length) {
       return false;
     }
 
