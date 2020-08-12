@@ -173,26 +173,18 @@ class _IsMountedHook extends Hook<IsMounted> {
 }
 
 class _IsMountedHookState extends HookState<IsMounted, _IsMountedHook> {
-  final _isMounted = IsMounted();
+  bool _mounted = true;
 
   @override
   IsMounted build(BuildContext context) => _isMounted;
 
+  bool _isMounted() => _mounted;
+
   @override
   void dispose() {
-    _isMounted._mounted = false;
+    _mounted = false;
     super.dispose();
   }
 }
 
-/// Mutable class that holds the current mounted value.
-/// See also:
-///   * The [State.mounted] property
-class IsMounted {
-  bool _mounted = true;
-
-  /// Returns whether or not the state is mounted.
-  bool call() {
-    return _mounted;
-  }
-}
+typedef IsMounted = bool Function();
