@@ -1,3 +1,7 @@
+## 0.13.1
+
+- `useIsMounted` now returns a function instead of a callable class.
+
 ## 0.13.0
 
 - Added `useIsMounted` to determine whether a widget was destroyed or not (thanks to @davidmartos96)
