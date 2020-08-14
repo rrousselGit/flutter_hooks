@@ -16,3 +16,4 @@ part 'tab_controller.dart';
 part 'text_controller.dart';
 part 'focus.dart';
 part 'scroll_controller.dart';
+part 'restoration.dart';

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'star_wars/planet_screen.dart';
 import 'use_effect.dart';
+import 'use_restorable_property.dart';
 import 'use_state.dart';
 import 'use_stream.dart';
 
@@ -36,6 +37,10 @@ class HooksGalleryApp extends StatelessWidget {
           _GalleryItem(
             title: 'Star Wars Planets',
             builder: (context) => PlanetScreen(),
+          ),
+          _GalleryItem(
+            title: 'useRestorationProperty',
+            builder: (context) => RestorablePropertyExample(),
           )
         ]),
       ),
