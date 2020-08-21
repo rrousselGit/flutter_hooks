@@ -151,7 +151,7 @@ how they did it in React: https://medium.com/@ryardley/react-hooks-not-magic-jus
 
 Due to hooks being obtained from their index, some rules must be respected:
 
-### DO always prefer your hooks with `use`:
+### DO always prefix your hooks with `use`:
 
 ```dart
 Widget build(BuildContext context) {
