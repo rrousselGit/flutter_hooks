@@ -62,3 +62,5 @@ linter:
     # Conflicts with disabling `implicit-dynamic`
     avoid_annotating_with_dynamic: false
 
+    # Too verbose
+    diagnostic_describe_all_properties: false

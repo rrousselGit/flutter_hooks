@@ -1216,6 +1216,49 @@ void main() {
     hotReload(tester);
     await tester.pump();
   });
+
+  testWidgets('refreshes identical widgets on hot-reload', (tester) async {
+    var value = 0;
+    final child = HookBuilder(builder: (context) {
+      use(MayHaveChangedOnReassemble());
+
+      return Text('$value', textDirection: TextDirection.ltr);
+    });
+
+    await tester.pumpWidget(child);
+
+    expect(find.text('0'), findsOneWidget);
+
+    value = 1;
+
+    // ignore: unawaited_futures
+    tester.binding.reassembleApplication();
+    await tester.pump();
+
+    expect(find.text('1'), findsOneWidget);
+  });
+}
+
+class MayHaveChangedOnReassemble extends Hook<void> {
+  @override
+  MayHaveChangedOnReassembleState createState() =>
+      MayHaveChangedOnReassembleState();
+}
+
+class MayHaveChangedOnReassembleState
+    extends HookState<void, MayHaveChangedOnReassemble> {
+  @override
+  void reassemble() {
+    markMayNeedRebuild();
+  }
+
+  @override
+  bool shouldRebuild() {
+    return false;
+  }
+
+  @override
+  void build(BuildContext context) {}
 }
 
 class MyHook extends Hook<MyHookState> {
