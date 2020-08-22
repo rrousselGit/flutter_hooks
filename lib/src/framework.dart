@@ -368,6 +368,18 @@ mixin HookElement on ComponentElement {
   }
 
   @override
+  void reassemble() {
+    super.reassemble();
+    _isOptionalRebuild = false;
+    _debugDidReassemble = true;
+    if (_hooks != null) {
+      for (final hook in _hooks) {
+        hook.value.reassemble();
+      }
+    }
+  }
+
+  @override
   Widget build() {
     // Check whether we can cancel the rebuild (caused by HookState.mayNeedRebuild).
     final mustRebuild = _isOptionalRebuild != true ||
@@ -493,17 +505,6 @@ Type mismatch between hooks:
       }
     }
     super.deactivate();
-  }
-
-  @override
-  void reassemble() {
-    super.reassemble();
-    _debugDidReassemble = true;
-    if (_hooks != null) {
-      for (final hook in _hooks) {
-        hook.value.reassemble();
-      }
-    }
   }
 }
 

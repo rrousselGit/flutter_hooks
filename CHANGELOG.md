@@ -1,3 +1,7 @@
+## 0.13.2
+
+- Fixed a bug where on hot-reload, a `HookWidget` could potentailly not rebuild
+
 ## 0.13.1
 
 - `useIsMounted` now returns a function instead of a callable class.
