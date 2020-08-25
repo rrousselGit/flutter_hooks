@@ -1,7 +1,7 @@
 part of 'hooks.dart';
 
 class _TextEditingControllerHookCreator {
-  const _TextEditingControllerHookCreator();
+  _TextEditingControllerHookCreator();
 
   /// Creates a [TextEditingController] that will be disposed automatically.
   ///
@@ -51,7 +51,7 @@ class _TextEditingControllerHookCreator {
 ///
 /// See also:
 /// - [TextEditingController], which this hook creates.
-const useTextEditingController = _TextEditingControllerHookCreator();
+final useTextEditingController = _TextEditingControllerHookCreator();
 
 class _TextEditingControllerHook extends Hook<TextEditingController> {
   const _TextEditingControllerHook(
