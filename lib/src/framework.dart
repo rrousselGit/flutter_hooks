@@ -281,6 +281,12 @@ abstract class HookState<R, T extends Hook<R>> {
       .._isOptionalRebuild = false
       ..markNeedsBuild();
   }
+
+  /// The [diagnosticsProperty] is the default propertity to add to `properties`
+  /// param of the [Element.debugFillProperties].
+  /// If it's null, it will be skipped
+  @visibleForTesting
+  DiagnosticsProperty get diagnosticsProperty => null;
 }
 
 class _Entry<T> extends LinkedListEntry<_Entry<T>> {
@@ -505,6 +511,19 @@ Type mismatch between hooks:
       }
     }
     super.deactivate();
+  }
+
+  /// By default read every [HookState.diagnosticsProperty], and if it's not
+  /// `null`, will be added to [properties]
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    for (final hookState in debugHooks) {
+      final property = hookState.diagnosticsProperty;
+      if (property != null) {
+        properties.add(property);
+      }
+    }
   }
 }
 
