@@ -203,7 +203,7 @@ Calling them outside of build method leads to an unstable state and is therefore
 }
 
 /// The logic and internal state for a [HookWidget]
-abstract class HookState<R, T extends Hook<R>> {
+abstract class HookState<R, T extends Hook<R>> implements Diagnosticable {
   /// Equivalent of [State.context] for [HookState]
   @protected
   BuildContext get context => _element;
@@ -283,6 +283,7 @@ abstract class HookState<R, T extends Hook<R>> {
   }
 
   /// Equivalent of [Element.debugFillProperties] for [HookState]
+  @override
   @mustCallSuper
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {}
 }
