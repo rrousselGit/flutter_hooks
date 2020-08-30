@@ -247,4 +247,10 @@ class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
   void _listener() {
     setState(() {});
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<T>('useState<$T>', _state.value));
+  }
 }
