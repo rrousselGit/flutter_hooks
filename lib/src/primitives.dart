@@ -41,6 +41,12 @@ class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
   T build(BuildContext context) {
     return value;
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<T>('useMemoized<$T>', value));
+  }
 }
 
 /// Watches a value and calls a callback whenever the value changed.
