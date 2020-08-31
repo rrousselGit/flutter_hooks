@@ -507,6 +507,7 @@ Type mismatch between hooks:
     super.deactivate();
   }
 
+  // ignore: comment_references
   /// Add properties [properties] using every [HookState.debugFillProperties]
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
