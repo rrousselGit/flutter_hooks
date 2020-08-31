@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -70,5 +72,31 @@ void main() {
 
     // ignore: invalid_use_of_protected_member
     expect(() => state.hasListeners, throwsFlutterError);
+  });
+
+  testWidgets('debugFillProperties should print state hook ', (tester) async {
+    ValueNotifier<int> state;
+    HookElement element;
+    final hookWidget = HookBuilder(
+      builder: (context) {
+        element = context as HookElement;
+        state = useState(0);
+        return const SizedBox();
+      },
+    );
+    await tester.pumpWidget(hookWidget);
+
+    expect(state.value, 0);
+
+    expect(
+      element
+          .toDiagnosticsNode(style: DiagnosticsTreeStyle.offstage)
+          .toStringDeep(),
+      equalsIgnoringHashCodes(
+        'HookBuilder\n'
+        ' │ useState<int>: 0\n'
+        ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
+      ),
+    );
   });
 }
