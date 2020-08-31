@@ -86,8 +86,6 @@ void main() {
     );
     await tester.pumpWidget(hookWidget);
 
-    expect(state.value, 0);
-
     expect(
       element
           .toDiagnosticsNode(style: DiagnosticsTreeStyle.offstage)
@@ -95,6 +93,21 @@ void main() {
       equalsIgnoringHashCodes(
         'HookBuilder\n'
         ' │ useState<int>: 0\n'
+        ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
+      ),
+    );
+
+    state.value++;
+
+    await tester.pump();
+
+    expect(
+      element
+          .toDiagnosticsNode(style: DiagnosticsTreeStyle.offstage)
+          .toStringDeep(),
+      equalsIgnoringHashCodes(
+        'HookBuilder\n'
+        ' │ useState<int>: 1\n'
         ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
       ),
     );
