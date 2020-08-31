@@ -6,10 +6,13 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 ///
 /// First, instead of a StatefulWidget, use a HookWidget instead!
 
+
+// Create the State
 class State {
   int counter = 0;
 }
 
+// Create the actions you wish to dispatch to the reducer
 class IncrementCounter {
   IncrementCounter({this.counter});
   int counter;
@@ -18,6 +21,7 @@ class IncrementCounter {
 class UseReducerExample extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    // Create the reducer function that will handle the actions you dispatch
     State _reducer(State state, IncrementCounter action) {
       if(action is IncrementCounter) {
         state.counter = state.counter + action.counter;
@@ -25,8 +29,8 @@ class UseReducerExample extends HookWidget {
       return state;
     }
 
-    // Next, invoke the `useState` function with a default value to create a
-    // `counter` variable that contains a `value`. Whenever the value is
+    // Next, invoke the `useReducer` function with the reducer funtion and initial state to create a
+    // `_store` variable that contains the current state and dispatch. Whenever the value is
     // changed, this Widget will be rebuilt!
     final _store = useReducer(
       _reducer,
@@ -42,7 +46,7 @@ class UseReducerExample extends HookWidget {
         child: Text('Button tapped ${_store.state.counter.toString()} times'),
       ),
       floatingActionButton: FloatingActionButton(
-        // When the button is pressed, update the value of the counter! This
+        // When the button is pressed, dispatch the Action you wish to trigger! This
         // will trigger a rebuild, displaying the latest value in the Text
         // Widget above!
         onPressed: () => _store.dispatch(IncrementCounter(counter: 1)),
