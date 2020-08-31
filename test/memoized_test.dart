@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'mock.dart';
@@ -279,6 +282,33 @@ void main() {
     await tester.pumpWidget(const SizedBox());
 
     verifyNoMoreInteractions(valueBuilder);
+  });
+
+  testWidgets('debugFillProperties should print memoized hook ',
+      (tester) async {
+    HookElement element;
+
+    final hookWidget = HookBuilder(
+      builder: (context) {
+        element = context as HookElement;
+        useMemoized<Future<int>>(() => Future.value(10));
+        useMemoized<int>(() => 43);
+        return const SizedBox();
+      },
+    );
+    await tester.pumpWidget(hookWidget);
+
+    expect(
+      element
+          .toDiagnosticsNode(style: DiagnosticsTreeStyle.offstage)
+          .toStringDeep(),
+      equalsIgnoringHashCodes(
+        'HookBuilder\n'
+        " │ useMemoized<Future<int>>: Instance of 'Future<int>'\n"
+        ' │ useMemoized<int>: 43\n'
+        ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
+      ),
+    );
   });
 }
 
