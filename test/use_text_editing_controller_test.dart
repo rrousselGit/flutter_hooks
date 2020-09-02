@@ -62,6 +62,20 @@ void main() {
     expect(controller.text, initialText);
   });
 
+  testWidgets('useTextEditingController throws error on null value',
+      (tester) async {
+    await tester.pumpWidget(HookBuilder(
+      builder: (context) {
+        try {
+          useTextEditingController.fromValue(null);
+        } catch (e) {
+          expect(e, isAssertionError);
+        }
+        return Container();
+      },
+    ));
+  });
+
   testWidgets('respects initial value property', (tester) async {
     final rebuilder = ValueNotifier(0);
     const initialValue = TextEditingValue(
