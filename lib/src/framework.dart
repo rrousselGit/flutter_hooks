@@ -271,6 +271,7 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
         .._shouldRebuildQueue.add(_Entry(shouldRebuild))
         ..markNeedsBuild();
     }
+    assert(_element.dirty, 'Bad state');
   }
 
   /// Equivalent of [State.setState] for [HookState]
@@ -400,6 +401,7 @@ mixin HookElement on ComponentElement {
     try {
       _buildCache = super.build();
     } finally {
+      _isOptionalRebuild = null;
       _unmountAllRemainingHooks();
       HookElement._currentHookElement = null;
       if (_needDispose != null && _needDispose.isNotEmpty) {

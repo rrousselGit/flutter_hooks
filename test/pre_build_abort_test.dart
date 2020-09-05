@@ -6,6 +6,58 @@ import 'package:flutter_test/flutter_test.dart';
 import 'mock.dart';
 
 void main() {
+  testWidgets(
+      'setState during build still cause mayHaveChange to rebuild the element',
+      (tester) async {
+    final number = ValueNotifier(0);
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (c) {
+        final state = useState(false);
+        state.value = true;
+        final isPositive = use(IsPositiveHook(number));
+        return Text('$isPositive', textDirection: TextDirection.ltr);
+      }),
+    );
+
+    expect(find.text('true'), findsOneWidget);
+    expect(find.text('false'), findsNothing);
+
+    number.value = -1;
+    await tester.pump();
+
+    expect(find.text('false'), findsOneWidget);
+    expect(find.text('true'), findsNothing);
+  });
+
+  testWidgets('setState during build still allow mayHaveChange to abort builds',
+      (tester) async {
+    final number = ValueNotifier(0);
+
+    var buildCount = 0;
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (c) {
+        buildCount++;
+        final state = useState(false);
+        state.value = true;
+        final isPositive = use(IsPositiveHook(number));
+        return Text('$isPositive', textDirection: TextDirection.ltr);
+      }),
+    );
+
+    expect(find.text('true'), findsOneWidget);
+    expect(find.text('false'), findsNothing);
+    expect(buildCount, 1);
+
+    number.value = 10;
+    await tester.pump();
+
+    expect(find.text('true'), findsOneWidget);
+    expect(find.text('false'), findsNothing);
+    expect(buildCount, 1);
+  });
+
   testWidgets('shouldRebuild defaults to true', (tester) async {
     MayRebuildState first;
     var buildCount = 0;
