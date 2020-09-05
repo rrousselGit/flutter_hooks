@@ -1,9 +1,6 @@
 ## [Unreleased]
 
-- Fixed a bug where a `useProvider` from riverpod potentially did not rebuild widgets
-
-## 0.13.2
-
+- added all `FocusNode` parameters to `useFocusNode`
 - Fixed a bug where on hot-reload, a `HookWidget` could potentailly not rebuild
 
 ## 0.13.1
