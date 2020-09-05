@@ -6,7 +6,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 ///
 /// First, instead of a StatefulWidget, use a HookWidget instead!
 
-
 // Create the State
 class State {
   int counter = 0;
@@ -23,7 +22,7 @@ class UseReducerExample extends HookWidget {
   Widget build(BuildContext context) {
     // Create the reducer function that will handle the actions you dispatch
     State _reducer(State state, IncrementCounter action) {
-      if(action is IncrementCounter) {
+      if (action is IncrementCounter) {
         state.counter = state.counter + action.counter;
       }
       return state;
@@ -32,10 +31,7 @@ class UseReducerExample extends HookWidget {
     // Next, invoke the `useReducer` function with the reducer funtion and initial state to create a
     // `_store` variable that contains the current state and dispatch. Whenever the value is
     // changed, this Widget will be rebuilt!
-    final _store = useReducer(
-      _reducer,
-      initialState: State()
-    );
+    final _store = useReducer(_reducer, initialState: State());
 
     return Scaffold(
       appBar: AppBar(
