@@ -55,6 +55,15 @@ class _FocusNodeHookState extends HookState<FocusNode, _FocusNodeHook> {
   }
 
   @override
+  void didUpdateHook(_FocusNodeHook oldHook) {
+    _focusNode
+      ..debugLabel = hook.debugLabel
+      ..skipTraversal = hook.skipTraversal
+      ..canRequestFocus = hook.canRequestFocus
+      ..descendantsAreFocusable = hook.descendantsAreFocusable;
+  }
+
+  @override
   FocusNode build(BuildContext context) => _focusNode;
 
   @override
