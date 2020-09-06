@@ -55,4 +55,7 @@ class _ScrollControllerHookState
 
   @override
   void dispose() => controller.dispose();
+
+  @override
+  String get debugLabel => 'useScrollController';
 }

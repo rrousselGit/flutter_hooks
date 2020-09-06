@@ -7,6 +7,34 @@ import 'package:flutter_test/flutter_test.dart';
 import 'mock.dart';
 
 void main() {
+  testWidgets('debugFillProperties', (tester) async {
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        useTextEditingController();
+        return const SizedBox();
+      }),
+    );
+
+    await tester.pump();
+
+    final element = tester.element(find.byType(HookBuilder));
+
+    expect(
+      element
+          .toDiagnosticsNode(style: DiagnosticsTreeStyle.offstage)
+          .toStringDeep(),
+      equalsIgnoringHashCodes(
+        'HookBuilder\n'
+        ' │ useTextEditingController:\n'
+        ' │   TextEditingController#00000(TextEditingValue(text: ┤├,\n'
+        ' │   selection: TextSelection(baseOffset: -1, extentOffset: -1,\n'
+        ' │   affinity: TextAffinity.downstream, isDirectional: false),\n'
+        ' │   composing: TextRange(start: -1, end: -1)))\n'
+        ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
+      ),
+    );
+  });
+
   testWidgets('useTextEditingController returns a controller', (tester) async {
     final rebuilder = ValueNotifier(0);
     TextEditingController controller;

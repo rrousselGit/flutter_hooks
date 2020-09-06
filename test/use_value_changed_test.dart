@@ -1,9 +1,40 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'mock.dart';
 
 void main() {
+  testWidgets('diagnostics', (tester) async {
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        useValueChanged<int, int>(0, (_, __) => 21);
+        return const SizedBox();
+      }),
+    );
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        useValueChanged<int, int>(42, (_, __) => 21);
+        return const SizedBox();
+      }),
+    );
+
+    final element = tester.element(find.byType(HookBuilder));
+
+    expect(
+      element
+          .toDiagnosticsNode(style: DiagnosticsTreeStyle.offstage)
+          .toStringDeep(),
+      equalsIgnoringHashCodes(
+        'HookBuilder\n'
+        ' │ useValueChanged: _ValueChangedHookState<int, int>#00000(21,\n'
+        ' │   value: 42, result: 21)\n'
+        ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
+      ),
+    );
+  });
+
   testWidgets('useValueChanged basic', (tester) async {
     var value = 42;
     final _useValueChanged = MockValueChanged();
