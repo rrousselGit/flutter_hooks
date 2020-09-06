@@ -55,4 +55,7 @@ class _TabControllerHookState
 
   @override
   void dispose() => controller?.dispose();
+
+  @override
+  String get debugLabel => 'useTabController';
 }

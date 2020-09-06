@@ -127,7 +127,7 @@ R use<R>(Hook<R> hook) => Hook.use(hook);
 /// In fact this has secondary bonus: `duration` is kept updated with the latest value.
 /// If we were to pass a variable as `duration` instead of a constant, then on value change the [AnimationController] will be updated.
 @immutable
-abstract class Hook<R> {
+abstract class Hook<R> with Diagnosticable {
   /// Allows subclasses to have a `const` constructor
   const Hook({this.keys});
 
@@ -209,6 +209,22 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   BuildContext get context => _element;
   HookElement _element;
 
+  R _debugLastBuiltValue;
+
+  /// The value shown in the devtool.
+  ///
+  /// Defaults to the last value returned by [build].
+  Object get debugValue => _debugLastBuiltValue;
+
+  /// A flag to not show [debugValue] in the devtool, for hooks that returns nothing.
+  bool get debugSkipValue => false;
+
+  /// A label used by the devtool to show the state of a hook
+  String get debugLabel => null;
+
+  /// Whether the devtool description should skip [debugFillProperties] or not.
+  bool get debugHasShortDescription => true;
+
   /// Equivalent of [State.widget] for [HookState]
   T get hook => _hook;
   T _hook;
@@ -281,6 +297,16 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
     _element
       .._isOptionalRebuild = false
       ..markNeedsBuild();
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    final value = debugValue;
+    if (value != this) {
+      properties.add(DiagnosticsProperty(null, value));
+    }
+    hook.debugFillProperties(properties);
   }
 }
 
@@ -447,6 +473,10 @@ Type mismatch between hooks:
     }
 
     final result = _currentHookState.value.build(this) as R;
+    assert(() {
+      _currentHookState.value._debugLastBuiltValue = result;
+      return true;
+    }(), '');
     _currentHookState = _currentHookState.next;
     return result;
   }
@@ -509,13 +539,28 @@ Type mismatch between hooks:
     super.deactivate();
   }
 
-  // ignore: comment_references
-  /// Add properties [properties] using every [HookState.debugFillProperties]
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     for (final hookState in debugHooks) {
-      hookState.debugFillProperties(properties);
+      if (hookState.debugHasShortDescription) {
+        if (hookState.debugSkipValue) {
+          properties.add(
+            StringProperty(hookState.debugLabel, '', ifEmpty: ''),
+          );
+        } else {
+          properties.add(
+            DiagnosticsProperty<dynamic>(
+              hookState.debugLabel,
+              hookState.debugValue,
+            ),
+          );
+        }
+      } else {
+        properties.add(
+          DiagnosticsProperty(hookState.debugLabel, hookState),
+        );
+      }
     }
   }
 }

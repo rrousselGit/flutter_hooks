@@ -6,8 +6,25 @@ part of 'hooks.dart';
 ///   * [Animation]
 ///   * [useValueListenable], [useListenable], [useStream]
 T useAnimation<T>(Animation<T> animation) {
-  useListenable(animation);
+  use(_UseAnimationHook(animation));
   return animation.value;
+}
+
+class _UseAnimationHook extends _ListenableHook {
+  const _UseAnimationHook(Animation animation) : super(animation);
+
+  @override
+  _UseAnimationStateHook createState() {
+    return _UseAnimationStateHook();
+  }
+}
+
+class _UseAnimationStateHook extends _ListenableStateHook {
+  @override
+  String get debugLabel => 'useAnimation';
+
+  @override
+  Object get debugValue => (hook.listenable as Animation).value;
 }
 
 /// Creates an [AnimationController] automatically disposed.
@@ -72,6 +89,12 @@ class _AnimationControllerHook extends Hook<AnimationController> {
   @override
   _AnimationControllerHookState createState() =>
       _AnimationControllerHookState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty('duration', duration));
+  }
 }
 
 class _AnimationControllerHookState
@@ -113,6 +136,12 @@ class _AnimationControllerHookState
   void dispose() {
     _animationController.dispose();
   }
+
+  @override
+  bool get debugHasShortDescription => false;
+
+  @override
+  String get debugLabel => 'useAnimationController';
 }
 
 /// Creates a single usage [TickerProvider].
@@ -176,4 +205,10 @@ class _TickerProviderHookState
     }
     return this;
   }
+
+  @override
+  String get debugLabel => 'useSingleTickerProvider';
+
+  @override
+  bool get debugSkipValue => true;
 }
