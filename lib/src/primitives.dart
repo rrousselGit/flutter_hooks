@@ -107,9 +107,6 @@ class _ValueChangedHookState<T, R>
   bool get debugHasShortDescription => false;
 
   @override
-  bool get debugSkipValue => true;
-
-  @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(DiagnosticsProperty('value', hook.value));
