@@ -68,4 +68,7 @@ class _FocusNodeHookState extends HookState<FocusNode, _FocusNodeHook> {
 
   @override
   void dispose() => _focusNode?.dispose();
+
+  @override
+  String get debugLabel => 'useFocusNode';
 }

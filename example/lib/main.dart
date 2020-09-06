@@ -1,5 +1,6 @@
 // ignore_for_file: omit_local_variable_types
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'star_wars/planet_screen.dart';
 import 'use_effect.dart';
@@ -11,9 +12,10 @@ void main() => runApp(HooksGalleryApp());
 /// An App that demonstrates how to use hooks. It includes examples that cover
 /// the hooks provided by this library as well as examples that demonstrate
 /// how to write custom hooks.
-class HooksGalleryApp extends StatelessWidget {
+class HooksGalleryApp extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    useAnimationController(duration: const Duration(seconds: 2));
     return MaterialApp(
       title: 'Flutter Hooks Gallery',
       home: Scaffold(

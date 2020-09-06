@@ -1,9 +1,32 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'mock.dart';
 
 void main() {
+  testWidgets('diagnostics', (tester) async {
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        useValueListenable(ValueNotifier(0));
+        return const SizedBox();
+      }),
+    );
+
+    final element = tester.element(find.byType(HookBuilder));
+
+    expect(
+      element
+          .toDiagnosticsNode(style: DiagnosticsTreeStyle.offstage)
+          .toStringDeep(),
+      equalsIgnoringHashCodes(
+        'HookBuilder\n'
+        ' │ useValueListenable: 0\n'
+        ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
+      ),
+    );
+  });
+
   testWidgets('useValueListenable throws with null', (tester) async {
     await tester.pumpWidget(
       HookBuilder(
