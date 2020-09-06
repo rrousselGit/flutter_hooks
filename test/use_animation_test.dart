@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -13,6 +14,28 @@ void main() {
     ));
 
     expect(tester.takeException(), isAssertionError);
+  });
+
+  testWidgets('debugFillProperties', (tester) async {
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        useAnimation(const AlwaysStoppedAnimation(42));
+        return const SizedBox();
+      }),
+    );
+
+    final element = tester.element(find.byType(HookBuilder));
+
+    expect(
+      element
+          .toDiagnosticsNode(style: DiagnosticsTreeStyle.offstage)
+          .toStringDeep(),
+      equalsIgnoringHashCodes(
+        'HookBuilder\n'
+        ' │ useAnimation: 42\n'
+        ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
+      ),
+    );
   });
 
   testWidgets('useAnimation', (tester) async {

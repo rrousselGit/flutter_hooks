@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,6 +8,28 @@ import 'package:flutter_hooks/src/hooks.dart';
 import 'mock.dart';
 
 void main() {
+  testWidgets('debugFillProperties', (tester) async {
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        useScrollController();
+        return const SizedBox();
+      }),
+    );
+
+    final element = tester.element(find.byType(HookBuilder));
+
+    expect(
+      element
+          .toDiagnosticsNode(style: DiagnosticsTreeStyle.offstage)
+          .toStringDeep(),
+      equalsIgnoringHashCodes(
+        'HookBuilder\n'
+        ' │ useScrollController: ScrollController#00000(no clients)\n'
+        ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
+      ),
+    );
+  });
+
   group('useScrollController', () {
     testWidgets('initial values matches with real constructor', (tester) async {
       ScrollController controller;

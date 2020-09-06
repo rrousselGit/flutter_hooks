@@ -2,6 +2,8 @@
 
 - added all `FocusNode` parameters to `useFocusNode`
 - Fixed a bug where on hot-reload, a `HookWidget` could potentailly not rebuild
+- Allow hooks to integrate with the devtool using the `Diagnosticable` API, and
+  implement it for all built-in hooks.
 
 ## 0.13.1
 

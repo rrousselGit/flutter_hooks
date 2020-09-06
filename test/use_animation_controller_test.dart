@@ -1,4 +1,4 @@
-import 'package:flutter/scheduler.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -29,6 +29,38 @@ void main() {
 
     // dispose
     await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('diagnostics', (tester) async {
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        useAnimationController(
+          animationBehavior: AnimationBehavior.preserve,
+          duration: const Duration(seconds: 1),
+          initialValue: 42,
+          lowerBound: 24,
+          upperBound: 84,
+          debugLabel: 'Foo',
+        );
+        return const SizedBox();
+      }),
+    );
+
+    final element = tester.element(find.byType(HookBuilder));
+
+    expect(
+      element
+          .toDiagnosticsNode(style: DiagnosticsTreeStyle.offstage)
+          .toStringDeep(),
+      equalsIgnoringHashCodes(
+        'HookBuilder\n'
+        ' │ useSingleTickerProvider\n'
+        ' │ useAnimationController:\n'
+        ' │   _AnimationControllerHookState#00000(AnimationController#00000(▶\n'
+        ' │   42.000; paused; for Foo), duration: 0:00:01.000000)\n'
+        ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
+      ),
+    );
   });
 
   testWidgets('useAnimationController complex', (tester) async {

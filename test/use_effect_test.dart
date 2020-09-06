@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -21,6 +22,31 @@ void main() {
     reset(unrelated);
     reset(effect);
   });
+
+  testWidgets('debugFillProperties', (tester) async {
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        useEffect(() {
+          return null;
+        }, []);
+        return const SizedBox();
+      }),
+    );
+
+    final element = tester.element(find.byType(HookBuilder));
+
+    expect(
+      element
+          .toDiagnosticsNode(style: DiagnosticsTreeStyle.offstage)
+          .toStringDeep(),
+      equalsIgnoringHashCodes(
+        'HookBuilder\n'
+        ' │ useEffect\n'
+        ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
+      ),
+    );
+  });
+
   testWidgets('useEffect null callback throws', (tester) async {
     await tester.pumpWidget(
       HookBuilder(builder: (c) {

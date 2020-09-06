@@ -6,7 +6,25 @@ part of 'hooks.dart';
 ///   * [ValueListenable], the created object
 ///   * [useListenable]
 T useValueListenable<T>(ValueListenable<T> valueListenable) {
-  return useListenable(valueListenable).value;
+  use(_UseValueListenableHook(valueListenable));
+  return valueListenable.value;
+}
+
+class _UseValueListenableHook extends _ListenableHook {
+  const _UseValueListenableHook(ValueListenable animation) : super(animation);
+
+  @override
+  _UseValueListenableStateHook createState() {
+    return _UseValueListenableStateHook();
+  }
+}
+
+class _UseValueListenableStateHook extends _ListenableStateHook {
+  @override
+  String get debugLabel => 'useValueListenable';
+
+  @override
+  Object get debugValue => (hook.listenable as ValueListenable).value;
 }
 
 /// Subscribes to a [Listenable] and mark the widget as needing build
@@ -57,6 +75,12 @@ class _ListenableStateHook extends HookState<void, _ListenableHook> {
   void dispose() {
     hook.listenable.removeListener(_listener);
   }
+
+  @override
+  String get debugLabel => 'useListenable';
+
+  @override
+  Object get debugValue => hook.listenable;
 }
 
 /// Creates a [ValueNotifier] automatically disposed.
@@ -103,4 +127,7 @@ class _UseValueNotiferHookState<T>
   void dispose() {
     notifier.dispose();
   }
+
+  @override
+  String get debugLabel => 'useValueNotifier';
 }

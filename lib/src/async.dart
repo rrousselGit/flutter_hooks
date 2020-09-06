@@ -91,6 +91,12 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
   AsyncSnapshot<T> build(BuildContext context) {
     return _snapshot;
   }
+
+  @override
+  String get debugLabel => 'useFuture';
+
+  @override
+  Object get debugValue => _snapshot;
 }
 
 /// Subscribes to a [Stream] and return its current state in an [AsyncSnapshot].
@@ -201,6 +207,9 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
 
   AsyncSnapshot<T> afterDisconnected(AsyncSnapshot<T> current) =>
       current.inState(ConnectionState.none);
+
+  @override
+  String get debugLabel => 'useStream';
 }
 
 /// Creates a [StreamController] automatically disposed.
@@ -269,4 +278,7 @@ class _StreamControllerHookState<T>
   void dispose() {
     _controller.close();
   }
+
+  @override
+  String get debugLabel => 'useStreamController';
 }

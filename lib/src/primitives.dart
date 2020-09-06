@@ -41,6 +41,9 @@ class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
   T build(BuildContext context) {
     return value;
   }
+
+  @override
+  String get debugLabel => 'useMemoized<$T>';
 }
 
 /// Watches a value and calls a callback whenever the value changed.
@@ -95,6 +98,19 @@ class _ValueChangedHookState<T, R>
   @override
   R build(BuildContext context) {
     return _result;
+  }
+
+  @override
+  String get debugLabel => 'useValueChanged';
+
+  @override
+  bool get debugHasShortDescription => false;
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty('value', hook.value));
+    properties.add(DiagnosticsProperty('result', _result));
   }
 }
 
@@ -176,6 +192,12 @@ class _EffectHookState extends HookState<void, _EffectHook> {
   void scheduleEffect() {
     disposer = hook.effect();
   }
+
+  @override
+  String get debugLabel => 'useEffect';
+
+  @override
+  bool get debugSkipValue => true;
 }
 
 /// Create variable and subscribes to it.
@@ -241,4 +263,10 @@ class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
   void _listener() {
     setState(() {});
   }
+
+  @override
+  Object get debugValue => _state.value;
+
+  @override
+  String get debugLabel => 'useState<$T>';
 }

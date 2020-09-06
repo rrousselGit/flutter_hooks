@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'mock.dart';
@@ -279,6 +280,30 @@ void main() {
     await tester.pumpWidget(const SizedBox());
 
     verifyNoMoreInteractions(valueBuilder);
+  });
+
+  testWidgets('debugFillProperties', (tester) async {
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        useMemoized<Future<int>>(() => Future.value(10));
+        useMemoized<int>(() => 43);
+        return const SizedBox();
+      }),
+    );
+
+    final element = tester.element(find.byType(HookBuilder));
+
+    expect(
+      element
+          .toDiagnosticsNode(style: DiagnosticsTreeStyle.offstage)
+          .toStringDeep(),
+      equalsIgnoringHashCodes(
+        'HookBuilder\n'
+        " │ useMemoized<Future<int>>: Instance of 'Future<int>'\n"
+        ' │ useMemoized<int>: 43\n'
+        ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
+      ),
+    );
   });
 }
 

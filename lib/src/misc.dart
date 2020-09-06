@@ -38,8 +38,13 @@ Store<State, Action> useReducer<State extends Object, Action>(
   State initialState,
   Action initialAction,
 }) {
-  return use(_ReducerdHook(reducer,
-      initialAction: initialAction, initialState: initialState));
+  return use(
+    _ReducerdHook(
+      reducer,
+      initialAction: initialAction,
+      initialState: initialState,
+    ),
+  );
 }
 
 class _ReducerdHook<State, Action> extends Hook<Store<State, Action>> {
@@ -82,6 +87,12 @@ class _ReducerdHookState<State, Action>
   Store<State, Action> build(BuildContext context) {
     return this;
   }
+
+  @override
+  String get debugLabel => 'useReducer';
+
+  @override
+  Object get debugValue => state;
 }
 
 /// Returns the previous argument called to [usePrevious].
@@ -108,6 +119,12 @@ class _PreviousHookState<T> extends HookState<T, _PreviousHook<T>> {
 
   @override
   T build(BuildContext context) => previous;
+
+  @override
+  String get debugLabel => 'usePrevious';
+
+  @override
+  Object get debugValue => previous;
 }
 
 /// Runs the callback on every hot reload
@@ -142,6 +159,12 @@ class _ReassembleHookState extends HookState<void, _ReassembleHook> {
 
   @override
   void build(BuildContext context) {}
+
+  @override
+  String get debugLabel => 'useReassemble';
+
+  @override
+  bool get debugSkipValue => true;
 }
 
 /// Returns an [IsMounted] object that you can use
@@ -185,6 +208,12 @@ class _IsMountedHookState extends HookState<IsMounted, _IsMountedHook> {
     _mounted = false;
     super.dispose();
   }
+
+  @override
+  String get debugLabel => 'useIsMounted';
+
+  @override
+  Object get debugValue => _mounted;
 }
 
 typedef IsMounted = bool Function();
