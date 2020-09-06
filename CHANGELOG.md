@@ -1,4 +1,4 @@
-## [Unreleased]
+## [0.14.0]
 
 - added all `FocusNode` parameters to `useFocusNode`
 - Fixed a bug where on hot-reload, a `HookWidget` could potentailly not rebuild
