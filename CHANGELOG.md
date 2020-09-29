@@ -1,4 +1,11 @@
-## [0.14.0]
+## 0.14.1
+
+- Increased the minimum version of the Flutter SDK required to match changes on
+  `useFocusNode`
+
+  The minimum required is now 1.20.0 (the stable channel is at 1.20.4)
+
+## 0.14.0
 
 - added all `FocusNode` parameters to `useFocusNode`
 - Fixed a bug where on hot-reload, a `HookWidget` could potentailly not rebuild
