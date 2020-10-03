@@ -11,13 +11,17 @@ jobs:
   flutter:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        channel:
+          - dev
+          - stable
+
     steps:
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v1
         with:
-          channel:
-            - dev
-            - stable
+          channel: ${{ matrix.channel }}
 
       - name: Install dependencies
         run: flutter pub get
