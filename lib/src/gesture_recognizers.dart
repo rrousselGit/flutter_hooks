@@ -24,7 +24,7 @@ class _GestureRecognizerHookState<G extends GestureRecognizer>
   void dispose() => recognizer?.dispose();
 
   @override
-  String get debugLabel => 'use${G.runtimeType}';
+  String get debugLabel => 'use$G';
 }
 
 /// Creates and disposes a [TapGestureRecognizer].
