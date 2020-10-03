@@ -73,9 +73,12 @@ void main() {
     ));
 
     final animationController = AnimationController(
-        vsync: provider, duration: const Duration(seconds: 1));
+      vsync: provider,
+      duration: const Duration(seconds: 1),
+    );
 
     try {
+      // ignore: unawaited_futures
       animationController.forward();
 
       await tester.pumpWidget(const SizedBox());
