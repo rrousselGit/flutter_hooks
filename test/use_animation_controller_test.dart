@@ -92,6 +92,7 @@ void main() {
     verifyNoMoreInteractions(provider);
 
     // check has a ticker
+    // ignore: unawaited_futures
     controller.forward();
     expect(controller.duration, const Duration(seconds: 1));
     expect(controller.lowerBound, 24);
