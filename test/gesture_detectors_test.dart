@@ -7,15 +7,12 @@ import 'package:flutter_hooks/src/hooks.dart';
 
 import 'mock.dart';
 
-void _testGestureRecognizer<T>({
-  Type gestureRecognizer,
-  T Function() useHook,
-}) {
-  group('use$gestureRecognizer', () {
+void main() {
+  group('useTapGestureRecognizer', () {
     testWidgets('debugFillProperties', (tester) async {
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
-          useHook();
+          useTapGestureRecognizer();
           return const SizedBox();
         }),
       );
@@ -30,40 +27,60 @@ void _testGestureRecognizer<T>({
             .toStringDeep(),
         equalsIgnoringHashCodes(
           'HookBuilder\n'
-          ' │ use$T: $T#00000\n'
+          ' │ useTapGestureRecognizer: TapGestureRecognizer#00000\n'
           ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
         ),
       );
     });
 
-    testWidgets("returns a $T that doesn't change", (tester) async {
-      T recognizer;
-      T recognizer2;
+    testWidgets("returns a TapGestureRecognizer that doesn't change",
+        (tester) async {
+      TapGestureRecognizer recognizer;
+      TapGestureRecognizer recognizer2;
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
-          recognizer = useHook();
+          recognizer = useTapGestureRecognizer();
           return const SizedBox();
         }),
       );
 
-      expect(recognizer, isA<T>());
+      expect(recognizer, isA<TapGestureRecognizer>());
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
-          recognizer2 = useHook();
+          recognizer2 = useTapGestureRecognizer();
           return const SizedBox();
         }),
       );
 
       expect(identical(recognizer, recognizer2), isTrue);
     });
-  });
-}
 
-void main() {
-  _testGestureRecognizer(
-    gestureRecognizer: TapGestureRecognizer,
-    useHook: useTapGestureRecognizer,
-  );
+    testWidgets('works in RichText for onTap', (tester) async {
+      var tapped = false;
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: HookBuilder(
+            builder: (context) {
+              final tapRecognizer = useTapGestureRecognizer()
+                ..onTap = () => tapped = true;
+
+              return Text.rich(TextSpan(
+                text: 'This is some tappable test content.',
+                recognizer: tapRecognizer,
+              ));
+            },
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(RichText));
+      await tester.pump();
+
+      expect(tapped, true);
+    });
+  });
 }
