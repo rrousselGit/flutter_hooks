@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
 export 'package:flutter_test/flutter_test.dart'
-    hide Func0, Func1, Func2, Func3, Func4, Func5, Func6;
+    hide Func0, Func1, Func2, Func3, Func4, Func5, Func6, Fake;
 export 'package:mockito/mockito.dart';
 
 class HookTest<R> extends Hook<R> {
