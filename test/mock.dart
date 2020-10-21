@@ -6,7 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
 export 'package:flutter_test/flutter_test.dart'
-    // ignore: undefined_hidden_name, Fake is only available in master
     hide
         Func0,
         Func1,
@@ -15,6 +14,7 @@ export 'package:flutter_test/flutter_test.dart'
         Func4,
         Func5,
         Func6,
+        // ignore: undefined_hidden_name, Fake is only available in master
         Fake;
 export 'package:mockito/mockito.dart';
 
