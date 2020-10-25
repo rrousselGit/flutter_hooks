@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_hooks/src/framework.dart';
 import 'package:flutter_hooks/src/hooks.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 import 'mock.dart';
 
@@ -47,8 +47,7 @@ void main() {
       expect(controller.keepPage, controller2.keepPage);
       expect(controller.viewportFraction, controller2.viewportFraction);
     });
-    testWidgets("returns a PageController that doesn't change",
-        (tester) async {
+    testWidgets("returns a PageController that doesn't change", (tester) async {
       PageController controller;
       PageController controller2;
 
@@ -71,8 +70,7 @@ void main() {
       expect(identical(controller, controller2), isTrue);
     });
 
-    testWidgets('passes hook parameters to the PageController',
-        (tester) async {
+    testWidgets('passes hook parameters to the PageController', (tester) async {
       PageController controller;
 
       await tester.pumpWidget(
