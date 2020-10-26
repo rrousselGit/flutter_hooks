@@ -90,5 +90,27 @@ void main() {
       expect(controller.keepPage, false);
       expect(controller.viewportFraction, 3.4);
     });
+
+    testWidgets('disposes the PageController on unmount', (tester) async {
+      PageController controller;
+
+      await tester.pumpWidget(
+        HookBuilder(
+          builder: (context) {
+            controller = usePageController();
+            return Container();
+          },
+        ),
+      );
+
+      // pump another widget so that the old one gets disposed
+      await tester.pumpWidget(Container());
+
+      expect(
+        () => controller.addListener(null),
+        throwsA(isFlutterError.having(
+            (e) => e.message, 'message', contains('disposed'))),
+      );
+    });
   });
 }
