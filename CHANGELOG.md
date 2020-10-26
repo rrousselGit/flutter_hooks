@@ -1,3 +1,7 @@
+## 0.15.0
+
+- Added `usePageController` to create a `PageController`
+
 ## 0.14.1
 
 - Increased the minimum version of the Flutter SDK required to match changes on
