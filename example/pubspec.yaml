@@ -1,13 +1,14 @@
 name: flutter_hooks_gallery
 description: A new Flutter project.
 
+publish_to: none
 version: 1.0.0+1
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
-  built_collection: '>=2.0.0 <5.0.0'
+  built_collection: ">=2.0.0 <5.0.0"
   built_value: ^6.0.0
   flutter:
     sdk: flutter
