@@ -4,8 +4,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Widget build(int value) => HookBuilder(
-      builder: (context) =>
-          Text(usePrevious(value).toString(), textDirection: TextDirection.ltr),
+      builder: (context, h) => Text(h.usePrevious(value).toString(),
+          textDirection: TextDirection.ltr),
     );
 void main() {
   group('usePrevious', () {
@@ -34,15 +34,15 @@ void main() {
 
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        usePrevious(42);
+      HookBuilder(builder: (context, h) {
+        h.usePrevious(42);
         return const SizedBox();
       }),
     );
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        usePrevious(21);
+      HookBuilder(builder: (context, h) {
+        h.usePrevious(21);
         return const SizedBox();
       }),
     );

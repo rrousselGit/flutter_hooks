@@ -8,8 +8,8 @@ import 'mock.dart';
 void main() {
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useSingleTickerProvider();
+      HookBuilder(builder: (context, h) {
+        h.useSingleTickerProvider();
         return const SizedBox();
       }),
     );
@@ -35,8 +35,8 @@ void main() {
 
     await tester.pumpWidget(TickerMode(
       enabled: true,
-      child: HookBuilder(builder: (context) {
-        provider = useSingleTickerProvider();
+      child: HookBuilder(builder: (context, h) {
+        provider = h.useSingleTickerProvider();
         return Container();
       }),
     ));
@@ -53,8 +53,8 @@ void main() {
   });
 
   testWidgets('useSingleTickerProvider unused', (tester) async {
-    await tester.pumpWidget(HookBuilder(builder: (context) {
-      useSingleTickerProvider();
+    await tester.pumpWidget(HookBuilder(builder: (context, h) {
+      h.useSingleTickerProvider();
       return Container();
     }));
 
@@ -66,8 +66,8 @@ void main() {
 
     await tester.pumpWidget(TickerMode(
       enabled: true,
-      child: HookBuilder(builder: (context) {
-        provider = useSingleTickerProvider();
+      child: HookBuilder(builder: (context, h) {
+        provider = h.useSingleTickerProvider();
         return Container();
       }),
     ));
@@ -93,16 +93,16 @@ void main() {
     TickerProvider provider;
     List<Object> keys;
 
-    await tester.pumpWidget(HookBuilder(builder: (context) {
-      provider = useSingleTickerProvider(keys: keys);
+    await tester.pumpWidget(HookBuilder(builder: (context, h) {
+      provider = h.useSingleTickerProvider(keys: keys);
       return Container();
     }));
 
     final previousProvider = provider;
     keys = [];
 
-    await tester.pumpWidget(HookBuilder(builder: (context) {
-      provider = useSingleTickerProvider(keys: keys);
+    await tester.pumpWidget(HookBuilder(builder: (context, h) {
+      provider = h.useSingleTickerProvider(keys: keys);
       return Container();
     }));
 

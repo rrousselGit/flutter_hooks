@@ -8,8 +8,8 @@ void main() {
   testWidgets('useListenable throws with null', (tester) async {
     await tester.pumpWidget(
       HookBuilder(
-        builder: (context) {
-          useListenable(null);
+        builder: (context, h) {
+          h.useListenable(null);
           return Container();
         },
       ),
@@ -20,8 +20,8 @@ void main() {
 
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useListenable(const AlwaysStoppedAnimation(42));
+      HookBuilder(builder: (context, h) {
+        h.useListenable(const AlwaysStoppedAnimation(42));
         return const SizedBox();
       }),
     );
@@ -45,8 +45,8 @@ void main() {
 
     Future<void> pump() {
       return tester.pumpWidget(HookBuilder(
-        builder: (context) {
-          useListenable(listenable);
+        builder: (context, h) {
+          h.useListenable(listenable);
           return Container();
         },
       ));

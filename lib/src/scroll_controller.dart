@@ -1,23 +1,25 @@
 part of 'hooks.dart';
 
-/// Creates and disposes a [ScrollController].
-///
-/// See also:
-/// - [ScrollController]
-ScrollController useScrollController({
-  double initialScrollOffset = 0.0,
-  bool keepScrollOffset = true,
-  String debugLabel,
-  List<Object> keys,
-}) {
-  return use(
-    _ScrollControllerHook(
-      initialScrollOffset: initialScrollOffset,
-      keepScrollOffset: keepScrollOffset,
-      debugLabel: debugLabel,
-      keys: keys,
-    ),
-  );
+extension UseScrollControllerHook on Hookable {
+  /// Creates and disposes a [ScrollController].
+  ///
+  /// See also:
+  /// - [ScrollController]
+  ScrollController useScrollController({
+    double initialScrollOffset = 0.0,
+    bool keepScrollOffset = true,
+    String debugLabel,
+    List<Object> keys,
+  }) {
+    return use(
+      _ScrollControllerHook(
+        initialScrollOffset: initialScrollOffset,
+        keepScrollOffset: keepScrollOffset,
+        debugLabel: debugLabel,
+        keys: keys,
+      ),
+    );
+  }
 }
 
 class _ScrollControllerHook extends Hook<ScrollController> {

@@ -1,13 +1,15 @@
 part of 'hooks.dart';
 
-/// Subscribes to an [Animation] and return its value.
-///
-/// See also:
-///   * [Animation]
-///   * [useValueListenable], [useListenable], [useStream]
-T useAnimation<T>(Animation<T> animation) {
-  use(_UseAnimationHook(animation));
-  return animation.value;
+extension UseAnimationHook on Hookable {
+  /// Subscribes to an [Animation] and return its value.
+  ///
+  /// See also:
+  ///   * [Animation]
+  ///   * [useValueListenable], [useListenable], [useStream]
+  T useAnimation<T>(Animation<T> animation) {
+    use(_UseAnimationHook(animation));
+    return animation.value;
+  }
 }
 
 class _UseAnimationHook extends _ListenableHook {
@@ -27,43 +29,45 @@ class _UseAnimationStateHook extends _ListenableStateHook {
   Object get debugValue => (hook.listenable as Animation).value;
 }
 
-/// Creates an [AnimationController] automatically disposed.
-///
-/// If no [vsync] is provided, the [TickerProvider] is implicitly obtained using [useSingleTickerProvider].
-/// If a [vsync] is specified, changing the instance of [vsync] will result in a call to [AnimationController.resync].
-/// It is not possible to switch between implicit and explicit [vsync].
-///
-/// Changing the [duration] parameter automatically updates [AnimationController.duration].
-///
-/// [initialValue], [lowerBound], [upperBound] and [debugLabel] are ignored after the first call.
-///
-/// See also:
-///   * [AnimationController], the created object.
-///   * [useAnimation], to listen to the created [AnimationController].
-AnimationController useAnimationController({
-  Duration duration,
-  String debugLabel,
-  double initialValue = 0,
-  double lowerBound = 0,
-  double upperBound = 1,
-  TickerProvider vsync,
-  AnimationBehavior animationBehavior = AnimationBehavior.normal,
-  List<Object> keys,
-}) {
-  vsync ??= useSingleTickerProvider(keys: keys);
+extension UseAnimationControllerHook on Hookable {
+  /// Creates an [AnimationController] automatically disposed.
+  ///
+  /// If no [vsync] is provided, the [TickerProvider] is implicitly obtained using [useSingleTickerProvider].
+  /// If a [vsync] is specified, changing the instance of [vsync] will result in a call to [AnimationController.resync].
+  /// It is not possible to switch between implicit and explicit [vsync].
+  ///
+  /// Changing the [duration] parameter automatically updates [AnimationController.duration].
+  ///
+  /// [initialValue], [lowerBound], [upperBound] and [debugLabel] are ignored after the first call.
+  ///
+  /// See also:
+  ///   * [AnimationController], the created object.
+  ///   * [useAnimation], to listen to the created [AnimationController].
+  AnimationController useAnimationController({
+    Duration duration,
+    String debugLabel,
+    double initialValue = 0,
+    double lowerBound = 0,
+    double upperBound = 1,
+    TickerProvider vsync,
+    AnimationBehavior animationBehavior = AnimationBehavior.normal,
+    List<Object> keys,
+  }) {
+    vsync ??= useSingleTickerProvider(keys: keys);
 
-  return use(
-    _AnimationControllerHook(
-      duration: duration,
-      debugLabel: debugLabel,
-      initialValue: initialValue,
-      lowerBound: lowerBound,
-      upperBound: upperBound,
-      vsync: vsync,
-      animationBehavior: animationBehavior,
-      keys: keys,
-    ),
-  );
+    return use(
+      _AnimationControllerHook(
+        duration: duration,
+        debugLabel: debugLabel,
+        initialValue: initialValue,
+        lowerBound: lowerBound,
+        upperBound: upperBound,
+        vsync: vsync,
+        animationBehavior: animationBehavior,
+        keys: keys,
+      ),
+    );
+  }
 }
 
 class _AnimationControllerHook extends Hook<AnimationController> {
@@ -144,16 +148,18 @@ class _AnimationControllerHookState
   String get debugLabel => 'useAnimationController';
 }
 
-/// Creates a single usage [TickerProvider].
-///
-/// See also:
-///  * [SingleTickerProviderStateMixin]
-TickerProvider useSingleTickerProvider({List<Object> keys}) {
-  return use(
-    keys != null
-        ? _SingleTickerProviderHook(keys)
-        : const _SingleTickerProviderHook(),
-  );
+extension UseSingleTickerProviderHook on Hookable {
+  /// Creates a single usage [TickerProvider].
+  ///
+  /// See also:
+  ///  * [SingleTickerProviderStateMixin]
+  TickerProvider useSingleTickerProvider({List<Object> keys}) {
+    return use(
+      keys != null
+          ? _SingleTickerProviderHook(keys)
+          : const _SingleTickerProviderHook(),
+    );
+  }
 }
 
 class _SingleTickerProviderHook extends Hook<TickerProvider> {

@@ -7,8 +7,8 @@ import 'mock.dart';
 void main() {
   testWidgets('diagnostics', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useValueListenable(ValueNotifier(0));
+      HookBuilder(builder: (context, h) {
+        h.useValueListenable(ValueNotifier(0));
         return const SizedBox();
       }),
     );
@@ -30,8 +30,8 @@ void main() {
   testWidgets('useValueListenable throws with null', (tester) async {
     await tester.pumpWidget(
       HookBuilder(
-        builder: (context) {
-          useValueListenable<void>(null);
+        builder: (context, h) {
+          h.useValueListenable<void>(null);
           return Container();
         },
       ),
@@ -45,8 +45,8 @@ void main() {
 
     Future<void> pump() {
       return tester.pumpWidget(HookBuilder(
-        builder: (context) {
-          result = useValueListenable(listenable);
+        builder: (context, h) {
+          result = h.useValueListenable(listenable);
           return Container();
         },
       ));

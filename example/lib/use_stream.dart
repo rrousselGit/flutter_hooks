@@ -18,12 +18,12 @@ class UseStreamExample extends StatelessWidget {
         // Widget to limit rebuilds to this section of the app, rather than
         // marking the entire UseStreamExample as a HookWidget!
         child: HookBuilder(
-          builder: (context) {
+          builder: (context, h) {
             // First, create and cache a Stream with the `useMemoized` hook.
             // This hook allows you to create an Object (such as a Stream or
             // Future) the first time this builder function is invoked without
             // recreating it on each subsequent build!
-            final stream = useMemoized(
+            final stream = h.useMemoized(
               () => Stream<int>.periodic(
                   const Duration(seconds: 1), (i) => i + 1),
             );
@@ -31,7 +31,7 @@ class UseStreamExample extends StatelessWidget {
             // Stream. This triggers a rebuild whenever a new value is emitted.
             //
             // Like normal StreamBuilders, it returns the current AsyncSnapshot.
-            final snapshot = useStream(stream);
+            final snapshot = h.useStream(stream);
 
             // Finally, use the data from the Stream to render a text Widget.
             // If no data is available, fallback to a default value.

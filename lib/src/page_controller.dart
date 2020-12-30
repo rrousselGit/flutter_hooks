@@ -1,23 +1,25 @@
 part of 'hooks.dart';
 
-/// Creates and disposes a [PageController].
-///
-/// See also:
-/// - [PageController]
-PageController usePageController({
-  int initialPage = 0,
-  bool keepPage = true,
-  double viewportFraction = 1.0,
-  List<Object> keys,
-}) {
-  return use(
-    _PageControllerHook(
-      initialPage: initialPage,
-      keepPage: keepPage,
-      viewportFraction: viewportFraction,
-      keys: keys,
-    ),
-  );
+extension UsePageControllerHook on Hookable {
+  /// Creates and disposes a [PageController].
+  ///
+  /// See also:
+  /// - [PageController]
+  PageController usePageController({
+    int initialPage = 0,
+    bool keepPage = true,
+    double viewportFraction = 1.0,
+    List<Object> keys,
+  }) {
+    return use(
+      _PageControllerHook(
+        initialPage: initialPage,
+        keepPage: keepPage,
+        viewportFraction: viewportFraction,
+        keys: keys,
+      ),
+    );
+  }
 }
 
 class _PageControllerHook extends Hook<PageController> {

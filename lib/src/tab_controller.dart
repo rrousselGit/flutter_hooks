@@ -1,23 +1,25 @@
 part of 'hooks.dart';
 
-/// Creates and disposes a [TabController].
-///
-/// See also:
-/// - [TabController]
-TabController useTabController({
-  @required int initialLength,
-  TickerProvider vsync,
-  int initialIndex = 0,
-  List<Object> keys,
-}) {
-  vsync ??= useSingleTickerProvider(keys: keys);
+extension UseTabControllerHook on Hookable {
+  /// Creates and disposes a [TabController].
+  ///
+  /// See also:
+  /// - [TabController]
+  TabController useTabController({
+    @required int initialLength,
+    TickerProvider vsync,
+    int initialIndex = 0,
+    List<Object> keys,
+  }) {
+    vsync ??= useSingleTickerProvider(keys: keys);
 
-  return use(_TabControllerHook(
-    vsync: vsync,
-    length: initialLength,
-    initialIndex: initialIndex,
-    keys: keys,
-  ));
+    return use(_TabControllerHook(
+      vsync: vsync,
+      length: initialLength,
+      initialIndex: initialIndex,
+      keys: keys,
+    ));
+  }
 }
 
 class _TabControllerHook extends Hook<TabController> {

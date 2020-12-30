@@ -10,8 +10,8 @@ import 'mock.dart';
 void main() {
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useTabController(initialLength: 4);
+      HookBuilder(builder: (context, h) {
+        h.useTabController(initialLength: 4);
         return const SizedBox();
       }),
     );
@@ -39,10 +39,10 @@ void main() {
       TabController controller2;
 
       await tester.pumpWidget(
-        HookBuilder(builder: (context) {
-          final vsync = useSingleTickerProvider();
+        HookBuilder(builder: (context, h) {
+          final vsync = h.useSingleTickerProvider();
           controller2 = TabController(length: 4, vsync: vsync);
-          controller = useTabController(initialLength: 4);
+          controller = h.useTabController(initialLength: 4);
           return Container();
         }),
       );
@@ -54,8 +54,8 @@ void main() {
       TabController controller2;
 
       await tester.pumpWidget(
-        HookBuilder(builder: (context) {
-          controller = useTabController(initialLength: 1);
+        HookBuilder(builder: (context, h) {
+          controller = h.useTabController(initialLength: 1);
           return Container();
         }),
       );
@@ -63,8 +63,8 @@ void main() {
       expect(controller, isA<TabController>());
 
       await tester.pumpWidget(
-        HookBuilder(builder: (context) {
-          controller2 = useTabController(initialLength: 1);
+        HookBuilder(builder: (context, h) {
+          controller2 = h.useTabController(initialLength: 1);
           return Container();
         }),
       );
@@ -75,8 +75,8 @@ void main() {
       TabController controller;
 
       await tester.pumpWidget(
-        HookBuilder(builder: (context) {
-          controller = useTabController(initialLength: 1);
+        HookBuilder(builder: (context, h) {
+          controller = h.useTabController(initialLength: 1);
           return Container();
         }),
       );
@@ -84,8 +84,8 @@ void main() {
       expect(controller.length, 1);
 
       await tester.pumpWidget(
-        HookBuilder(builder: (context) {
-          controller = useTabController(initialLength: 2);
+        HookBuilder(builder: (context, h) {
+          controller = h.useTabController(initialLength: 2);
           return Container();
         }),
       );
@@ -98,8 +98,8 @@ void main() {
 
       await tester.pumpWidget(
         HookBuilder(
-          builder: (context) {
-            controller = useTabController(initialIndex: 2, initialLength: 4);
+          builder: (context, h) {
+            controller = h.useTabController(initialIndex: 2, initialLength: 4);
 
             return Container();
           },
@@ -116,8 +116,8 @@ void main() {
 
       await tester.pumpWidget(
         HookBuilder(
-          builder: (context) {
-            useTabController(initialLength: 1, vsync: vsync);
+          builder: (context, h) {
+            h.useTabController(initialLength: 1, vsync: vsync);
 
             return Container();
           },
@@ -129,8 +129,8 @@ void main() {
 
       await tester.pumpWidget(
         HookBuilder(
-          builder: (context) {
-            useTabController(initialLength: 1, vsync: vsync);
+          builder: (context, h) {
+            h.useTabController(initialLength: 1, vsync: vsync);
             return Container();
           },
         ),

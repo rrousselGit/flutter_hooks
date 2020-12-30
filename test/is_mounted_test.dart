@@ -8,8 +8,8 @@ void main() {
     IsMounted isMounted;
 
     await tester.pumpWidget(HookBuilder(
-      builder: (context) {
-        isMounted = useIsMounted();
+      builder: (context, h) {
+        isMounted = h.useIsMounted();
         return Container();
       },
     ));
@@ -23,8 +23,8 @@ void main() {
 
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useIsMounted();
+      HookBuilder(builder: (context, h) {
+        h.useIsMounted();
         return const SizedBox();
       }),
     );

@@ -9,8 +9,8 @@ import 'mock.dart';
 void main() {
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useStreamController<int>();
+      HookBuilder(builder: (context, h) {
+        h.useStreamController<int>();
         return const SizedBox();
       }),
     );
@@ -37,14 +37,14 @@ void main() {
     testWidgets('keys', (tester) async {
       StreamController<int> controller;
 
-      await tester.pumpWidget(HookBuilder(builder: (context) {
-        controller = useStreamController();
+      await tester.pumpWidget(HookBuilder(builder: (context, h) {
+        controller = h.useStreamController();
         return Container();
       }));
 
       final previous = controller;
-      await tester.pumpWidget(HookBuilder(builder: (context) {
-        controller = useStreamController(keys: []);
+      await tester.pumpWidget(HookBuilder(builder: (context, h) {
+        controller = h.useStreamController(keys: []);
         return Container();
       }));
 
@@ -53,8 +53,8 @@ void main() {
     testWidgets('basics', (tester) async {
       StreamController<int> controller;
 
-      await tester.pumpWidget(HookBuilder(builder: (context) {
-        controller = useStreamController();
+      await tester.pumpWidget(HookBuilder(builder: (context, h) {
+        controller = h.useStreamController();
         return Container();
       }));
 
@@ -67,8 +67,8 @@ void main() {
       final previousController = controller;
       void onListen() {}
       void onCancel() {}
-      await tester.pumpWidget(HookBuilder(builder: (context) {
-        controller = useStreamController(
+      await tester.pumpWidget(HookBuilder(builder: (context, h) {
+        controller = h.useStreamController(
           sync: true,
           onCancel: onCancel,
           onListen: onListen,
@@ -90,8 +90,8 @@ void main() {
     testWidgets('sync', (tester) async {
       StreamController<int> controller;
 
-      await tester.pumpWidget(HookBuilder(builder: (context) {
-        controller = useStreamController(sync: true);
+      await tester.pumpWidget(HookBuilder(builder: (context, h) {
+        controller = h.useStreamController(sync: true);
         return Container();
       }));
 
@@ -104,8 +104,8 @@ void main() {
       final previousController = controller;
       void onListen() {}
       void onCancel() {}
-      await tester.pumpWidget(HookBuilder(builder: (context) {
-        controller = useStreamController(
+      await tester.pumpWidget(HookBuilder(builder: (context, h) {
+        controller = h.useStreamController(
           onCancel: onCancel,
           onListen: onListen,
         );

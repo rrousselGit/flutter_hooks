@@ -13,8 +13,8 @@ void main() {
 
   testWidgets('invalid parameters', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useMemoized<void>(null);
+      HookBuilder(builder: (context, h) {
+        h.useMemoized<void>(null);
         return Container();
       }),
     );
@@ -22,8 +22,8 @@ void main() {
     expect(tester.takeException(), isAssertionError);
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useMemoized(() {}, null);
+      HookBuilder(builder: (context, h) {
+        h.useMemoized(() {}, null);
         return Container();
       }),
     );
@@ -37,8 +37,8 @@ void main() {
     when(valueBuilder()).thenReturn(42);
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        result = useMemoized<int>(valueBuilder);
+      HookBuilder(builder: (context, h) {
+        result = h.useMemoized<int>(valueBuilder);
         return Container();
       }),
     );
@@ -48,8 +48,8 @@ void main() {
     expect(result, 42);
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        result = useMemoized<int>(valueBuilder);
+      HookBuilder(builder: (context, h) {
+        result = h.useMemoized<int>(valueBuilder);
         return Container();
       }),
     );
@@ -70,8 +70,8 @@ void main() {
     when(valueBuilder()).thenReturn(0);
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        result = useMemoized<int>(valueBuilder, []);
+      HookBuilder(builder: (context, h) {
+        result = h.useMemoized<int>(valueBuilder, []);
         return Container();
       }),
     );
@@ -83,8 +83,8 @@ void main() {
     /* No change */
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        result = useMemoized<int>(valueBuilder, []);
+      HookBuilder(builder: (context, h) {
+        result = h.useMemoized<int>(valueBuilder, []);
         return Container();
       }),
     );
@@ -97,8 +97,8 @@ void main() {
     when(valueBuilder()).thenReturn(1);
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        result = useMemoized<int>(valueBuilder, ['foo']);
+      HookBuilder(builder: (context, h) {
+        result = h.useMemoized<int>(valueBuilder, ['foo']);
         return Container();
       }),
     );
@@ -110,8 +110,8 @@ void main() {
     /* No change */
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        result = useMemoized<int>(valueBuilder, ['foo']);
+      HookBuilder(builder: (context, h) {
+        result = h.useMemoized<int>(valueBuilder, ['foo']);
         return Container();
       }),
     );
@@ -124,8 +124,8 @@ void main() {
     when(valueBuilder()).thenReturn(2);
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        result = useMemoized<int>(valueBuilder, []);
+      HookBuilder(builder: (context, h) {
+        result = h.useMemoized<int>(valueBuilder, []);
         return Container();
       }),
     );
@@ -137,8 +137,8 @@ void main() {
     /* No change */
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        result = useMemoized<int>(valueBuilder, []);
+      HookBuilder(builder: (context, h) {
+        result = h.useMemoized<int>(valueBuilder, []);
         return Container();
       }),
     );
@@ -159,8 +159,8 @@ void main() {
     when(valueBuilder()).thenReturn(0);
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        result = useMemoized<int>(valueBuilder, ['foo', 42, 24.0]);
+      HookBuilder(builder: (context, h) {
+        result = h.useMemoized<int>(valueBuilder, ['foo', 42, 24.0]);
         return Container();
       }),
     );
@@ -172,8 +172,8 @@ void main() {
     /* Array reference changed but content didn't */
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        result = useMemoized<int>(valueBuilder, ['foo', 42, 24.0]);
+      HookBuilder(builder: (context, h) {
+        result = h.useMemoized<int>(valueBuilder, ['foo', 42, 24.0]);
         return Container();
       }),
     );
@@ -186,8 +186,8 @@ void main() {
     when(valueBuilder()).thenReturn(1);
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        result = useMemoized<int>(valueBuilder, [42, 'foo', 24.0]);
+      HookBuilder(builder: (context, h) {
+        result = h.useMemoized<int>(valueBuilder, [42, 'foo', 24.0]);
         return Container();
       }),
     );
@@ -199,8 +199,8 @@ void main() {
     when(valueBuilder()).thenReturn(2);
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        result = useMemoized<int>(valueBuilder, [42, 24.0, 'foo']);
+      HookBuilder(builder: (context, h) {
+        result = h.useMemoized<int>(valueBuilder, [42, 24.0, 'foo']);
         return Container();
       }),
     );
@@ -214,8 +214,8 @@ void main() {
     when(valueBuilder()).thenReturn(3);
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        result = useMemoized<int>(valueBuilder, [43, 24.0, 'foo']);
+      HookBuilder(builder: (context, h) {
+        result = h.useMemoized<int>(valueBuilder, [43, 24.0, 'foo']);
         return Container();
       }),
     );
@@ -228,8 +228,8 @@ void main() {
 
     // type change
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        result = useMemoized<int>(valueBuilder, [43, 24.0, 'foo']);
+      HookBuilder(builder: (context, h) {
+        result = h.useMemoized<int>(valueBuilder, [43, 24.0, 'foo']);
         return Container();
       }),
     );
@@ -253,8 +253,8 @@ void main() {
     when(valueBuilder()).thenReturn(0);
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        result = useMemoized<int>(valueBuilder, parameters);
+      HookBuilder(builder: (context, h) {
+        result = h.useMemoized<int>(valueBuilder, parameters);
         return Container();
       }),
     );
@@ -267,8 +267,8 @@ void main() {
     parameters.add(42);
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        result = useMemoized<int>(valueBuilder, parameters);
+      HookBuilder(builder: (context, h) {
+        result = h.useMemoized<int>(valueBuilder, parameters);
         return Container();
       }),
     );
@@ -284,9 +284,9 @@ void main() {
 
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useMemoized<Future<int>>(() => Future.value(10));
-        useMemoized<int>(() => 43);
+      HookBuilder(builder: (context, h) {
+        h.useMemoized<Future<int>>(() => Future.value(10));
+        h.useMemoized<int>(() => 43);
         return const SizedBox();
       }),
     );

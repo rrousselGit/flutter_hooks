@@ -7,8 +7,8 @@ import 'mock.dart';
 void main() {
   testWidgets('diagnostics', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useValueNotifier(0);
+      HookBuilder(builder: (context, h) {
+        h.useValueNotifier(0);
         return const SizedBox();
       }),
     );
@@ -34,9 +34,9 @@ void main() {
       final listener = MockListener();
 
       await tester.pumpWidget(HookBuilder(
-        builder: (context) {
+        builder: (context, h) {
           element = context as HookElement;
-          state = useValueNotifier(42);
+          state = h.useValueNotifier(42);
           return Container();
         },
       ));
@@ -76,9 +76,9 @@ void main() {
       final listener = MockListener();
 
       await tester.pumpWidget(HookBuilder(
-        builder: (context) {
+        builder: (context, h) {
           element = context as HookElement;
-          state = useValueNotifier();
+          state = h.useValueNotifier();
           return Container();
         },
       ));
@@ -117,16 +117,16 @@ void main() {
       ValueNotifier<int> previous;
 
       await tester.pumpWidget(HookBuilder(
-        builder: (context) {
-          state = useValueNotifier(42);
+        builder: (context, h) {
+          state = h.useValueNotifier(42);
           return Container();
         },
       ));
 
       await tester.pumpWidget(HookBuilder(
-        builder: (context) {
+        builder: (context, h) {
           previous = state;
-          state = useValueNotifier(42, [42]);
+          state = h.useValueNotifier(42, [42]);
           return Container();
         },
       ));
@@ -138,16 +138,16 @@ void main() {
       ValueNotifier<int> previous;
 
       await tester.pumpWidget(HookBuilder(
-        builder: (context) {
-          state = useValueNotifier(null, [42]);
+        builder: (context, h) {
+          state = h.useValueNotifier(null, [42]);
           return Container();
         },
       ));
 
       await tester.pumpWidget(HookBuilder(
-        builder: (context) {
+        builder: (context, h) {
           previous = state;
-          state = useValueNotifier(42, [42]);
+          state = h.useValueNotifier(42, [42]);
           return Container();
         },
       ));

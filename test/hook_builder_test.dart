@@ -5,8 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   testWidgets('simple build', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        final state = useState(42).value;
+      HookBuilder(builder: (context, h) {
+        final state = h.useState(42).value;
         return Text('$state', textDirection: TextDirection.ltr);
       }),
     );

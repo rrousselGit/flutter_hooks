@@ -8,8 +8,8 @@ void main() {
   testWidgets('creates a focus node and disposes it', (tester) async {
     FocusNode focusNode;
     await tester.pumpWidget(
-      HookBuilder(builder: (_) {
-        focusNode = useFocusNode();
+      HookBuilder(builder: (_, h) {
+        focusNode = h.useFocusNode();
         return Container();
       }),
     );
@@ -21,8 +21,8 @@ void main() {
     final previousValue = focusNode;
 
     await tester.pumpWidget(
-      HookBuilder(builder: (_) {
-        focusNode = useFocusNode();
+      HookBuilder(builder: (_, h) {
+        focusNode = h.useFocusNode();
         return Container();
       }),
     );
@@ -42,8 +42,8 @@ void main() {
 
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useFocusNode();
+      HookBuilder(builder: (context, h) {
+        h.useFocusNode();
         return const SizedBox();
       }),
     );
@@ -67,8 +67,8 @@ void main() {
 
     FocusNode focusNode;
     await tester.pumpWidget(
-      HookBuilder(builder: (_) {
-        focusNode = useFocusNode();
+      HookBuilder(builder: (_, h) {
+        focusNode = h.useFocusNode();
         return Container();
       }),
     );
@@ -85,8 +85,8 @@ void main() {
 
     FocusNode focusNode;
     await tester.pumpWidget(
-      HookBuilder(builder: (_) {
-        focusNode = useFocusNode(
+      HookBuilder(builder: (_, h) {
+        focusNode = h.useFocusNode(
           debugLabel: 'Foo',
           onKey: onKey,
           skipTraversal: true,
@@ -110,8 +110,8 @@ void main() {
 
     FocusNode focusNode;
     await tester.pumpWidget(
-      HookBuilder(builder: (_) {
-        focusNode = useFocusNode(
+      HookBuilder(builder: (_, h) {
+        focusNode = h.useFocusNode(
           debugLabel: 'Foo',
           onKey: onKey,
           skipTraversal: true,
@@ -123,8 +123,8 @@ void main() {
     );
 
     await tester.pumpWidget(
-      HookBuilder(builder: (_) {
-        focusNode = useFocusNode(
+      HookBuilder(builder: (_, h) {
+        focusNode = h.useFocusNode(
           debugLabel: 'Bar',
           onKey: onKey2,
         );

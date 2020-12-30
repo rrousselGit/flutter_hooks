@@ -15,8 +15,8 @@ void main() {
     final stream = Stream.value(42);
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useStream(stream);
+      HookBuilder(builder: (context, h) {
+        h.useStream(stream);
         return const SizedBox();
       }),
     );
@@ -40,9 +40,9 @@ void main() {
   testWidgets('default preserve state, changing stream keeps previous value',
       (tester) async {
     AsyncSnapshot<int> value;
-    Widget Function(BuildContext) builder(Stream<int> stream) {
-      return (context) {
-        value = useStream(stream);
+    Widget Function(BuildContext, Hookable) builder(Stream<int> stream) {
+      return (context, h) {
+        value = h.useStream(stream);
         return Container();
       };
     }
@@ -62,9 +62,9 @@ void main() {
   testWidgets('If preserveState == false, changing stream resets value',
       (tester) async {
     AsyncSnapshot<int> value;
-    Widget Function(BuildContext) builder(Stream<int> stream) {
-      return (context) {
-        value = useStream(stream, preserveState: false);
+    Widget Function(BuildContext, Hookable) builder(Stream<int> stream) {
+      return (context, h) {
+        value = h.useStream(stream, preserveState: false);
         return Container();
       };
     }
@@ -82,10 +82,10 @@ void main() {
     expect(value.data, 42);
   });
 
-  Widget Function(BuildContext) snapshotText(Stream<String> stream,
+  Widget Function(BuildContext, Hookable) snapshotText(Stream<String> stream,
       {String initialData}) {
-    return (context) {
-      final snapshot = useStream(stream, initialData: initialData);
+    return (context, h) {
+      final snapshot = h.useStream(stream, initialData: initialData);
       return Text(snapshot.toString(), textDirection: TextDirection.ltr);
     };
   }

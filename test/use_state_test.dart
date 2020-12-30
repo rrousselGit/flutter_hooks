@@ -11,9 +11,9 @@ void main() {
     HookElement element;
 
     await tester.pumpWidget(HookBuilder(
-      builder: (context) {
+      builder: (context, h) {
         element = context as HookElement;
-        state = useState(42);
+        state = h.useState(42);
         return Container();
       },
     ));
@@ -45,9 +45,9 @@ void main() {
     HookElement element;
 
     await tester.pumpWidget(HookBuilder(
-      builder: (context) {
+      builder: (context, h) {
         element = context as HookElement;
-        state = useState();
+        state = h.useState();
         return Container();
       },
     ));
@@ -78,9 +78,9 @@ void main() {
     ValueNotifier<int> state;
     HookElement element;
     final hookWidget = HookBuilder(
-      builder: (context) {
+      builder: (context, h) {
         element = context as HookElement;
-        state = useState(0);
+        state = h.useState(0);
         return const SizedBox();
       },
     );

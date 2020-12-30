@@ -7,8 +7,8 @@ import 'mock.dart';
 void main() {
   testWidgets('useReassemble null callback throws', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (c) {
-        useReassemble(null);
+      HookBuilder(builder: (c, h) {
+        h.useReassemble(null);
         return Container();
       }),
     );
@@ -19,8 +19,8 @@ void main() {
   testWidgets("hot-reload calls useReassemble's callback", (tester) async {
     final reassemble = MockReassemble();
 
-    await tester.pumpWidget(HookBuilder(builder: (context) {
-      useReassemble(reassemble);
+    await tester.pumpWidget(HookBuilder(builder: (context, h) {
+      h.useReassemble(reassemble);
       return Container();
     }));
 
@@ -35,8 +35,8 @@ void main() {
 
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useReassemble(() {});
+      HookBuilder(builder: (context, h) {
+        h.useReassemble(() {});
         return const SizedBox();
       }),
     );

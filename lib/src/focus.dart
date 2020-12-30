@@ -1,23 +1,25 @@
 part of 'hooks.dart';
 
-/// Creates and dispose of a [FocusNode].
-///
-/// See also:
-/// - [FocusNode]
-FocusNode useFocusNode({
-  String debugLabel,
-  FocusOnKeyCallback onKey,
-  bool skipTraversal = false,
-  bool canRequestFocus = true,
-  bool descendantsAreFocusable = true,
-}) =>
-    use(_FocusNodeHook(
-      debugLabel: debugLabel,
-      onKey: onKey,
-      skipTraversal: skipTraversal,
-      canRequestFocus: canRequestFocus,
-      descendantsAreFocusable: descendantsAreFocusable,
-    ));
+extension UseFocusNodeHook on Hookable {
+  /// Creates and dispose of a [FocusNode].
+  ///
+  /// See also:
+  /// - [FocusNode]
+  FocusNode useFocusNode({
+    String debugLabel,
+    FocusOnKeyCallback onKey,
+    bool skipTraversal = false,
+    bool canRequestFocus = true,
+    bool descendantsAreFocusable = true,
+  }) =>
+      use(_FocusNodeHook(
+        debugLabel: debugLabel,
+        onKey: onKey,
+        skipTraversal: skipTraversal,
+        canRequestFocus: canRequestFocus,
+        descendantsAreFocusable: descendantsAreFocusable,
+      ));
+}
 
 class _FocusNodeHook extends Hook<FocusNode> {
   const _FocusNodeHook({

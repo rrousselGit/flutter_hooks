@@ -9,8 +9,8 @@ import 'mock.dart';
 void main() {
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        usePageController();
+      HookBuilder(builder: (context, h) {
+        h.usePageController();
         return const SizedBox();
       }),
     );
@@ -35,9 +35,9 @@ void main() {
       PageController controller2;
 
       await tester.pumpWidget(
-        HookBuilder(builder: (context) {
+        HookBuilder(builder: (context, h) {
           controller2 = PageController();
-          controller = usePageController();
+          controller = h.usePageController();
           return Container();
         }),
       );
@@ -51,8 +51,8 @@ void main() {
       PageController controller2;
 
       await tester.pumpWidget(
-        HookBuilder(builder: (context) {
-          controller = usePageController();
+        HookBuilder(builder: (context, h) {
+          controller = h.usePageController();
           return Container();
         }),
       );
@@ -60,8 +60,8 @@ void main() {
       expect(controller, isA<PageController>());
 
       await tester.pumpWidget(
-        HookBuilder(builder: (context) {
-          controller2 = usePageController();
+        HookBuilder(builder: (context, h) {
+          controller2 = h.usePageController();
           return Container();
         }),
       );
@@ -74,8 +74,8 @@ void main() {
 
       await tester.pumpWidget(
         HookBuilder(
-          builder: (context) {
-            controller = usePageController(
+          builder: (context, h) {
+            controller = h.usePageController(
               initialPage: 42,
               keepPage: false,
               viewportFraction: 3.4,
@@ -96,8 +96,8 @@ void main() {
 
       await tester.pumpWidget(
         HookBuilder(
-          builder: (context) {
-            controller = usePageController();
+          builder: (context, h) {
+            controller = h.usePageController();
             return Container();
           },
         ),

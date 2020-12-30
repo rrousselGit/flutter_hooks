@@ -9,8 +9,8 @@ void main() {
     testWidgets('returns current BuildContext during build', (tester) async {
       BuildContext res;
 
-      await tester.pumpWidget(HookBuilder(builder: (context) {
-        res = useContext();
+      await tester.pumpWidget(HookBuilder(builder: (context, h) {
+        res = h.useContext();
         return Container();
       }));
 
@@ -20,14 +20,15 @@ void main() {
     });
 
     testWidgets('crashed outside of build', (tester) async {
-      expect(useContext, throwsAssertionError);
+      const Hookable h = null;
+      expect(h.useContext, throwsAssertionError);
       await tester.pumpWidget(HookBuilder(
-        builder: (context) {
-          useContext();
+        builder: (context, h) {
+          h.useContext();
           return Container();
         },
       ));
-      expect(useContext, throwsAssertionError);
+      expect(h.useContext, throwsAssertionError);
     });
   });
 }

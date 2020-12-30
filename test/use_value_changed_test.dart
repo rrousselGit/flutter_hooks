@@ -7,15 +7,15 @@ import 'mock.dart';
 void main() {
   testWidgets('diagnostics', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useValueChanged<int, int>(0, (_, __) => 21);
+      HookBuilder(builder: (context, h) {
+        h.useValueChanged<int, int>(0, (_, __) => 21);
         return const SizedBox();
       }),
     );
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useValueChanged<int, int>(42, (_, __) => 21);
+      HookBuilder(builder: (context, h) {
+        h.useValueChanged<int, int>(42, (_, __) => 21);
         return const SizedBox();
       }),
     );
@@ -42,8 +42,8 @@ void main() {
 
     Future<void> pump() {
       return tester.pumpWidget(
-        HookBuilder(builder: (context) {
-          result = useValueChanged(value, _useValueChanged);
+        HookBuilder(builder: (context, h) {
+          result = h.useValueChanged(value, _useValueChanged);
           return Container();
         }),
       );
@@ -99,8 +99,8 @@ void main() {
 
   testWidgets('valueChanged required', (tester) async {
     await tester.pumpWidget(HookBuilder(
-      builder: (context) {
-        useValueChanged<int, int>(42, null);
+      builder: (context, h) {
+        h.useValueChanged<int, int>(42, null);
         return Container();
       },
     ));

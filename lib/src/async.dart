@@ -1,17 +1,19 @@
 part of 'hooks.dart';
 
-/// Subscribes to a [Future] and return its current state in an [AsyncSnapshot].
-///
-/// * [preserveState] defines if the current value should be preserved when changing
-/// the [Future] instance.
-///
-/// See also:
-///   * [Future], the listened object.
-///   * [useStream], similar to [useFuture] but for [Stream].
-AsyncSnapshot<T> useFuture<T>(Future<T> future,
-    {T initialData, bool preserveState = true}) {
-  return use(_FutureHook(future,
-      initialData: initialData, preserveState: preserveState));
+extension UseFutureHook on Hookable {
+  /// Subscribes to a [Future] and return its current state in an [AsyncSnapshot].
+  ///
+  /// * [preserveState] defines if the current value should be preserved when changing
+  /// the [Future] instance.
+  ///
+  /// See also:
+  ///   * [Future], the listened object.
+  ///   * [useStream], similar to [useFuture] but for [Stream].
+  AsyncSnapshot<T> useFuture<T>(Future<T> future,
+      {T initialData, bool preserveState = true}) {
+    return use(_FutureHook(future,
+        initialData: initialData, preserveState: preserveState));
+  }
 }
 
 class _FutureHook<T> extends Hook<AsyncSnapshot<T>> {
@@ -99,18 +101,20 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
   Object get debugValue => _snapshot;
 }
 
-/// Subscribes to a [Stream] and return its current state in an [AsyncSnapshot].
-///
-/// See also:
-///   * [Stream], the object listened.
-///   * [useFuture], similar to [useStream] but for [Future].
-AsyncSnapshot<T> useStream<T>(Stream<T> stream,
-    {T initialData, bool preserveState = true}) {
-  return use(_StreamHook(
-    stream,
-    initialData: initialData,
-    preserveState: preserveState,
-  ));
+extension UseStreamHook on Hookable {
+  /// Subscribes to a [Stream] and return its current state in an [AsyncSnapshot].
+  ///
+  /// See also:
+  ///   * [Stream], the object listened.
+  ///   * [useFuture], similar to [useStream] but for [Future].
+  AsyncSnapshot<T> useStream<T>(Stream<T> stream,
+      {T initialData, bool preserveState = true}) {
+    return use(_StreamHook(
+      stream,
+      initialData: initialData,
+      preserveState: preserveState,
+    ));
+  }
 }
 
 class _StreamHook<T> extends Hook<AsyncSnapshot<T>> {
@@ -212,22 +216,24 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
   String get debugLabel => 'useStream';
 }
 
-/// Creates a [StreamController] automatically disposed.
-///
-/// See also:
-///   * [StreamController], the created object
-///   * [useStream], to listen to the created [StreamController]
-StreamController<T> useStreamController<T>(
-    {bool sync = false,
-    VoidCallback onListen,
-    VoidCallback onCancel,
-    List<Object> keys}) {
-  return use(_StreamControllerHook(
-    onCancel: onCancel,
-    onListen: onListen,
-    sync: sync,
-    keys: keys,
-  ));
+extension UseStreamControllerHook on Hookable {
+  /// Creates a [StreamController] automatically disposed.
+  ///
+  /// See also:
+  ///   * [StreamController], the created object
+  ///   * [useStream], to listen to the created [StreamController]
+  StreamController<T> useStreamController<T>(
+      {bool sync = false,
+      VoidCallback onListen,
+      VoidCallback onCancel,
+      List<Object> keys}) {
+    return use(_StreamControllerHook(
+      onCancel: onCancel,
+      onListen: onListen,
+      sync: sync,
+      keys: keys,
+    ));
+  }
 }
 
 class _StreamControllerHook<T> extends Hook<StreamController<T>> {

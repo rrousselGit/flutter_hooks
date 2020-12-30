@@ -31,17 +31,19 @@ class CustomHookFunctionExample extends HookWidget {
   }
 }
 
-/// A custom hook that wraps the useState hook to add logging. Hooks can be
-/// composed -- meaning you can use hooks within hooks!
-ValueNotifier<T> useLoggedState<T>([T initialData]) {
-  // First, call the useState hook. It will create a ValueNotifier for you that
-  // rebuilds the Widget whenever the value changes.
-  final result = useState<T>(initialData);
+extension UseLoggedStateHook on Hookable {
+  /// A custom hook that wraps the useState hook to add logging. Hooks can be
+  /// composed -- meaning you can use hooks within hooks!
+  ValueNotifier<T> useLoggedState<T>([T initialData]) {
+    // First, call the useState hook. It will create a ValueNotifier for you that
+    // rebuilds the Widget whenever the value changes.
+    final result = useState<T>(initialData);
 
-  // Next, call the useValueChanged hook to print the state whenever it changes
-  useValueChanged<T, void>(result.value, (_, __) {
-    print(result.value);
-  });
+    // Next, call the useValueChanged hook to print the state whenever it changes
+    useValueChanged<T, void>(result.value, (_, __) {
+      print(result.value);
+    });
 
-  return result;
+    return result;
+  }
 }

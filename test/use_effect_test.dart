@@ -10,8 +10,8 @@ void main() {
   List<Object> parameters;
 
   Widget builder() {
-    return HookBuilder(builder: (context) {
-      useEffect(effect, parameters);
+    return HookBuilder(builder: (context, h) {
+      h.useEffect(effect, parameters);
       unrelated();
       return Container();
     });
@@ -25,8 +25,8 @@ void main() {
 
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useEffect(() {
+      HookBuilder(builder: (context, h) {
+        h.useEffect(() {
           return null;
         }, []);
         return const SizedBox();
@@ -49,8 +49,8 @@ void main() {
 
   testWidgets('useEffect null callback throws', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (c) {
-        useEffect(null);
+      HookBuilder(builder: (c, h) {
+        h.useEffect(null);
         return Container();
       }),
     );
@@ -64,8 +64,8 @@ void main() {
     when(effect()).thenReturn(dispose);
 
     Widget builder() {
-      return HookBuilder(builder: (context) {
-        useEffect(effect);
+      return HookBuilder(builder: (context, h) {
+        h.useEffect(effect);
         unrelated();
         return Container();
       });
@@ -211,8 +211,8 @@ void main() {
     List<Object> parameters;
 
     Widget builder() {
-      return HookBuilder(builder: (context) {
-        useEffect(effect, parameters);
+      return HookBuilder(builder: (context, h) {
+        h.useEffect(effect, parameters);
         return Container();
       });
     }

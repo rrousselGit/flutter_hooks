@@ -10,8 +10,8 @@ import 'mock.dart';
 void main() {
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useScrollController();
+      HookBuilder(builder: (context, h) {
+        h.useScrollController();
         return const SizedBox();
       }),
     );
@@ -36,9 +36,9 @@ void main() {
       ScrollController controller2;
 
       await tester.pumpWidget(
-        HookBuilder(builder: (context) {
+        HookBuilder(builder: (context, h) {
           controller2 = ScrollController();
-          controller = useScrollController();
+          controller = h.useScrollController();
           return Container();
         }),
       );
@@ -53,8 +53,8 @@ void main() {
       ScrollController controller2;
 
       await tester.pumpWidget(
-        HookBuilder(builder: (context) {
-          controller = useScrollController();
+        HookBuilder(builder: (context, h) {
+          controller = h.useScrollController();
           return Container();
         }),
       );
@@ -62,8 +62,8 @@ void main() {
       expect(controller, isA<ScrollController>());
 
       await tester.pumpWidget(
-        HookBuilder(builder: (context) {
-          controller2 = useScrollController();
+        HookBuilder(builder: (context, h) {
+          controller2 = h.useScrollController();
           return Container();
         }),
       );
@@ -77,8 +77,8 @@ void main() {
 
       await tester.pumpWidget(
         HookBuilder(
-          builder: (context) {
-            controller = useScrollController(
+          builder: (context, h) {
+            controller = h.useScrollController(
               initialScrollOffset: 42,
               debugLabel: 'Hello',
               keepScrollOffset: false,

@@ -1,13 +1,15 @@
 part of 'hooks.dart';
 
-/// Subscribes to a [ValueListenable] and return its value.
-///
-/// See also:
-///   * [ValueListenable], the created object
-///   * [useListenable]
-T useValueListenable<T>(ValueListenable<T> valueListenable) {
-  use(_UseValueListenableHook(valueListenable));
-  return valueListenable.value;
+extension UseValueListenableHook on Hookable {
+  /// Subscribes to a [ValueListenable] and return its value.
+  ///
+  /// See also:
+  ///   * [ValueListenable], the created object
+  ///   * [useListenable]
+  T useValueListenable<T>(ValueListenable<T> valueListenable) {
+    use(_UseValueListenableHook(valueListenable));
+    return valueListenable.value;
+  }
 }
 
 class _UseValueListenableHook extends _ListenableHook {
@@ -27,15 +29,17 @@ class _UseValueListenableStateHook extends _ListenableStateHook {
   Object get debugValue => (hook.listenable as ValueListenable).value;
 }
 
-/// Subscribes to a [Listenable] and mark the widget as needing build
-/// whenever the listener is called.
-///
-/// See also:
-///   * [Listenable]
-///   * [useValueListenable], [useAnimation]
-T useListenable<T extends Listenable>(T listenable) {
-  use(_ListenableHook(listenable));
-  return listenable;
+extension UseListenableHook on Hookable {
+  /// Subscribes to a [Listenable] and mark the widget as needing build
+  /// whenever the listener is called.
+  ///
+  /// See also:
+  ///   * [Listenable]
+  ///   * [useValueListenable], [useAnimation]
+  T useListenable<T extends Listenable>(T listenable) {
+    use(_ListenableHook(listenable));
+    return listenable;
+  }
 }
 
 class _ListenableHook extends Hook<void> {
@@ -83,19 +87,21 @@ class _ListenableStateHook extends HookState<void, _ListenableHook> {
   Object get debugValue => hook.listenable;
 }
 
-/// Creates a [ValueNotifier] automatically disposed.
-///
-/// As opposed to `useState`, this hook do not subscribes to [ValueNotifier].
-/// This allows a more granular rebuild.
-///
-/// See also:
-///   * [ValueNotifier]
-///   * [useValueListenable]
-ValueNotifier<T> useValueNotifier<T>([T intialData, List<Object> keys]) {
-  return use(_ValueNotifierHook(
-    initialData: intialData,
-    keys: keys,
-  ));
+extension UseValueNotifierHook on Hookable {
+  /// Creates a [ValueNotifier] automatically disposed.
+  ///
+  /// As opposed to `useState`, this hook do not subscribes to [ValueNotifier].
+  /// This allows a more granular rebuild.
+  ///
+  /// See also:
+  ///   * [ValueNotifier]
+  ///   * [useValueListenable]
+  ValueNotifier<T> useValueNotifier<T>([T intialData, List<Object> keys]) {
+    return use(_ValueNotifierHook(
+      initialData: intialData,
+      keys: keys,
+    ));
+  }
 }
 
 class _ValueNotifierHook<T> extends Hook<ValueNotifier<T>> {

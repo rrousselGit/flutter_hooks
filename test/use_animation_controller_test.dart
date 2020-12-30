@@ -9,8 +9,8 @@ void main() {
     AnimationController controller;
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        controller = useAnimationController();
+      HookBuilder(builder: (context, h) {
+        controller = h.useAnimationController();
         return Container();
       }),
     );
@@ -33,8 +33,8 @@ void main() {
 
   testWidgets('diagnostics', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useAnimationController(
+      HookBuilder(builder: (context, h) {
+        h.useAnimationController(
           animationBehavior: AnimationBehavior.preserve,
           duration: const Duration(seconds: 1),
           initialValue: 42,
@@ -74,8 +74,8 @@ void main() {
     });
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        controller = useAnimationController(
+      HookBuilder(builder: (context, h) {
+        controller = h.useAnimationController(
           vsync: provider,
           animationBehavior: AnimationBehavior.preserve,
           duration: const Duration(seconds: 1),
@@ -109,8 +109,8 @@ void main() {
     });
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        controller = useAnimationController(
+      HookBuilder(builder: (context, h) {
+        controller = h.useAnimationController(
           vsync: provider,
           duration: const Duration(seconds: 2),
           debugLabel: 'Bar',
@@ -135,15 +135,15 @@ void main() {
 
   testWidgets('switch from uncontrolled to controlled throws', (tester) async {
     await tester.pumpWidget(HookBuilder(
-      builder: (context) {
-        useAnimationController();
+      builder: (context, h) {
+        h.useAnimationController();
         return Container();
       },
     ));
 
     await tester.pumpWidget(HookBuilder(
-      builder: (context) {
-        useAnimationController(vsync: tester);
+      builder: (context, h) {
+        h.useAnimationController(vsync: tester);
         return Container();
       },
     ));
@@ -152,15 +152,15 @@ void main() {
   });
   testWidgets('switch from controlled to uncontrolled throws', (tester) async {
     await tester.pumpWidget(HookBuilder(
-      builder: (context) {
-        useAnimationController(vsync: tester);
+      builder: (context, h) {
+        h.useAnimationController(vsync: tester);
         return Container();
       },
     ));
 
     await tester.pumpWidget(HookBuilder(
-      builder: (context) {
-        useAnimationController();
+      builder: (context, h) {
+        h.useAnimationController();
         return Container();
       },
     ));
@@ -172,8 +172,8 @@ void main() {
     List<Object> keys;
     AnimationController controller;
     await tester.pumpWidget(HookBuilder(
-      builder: (context) {
-        controller = useAnimationController(keys: keys);
+      builder: (context, h) {
+        controller = h.useAnimationController(keys: keys);
         return Container();
       },
     ));
@@ -182,8 +182,8 @@ void main() {
     keys = [];
 
     await tester.pumpWidget(HookBuilder(
-      builder: (context) {
-        controller = useAnimationController(keys: keys);
+      builder: (context, h) {
+        controller = h.useAnimationController(keys: keys);
         return Container();
       },
     ));

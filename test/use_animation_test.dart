@@ -7,8 +7,8 @@ import 'mock.dart';
 void main() {
   testWidgets('useAnimation throws with null', (tester) async {
     await tester.pumpWidget(HookBuilder(
-      builder: (context) {
-        useAnimation<void>(null);
+      builder: (context, h) {
+        h.useAnimation<void>(null);
         return Container();
       },
     ));
@@ -18,8 +18,8 @@ void main() {
 
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useAnimation(const AlwaysStoppedAnimation(42));
+      HookBuilder(builder: (context, h) {
+        h.useAnimation(const AlwaysStoppedAnimation(42));
         return const SizedBox();
       }),
     );
@@ -44,8 +44,8 @@ void main() {
 
     Future<void> pump() {
       return tester.pumpWidget(HookBuilder(
-        builder: (context) {
-          result = useAnimation(listenable);
+        builder: (context, h) {
+          result = h.useAnimation(listenable);
           return Container();
         },
       ));

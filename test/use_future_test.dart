@@ -10,9 +10,9 @@ void main() {
   testWidgets('default preserve state, changing future keeps previous value',
       (tester) async {
     AsyncSnapshot<int> value;
-    Widget Function(BuildContext) builder(Future<int> stream) {
-      return (context) {
-        value = useFuture(stream);
+    Widget Function(BuildContext, Hookable) builder(Future<int> stream) {
+      return (context, h) {
+        value = h.useFuture(stream);
         return Container();
       };
     }
@@ -34,8 +34,8 @@ void main() {
     final future = Future.value(42);
 
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useFuture(future);
+      HookBuilder(builder: (context, h) {
+        h.useFuture(future);
         return const SizedBox();
       }),
     );
@@ -59,9 +59,9 @@ void main() {
   testWidgets('If preserveState == false, changing future resets value',
       (tester) async {
     AsyncSnapshot<int> value;
-    Widget Function(BuildContext) builder(Future<int> stream) {
-      return (context) {
-        value = useFuture(stream, preserveState: false);
+    Widget Function(BuildContext, Hookable) builder(Future<int> stream) {
+      return (context, h) {
+        value = h.useFuture(stream, preserveState: false);
         return Container();
       };
     }
@@ -79,10 +79,10 @@ void main() {
     expect(value.data, 42);
   });
 
-  Widget Function(BuildContext) snapshotText(Future<String> stream,
+  Widget Function(BuildContext, Hookable) snapshotText(Future<String> stream,
       {String initialData}) {
-    return (context) {
-      final snapshot = useFuture(stream, initialData: initialData);
+    return (context, h) {
+      final snapshot = h.useFuture(stream, initialData: initialData);
       return Text(snapshot.toString(), textDirection: TextDirection.ltr);
     };
   }

@@ -7,8 +7,8 @@ import 'mock.dart';
 void main() {
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useReducer<int, int>((state, action) => 42);
+      HookBuilder(builder: (context, h) {
+        h.useReducer<int, int>((state, action) => 42);
         return const SizedBox();
       }),
     );
@@ -34,8 +34,8 @@ void main() {
       Store<int, String> store;
       Future<void> pump() {
         return tester.pumpWidget(HookBuilder(
-          builder: (context) {
-            store = useReducer(reducer);
+          builder: (context, h) {
+            store = h.useReducer(reducer);
             return Container();
           },
         ));
@@ -76,8 +76,8 @@ void main() {
     testWidgets('reducer required', (tester) async {
       await tester.pumpWidget(
         HookBuilder(
-          builder: (context) {
-            useReducer<void, void>(null);
+          builder: (context, h) {
+            h.useReducer<void, void>(null);
             return Container();
           },
         ),
@@ -91,8 +91,8 @@ void main() {
 
       await tester.pumpWidget(
         HookBuilder(
-          builder: (context) {
-            useReducer(reducer.call).dispatch('Foo');
+          builder: (context, h) {
+            h.useReducer(reducer.call).dispatch('Foo');
             return Container();
           },
         ),
@@ -107,12 +107,14 @@ void main() {
 
       await tester.pumpWidget(
         HookBuilder(
-          builder: (context) {
-            final result = useReducer(
-              reducer,
-              initialAction: 'Foo',
-              initialState: 0,
-            ).state;
+          builder: (context, h) {
+            final result = h
+                .useReducer(
+                  reducer,
+                  initialAction: 'Foo',
+                  initialState: 0,
+                )
+                .state;
             return Text('$result', textDirection: TextDirection.ltr);
           },
         ),
@@ -126,8 +128,8 @@ void main() {
       Store<int, String> store;
       Future<void> pump() {
         return tester.pumpWidget(HookBuilder(
-          builder: (context) {
-            store = useReducer(reducer);
+          builder: (context, h) {
+            store = h.useReducer(reducer);
             return Container();
           },
         ));
@@ -149,8 +151,8 @@ void main() {
 
       await tester.pumpWidget(
         HookBuilder(
-          builder: (context) {
-            useReducer(reducer.call);
+          builder: (context, h) {
+            h.useReducer(reducer.call);
             return Container();
           },
         ),

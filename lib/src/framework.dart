@@ -9,14 +9,16 @@ import 'package:flutter/widgets.dart';
 /// `true` by default. It has no impact on release builds.
 bool debugHotReloadHooksEnabled = true;
 
-/// Register a [Hook] and returns its value
-///
-/// [use] must be called withing `build` of either [HookWidget] or [StatefulHookWidget],
-/// and all calls to [use] must be made unconditionally, always on the same order.
-///
-/// See [Hook] for more explanations.
-// ignore: deprecated_member_use_from_same_package
-R use<R>(Hook<R> hook) => Hook.use(hook);
+extension UseHookExtension on Hookable {
+  /// Register a [Hook] and returns its value
+  ///
+  /// [use] must be called withing `build` of either [HookWidget] or [StatefulHookWidget],
+  /// and all calls to [use] must be made unconditionally, always on the same order.
+  ///
+  /// See [Hook] for more explanations.
+  // ignore: deprecated_member_use_from_same_package
+  R use<R>(Hook<R> hook) => Hook.use(hook);
+}
 
 /// [Hook] is similar to a [StatelessWidget], but is not associated
 /// to an [Element].
@@ -565,6 +567,8 @@ Type mismatch between hooks:
   }
 }
 
+abstract class Hookable {}
+
 /// A [Widget] that can use [Hook]
 ///
 /// It's usage is very similar to [StatelessWidget].
@@ -573,7 +577,7 @@ Type mismatch between hooks:
 ///
 /// The difference is that it can use [Hook], which allows
 /// [HookWidget] to store mutable data without implementing a [State].
-abstract class HookWidget extends StatelessWidget {
+abstract class HookWidget extends StatelessWidget implements Hookable {
   /// Initializes [key] for subclasses.
   const HookWidget({Key key}) : super(key: key);
 
@@ -591,7 +595,7 @@ class _StatelessHookElement extends StatelessElement with HookElement {
 ///
 /// The difference is that it can use [Hook], which allows
 /// [HookWidget] to store mutable data without implementing a [State].
-abstract class StatefulHookWidget extends StatefulWidget {
+abstract class StatefulHookWidget extends StatefulWidget implements Hookable {
   /// Initializes [key] for subclasses.
   const StatefulHookWidget({Key key}) : super(key: key);
 
@@ -603,13 +607,15 @@ class _StatefulHookElement extends StatefulElement with HookElement {
   _StatefulHookElement(StatefulHookWidget hooks) : super(hooks);
 }
 
-/// Obtain the [BuildContext] of the building [HookWidget].
-BuildContext useContext() {
-  assert(
-    HookElement._currentHookElement != null,
-    '`useContext` can only be called from the build method of HookWidget',
-  );
-  return HookElement._currentHookElement;
+extension UseContextHook on Hookable {
+  /// Obtain the [BuildContext] of the building [HookWidget].
+  BuildContext useContext() {
+    assert(
+      HookElement._currentHookElement != null,
+      '`useContext` can only be called from the build method of HookWidget',
+    );
+    return HookElement._currentHookElement;
+  }
 }
 
 /// A [HookWidget] that defer its `build` to a callback
@@ -627,8 +633,8 @@ class HookBuilder extends HookWidget {
   ///
   /// If a [Hook] asks for a rebuild, [builder] will be called again.
   /// [builder] must not return `null`.
-  final Widget Function(BuildContext context) builder;
+  final Widget Function(BuildContext context, Hookable h) builder;
 
   @override
-  Widget build(BuildContext context) => builder(context);
+  Widget build(BuildContext context) => builder(context, this);
 }

@@ -9,7 +9,7 @@ import 'mock.dart';
 void main() {
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
-      HookBuilder(builder: (context) {
+      HookBuilder(builder: (context, h) {
         useTextEditingController();
         return const SizedBox();
       }),
@@ -40,9 +40,9 @@ void main() {
     TextEditingController controller;
 
     await tester.pumpWidget(HookBuilder(
-      builder: (context) {
+      builder: (context, h) {
         controller = useTextEditingController();
-        useValueListenable(rebuilder);
+        h.useValueListenable(rebuilder);
         return Container();
       },
     ));
@@ -74,9 +74,9 @@ void main() {
     var targetText = initialText;
 
     await tester.pumpWidget(HookBuilder(
-      builder: (context) {
+      builder: (context, h) {
         controller = useTextEditingController(text: targetText);
-        useValueListenable(rebuilder);
+        h.useValueListenable(rebuilder);
         return Container();
       },
     ));
@@ -93,7 +93,7 @@ void main() {
   testWidgets('useTextEditingController throws error on null value',
       (tester) async {
     await tester.pumpWidget(HookBuilder(
-      builder: (context) {
+      builder: (context, h) {
         try {
           useTextEditingController.fromValue(null);
         } catch (e) {
@@ -114,9 +114,9 @@ void main() {
     TextEditingController controller;
 
     await tester.pumpWidget(HookBuilder(
-      builder: (context) {
+      builder: (context, h) {
         controller = useTextEditingController.fromValue(targetValue);
-        useValueListenable(rebuilder);
+        h.useValueListenable(rebuilder);
         return Container();
       },
     ));
