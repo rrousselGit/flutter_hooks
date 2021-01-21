@@ -190,7 +190,7 @@ class _EffectHookState extends HookState<void, _EffectHook> {
   bool get debugSkipValue => true;
 }
 
-/// Create variable and subscribes to it.
+/// Creates a variable and subscribes to it.
 ///
 /// Whenever [ValueNotifier.value] updates, it will mark the caller [HookWidget]
 /// as needing build.
@@ -222,46 +222,7 @@ ValueNotifier<T> useState<T>(T initialData) {
   return use(_StateHook(initialData: initialData));
 }
 
-class _StateHook<T> extends Hook<ValueNotifier<T>> {
-  const _StateHook({required this.initialData});
-
-  final T initialData;
-
-  @override
-  _StateHookState<T> createState() => _StateHookState();
-}
-
-class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
-  late ValueNotifier<T> _state;
-
-  @override
-  void initHook() {
-    super.initHook();
-    _state = ValueNotifier(hook.initialData)..addListener(_listener);
-  }
-
-  @override
-  void dispose() {
-    _state.dispose();
-  }
-
-  @override
-  ValueNotifier<T> build(BuildContext context) {
-    return _state;
-  }
-
-  void _listener() {
-    setState(() {});
-  }
-
-  @override
-  Object? get debugValue => _state.value;
-
-  @override
-  String get debugLabel => 'useState<$T>';
-}
-
-/// Create variable and subscribes to it.
+/// Creates a nullable variable and subscribes to it.
 ///
 /// Whenever [ValueNotifier.value] updates, it will mark the caller [HookWidget]
 /// as needing build.
@@ -290,21 +251,20 @@ class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
 ///  * [ValueNotifier]
 ///  * [useStreamController], an alternative to [ValueNotifier] for state.
 ValueNotifier<T?> useNullableState<T>([T? initialData]) {
-  return use(_NullableStateHook(initialData: initialData));
+  return use(_StateHook(initialData: initialData));
 }
 
-class _NullableStateHook<T> extends Hook<ValueNotifier<T?>> {
-  const _NullableStateHook({this.initialData});
+class _StateHook<T> extends Hook<ValueNotifier<T>> {
+  const _StateHook({required this.initialData});
 
-  final T? initialData;
+  final T initialData;
 
   @override
-  _NullableStateHookState<T> createState() => _NullableStateHookState();
+  _StateHookState<T> createState() => _StateHookState();
 }
 
-class _NullableStateHookState<T>
-    extends HookState<ValueNotifier<T?>, _NullableStateHook<T>> {
-  late ValueNotifier<T?> _state;
+class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
+  late ValueNotifier<T> _state;
 
   @override
   void initHook() {
@@ -318,7 +278,7 @@ class _NullableStateHookState<T>
   }
 
   @override
-  ValueNotifier<T?> build(BuildContext context) {
+  ValueNotifier<T> build(BuildContext context) {
     return _state;
   }
 
