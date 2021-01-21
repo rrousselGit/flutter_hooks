@@ -11,3 +11,4 @@ ios/
 /coverage
 pubspec.lock
 .vscode/
+.fvm
