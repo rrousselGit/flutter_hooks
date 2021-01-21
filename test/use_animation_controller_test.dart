@@ -6,7 +6,7 @@ import 'mock.dart';
 
 void main() {
   testWidgets('useAnimationController basic', (tester) async {
-    AnimationController controller;
+    late AnimationController controller;
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
@@ -64,11 +64,11 @@ void main() {
   });
 
   testWidgets('useAnimationController complex', (tester) async {
-    AnimationController controller;
+    late AnimationController controller;
 
     TickerProvider provider;
     provider = _TickerProvider();
-    when(provider.createTicker(any)).thenAnswer((_) {
+    when(provider.createTicker((_) {})).thenAnswer((_) {
       return tester
           .createTicker(_.positionalArguments[0] as void Function(Duration));
     });
@@ -88,7 +88,7 @@ void main() {
       }),
     );
 
-    verify(provider.createTicker(any)).called(1);
+    verify(provider.createTicker((_) {})).called(1);
     verifyNoMoreInteractions(provider);
 
     // check has a ticker
@@ -103,7 +103,7 @@ void main() {
 
     final previousController = controller;
     provider = _TickerProvider();
-    when(provider.createTicker(any)).thenAnswer((_) {
+    when(provider.createTicker((_) {})).thenAnswer((_) {
       return tester
           .createTicker(_.positionalArguments[0] as void Function(Duration));
     });
@@ -119,7 +119,7 @@ void main() {
       }),
     );
 
-    verify(provider.createTicker(any)).called(1);
+    verify(provider.createTicker((_) {})).called(1);
     verifyNoMoreInteractions(provider);
     expect(controller, previousController);
     expect(controller.duration, const Duration(seconds: 2));
@@ -169,8 +169,8 @@ void main() {
   });
 
   testWidgets('useAnimationController pass down keys', (tester) async {
-    List<Object> keys;
-    AnimationController controller;
+    List<Object>? keys;
+    late AnimationController controller;
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
         controller = useAnimationController(keys: keys);

@@ -31,7 +31,7 @@ void main() {
     testWidgets('basic', (tester) async {
       final reducer = MockReducer();
 
-      Store<int, String> store;
+      late Store<int, String> store;
       Future<void> pump() {
         return tester.pumpWidget(HookBuilder(
           builder: (context) {
@@ -73,19 +73,6 @@ void main() {
       expect(element.dirty, false);
     });
 
-    testWidgets('reducer required', (tester) async {
-      await tester.pumpWidget(
-        HookBuilder(
-          builder: (context) {
-            useReducer<void, void>(null);
-            return Container();
-          },
-        ),
-      );
-
-      expect(tester.takeException(), isAssertionError);
-    });
-
     testWidgets('dispatch during build fails', (tester) async {
       final reducer = MockReducer();
 
@@ -120,29 +107,6 @@ void main() {
 
       expect(find.text('42'), findsOneWidget);
     });
-    testWidgets('dispatchs reducer call must not return null', (tester) async {
-      final reducer = MockReducer();
-
-      Store<int, String> store;
-      Future<void> pump() {
-        return tester.pumpWidget(HookBuilder(
-          builder: (context) {
-            store = useReducer(reducer);
-            return Container();
-          },
-        ));
-      }
-
-      when(reducer(null, null)).thenReturn(42);
-
-      await pump();
-
-      when(reducer(42, 'foo')).thenReturn(null);
-      expect(() => store.dispatch('foo'), throwsAssertionError);
-
-      await pump();
-      expect(store.state, 42);
-    });
 
     testWidgets('first reducer call must not return null', (tester) async {
       final reducer = MockReducer();
@@ -162,5 +126,5 @@ void main() {
 }
 
 class MockReducer extends Mock {
-  int call(int state, String action);
+  int call(int? state, String? action);
 }

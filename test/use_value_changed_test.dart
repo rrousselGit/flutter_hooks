@@ -38,7 +38,7 @@ void main() {
   testWidgets('useValueChanged basic', (tester) async {
     var value = 42;
     final _useValueChanged = MockValueChanged();
-    String result;
+    late String result;
 
     Future<void> pump() {
       return tester.pumpWidget(
@@ -96,19 +96,8 @@ void main() {
     // dispose
     await tester.pumpWidget(const SizedBox());
   });
-
-  testWidgets('valueChanged required', (tester) async {
-    await tester.pumpWidget(HookBuilder(
-      builder: (context) {
-        useValueChanged<int, int>(42, null);
-        return Container();
-      },
-    ));
-
-    expect(tester.takeException(), isAssertionError);
-  });
 }
 
 class MockValueChanged extends Mock {
-  String call(int value, String previous);
+  String call(int? value, String? previous);
 }

@@ -145,7 +145,7 @@ Hooks can only be called from the build method of a widget that mix-in `Hooks`.
 Hooks should only be called within the build method of a widget.
 Calling them outside of build method leads to an unstable state and is therefore prohibited.
 ''');
-    return HookElement._currentHookElement._use(hook);
+    return HookElement._currentHookElement!._use(hook);
   }
 
   /// A list of objects that specify if a [HookState] should be reused or a new one should be created.
@@ -153,7 +153,7 @@ Calling them outside of build method leads to an unstable state and is therefore
   /// When a new [Hook] is created, the framework checks if keys matches using [Hook.shouldPreserveState].
   /// If they don't, the previously created [HookState] is disposed, and a new one is created
   /// using [Hook.createState], followed by [HookState.initHook].
-  final List<Object> keys;
+  final List<Object>? keys;
 
   /// The algorithm to determine if a [HookState] should be reused or disposed.
   ///
@@ -207,27 +207,27 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   /// Equivalent of [State.context] for [HookState]
   @protected
   BuildContext get context => _element;
-  HookElement _element;
+  late HookElement _element;
 
-  R _debugLastBuiltValue;
+  late R _debugLastBuiltValue;
 
   /// The value shown in the devtool.
   ///
   /// Defaults to the last value returned by [build].
-  Object get debugValue => _debugLastBuiltValue;
+  Object? get debugValue => _debugLastBuiltValue;
 
   /// A flag to not show [debugValue] in the devtool, for hooks that returns nothing.
   bool get debugSkipValue => false;
 
   /// A label used by the devtool to show the state of a hook
-  String get debugLabel => null;
+  String? get debugLabel => null;
 
   /// Whether the devtool description should skip [debugFillProperties] or not.
   bool get debugHasShortDescription => true;
 
   /// Equivalent of [State.widget] for [HookState]
   T get hook => _hook;
-  T _hook;
+  late T _hook;
 
   /// Equivalent of [State.initState] for [HookState]
   @protected
@@ -241,7 +241,7 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   ///
   /// [build] is where an [HookState] may use other hooks. This restriction is made to ensure that hooks are unconditionally always requested
   @protected
-  R build(BuildContext context);
+  R? build(BuildContext context);
 
   /// Equivalent of [State.didUpdateWidget] for [HookState]
   @protected
@@ -284,7 +284,7 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
       _element
         .._isOptionalRebuild = true
         .._shouldRebuildQueue ??= LinkedList()
-        .._shouldRebuildQueue.add(_Entry(shouldRebuild))
+        .._shouldRebuildQueue!.add(_Entry(shouldRebuild))
         ..markNeedsBuild();
     }
     assert(_element.dirty, 'Bad state');
@@ -338,7 +338,7 @@ extension on HookElement {
   void _appendHook<R>(Hook<R> hook) {
     final result = _createHookState<R>(hook);
     _currentHookState = _Entry(result);
-    _hooks.add(_currentHookState);
+    _hooks.add(_currentHookState!);
   }
 
   void _unmountAllRemainingHooks() {
@@ -346,10 +346,10 @@ extension on HookElement {
       _needDispose ??= LinkedList();
       // Mark all hooks >= this one as needing dispose
       while (_currentHookState != null) {
-        final previousHookState = _currentHookState;
-        _currentHookState = _currentHookState.next;
+        final previousHookState = _currentHookState!;
+        _currentHookState = _currentHookState!.next;
         previousHookState.unlink();
-        _needDispose.add(previousHookState);
+        _needDispose!.add(previousHookState);
       }
     }
   }
@@ -358,14 +358,14 @@ extension on HookElement {
 /// An [Element] that uses a [HookWidget] as its configuration.
 @visibleForTesting
 mixin HookElement on ComponentElement {
-  static HookElement _currentHookElement;
+  static HookElement? _currentHookElement;
 
-  _Entry<HookState> _currentHookState;
+  _Entry<HookState>? _currentHookState;
   final LinkedList<_Entry<HookState>> _hooks = LinkedList();
-  LinkedList<_Entry<bool Function()>> _shouldRebuildQueue;
-  LinkedList<_Entry<HookState>> _needDispose;
-  bool _isOptionalRebuild = false;
-  Widget _buildCache;
+  LinkedList<_Entry<bool Function()>>? _shouldRebuildQueue;
+  LinkedList<_Entry<HookState>>? _needDispose;
+  bool? _isOptionalRebuild = false;
+  late Widget _buildCache;
 
   bool _debugIsInitHook = false;
   bool _debugDidReassemble = false;
@@ -373,7 +373,7 @@ mixin HookElement on ComponentElement {
   /// A read-only list of all hooks available.
   ///
   /// In release mode, returns `null`.
-  List<HookState> get debugHooks {
+  List<HookState>? get debugHooks {
     if (!kDebugMode) {
       return null;
     }
@@ -399,10 +399,8 @@ mixin HookElement on ComponentElement {
     super.reassemble();
     _isOptionalRebuild = false;
     _debugDidReassemble = true;
-    if (_hooks != null) {
-      for (final hook in _hooks) {
-        hook.value.reassemble();
-      }
+    for (final hook in _hooks) {
+      hook.value.reassemble();
     }
   }
 
@@ -410,7 +408,7 @@ mixin HookElement on ComponentElement {
   Widget build() {
     // Check whether we can cancel the rebuild (caused by HookState.mayNeedRebuild).
     final mustRebuild = _isOptionalRebuild != true ||
-        _shouldRebuildQueue.any((cb) => cb.value());
+        (_shouldRebuildQueue?.any((cb) => cb.value()) ?? false);
 
     _isOptionalRebuild = null;
     _shouldRebuildQueue?.clear();
@@ -430,8 +428,9 @@ mixin HookElement on ComponentElement {
       _isOptionalRebuild = null;
       _unmountAllRemainingHooks();
       HookElement._currentHookElement = null;
-      if (_needDispose != null && _needDispose.isNotEmpty) {
-        for (var toDispose = _needDispose.last;
+      if (_needDispose != null && _needDispose!.isNotEmpty) {
+        for (_Entry<HookState<dynamic, Hook<dynamic>>>? toDispose =
+                _needDispose!.last;
             toDispose != null;
             toDispose = toDispose.previous) {
           toDispose.value.dispose();
@@ -447,8 +446,8 @@ mixin HookElement on ComponentElement {
     /// At the end of the hooks list
     if (_currentHookState == null) {
       _appendHook(hook);
-    } else if (hook.runtimeType != _currentHookState.value.hook.runtimeType) {
-      final previousHookType = _currentHookState.value.hook.runtimeType;
+    } else if (hook.runtimeType != _currentHookState!.value.hook.runtimeType) {
+      final previousHookType = _currentHookState!.value.hook.runtimeType;
       _unmountAllRemainingHooks();
       if (kDebugMode && _debugDidReassemble) {
         _appendHook(hook);
@@ -459,31 +458,31 @@ Type mismatch between hooks:
 - new hook: ${hook.runtimeType}
 ''');
       }
-    } else if (hook != _currentHookState.value.hook) {
-      final previousHook = _currentHookState.value.hook;
+    } else if (hook != _currentHookState!.value.hook) {
+      final previousHook = _currentHookState!.value.hook;
       if (Hook.shouldPreserveState(previousHook, hook)) {
-        _currentHookState.value
+        _currentHookState!.value
           .._hook = hook
           ..didUpdateHook(previousHook);
       } else {
         _needDispose ??= LinkedList();
-        _needDispose.add(_Entry(_currentHookState.value));
-        _currentHookState.value = _createHookState<R>(hook);
+        _needDispose!.add(_Entry(_currentHookState!.value));
+        _currentHookState!.value = _createHookState<R>(hook);
       }
     }
 
-    final result = _currentHookState.value.build(this) as R;
+    final result = _currentHookState!.value.build(this) as R;
     assert(() {
-      _currentHookState.value._debugLastBuiltValue = result;
+      _currentHookState!.value._debugLastBuiltValue = result;
       return true;
     }(), '');
-    _currentHookState = _currentHookState.next;
+    _currentHookState = _currentHookState!.next;
     return result;
   }
 
   @override
-  T dependOnInheritedWidgetOfExactType<T extends InheritedWidget>({
-    Object aspect,
+  T? dependOnInheritedWidgetOfExactType<T extends InheritedWidget>({
+    Object? aspect,
   }) {
     assert(
       !_debugIsInitHook,
@@ -496,8 +495,10 @@ Type mismatch between hooks:
   @override
   void unmount() {
     super.unmount();
-    if (_hooks != null && _hooks.isNotEmpty) {
-      for (var hook = _hooks.last; hook != null; hook = hook.previous) {
+    if (_hooks.isNotEmpty) {
+      for (_Entry<HookState<dynamic, Hook<dynamic>>>? hook = _hooks.last;
+          hook != null;
+          hook = hook.previous) {
         try {
           hook.value.dispose();
         } catch (exception, stack) {
@@ -518,22 +519,20 @@ Type mismatch between hooks:
 
   @override
   void deactivate() {
-    if (_hooks != null) {
-      for (final hook in _hooks) {
-        try {
-          hook.value.deactivate();
-        } catch (exception, stack) {
-          FlutterError.reportError(
-            FlutterErrorDetails(
-              exception: exception,
-              stack: stack,
-              library: 'hooks library',
-              context: DiagnosticsNode.message(
-                'while deactivating ${hook.runtimeType}',
-              ),
+    for (final hook in _hooks) {
+      try {
+        hook.value.deactivate();
+      } catch (exception, stack) {
+        FlutterError.reportError(
+          FlutterErrorDetails(
+            exception: exception,
+            stack: stack,
+            library: 'hooks library',
+            context: DiagnosticsNode.message(
+              'while deactivating ${hook.runtimeType}',
             ),
-          );
-        }
+          ),
+        );
       }
     }
     super.deactivate();
@@ -542,11 +541,11 @@ Type mismatch between hooks:
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    for (final hookState in debugHooks) {
+    for (final hookState in debugHooks!) {
       if (hookState.debugHasShortDescription) {
         if (hookState.debugSkipValue) {
           properties.add(
-            StringProperty(hookState.debugLabel, '', ifEmpty: ''),
+            StringProperty(hookState.debugLabel!, '', ifEmpty: ''),
           );
         } else {
           properties.add(
@@ -575,7 +574,7 @@ Type mismatch between hooks:
 /// [HookWidget] to store mutable data without implementing a [State].
 abstract class HookWidget extends StatelessWidget {
   /// Initializes [key] for subclasses.
-  const HookWidget({Key key}) : super(key: key);
+  const HookWidget({Key? key}) : super(key: key);
 
   @override
   _StatelessHookElement createElement() => _StatelessHookElement(this);
@@ -593,7 +592,7 @@ class _StatelessHookElement extends StatelessElement with HookElement {
 /// [HookWidget] to store mutable data without implementing a [State].
 abstract class StatefulHookWidget extends StatefulWidget {
   /// Initializes [key] for subclasses.
-  const StatefulHookWidget({Key key}) : super(key: key);
+  const StatefulHookWidget({Key? key}) : super(key: key);
 
   @override
   _StatefulHookElement createElement() => _StatefulHookElement(this);
@@ -609,7 +608,7 @@ BuildContext useContext() {
     HookElement._currentHookElement != null,
     '`useContext` can only be called from the build method of HookWidget',
   );
-  return HookElement._currentHookElement;
+  return HookElement._currentHookElement!;
 }
 
 /// A [HookWidget] that defer its `build` to a callback
@@ -618,10 +617,9 @@ class HookBuilder extends HookWidget {
   ///
   /// The [builder] argument must not be null.
   const HookBuilder({
-    @required this.builder,
-    Key key,
-  })  : assert(builder != null, '`builder` cannot be null'),
-        super(key: key);
+    required this.builder,
+    Key? key,
+  }) : super(key: key);
 
   /// The callback used by [HookBuilder] to create a widget.
   ///

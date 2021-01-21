@@ -29,21 +29,21 @@ class HookTest<R> extends Hook<R> {
     this.createStateFn,
     this.didBuild,
     this.deactivate,
-    List<Object> keys,
+    List<Object>? keys,
   }) : super(keys: keys);
 
-  final R Function(BuildContext context) build;
-  final void Function() dispose;
-  final void Function() didBuild;
-  final void Function() initHook;
-  final void Function() deactivate;
-  final void Function(HookTest<R> previousHook) didUpdateHook;
-  final void Function() reassemble;
-  final HookStateTest<R> Function() createStateFn;
+  final R Function(BuildContext context)? build;
+  final void Function()? dispose;
+  final void Function()? didBuild;
+  final void Function()? initHook;
+  final void Function()? deactivate;
+  final void Function(HookTest<R> previousHook)? didUpdateHook;
+  final void Function()? reassemble;
+  final HookStateTest<R> Function()? createStateFn;
 
   @override
   HookStateTest<R> createState() =>
-      createStateFn != null ? createStateFn() : HookStateTest<R>();
+      createStateFn != null ? createStateFn!() : HookStateTest<R>();
 }
 
 class HookStateTest<R> extends HookState<R, HookTest<R>> {
@@ -51,57 +51,47 @@ class HookStateTest<R> extends HookState<R, HookTest<R>> {
   void initHook() {
     super.initHook();
     if (hook.initHook != null) {
-      hook.initHook();
+      hook.initHook!();
     }
   }
 
   @override
   void dispose() {
-    if (hook.dispose != null) {
-      hook.dispose();
-    }
+    hook.dispose?.call();
   }
 
   @override
   void didUpdateHook(HookTest<R> oldHook) {
     super.didUpdateHook(oldHook);
-    if (hook.didUpdateHook != null) {
-      hook.didUpdateHook(oldHook);
-    }
+    hook.didUpdateHook?.call(oldHook);
   }
 
   @override
   void reassemble() {
     super.reassemble();
-    if (hook.reassemble != null) {
-      hook.reassemble();
-    }
+    hook.reassemble?.call();
   }
 
   @override
   void deactivate() {
     super.deactivate();
-    if (hook.deactivate != null) {
-      hook.deactivate();
-    }
+    hook.deactivate?.call();
   }
 
   @override
-  R build(BuildContext context) {
+  R? build(BuildContext context) {
     if (hook.build != null) {
-      return hook.build(context);
+      return hook.build!(context);
     }
     return null;
   }
 }
 
 Element _rootOf(Element element) {
-  Element root;
+  late Element root;
   element.visitAncestorElements((e) {
-    if (e != null) {
-      root = e;
-    }
-    return e != null;
+    root = e;
+    return true;
   });
   return root;
 }
@@ -109,7 +99,7 @@ Element _rootOf(Element element) {
 void hotReload(WidgetTester tester) {
   final root = _rootOf(tester.allElements.first);
 
-  TestWidgetsFlutterBinding.ensureInitialized().buildOwner.reassemble(root);
+  TestWidgetsFlutterBinding.ensureInitialized().buildOwner?.reassemble(root);
 }
 
 class MockSetState extends Mock {
@@ -133,11 +123,11 @@ class MockDeactivate extends Mock {
 }
 
 class MockErrorBuilder extends Mock {
-  Widget call(FlutterErrorDetails error);
+  Widget call(FlutterErrorDetails? error);
 }
 
 class MockOnError extends Mock {
-  void call(FlutterErrorDetails error);
+  void call(FlutterErrorDetails? error);
 }
 
 class MockReassemble extends Mock {

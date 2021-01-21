@@ -31,8 +31,8 @@ void main() {
 
   group('usePageController', () {
     testWidgets('initial values matches with real constructor', (tester) async {
-      PageController controller;
-      PageController controller2;
+      late PageController controller;
+      late PageController controller2;
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
@@ -47,8 +47,8 @@ void main() {
       expect(controller.viewportFraction, controller2.viewportFraction);
     });
     testWidgets("returns a PageController that doesn't change", (tester) async {
-      PageController controller;
-      PageController controller2;
+      late PageController controller;
+      late PageController controller2;
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
@@ -70,7 +70,7 @@ void main() {
     });
 
     testWidgets('passes hook parameters to the PageController', (tester) async {
-      PageController controller;
+      late PageController controller;
 
       await tester.pumpWidget(
         HookBuilder(
@@ -92,7 +92,7 @@ void main() {
     });
 
     testWidgets('disposes the PageController on unmount', (tester) async {
-      PageController controller;
+      late PageController controller;
 
       await tester.pumpWidget(
         HookBuilder(
@@ -107,7 +107,7 @@ void main() {
       await tester.pumpWidget(Container());
 
       expect(
-        () => controller.addListener(null),
+        () => controller.addListener(() {}),
         throwsA(isFlutterError.having(
             (e) => e.message, 'message', contains('disposed'))),
       );

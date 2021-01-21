@@ -10,3 +10,4 @@ android/
 ios/
 /coverage
 pubspec.lock
+.vscode/

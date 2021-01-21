@@ -59,7 +59,7 @@ void main() {
   });
 
   testWidgets('shouldRebuild defaults to true', (tester) async {
-    MayRebuildState first;
+    late MayRebuildState first;
     var buildCount = 0;
 
     await tester.pumpWidget(
@@ -81,8 +81,8 @@ void main() {
   testWidgets('can queue multiple mayRebuilds at once', (tester) async {
     final firstSpy = ShouldRebuildMock();
     final secondSpy = ShouldRebuildMock();
-    MayRebuildState first;
-    MayRebuildState second;
+    late MayRebuildState first;
+    late MayRebuildState second;
     var buildCount = 0;
 
     await tester.pumpWidget(
@@ -220,7 +220,7 @@ void main() {
     expect(find.text('true'), findsOneWidget);
     expect(find.text('false'), findsNothing);
   });
-  testWidgets('markMayNeedBuild then didChangeDepencies forces build',
+  testWidgets('markMayNeedBuild then didChangeDependencies forces build',
       (tester) async {
     var buildCount = 0;
     final notifier = ValueNotifier(0);
@@ -271,7 +271,7 @@ class IsPositiveHook extends Hook<bool> {
 
 class IsPositiveHookState extends HookState<bool, IsPositiveHook> {
   bool dirty = true;
-  bool value;
+  late bool value;
 
   @override
   void initHook() {
@@ -317,7 +317,7 @@ class IsPositiveHookState extends HookState<bool, IsPositiveHook> {
 class MayRebuild extends Hook<MayRebuildState> {
   const MayRebuild([this.shouldRebuild]);
 
-  final ShouldRebuildMock shouldRebuild;
+  final ShouldRebuildMock? shouldRebuild;
 
   @override
   MayRebuildState createState() {
@@ -331,7 +331,7 @@ class MayRebuildState extends HookState<MayRebuildState, MayRebuild> {
     if (hook.shouldRebuild == null) {
       return super.shouldRebuild();
     }
-    return hook.shouldRebuild();
+    return hook.shouldRebuild!();
   }
 
   @override

@@ -31,7 +31,7 @@ void main() {
   });
 
   testWidgets('useSingleTickerProvider basic', (tester) async {
-    TickerProvider provider;
+    late TickerProvider provider;
 
     await tester.pumpWidget(TickerMode(
       enabled: true,
@@ -62,7 +62,7 @@ void main() {
   });
 
   testWidgets('useSingleTickerProvider still active', (tester) async {
-    TickerProvider provider;
+    late TickerProvider provider;
 
     await tester.pumpWidget(TickerMode(
       enabled: true,
@@ -90,8 +90,8 @@ void main() {
   });
 
   testWidgets('useSingleTickerProvider pass down keys', (tester) async {
-    TickerProvider provider;
-    List<Object> keys;
+    late TickerProvider provider;
+    List<Object>? keys;
 
     await tester.pumpWidget(HookBuilder(builder: (context) {
       provider = useSingleTickerProvider(keys: keys);

@@ -5,10 +5,10 @@ part of 'hooks.dart';
 /// See also:
 /// - [TabController]
 TabController useTabController({
-  @required int initialLength,
-  TickerProvider vsync,
+  required int initialLength,
+  TickerProvider? vsync,
   int initialIndex = 0,
-  List<Object> keys,
+  List<Object>? keys,
 }) {
   vsync ??= useSingleTickerProvider(keys: keys);
 
@@ -22,10 +22,10 @@ TabController useTabController({
 
 class _TabControllerHook extends Hook<TabController> {
   const _TabControllerHook({
-    @required this.length,
-    @required this.vsync,
+    required this.length,
+    required this.vsync,
     this.initialIndex = 0,
-    List<Object> keys,
+    List<Object>? keys,
   }) : super(keys: keys);
 
   final int length;
@@ -39,7 +39,7 @@ class _TabControllerHook extends Hook<TabController> {
 
 class _TabControllerHookState
     extends HookState<TabController, _TabControllerHook> {
-  TabController controller;
+  late TabController controller;
 
   @override
   void initHook() {
@@ -54,7 +54,7 @@ class _TabControllerHookState
   TabController build(BuildContext context) => controller;
 
   @override
-  void dispose() => controller?.dispose();
+  void dispose() => controller.dispose();
 
   @override
   String get debugLabel => 'useTabController';

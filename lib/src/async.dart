@@ -9,7 +9,7 @@ part of 'hooks.dart';
 ///   * [Future], the listened object.
 ///   * [useStream], similar to [useFuture] but for [Stream].
 AsyncSnapshot<T> useFuture<T>(Future<T> future,
-    {T initialData, bool preserveState = true}) {
+    {T? initialData, bool preserveState = true}) {
   return use(_FutureHook(future,
       initialData: initialData, preserveState: preserveState));
 }
@@ -19,7 +19,7 @@ class _FutureHook<T> extends Hook<AsyncSnapshot<T>> {
 
   final Future<T> future;
   final bool preserveState;
-  final T initialData;
+  final T? initialData;
 
   @override
   _FutureStateHook<T> createState() => _FutureStateHook<T>();
@@ -29,14 +29,18 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
   /// An object that identifies the currently active callbacks. Used to avoid
   /// calling setState from stale callbacks, e.g. after disposal of this state,
   /// or after widget reconfiguration to a new Future.
-  Object _activeCallbackIdentity;
-  AsyncSnapshot<T> _snapshot;
+  Object? _activeCallbackIdentity;
+  late AsyncSnapshot<T> _snapshot;
 
   @override
   void initHook() {
     super.initHook();
-    _snapshot =
-        AsyncSnapshot<T>.withData(ConnectionState.none, hook.initialData);
+    if (hook.initialData != null) {
+      _snapshot = AsyncSnapshot<T>.withData(
+          ConnectionState.none, hook.initialData as T);
+    } else {
+      _snapshot = AsyncSnapshot<T>.nothing();
+    }
     _subscribe();
   }
 
@@ -49,8 +53,12 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
         if (hook.preserveState) {
           _snapshot = _snapshot.inState(ConnectionState.none);
         } else {
-          _snapshot =
-              AsyncSnapshot<T>.withData(ConnectionState.none, hook.initialData);
+          if (hook.initialData != null) {
+            _snapshot = AsyncSnapshot<T>.withData(
+                ConnectionState.none, hook.initialData as T);
+          } else {
+            _snapshot = AsyncSnapshot<T>.nothing();
+          }
         }
       }
       _subscribe();
@@ -63,24 +71,23 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
   }
 
   void _subscribe() {
-    if (hook.future != null) {
-      final callbackIdentity = Object();
-      _activeCallbackIdentity = callbackIdentity;
-      hook.future.then<void>((data) {
-        if (_activeCallbackIdentity == callbackIdentity) {
-          setState(() {
-            _snapshot = AsyncSnapshot<T>.withData(ConnectionState.done, data);
-          });
-        }
-      }, onError: (dynamic error) {
-        if (_activeCallbackIdentity == callbackIdentity) {
-          setState(() {
-            _snapshot = AsyncSnapshot<T>.withError(ConnectionState.done, error);
-          });
-        }
-      });
-      _snapshot = _snapshot.inState(ConnectionState.waiting);
-    }
+    final callbackIdentity = Object();
+    _activeCallbackIdentity = callbackIdentity;
+    hook.future.then<void>((data) {
+      if (_activeCallbackIdentity == callbackIdentity) {
+        setState(() {
+          _snapshot = AsyncSnapshot<T>.withData(ConnectionState.done, data);
+        });
+      }
+    }, onError: (dynamic error) {
+      if (_activeCallbackIdentity == callbackIdentity) {
+        setState(() {
+          _snapshot =
+              AsyncSnapshot<T>.withError(ConnectionState.done, error as Object);
+        });
+      }
+    });
+    _snapshot = _snapshot.inState(ConnectionState.waiting);
   }
 
   void _unsubscribe() {
@@ -105,7 +112,7 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
 ///   * [Stream], the object listened.
 ///   * [useFuture], similar to [useStream] but for [Future].
 AsyncSnapshot<T> useStream<T>(Stream<T> stream,
-    {T initialData, bool preserveState = true}) {
+    {T? initialData, bool preserveState = true}) {
   return use(_StreamHook(
     stream,
     initialData: initialData,
@@ -117,7 +124,7 @@ class _StreamHook<T> extends Hook<AsyncSnapshot<T>> {
   const _StreamHook(this.stream, {this.initialData, this.preserveState = true});
 
   final Stream<T> stream;
-  final T initialData;
+  final T? initialData;
   final bool preserveState;
 
   @override
@@ -126,8 +133,8 @@ class _StreamHook<T> extends Hook<AsyncSnapshot<T>> {
 
 /// a clone of [StreamBuilderBase] implementation
 class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
-  StreamSubscription<T> _subscription;
-  AsyncSnapshot<T> _summary;
+  StreamSubscription<T>? _subscription;
+  late AsyncSnapshot<T> _summary;
 
   @override
   void initHook() {
@@ -158,29 +165,25 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
   }
 
   void _subscribe() {
-    if (hook.stream != null) {
-      _subscription = hook.stream.listen((data) {
-        setState(() {
-          _summary = afterData(_summary, data);
-        });
-      }, onError: (dynamic error) {
-        setState(() {
-          _summary = afterError(_summary, error);
-        });
-      }, onDone: () {
-        setState(() {
-          _summary = afterDone(_summary);
-        });
+    _subscription = hook.stream.listen((data) {
+      setState(() {
+        _summary = afterData(_summary, data);
       });
-      _summary = afterConnected(_summary);
-    }
+    }, onError: (dynamic error) {
+      setState(() {
+        _summary = afterError(_summary, error as Object);
+      });
+    }, onDone: () {
+      setState(() {
+        _summary = afterDone(_summary);
+      });
+    });
+    _summary = afterConnected(_summary);
   }
 
   void _unsubscribe() {
-    if (_subscription != null) {
-      _subscription.cancel();
-      _subscription = null;
-    }
+    _subscription?.cancel();
+    _subscription = null;
   }
 
   @override
@@ -188,8 +191,9 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
     return _summary;
   }
 
-  AsyncSnapshot<T> initial() =>
-      AsyncSnapshot<T>.withData(ConnectionState.none, hook.initialData);
+  AsyncSnapshot<T> initial() => hook.initialData != null
+      ? AsyncSnapshot<T>.withData(ConnectionState.none, hook.initialData as T)
+      : AsyncSnapshot<T>.nothing();
 
   AsyncSnapshot<T> afterConnected(AsyncSnapshot<T> current) =>
       current.inState(ConnectionState.waiting);
@@ -219,9 +223,9 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
 ///   * [useStream], to listen to the created [StreamController]
 StreamController<T> useStreamController<T>(
     {bool sync = false,
-    VoidCallback onListen,
-    VoidCallback onCancel,
-    List<Object> keys}) {
+    VoidCallback? onListen,
+    VoidCallback? onCancel,
+    List<Object>? keys}) {
   return use(_StreamControllerHook(
     onCancel: onCancel,
     onListen: onListen,
@@ -232,12 +236,12 @@ StreamController<T> useStreamController<T>(
 
 class _StreamControllerHook<T> extends Hook<StreamController<T>> {
   const _StreamControllerHook(
-      {this.sync = false, this.onListen, this.onCancel, List<Object> keys})
+      {this.sync = false, this.onListen, this.onCancel, List<Object>? keys})
       : super(keys: keys);
 
   final bool sync;
-  final VoidCallback onListen;
-  final VoidCallback onCancel;
+  final VoidCallback? onListen;
+  final VoidCallback? onCancel;
 
   @override
   _StreamControllerHookState<T> createState() =>
@@ -246,7 +250,7 @@ class _StreamControllerHook<T> extends Hook<StreamController<T>> {
 
 class _StreamControllerHookState<T>
     extends HookState<StreamController<T>, _StreamControllerHook<T>> {
-  StreamController<T> _controller;
+  late StreamController<T> _controller;
 
   @override
   void initHook() {

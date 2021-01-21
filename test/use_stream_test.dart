@@ -39,7 +39,7 @@ void main() {
 
   testWidgets('default preserve state, changing stream keeps previous value',
       (tester) async {
-    AsyncSnapshot<int> value;
+    late AsyncSnapshot<int> value;
     Widget Function(BuildContext) builder(Stream<int> stream) {
       return (context) {
         value = useStream(stream);
@@ -61,7 +61,7 @@ void main() {
   });
   testWidgets('If preserveState == false, changing stream resets value',
       (tester) async {
-    AsyncSnapshot<int> value;
+    late AsyncSnapshot<int> value;
     Widget Function(BuildContext) builder(Stream<int> stream) {
       return (context) {
         value = useStream(stream, preserveState: false);
@@ -83,35 +83,13 @@ void main() {
   });
 
   Widget Function(BuildContext) snapshotText(Stream<String> stream,
-      {String initialData}) {
+      {String? initialData}) {
     return (context) {
       final snapshot = useStream(stream, initialData: initialData);
       return Text(snapshot.toString(), textDirection: TextDirection.ltr);
     };
   }
 
-  testWidgets('gracefully handles transition from null stream', (tester) async {
-    await tester.pumpWidget(HookBuilder(builder: snapshotText(null)));
-    expect(find.text('AsyncSnapshot<String>(ConnectionState.none, null, null)'),
-        findsOneWidget);
-    final controller = StreamController<String>();
-    await tester
-        .pumpWidget(HookBuilder(builder: snapshotText(controller.stream)));
-    expect(
-        find.text('AsyncSnapshot<String>(ConnectionState.waiting, null, null)'),
-        findsOneWidget);
-  });
-  testWidgets('gracefully handles transition to null stream', (tester) async {
-    final controller = StreamController<String>();
-    await tester
-        .pumpWidget(HookBuilder(builder: snapshotText(controller.stream)));
-    expect(
-        find.text('AsyncSnapshot<String>(ConnectionState.waiting, null, null)'),
-        findsOneWidget);
-    await tester.pumpWidget(HookBuilder(builder: snapshotText(null)));
-    expect(find.text('AsyncSnapshot<String>(ConnectionState.none, null, null)'),
-        findsOneWidget);
-  });
   testWidgets('gracefully handles transition to other stream', (tester) async {
     final controllerA = StreamController<String>();
     final controllerB = StreamController<String>();
@@ -163,7 +141,7 @@ void main() {
   });
   testWidgets('ignores initialData when reconfiguring', (tester) async {
     await tester.pumpWidget(HookBuilder(
-      builder: snapshotText(null, initialData: 'I'),
+      builder: snapshotText(const Stream.empty(), initialData: 'I'),
     ));
     expect(find.text('AsyncSnapshot<String>(ConnectionState.none, I, null)'),
         findsOneWidget);

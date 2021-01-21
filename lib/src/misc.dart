@@ -17,14 +17,14 @@ abstract class Store<State, Action> {
 /// Composes an [Action] and a [State] to create a new [State].
 ///
 /// [Reducer] must never return `null`, even if [state] or [action] are `null`.
-typedef Reducer<State, Action> = State Function(State state, Action action);
+typedef Reducer<State, Action> = State Function(State? state, Action? action);
 
 /// An alternative to [useState] for more complex states.
 ///
 /// [useReducer] manages an read only state that can be updated
 /// by dispatching actions which are interpreted by a [Reducer].
 ///
-/// [reducer] is immediatly called on first build with [initialAction]
+/// [reducer] is immediately called on first build with [initialAction]
 /// and [initialState] as parameter.
 ///
 /// It is possible to change the [reducer] by calling [useReducer]
@@ -35,11 +35,11 @@ typedef Reducer<State, Action> = State Function(State state, Action action);
 ///  * [Store]
 Store<State, Action> useReducer<State extends Object, Action>(
   Reducer<State, Action> reducer, {
-  State initialState,
-  Action initialAction,
+  State? initialState,
+  Action? initialAction,
 }) {
   return use(
-    _ReducerdHook(
+    _ReducerHook(
       reducer,
       initialAction: initialAction,
       initialState: initialState,
@@ -47,24 +47,23 @@ Store<State, Action> useReducer<State extends Object, Action>(
   );
 }
 
-class _ReducerdHook<State, Action> extends Hook<Store<State, Action>> {
-  const _ReducerdHook(this.reducer, {this.initialState, this.initialAction})
-      : assert(reducer != null, 'reducer cannot be null');
+class _ReducerHook<State, Action> extends Hook<Store<State, Action>> {
+  const _ReducerHook(this.reducer, {this.initialState, this.initialAction});
 
   final Reducer<State, Action> reducer;
-  final State initialState;
-  final Action initialAction;
+  final State? initialState;
+  final Action? initialAction;
 
   @override
-  _ReducerdHookState<State, Action> createState() =>
-      _ReducerdHookState<State, Action>();
+  _ReducerHookState<State, Action> createState() =>
+      _ReducerHookState<State, Action>();
 }
 
-class _ReducerdHookState<State, Action>
-    extends HookState<Store<State, Action>, _ReducerdHook<State, Action>>
+class _ReducerHookState<State, Action>
+    extends HookState<Store<State, Action>, _ReducerHook<State, Action>>
     implements Store<State, Action> {
   @override
-  State state;
+  late State state;
 
   @override
   void initHook() {
@@ -77,7 +76,7 @@ class _ReducerdHookState<State, Action>
   @override
   void dispatch(Action action) {
     final newState = hook.reducer(state, action);
-    assert(newState != null, 'recuders cannot return null');
+    assert(newState != null, 'reducers cannot return null');
     if (state != newState) {
       setState(() => state = newState);
     }
@@ -92,7 +91,7 @@ class _ReducerdHookState<State, Action>
   String get debugLabel => 'useReducer';
 
   @override
-  Object get debugValue => state;
+  Object? get debugValue => state;
 }
 
 /// Returns the previous argument called to [usePrevious].
@@ -110,7 +109,7 @@ class _PreviousHook<T> extends Hook<T> {
 }
 
 class _PreviousHookState<T> extends HookState<T, _PreviousHook<T>> {
-  T previous;
+  late T previous;
 
   @override
   void didUpdateHook(_PreviousHook<T> old) {
@@ -124,7 +123,7 @@ class _PreviousHookState<T> extends HookState<T, _PreviousHook<T>> {
   String get debugLabel => 'usePrevious';
 
   @override
-  Object get debugValue => previous;
+  Object? get debugValue => previous;
 }
 
 /// Runs the callback on every hot reload
@@ -141,8 +140,7 @@ void useReassemble(VoidCallback callback) {
 }
 
 class _ReassembleHook extends Hook<void> {
-  const _ReassembleHook(this.callback)
-      : assert(callback != null, 'callback cannot be null');
+  const _ReassembleHook(this.callback);
 
   final VoidCallback callback;
 

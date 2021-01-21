@@ -5,8 +5,8 @@ part of 'hooks.dart';
 /// See also:
 /// - [FocusNode]
 FocusNode useFocusNode({
-  String debugLabel,
-  FocusOnKeyCallback onKey,
+  String? debugLabel,
+  FocusOnKeyCallback? onKey,
   bool skipTraversal = false,
   bool canRequestFocus = true,
   bool descendantsAreFocusable = true,
@@ -23,13 +23,13 @@ class _FocusNodeHook extends Hook<FocusNode> {
   const _FocusNodeHook({
     this.debugLabel,
     this.onKey,
-    this.skipTraversal,
-    this.canRequestFocus,
-    this.descendantsAreFocusable,
+    required this.skipTraversal,
+    required this.canRequestFocus,
+    required this.descendantsAreFocusable,
   });
 
-  final String debugLabel;
-  final FocusOnKeyCallback onKey;
+  final String? debugLabel;
+  final FocusOnKeyCallback? onKey;
   final bool skipTraversal;
   final bool canRequestFocus;
   final bool descendantsAreFocusable;
@@ -41,7 +41,7 @@ class _FocusNodeHook extends Hook<FocusNode> {
 }
 
 class _FocusNodeHookState extends HookState<FocusNode, _FocusNodeHook> {
-  FocusNode _focusNode;
+  late FocusNode _focusNode;
 
   @override
   void initHook() {
@@ -67,7 +67,7 @@ class _FocusNodeHookState extends HookState<FocusNode, _FocusNodeHook> {
   FocusNode build(BuildContext context) => _focusNode;
 
   @override
-  void dispose() => _focusNode?.dispose();
+  void dispose() => _focusNode.dispose();
 
   @override
   String get debugLabel => 'useFocusNode';
