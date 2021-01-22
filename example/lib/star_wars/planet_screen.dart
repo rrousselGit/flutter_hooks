@@ -100,8 +100,10 @@ class _Error extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         if (errorMsg != null) Text(errorMsg),
-        RaisedButton(
-          color: Colors.redAccent,
+        ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(Colors.redAccent),
+          ),
           onPressed: () async {
             await Provider.of<_PlanetHandler>(
               context,
@@ -124,7 +126,7 @@ class _LoadPageButton extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final state = Provider.of<AppState>(context);
-    return RaisedButton(
+    return ElevatedButton(
       onPressed: () async {
         final url = next ? state.planetPage.next : state.planetPage.previous;
         await Provider.of<_PlanetHandler>(context, listen: false)
