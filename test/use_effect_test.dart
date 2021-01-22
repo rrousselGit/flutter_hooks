@@ -252,7 +252,7 @@ void main() {
 }
 
 class MockEffect extends Mock {
-  VoidCallback call();
+  VoidCallback? call();
 }
 
 class MockWidgetBuild extends Mock {

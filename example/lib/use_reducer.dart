@@ -28,7 +28,7 @@ class UseReducerExample extends HookWidget {
       return state;
     }
 
-    // Next, invoke the `useReducer` function with the reducer funtion and initial state to create a
+    // Next, invoke the `useReducer` function with the reducer function and initial state to create a
     // `_store` variable that contains the current state and dispatch. Whenever the value is
     // changed, this Widget will be rebuilt!
     final _store = useReducer(_reducer, initialState: State());

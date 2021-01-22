@@ -50,9 +50,7 @@ class HookStateTest<R> extends HookState<R, HookTest<R>> {
   @override
   void initHook() {
     super.initHook();
-    if (hook.initHook != null) {
-      hook.initHook!();
-    }
+    hook.initHook?.call();
   }
 
   @override
@@ -111,19 +109,28 @@ class MockInitHook extends Mock {
 }
 
 class MockCreateState<T extends HookState<dynamic, Hook>> extends Mock {
-  T call();
+  MockCreateState(this.value);
+  final T value;
+
+  T call() => value;
 }
 
 class MockBuild<T> extends Mock {
-  T call(BuildContext context);
+  T call(BuildContext? context);
 }
 
 class MockDeactivate extends Mock {
   void call();
 }
 
+class MockFlutterErrorDetails extends Mock implements FlutterErrorDetails {
+  @override
+  String toString({DiagnosticLevel? minLevel}) => super.toString();
+}
+
 class MockErrorBuilder extends Mock {
-  Widget call(FlutterErrorDetails? error);
+  Widget call(FlutterErrorDetails error) =>
+      super.noSuchMethod(Invocation.getter(#call), Container()) as Widget;
 }
 
 class MockOnError extends Mock {
@@ -135,7 +142,7 @@ class MockReassemble extends Mock {
 }
 
 class MockDidUpdateHook extends Mock {
-  void call(HookTest hook);
+  void call(HookTest? hook);
 }
 
 class MockDispose extends Mock {

@@ -28,7 +28,7 @@ void main() {
           .toStringDeep(),
       equalsIgnoringHashCodes(
         'HookBuilder\n'
-        ' │ useValueChanged: _ValueChangedHookState<int, int>#00000(21,\n'
+        ' │ useValueChanged: _ValueChangedHookState<int, int?>#00000(21,\n'
         ' │   value: 42, result: 21)\n'
         ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
       ),
@@ -38,7 +38,7 @@ void main() {
   testWidgets('useValueChanged basic', (tester) async {
     var value = 42;
     final _useValueChanged = MockValueChanged();
-    late String result;
+    late String? result;
 
     Future<void> pump() {
       return tester.pumpWidget(
@@ -99,5 +99,5 @@ void main() {
 }
 
 class MockValueChanged extends Mock {
-  String call(int? value, String? previous);
+  String? call(int? value, String? previous);
 }

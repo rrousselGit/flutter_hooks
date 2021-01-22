@@ -64,9 +64,9 @@ class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
 ///     controller.forward();
 /// });
 /// ```
-R useValueChanged<T, R>(
+R? useValueChanged<T, R>(
   T value,
-  R Function(T oldValue, R oldResult) valueChange,
+  R? Function(T oldValue, R? oldResult) valueChange,
 ) {
   return use(_ValueChangedHook(value, valueChange));
 }
@@ -74,7 +74,7 @@ R useValueChanged<T, R>(
 class _ValueChangedHook<T, R> extends Hook<R> {
   const _ValueChangedHook(this.value, this.valueChanged);
 
-  final R Function(T oldValue, R oldResult) valueChanged;
+  final R Function(T oldValue, R? oldResult) valueChanged;
   final T value;
 
   @override
@@ -83,7 +83,7 @@ class _ValueChangedHook<T, R> extends Hook<R> {
 
 class _ValueChangedHookState<T, R>
     extends HookState<R, _ValueChangedHook<T, R>> {
-  late R _result;
+  R? _result;
 
   @override
   void didUpdateHook(_ValueChangedHook<T, R> oldHook) {
@@ -94,7 +94,7 @@ class _ValueChangedHookState<T, R>
   }
 
   @override
-  R build(BuildContext context) {
+  R? build(BuildContext context) {
     return _result;
   }
 
@@ -251,7 +251,7 @@ ValueNotifier<T> useState<T>(T initialData) {
 ///  * [ValueNotifier]
 ///  * [useStreamController], an alternative to [ValueNotifier] for state.
 ValueNotifier<T?> useNullableState<T>([T? initialData]) {
-  return use(_StateHook(initialData: initialData));
+  return use(_StateHook<T?>(initialData: initialData));
 }
 
 class _StateHook<T> extends Hook<ValueNotifier<T>> {
@@ -264,7 +264,7 @@ class _StateHook<T> extends Hook<ValueNotifier<T>> {
 }
 
 class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
-  late ValueNotifier<T> _state;
+  ValueNotifier<T>? _state;
 
   @override
   void initHook() {
@@ -274,11 +274,11 @@ class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
 
   @override
   void dispose() {
-    _state.dispose();
+    _state?.dispose();
   }
 
   @override
-  ValueNotifier<T> build(BuildContext context) {
+  ValueNotifier<T>? build(BuildContext context) {
     return _state;
   }
 
@@ -287,7 +287,7 @@ class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
   }
 
   @override
-  Object? get debugValue => _state.value;
+  Object? get debugValue => _state?.value;
 
   @override
   String get debugLabel => 'useState<$T>';

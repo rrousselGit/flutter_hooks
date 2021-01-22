@@ -95,7 +95,7 @@ class _ReducerHookState<State, Action>
 }
 
 /// Returns the previous argument called to [usePrevious].
-T usePrevious<T>(T val) {
+T? usePrevious<T>(T val) {
   return use(_PreviousHook(val));
 }
 
@@ -109,7 +109,7 @@ class _PreviousHook<T> extends Hook<T> {
 }
 
 class _PreviousHookState<T> extends HookState<T, _PreviousHook<T>> {
-  late T previous;
+  T? previous;
 
   @override
   void didUpdateHook(_PreviousHook<T> old) {
@@ -117,7 +117,7 @@ class _PreviousHookState<T> extends HookState<T, _PreviousHook<T>> {
   }
 
   @override
-  T build(BuildContext context) => previous;
+  T? build(BuildContext context) => previous;
 
   @override
   String get debugLabel => 'usePrevious';

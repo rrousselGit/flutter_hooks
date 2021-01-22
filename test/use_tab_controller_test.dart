@@ -142,4 +142,8 @@ void main() {
   });
 }
 
-class TickerProviderMock extends Mock implements TickerProvider {}
+class TickerProviderMock extends Mock implements TickerProvider {
+  @override
+  Ticker createTicker(TickerCallback onTick) =>
+      super.noSuchMethod(Invocation.getter(#createTicker), Ticker(onTick)) as Ticker;
+}

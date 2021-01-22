@@ -339,5 +339,5 @@ class MayRebuildState extends HookState<MayRebuildState, MayRebuild> {
 }
 
 class ShouldRebuildMock extends Mock {
-  bool call();
+  bool call() => super.noSuchMethod(Invocation.getter(#call), false) as bool;
 }

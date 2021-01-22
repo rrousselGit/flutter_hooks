@@ -143,7 +143,7 @@ void main() {
     await tester.pumpWidget(HookBuilder(
       builder: snapshotText(const Stream.empty(), initialData: 'I'),
     ));
-    expect(find.text('AsyncSnapshot<String>(ConnectionState.none, I, null)'),
+    expect(find.text('AsyncSnapshot<String>(ConnectionState.waiting, I, null)'),
         findsOneWidget);
     final controller = StreamController<String>();
     await tester.pumpWidget(HookBuilder(
