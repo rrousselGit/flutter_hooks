@@ -222,38 +222,6 @@ ValueNotifier<T> useState<T>(T initialData) {
   return use(_StateHook(initialData: initialData));
 }
 
-/// Creates a nullable variable and subscribes to it.
-///
-/// Whenever [ValueNotifier.value] updates, it will mark the caller [HookWidget]
-/// as needing build.
-/// On first call, inits [ValueNotifier] to [initialData]. [initialData] is ignored
-/// on subsequent calls.
-///
-/// The following example showcase a basic counter application.
-///
-/// ```dart
-/// class Counter extends HookWidget {
-///   @override
-///   Widget build(BuildContext context) {
-///     final counter = useState(0);
-///
-///     return GestureDetector(
-///       // automatically triggers a rebuild of Counter widget
-///       onTap: () => counter.value++,
-///       child: Text(counter.value.toString()),
-///     );
-///   }
-/// }
-/// ```
-///
-/// See also:
-///
-///  * [ValueNotifier]
-///  * [useStreamController], an alternative to [ValueNotifier] for state.
-ValueNotifier<T?> useNullableState<T>([T? initialData]) {
-  return use(_StateHook<T?>(initialData: initialData));
-}
-
 class _StateHook<T> extends Hook<ValueNotifier<T>> {
   const _StateHook({required this.initialData});
 
@@ -269,7 +237,7 @@ class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
   @override
   void initHook() {
     super.initHook();
-    _state = ValueNotifier(hook.initialData)..addListener(_listener);
+    _state = ValueNotifier<T>(hook.initialData)..addListener(_listener);
   }
 
   @override

@@ -78,7 +78,7 @@ void main() {
       await tester.pumpWidget(HookBuilder(
         builder: (context) {
           element = context as HookElement;
-          state = useNullableValueNotifier();
+          state = useValueNotifier<int?>(null);
           return Container();
         },
       ));

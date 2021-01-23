@@ -82,22 +82,6 @@ class _ListenableStateHook extends HookState<void, _ListenableHook> {
   Object? get debugValue => hook.listenable;
 }
 
-/// Creates a nullable [ValueNotifier] automatically disposed.
-///
-/// As opposed to `useState`, this hook do not subscribes to [ValueNotifier].
-/// This allows a more granular rebuild.
-///
-/// See also:
-///   * [ValueNotifier]
-///   * [useValueListenable]
-ValueNotifier<T?> useNullableValueNotifier<T>(
-    [T? initialData, List<Object>? keys]) {
-  return use(_ValueNotifierHook(
-    initialData: initialData,
-    keys: keys,
-  ));
-}
-
 /// Creates a [ValueNotifier] automatically disposed.
 ///
 /// As opposed to `useState`, this hook do not subscribes to [ValueNotifier].
