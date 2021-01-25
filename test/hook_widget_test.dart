@@ -471,7 +471,7 @@ void main() {
     verifyNoMoreInteractions(dispose);
   });
   testWidgets('keys recreate hookstate', (tester) async {
-    List<Object>? keys;
+    List<Object?>? keys;
 
     final createState =
         MockCreateState<HookStateTest<int?>>(HookStateTest<int?>());

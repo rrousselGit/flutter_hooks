@@ -8,7 +8,7 @@ ScrollController useScrollController({
   double initialScrollOffset = 0.0,
   bool keepScrollOffset = true,
   String? debugLabel,
-  List<Object>? keys,
+  List<Object?>? keys,
 }) {
   return use(
     _ScrollControllerHook(
@@ -25,7 +25,7 @@ class _ScrollControllerHook extends Hook<ScrollController> {
     required this.initialScrollOffset,
     required this.keepScrollOffset,
     this.debugLabel,
-    List<Object>? keys,
+    List<Object?>? keys,
   }) : super(keys: keys);
 
   final double initialScrollOffset;

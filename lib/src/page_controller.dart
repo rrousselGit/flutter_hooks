@@ -8,7 +8,7 @@ PageController usePageController({
   int initialPage = 0,
   bool keepPage = true,
   double viewportFraction = 1.0,
-  List<Object>? keys,
+  List<Object?>? keys,
 }) {
   return use(
     _PageControllerHook(
@@ -25,7 +25,7 @@ class _PageControllerHook extends Hook<PageController> {
     required this.initialPage,
     required this.keepPage,
     required this.viewportFraction,
-    List<Object>? keys,
+    List<Object?>? keys,
   }) : super(keys: keys);
 
   final int initialPage;

@@ -169,7 +169,7 @@ void main() {
   });
 
   testWidgets('useAnimationController pass down keys', (tester) async {
-    List<Object>? keys;
+    List<Object?>? keys;
     late AnimationController controller;
     await tester.pumpWidget(HookBuilder(
       builder: (context) {

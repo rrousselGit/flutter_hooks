@@ -7,7 +7,7 @@ part of 'hooks.dart';
 ///
 /// A later call of [useMemoized] with different [keys] will call [useMemoized] again to create a new instance.
 T useMemoized<T>(T Function() valueBuilder,
-    [List<Object> keys = const <Object>[]]) {
+    [List<Object?> keys = const <Object>[]]) {
   return use(_MemoizedHook(
     valueBuilder,
     keys: keys,
@@ -17,7 +17,7 @@ T useMemoized<T>(T Function() valueBuilder,
 class _MemoizedHook<T> extends Hook<T> {
   const _MemoizedHook(
     this.valueBuilder, {
-    List<Object>? keys = const <Object>[],
+    List<Object?>? keys = const <Object>[],
   })  : assert(keys != null, 'keys cannot be null'),
         super(keys: keys);
 
@@ -141,12 +141,12 @@ typedef Dispose = void Function();
 ///   [stream],
 /// );
 /// ```
-void useEffect(Dispose? Function() effect, [List<Object>? keys]) {
+void useEffect(Dispose? Function() effect, [List<Object?>? keys]) {
   use(_EffectHook(effect, keys));
 }
 
 class _EffectHook extends Hook<void> {
-  const _EffectHook(this.effect, [List<Object>? keys]) : super(keys: keys);
+  const _EffectHook(this.effect, [List<Object?>? keys]) : super(keys: keys);
 
   final Dispose? Function() effect;
 

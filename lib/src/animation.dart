@@ -48,7 +48,7 @@ AnimationController useAnimationController({
   double upperBound = 1,
   TickerProvider? vsync,
   AnimationBehavior animationBehavior = AnimationBehavior.normal,
-  List<Object>? keys,
+  List<Object?>? keys,
 }) {
   vsync ??= useSingleTickerProvider(keys: keys);
 
@@ -75,7 +75,7 @@ class _AnimationControllerHook extends Hook<AnimationController> {
     required this.upperBound,
     required this.vsync,
     required this.animationBehavior,
-    List<Object>? keys,
+    List<Object?>? keys,
   }) : super(keys: keys);
 
   final Duration? duration;
@@ -148,7 +148,7 @@ class _AnimationControllerHookState
 ///
 /// See also:
 ///  * [SingleTickerProviderStateMixin]
-TickerProvider useSingleTickerProvider({List<Object>? keys}) {
+TickerProvider useSingleTickerProvider({List<Object?>? keys}) {
   return use(
     keys != null
         ? _SingleTickerProviderHook(keys)
@@ -157,7 +157,7 @@ TickerProvider useSingleTickerProvider({List<Object>? keys}) {
 }
 
 class _SingleTickerProviderHook extends Hook<TickerProvider> {
-  const _SingleTickerProviderHook([List<Object>? keys]) : super(keys: keys);
+  const _SingleTickerProviderHook([List<Object?>? keys]) : super(keys: keys);
 
   @override
   _TickerProviderHookState createState() => _TickerProviderHookState();

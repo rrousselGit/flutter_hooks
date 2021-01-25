@@ -90,7 +90,7 @@ class _ListenableStateHook extends HookState<void, _ListenableHook> {
 /// See also:
 ///   * [ValueNotifier]
 ///   * [useValueListenable]
-ValueNotifier<T> useValueNotifier<T>(T initialData, [List<Object>? keys]) {
+ValueNotifier<T> useValueNotifier<T>(T initialData, [List<Object?>? keys]) {
   return use(_ValueNotifierHook(
     initialData: initialData,
     keys: keys,
@@ -98,7 +98,7 @@ ValueNotifier<T> useValueNotifier<T>(T initialData, [List<Object>? keys]) {
 }
 
 class _ValueNotifierHook<T> extends Hook<ValueNotifier<T>> {
-  const _ValueNotifierHook({List<Object>? keys, required this.initialData})
+  const _ValueNotifierHook({List<Object?>? keys, required this.initialData})
       : super(keys: keys);
 
   final T initialData;

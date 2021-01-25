@@ -8,7 +8,7 @@ TabController useTabController({
   required int initialLength,
   TickerProvider? vsync,
   int initialIndex = 0,
-  List<Object>? keys,
+  List<Object?>? keys,
 }) {
   vsync ??= useSingleTickerProvider(keys: keys);
 
@@ -25,7 +25,7 @@ class _TabControllerHook extends Hook<TabController> {
     required this.length,
     required this.vsync,
     this.initialIndex = 0,
-    List<Object>? keys,
+    List<Object?>? keys,
   }) : super(keys: keys);
 
   final int length;

@@ -9,25 +9,25 @@ import 'mock.dart';
 void main() {
   testWidgets('default preserve state, changing future keeps previous value',
       (tester) async {
-    late AsyncSnapshot<int> value;
+    late AsyncSnapshot<int>? value;
     Widget Function(BuildContext) builder(Future<int> stream) {
       return (context) {
-        value = useFuture(stream);
+        value = useFuture(stream, initialData: 0);
         return Container();
       };
     }
 
     var future = Future.value(0);
     await tester.pumpWidget(HookBuilder(builder: builder(future)));
-    expect(value.data, null);
+    expect(value!.data, null);
     await tester.pumpWidget(HookBuilder(builder: builder(future)));
-    expect(value.data, 0);
+    expect(value!.data, 0);
 
     future = Future.value(42);
     await tester.pumpWidget(HookBuilder(builder: builder(future)));
-    expect(value.data, 0);
+    expect(value!.data, 0);
     await tester.pumpWidget(HookBuilder(builder: builder(future)));
-    expect(value.data, 42);
+    expect(value!.data, 42);
   });
 
   testWidgets('debugFillProperties', (tester) async {
@@ -35,7 +35,7 @@ void main() {
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        useFuture(future);
+        useFuture(future, initialData: 42);
         return const SizedBox();
       }),
     );
@@ -59,25 +59,25 @@ void main() {
 
   testWidgets('If preserveState == false, changing future resets value',
       (tester) async {
-    late AsyncSnapshot<int> value;
+    late AsyncSnapshot<int>? value;
     Widget Function(BuildContext) builder(Future<int> stream) {
       return (context) {
-        value = useFuture(stream, preserveState: false);
+        value = useFuture(stream, initialData: 0, preserveState: false);
         return Container();
       };
     }
 
     var future = Future.value(0);
     await tester.pumpWidget(HookBuilder(builder: builder(future)));
-    expect(value.data, null);
+    expect(value!.data, null);
     await tester.pumpWidget(HookBuilder(builder: builder(future)));
-    expect(value.data, 0);
+    expect(value!.data, 0);
 
     future = Future.value(42);
     await tester.pumpWidget(HookBuilder(builder: builder(future)));
-    expect(value.data, null);
+    expect(value!.data, null);
     await tester.pumpWidget(HookBuilder(builder: builder(future)));
-    expect(value.data, 42);
+    expect(value!.data, 42);
   });
 
   Widget Function(BuildContext) snapshotText(Future<String?> stream,

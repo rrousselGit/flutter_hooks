@@ -29,7 +29,7 @@ class HookTest<R> extends Hook<R> {
     this.createStateFn,
     this.didBuild,
     this.deactivate,
-    List<Object>? keys,
+    List<Object?>? keys,
   }) : super(keys: keys);
 
   final R Function(BuildContext context)? build;

@@ -7,14 +7,14 @@ class _TextEditingControllerHookCreator {
   ///
   /// The [text] parameter can be used to set the initial value of the
   /// controller.
-  TextEditingController call({String? text, List<Object>? keys}) {
+  TextEditingController call({String? text, List<Object?>? keys}) {
     return use(_TextEditingControllerHook(text, keys));
   }
 
   /// Creates a [TextEditingController] from the initial [value] that will
   /// be disposed automatically.
   TextEditingController fromValue(TextEditingValue value,
-      [List<Object>? keys]) {
+      [List<Object?>? keys]) {
     return use(_TextEditingControllerHook.fromValue(value, keys));
   }
 }
@@ -57,13 +57,13 @@ const useTextEditingController = _TextEditingControllerHookCreator();
 class _TextEditingControllerHook extends Hook<TextEditingController> {
   const _TextEditingControllerHook(
     this.initialText, [
-    List<Object>? keys,
+    List<Object?>? keys,
   ])  : initialValue = null,
         super(keys: keys);
 
   const _TextEditingControllerHook.fromValue(
     TextEditingValue this.initialValue, [
-    List<Object>? keys,
+    List<Object?>? keys,
   ])  : initialText = null,
         super(keys: keys);
 
