@@ -114,6 +114,7 @@ class _ValueChangedHookState<T, R>
   }
 }
 
+/// A function called when the state of a widget is destroyed.
 typedef Dispose = void Function();
 
 /// Useful for side-effects and optionally canceling them.

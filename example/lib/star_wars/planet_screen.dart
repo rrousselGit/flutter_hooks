@@ -100,6 +100,7 @@ class _Error extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         if (errorMsg != null) Text(errorMsg),
+        // ignore: deprecated_member_use, ElevatedButton is not available in stable yet
         RaisedButton(
           color: Colors.redAccent,
           onPressed: () async {
@@ -124,6 +125,7 @@ class _LoadPageButton extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final state = Provider.of<AppState>(context);
+    // ignore: deprecated_member_use, ElevatedButton is not available in stable yet
     return RaisedButton(
       onPressed: () async {
         final url = next ? state.planetPage.next : state.planetPage.previous;
