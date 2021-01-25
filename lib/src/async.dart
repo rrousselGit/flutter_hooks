@@ -8,7 +8,7 @@ part of 'hooks.dart';
 /// See also:
 ///   * [Future], the listened object.
 ///   * [useStream], similar to [useFuture] but for [Stream].
-AsyncSnapshot<T>? useFuture<T>(
+AsyncSnapshot<T> useFuture<T>(
   Future<T>? future, {
   required T initialData,
   bool preserveState = true,
@@ -40,13 +40,12 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
   /// calling setState from stale callbacks, e.g. after disposal of this state,
   /// or after widget reconfiguration to a new Future.
   Object? _activeCallbackIdentity;
-  AsyncSnapshot<T>? _snapshot;
+  late AsyncSnapshot<T> _snapshot =
+      AsyncSnapshot<T>.withData(ConnectionState.none, hook.initialData);
 
   @override
   void initHook() {
     super.initHook();
-    _snapshot =
-        AsyncSnapshot<T>.withData(ConnectionState.none, hook.initialData);
     _subscribe();
   }
 
@@ -56,8 +55,8 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
     if (oldHook.future != hook.future) {
       if (_activeCallbackIdentity != null) {
         _unsubscribe();
-        if (hook.preserveState && _snapshot != null) {
-          _snapshot = _snapshot!.inState(ConnectionState.none);
+        if (hook.preserveState) {
+          _snapshot = _snapshot.inState(ConnectionState.none);
         } else {
           _snapshot =
               AsyncSnapshot<T>.withData(ConnectionState.none, hook.initialData);
@@ -90,7 +89,7 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
           });
         }
       });
-      _snapshot = _snapshot!.inState(ConnectionState.waiting);
+      _snapshot = _snapshot.inState(ConnectionState.waiting);
     }
   }
 
@@ -99,7 +98,7 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
   }
 
   @override
-  AsyncSnapshot<T>? build(BuildContext context) {
+  AsyncSnapshot<T> build(BuildContext context) {
     return _snapshot;
   }
 
@@ -139,12 +138,11 @@ class _StreamHook<T> extends Hook<AsyncSnapshot<T>> {
 /// a clone of [StreamBuilderBase] implementation
 class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
   StreamSubscription<T>? _subscription;
-  AsyncSnapshot<T>? _summary;
+  late AsyncSnapshot<T> _summary = initial;
 
   @override
   void initHook() {
     super.initHook();
-    _summary = initial();
     _subscribe();
   }
 
@@ -154,10 +152,10 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
     if (oldWidget.stream != hook.stream) {
       if (_subscription != null) {
         _unsubscribe();
-        if (hook.preserveState && _summary != null) {
-          _summary = afterDisconnected(_summary!);
+        if (hook.preserveState) {
+          _summary = afterDisconnected(_summary);
         } else {
-          _summary = initial();
+          _summary = initial;
         }
       }
       _subscribe();
@@ -181,10 +179,10 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
         });
       }, onDone: () {
         setState(() {
-          _summary = afterDone(_summary!);
+          _summary = afterDone(_summary);
         });
       });
-      _summary = afterConnected(_summary!);
+      _summary = afterConnected(_summary);
     }
   }
 
@@ -194,11 +192,11 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
   }
 
   @override
-  AsyncSnapshot<T>? build(BuildContext context) {
+  AsyncSnapshot<T> build(BuildContext context) {
     return _summary;
   }
 
-  AsyncSnapshot<T> initial() =>
+  AsyncSnapshot<T> get initial =>
       AsyncSnapshot<T>.withData(ConnectionState.none, hook.initialData);
 
   AsyncSnapshot<T> afterConnected(AsyncSnapshot<T> current) =>

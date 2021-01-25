@@ -40,10 +40,10 @@ void main() {
 
   testWidgets('default preserve state, changing stream keeps previous value',
       (tester) async {
-    late AsyncSnapshot<int>? value;
-    Widget Function(BuildContext) builder(Stream<int> stream) {
+    late AsyncSnapshot<int?>? value;
+    Widget Function(BuildContext) builder(Stream<int?> stream) {
       return (context) {
-        value = useStream(stream, initialData: 0);
+        value = useStream(stream, initialData: null);
         return Container();
       };
     }
@@ -62,10 +62,10 @@ void main() {
   });
   testWidgets('If preserveState == false, changing stream resets value',
       (tester) async {
-    late AsyncSnapshot<int>? value;
-    Widget Function(BuildContext) builder(Stream<int> stream) {
+    late AsyncSnapshot<int?>? value;
+    Widget Function(BuildContext) builder(Stream<int?> stream) {
       return (context) {
-        value = useStream(stream, initialData: 0, preserveState: false);
+        value = useStream(stream, initialData: null, preserveState: false);
         return Container();
       };
     }
@@ -86,7 +86,7 @@ void main() {
   Widget Function(BuildContext) snapshotText(Stream<String> stream,
       {String? initialData}) {
     return (context) {
-      final snapshot = useStream(stream, initialData: initialData);
+      final snapshot = useStream(stream, initialData: initialData ?? '');
       return Text(snapshot.toString(), textDirection: TextDirection.ltr);
     };
   }
@@ -98,7 +98,7 @@ void main() {
         .pumpWidget(HookBuilder(builder: snapshotText(controllerA.stream)));
     expect(
         find.text(
-            'AsyncSnapshot<String>(ConnectionState.waiting, null, null, null)'),
+            'AsyncSnapshot<String>(ConnectionState.waiting, , null, null)'),
         findsOneWidget);
     await tester
         .pumpWidget(HookBuilder(builder: snapshotText(controllerB.stream)));
@@ -117,7 +117,7 @@ void main() {
         .pumpWidget(HookBuilder(builder: snapshotText(controller.stream)));
     expect(
         find.text(
-            'AsyncSnapshot<String>(ConnectionState.waiting, null, null, null)'),
+            'AsyncSnapshot<String>(ConnectionState.waiting, , null, null)'),
         findsOneWidget);
     controller..add('1')..add('2');
     await eventFiring(tester);
