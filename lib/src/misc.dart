@@ -214,4 +214,6 @@ class _IsMountedHookState extends HookState<IsMounted, _IsMountedHook> {
   Object get debugValue => _mounted;
 }
 
+/// Used by [useIsMounted] to allow widgets to determine if the widget is still
+/// in the widget tree or not.
 typedef IsMounted = bool Function();

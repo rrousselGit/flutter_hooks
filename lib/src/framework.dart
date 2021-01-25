@@ -15,7 +15,7 @@ bool debugHotReloadHooksEnabled = true;
 /// and all calls to [use] must be made unconditionally, always on the same order.
 ///
 /// See [Hook] for more explanations.
-// ignore: deprecated_member_use_from_same_package
+// ignore: deprecated_member_use, deprecated_member_use_from_same_package
 R use<R>(Hook<R> hook) => Hook.use(hook);
 
 /// [Hook] is similar to a [StatelessWidget], but is not associated
