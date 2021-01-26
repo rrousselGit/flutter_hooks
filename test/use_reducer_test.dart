@@ -32,6 +32,27 @@ void main() {
   });
 
   group('useReducer', () {
+    testWidgets('initialize the state even "state" is never read',
+        (tester) async {
+      final reducer = MockReducer();
+
+      await tester.pumpWidget(
+        HookBuilder(
+          builder: (context) {
+            useReducer<int?, String?>(
+              reducer,
+              initialAction: '',
+              initialState: 0,
+            );
+            return Container();
+          },
+        ),
+      );
+
+      verify(reducer(null, null)).called(1);
+      verifyNoMoreInteractions(reducer);
+    });
+
     testWidgets('basic', (tester) async {
       final reducer = MockReducer();
 
@@ -53,6 +74,7 @@ void main() {
       }
 
       when(reducer(null, null)).thenReturn(0);
+
       await pump();
       final element = tester.firstElement(find.byType(HookBuilder));
 
@@ -62,6 +84,7 @@ void main() {
       expect(store!.state, 0);
 
       await pump();
+
       verifyNoMoreInteractions(reducer);
       expect(store!.state, 0);
 
@@ -84,27 +107,31 @@ void main() {
       expect(element.dirty, false);
     });
 
-    // TODO fix test
-    // testWidgets('dispatch during build fails', (tester) async {
-    //   int reducer(int? state, String? action) {
-    //     if (state == null) {
-    //       return 0;
-    //     } else {
-    //       return 1;
-    //     }
-    //   }
+    testWidgets('dispatch during build fails', (tester) async {
+      int reducer(int? state, String? action) {
+        if (state == null) {
+          return 0;
+        } else {
+          return 1;
+        }
+      }
 
-    //   await tester.pumpWidget(
-    //     HookBuilder(
-    //       builder: (context) {
-    //         useReducer(reducer).dispatch('Foo');
-    //         return Container();
-    //       },
-    //     ),
-    //   );
+      await tester.pumpWidget(
+        HookBuilder(
+          builder: (context) {
+            useReducer(
+              reducer,
+              initialAction: null,
+              initialState: null,
+            ).dispatch(null);
+            return Container();
+          },
+        ),
+      );
 
-    //   expect(tester.takeException(), isAssertionError);
-    // });
+      expect(tester.takeException(), isAssertionError);
+    });
+
     testWidgets('first reducer call receive initialAction and initialState',
         (tester) async {
       final reducer = MockReducer();
@@ -113,7 +140,7 @@ void main() {
       await tester.pumpWidget(
         HookBuilder(
           builder: (context) {
-            final result = useReducer(
+            final result = useReducer<int?, String?>(
               reducer,
               initialAction: 'Foo',
               initialState: 0,
@@ -129,7 +156,7 @@ void main() {
 }
 
 class MockReducer extends Mock {
-  int call(int? state, String? action) {
-    return super.noSuchMethod(Invocation.getter(#call), 0) as int;
+  int? call(int? state, String? action) {
+    return super.noSuchMethod(Invocation.getter(#call), 0) as int?;
   }
 }

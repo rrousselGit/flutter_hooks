@@ -28,7 +28,7 @@ void main() {
           .toStringDeep(),
       equalsIgnoringHashCodes(
         'HookBuilder\n'
-        ' │ useValueChanged: _ValueChangedHookState<int, int?>#00000(21,\n'
+        ' │ useValueChanged: _ValueChangedHookState<int, int>#00000(21,\n'
         ' │   value: 42, result: 21)\n'
         ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
       ),

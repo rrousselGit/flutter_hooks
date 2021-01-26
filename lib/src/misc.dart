@@ -70,7 +70,19 @@ class _ReducerHookState<State, Action>
   late State state = hook.reducer(hook.initialState, hook.initialAction);
 
   @override
+  void initHook() {
+    super.initHook();
+    // ignore: unnecessary_statements, Force the late variable to compute
+    state;
+  }
+
+  @override
   void dispatch(Action action) {
+    assert(
+      !context.debugDoingBuild,
+      'Cannot call `dispatch` when widgets are building',
+    );
+
     final newState = hook.reducer(state, action);
     assert(newState != null, 'reducers cannot return null');
     if (state != newState) {
