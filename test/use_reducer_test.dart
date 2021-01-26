@@ -32,6 +32,50 @@ void main() {
   });
 
   group('useReducer', () {
+    testWidgets('supports null initial state', (tester) async {
+      Store<Object?, Object?>? store;
+
+      await tester.pumpWidget(
+        HookBuilder(
+          builder: (context) {
+            store = useReducer(
+              (state, action) => state,
+              initialAction: null,
+              initialState: null,
+            );
+
+            return Container();
+          },
+        ),
+      );
+
+      expect(store!.state, isNull);
+    });
+
+    testWidgets('supports null state after dispatch', (tester) async {
+      Store<int?, int?>? store;
+
+      await tester.pumpWidget(
+        HookBuilder(
+          builder: (context) {
+            store = useReducer(
+              (state, action) => action,
+              initialAction: 0,
+              initialState: null,
+            );
+
+            return Container();
+          },
+        ),
+      );
+
+      expect(store?.state, 0);
+
+      store!.dispatch(null);
+
+      expect(store!.state, null);
+    });
+
     testWidgets('initialize the state even "state" is never read',
         (tester) async {
       final reducer = MockReducer();

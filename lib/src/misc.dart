@@ -84,7 +84,7 @@ class _ReducerHookState<State, Action>
     );
 
     final newState = hook.reducer(state, action);
-    assert(newState != null, 'reducers cannot return null');
+
     if (state != newState) {
       setState(() => state = newState);
     }
