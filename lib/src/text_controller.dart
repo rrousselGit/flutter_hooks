@@ -78,16 +78,9 @@ class _TextEditingControllerHook extends Hook<TextEditingController> {
 
 class _TextEditingControllerHookState
     extends HookState<TextEditingController, _TextEditingControllerHook> {
-  late TextEditingController _controller;
-
-  @override
-  void initHook() {
-    if (hook.initialValue != null) {
-      _controller = TextEditingController.fromValue(hook.initialValue);
-    } else {
-      _controller = TextEditingController(text: hook.initialText);
-    }
-  }
+  late final TextEditingController _controller = hook.initialValue != null
+      ? TextEditingController.fromValue(hook.initialValue)
+      : TextEditingController(text: hook.initialText);
 
   @override
   TextEditingController build(BuildContext context) => _controller;

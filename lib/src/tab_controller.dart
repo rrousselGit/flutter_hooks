@@ -39,16 +39,11 @@ class _TabControllerHook extends Hook<TabController> {
 
 class _TabControllerHookState
     extends HookState<TabController, _TabControllerHook> {
-  late TabController controller;
-
-  @override
-  void initHook() {
-    controller = TabController(
-      length: hook.length,
-      initialIndex: hook.initialIndex,
-      vsync: hook.vsync,
-    );
-  }
+  late final TabController controller = TabController(
+    length: hook.length,
+    initialIndex: hook.initialIndex,
+    vsync: hook.vsync,
+  );
 
   @override
   TabController build(BuildContext context) => controller;

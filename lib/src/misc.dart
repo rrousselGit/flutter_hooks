@@ -63,12 +63,11 @@ class _ReducerHookState<State, Action>
     extends HookState<Store<State, Action>, _ReducerHook<State, Action>>
     implements Store<State, Action> {
   @override
-  late State state;
+  late State state = hook.reducer(hook.initialState, hook.initialAction);
 
   @override
   void initHook() {
     super.initHook();
-    state = hook.reducer(hook.initialState, hook.initialAction);
     // TODO support null
     assert(state != null, 'reducers cannot return null');
   }

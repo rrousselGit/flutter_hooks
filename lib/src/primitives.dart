@@ -28,13 +28,7 @@ class _MemoizedHook<T> extends Hook<T> {
 }
 
 class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
-  late T value;
-
-  @override
-  void initHook() {
-    super.initHook();
-    value = hook.valueBuilder();
-  }
+  late final T value = hook.valueBuilder();
 
   @override
   T build(BuildContext context) {
@@ -233,21 +227,16 @@ class _StateHook<T> extends Hook<ValueNotifier<T>> {
 }
 
 class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
-  ValueNotifier<T>? _state;
-
-  @override
-  void initHook() {
-    super.initHook();
-    _state = ValueNotifier<T>(hook.initialData)..addListener(_listener);
-  }
+  late final ValueNotifier<T> _state = ValueNotifier<T>(hook.initialData)
+    ..addListener(_listener);
 
   @override
   void dispose() {
-    _state?.dispose();
+    _state.dispose();
   }
 
   @override
-  ValueNotifier<T>? build(BuildContext context) {
+  ValueNotifier<T> build(BuildContext context) {
     return _state;
   }
 
@@ -256,7 +245,7 @@ class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
   }
 
   @override
-  Object? get debugValue => _state?.value;
+  Object? get debugValue => _state.value;
 
   @override
   String get debugLabel => 'useState<$T>';

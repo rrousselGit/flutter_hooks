@@ -254,17 +254,11 @@ class _StreamControllerHook<T> extends Hook<StreamController<T>> {
 
 class _StreamControllerHookState<T>
     extends HookState<StreamController<T>, _StreamControllerHook<T>> {
-  late StreamController<T> _controller;
-
-  @override
-  void initHook() {
-    super.initHook();
-    _controller = StreamController.broadcast(
-      sync: hook.sync,
-      onCancel: hook.onCancel,
-      onListen: hook.onListen,
-    );
-  }
+  late final StreamController<T> _controller = StreamController.broadcast(
+    sync: hook.sync,
+    onCancel: hook.onCancel,
+    onListen: hook.onListen,
+  );
 
   @override
   void didUpdateHook(_StreamControllerHook<T> oldHook) {

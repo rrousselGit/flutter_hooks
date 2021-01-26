@@ -209,7 +209,7 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   BuildContext get context => _element;
   late HookElement _element;
 
-  late R _debugLastBuiltValue;
+  R? _debugLastBuiltValue;
 
   /// The value shown in the devtool.
   ///
