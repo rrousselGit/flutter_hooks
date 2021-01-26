@@ -42,12 +42,12 @@ class _FocusNodeHook extends Hook<FocusNode> {
 
 class _FocusNodeHookState extends HookState<FocusNode, _FocusNodeHook> {
   late final FocusNode _focusNode = FocusNode(
-      debugLabel: hook.debugLabel,
-      onKey: hook.onKey,
-      skipTraversal: hook.skipTraversal,
-      canRequestFocus: hook.canRequestFocus,
-      descendantsAreFocusable: hook.descendantsAreFocusable,
-    );
+    debugLabel: hook.debugLabel,
+    onKey: hook.onKey,
+    skipTraversal: hook.skipTraversal,
+    canRequestFocus: hook.canRequestFocus,
+    descendantsAreFocusable: hook.descendantsAreFocusable,
+  );
 
   @override
   void didUpdateHook(_FocusNodeHook oldHook) {
