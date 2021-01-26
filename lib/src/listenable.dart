@@ -91,10 +91,12 @@ class _ListenableStateHook extends HookState<void, _ListenableHook> {
 ///   * [ValueNotifier]
 ///   * [useValueListenable]
 ValueNotifier<T> useValueNotifier<T>(T initialData, [List<Object?>? keys]) {
-  return use(_ValueNotifierHook(
-    initialData: initialData,
-    keys: keys,
-  ));
+  return use(
+    _ValueNotifierHook(
+      initialData: initialData,
+      keys: keys,
+    ),
+  );
 }
 
 class _ValueNotifierHook<T> extends Hook<ValueNotifier<T>> {
@@ -110,13 +112,7 @@ class _ValueNotifierHook<T> extends Hook<ValueNotifier<T>> {
 
 class _UseValueNotifierHookState<T>
     extends HookState<ValueNotifier<T>, _ValueNotifierHook<T>> {
-  late ValueNotifier<T> notifier;
-
-  @override
-  void initHook() {
-    super.initHook();
-    notifier = ValueNotifier(hook.initialData);
-  }
+  late final notifier = ValueNotifier<T>(hook.initialData);
 
   @override
   ValueNotifier<T> build(BuildContext context) {

@@ -39,16 +39,11 @@ class _ScrollControllerHook extends Hook<ScrollController> {
 
 class _ScrollControllerHookState
     extends HookState<ScrollController, _ScrollControllerHook> {
-  late ScrollController controller;
-
-  @override
-  void initHook() {
-    controller = ScrollController(
-      initialScrollOffset: hook.initialScrollOffset,
-      keepScrollOffset: hook.keepScrollOffset,
-      debugLabel: hook.debugLabel,
-    );
-  }
+  late final controller = ScrollController(
+    initialScrollOffset: hook.initialScrollOffset,
+    keepScrollOffset: hook.keepScrollOffset,
+    debugLabel: hook.debugLabel,
+  );
 
   @override
   ScrollController build(BuildContext context) => controller;

@@ -8,7 +8,11 @@ void main() {
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        useReducer<int, int>((state, action) => 42);
+        useReducer<int?, int?>(
+          (state, action) => 42,
+          initialAction: null,
+          initialState: null,
+        );
         return const SizedBox();
       }),
     );
@@ -31,14 +35,21 @@ void main() {
     testWidgets('basic', (tester) async {
       final reducer = MockReducer();
 
-      late Store<int, String> store;
+      Store<int?, String?>? store;
+
       Future<void> pump() {
-        return tester.pumpWidget(HookBuilder(
-          builder: (context) {
-            store = useReducer(reducer);
-            return Container();
-          },
-        ));
+        return tester.pumpWidget(
+          HookBuilder(
+            builder: (context) {
+              store = useReducer(
+                reducer,
+                initialAction: null,
+                initialState: null,
+              );
+              return Container();
+            },
+          ),
+        );
       }
 
       when(reducer(null, null)).thenReturn(0);
@@ -48,15 +59,15 @@ void main() {
       verify(reducer(null, null)).called(1);
       verifyNoMoreInteractions(reducer);
 
-      expect(store.state, 0);
+      expect(store!.state, 0);
 
       await pump();
       verifyNoMoreInteractions(reducer);
-      expect(store.state, 0);
+      expect(store!.state, 0);
 
       when(reducer(0, 'foo')).thenReturn(1);
 
-      store.dispatch('foo');
+      store!.dispatch('foo');
 
       verify(reducer(0, 'foo')).called(1);
       verifyNoMoreInteractions(reducer);
@@ -66,7 +77,7 @@ void main() {
 
       when(reducer(1, 'bar')).thenReturn(1);
 
-      store.dispatch('bar');
+      store!.dispatch('bar');
 
       verify(reducer(1, 'bar')).called(1);
       verifyNoMoreInteractions(reducer);
@@ -118,6 +129,7 @@ void main() {
 }
 
 class MockReducer extends Mock {
-  int call(int? state, String? action) =>
-      super.noSuchMethod(Invocation.getter(#call), 0) as int;
+  int call(int? state, String? action) {
+    return super.noSuchMethod(Invocation.getter(#call), 0) as int;
+  }
 }

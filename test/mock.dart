@@ -18,7 +18,7 @@ export 'package:flutter_test/flutter_test.dart'
         Fake;
 export 'package:mockito/mockito.dart';
 
-class HookTest<R> extends Hook<R> {
+class HookTest<R> extends Hook<R?> {
   // ignore: prefer_const_constructors_in_immutables
   HookTest({
     this.build,
@@ -46,7 +46,7 @@ class HookTest<R> extends Hook<R> {
       createStateFn != null ? createStateFn!() : HookStateTest<R>();
 }
 
-class HookStateTest<R> extends HookState<R, HookTest<R>> {
+class HookStateTest<R> extends HookState<R?, HookTest<R>> {
   @override
   void initHook() {
     super.initHook();

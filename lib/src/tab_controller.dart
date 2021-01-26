@@ -12,19 +12,21 @@ TabController useTabController({
 }) {
   vsync ??= useSingleTickerProvider(keys: keys);
 
-  return use(_TabControllerHook(
-    vsync: vsync,
-    length: initialLength,
-    initialIndex: initialIndex,
-    keys: keys,
-  ));
+  return use(
+    _TabControllerHook(
+      vsync: vsync,
+      length: initialLength,
+      initialIndex: initialIndex,
+      keys: keys,
+    ),
+  );
 }
 
 class _TabControllerHook extends Hook<TabController> {
   const _TabControllerHook({
     required this.length,
     required this.vsync,
-    this.initialIndex = 0,
+    required this.initialIndex,
     List<Object?>? keys,
   }) : super(keys: keys);
 
@@ -39,16 +41,11 @@ class _TabControllerHook extends Hook<TabController> {
 
 class _TabControllerHookState
     extends HookState<TabController, _TabControllerHook> {
-  late TabController controller;
-
-  @override
-  void initHook() {
-    controller = TabController(
-      length: hook.length,
-      initialIndex: hook.initialIndex,
-      vsync: hook.vsync,
-    );
-  }
+  late final controller = TabController(
+    length: hook.length,
+    initialIndex: hook.initialIndex,
+    vsync: hook.vsync,
+  );
 
   @override
   TabController build(BuildContext context) => controller;

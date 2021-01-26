@@ -39,16 +39,11 @@ class _PageControllerHook extends Hook<PageController> {
 
 class _PageControllerHookState
     extends HookState<PageController, _PageControllerHook> {
-  late PageController controller;
-
-  @override
-  void initHook() {
-    controller = PageController(
-      initialPage: hook.initialPage,
-      keepPage: hook.keepPage,
-      viewportFraction: hook.viewportFraction,
-    );
-  }
+  late final controller = PageController(
+    initialPage: hook.initialPage,
+    keepPage: hook.keepPage,
+    viewportFraction: hook.viewportFraction,
+  );
 
   @override
   PageController build(BuildContext context) => controller;

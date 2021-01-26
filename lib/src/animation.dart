@@ -99,21 +99,15 @@ class _AnimationControllerHook extends Hook<AnimationController> {
 
 class _AnimationControllerHookState
     extends HookState<AnimationController, _AnimationControllerHook> {
-  late AnimationController _animationController;
-
-  @override
-  void initHook() {
-    super.initHook();
-    _animationController = AnimationController(
-      vsync: hook.vsync,
-      duration: hook.duration,
-      debugLabel: hook.debugLabel,
-      lowerBound: hook.lowerBound,
-      upperBound: hook.upperBound,
-      animationBehavior: hook.animationBehavior,
-      value: hook.initialValue,
-    );
-  }
+  late final AnimationController _animationController = AnimationController(
+    vsync: hook.vsync,
+    duration: hook.duration,
+    debugLabel: hook.debugLabel,
+    lowerBound: hook.lowerBound,
+    upperBound: hook.upperBound,
+    animationBehavior: hook.animationBehavior,
+    value: hook.initialValue,
+  );
 
   @override
   void didUpdateHook(_AnimationControllerHook oldHook) {

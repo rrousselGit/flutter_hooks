@@ -17,7 +17,7 @@ abstract class Store<State, Action> {
 /// Composes an [Action] and a [State] to create a new [State].
 ///
 /// [Reducer] must never return `null`, even if [state] or [action] are `null`.
-typedef Reducer<State, Action> = State Function(State? state, Action? action);
+typedef Reducer<State, Action> = State Function(State state, Action action);
 
 /// An alternative to [useState] for more complex states.
 ///
@@ -33,10 +33,10 @@ typedef Reducer<State, Action> = State Function(State? state, Action? action);
 /// See also:
 ///  * [Reducer]
 ///  * [Store]
-Store<State, Action> useReducer<State extends Object, Action>(
+Store<State, Action> useReducer<State, Action>(
   Reducer<State, Action> reducer, {
-  State? initialState,
-  Action? initialAction,
+  required State initialState,
+  required Action initialAction,
 }) {
   return use(
     _ReducerHook(
@@ -48,11 +48,15 @@ Store<State, Action> useReducer<State extends Object, Action>(
 }
 
 class _ReducerHook<State, Action> extends Hook<Store<State, Action>> {
-  const _ReducerHook(this.reducer, {this.initialState, this.initialAction});
+  const _ReducerHook(
+    this.reducer, {
+    required this.initialState,
+    required this.initialAction,
+  });
 
   final Reducer<State, Action> reducer;
-  final State? initialState;
-  final Action? initialAction;
+  final State initialState;
+  final Action initialAction;
 
   @override
   _ReducerHookState<State, Action> createState() =>
@@ -63,15 +67,7 @@ class _ReducerHookState<State, Action>
     extends HookState<Store<State, Action>, _ReducerHook<State, Action>>
     implements Store<State, Action> {
   @override
-  late State state;
-
-  @override
-  void initHook() {
-    super.initHook();
-    state = hook.reducer(hook.initialState, hook.initialAction);
-    // TODO support null
-    assert(state != null, 'reducers cannot return null');
-  }
+  late State state = hook.reducer(hook.initialState, hook.initialAction);
 
   @override
   void dispatch(Action action) {
@@ -99,7 +95,7 @@ T? usePrevious<T>(T val) {
   return use(_PreviousHook(val));
 }
 
-class _PreviousHook<T> extends Hook<T> {
+class _PreviousHook<T> extends Hook<T?> {
   const _PreviousHook(this.value);
 
   final T value;
@@ -108,7 +104,7 @@ class _PreviousHook<T> extends Hook<T> {
   _PreviousHookState<T> createState() => _PreviousHookState();
 }
 
-class _PreviousHookState<T> extends HookState<T, _PreviousHook<T>> {
+class _PreviousHookState<T> extends HookState<T?, _PreviousHook<T>> {
   T? previous;
 
   @override
@@ -176,7 +172,6 @@ class _ReassembleHookState extends HookState<void, _ReassembleHook> {
 ///       // Do something
 ///     }
 ///   });
-///   return null;
 /// }, []);
 /// ```
 ///

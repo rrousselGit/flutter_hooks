@@ -6,20 +6,23 @@ part of 'hooks.dart';
 /// Later, when [HookWidget] rebuilds, the call to [useMemoized] will return the previously created instance without calling [valueBuilder].
 ///
 /// A later call of [useMemoized] with different [keys] will call [useMemoized] again to create a new instance.
-T useMemoized<T>(T Function() valueBuilder,
-    [List<Object?> keys = const <Object>[]]) {
-  return use(_MemoizedHook(
-    valueBuilder,
-    keys: keys,
-  ));
+T useMemoized<T>(
+  T Function() valueBuilder, [
+  List<Object?> keys = const <Object>[],
+]) {
+  return use(
+    _MemoizedHook(
+      valueBuilder,
+      keys: keys,
+    ),
+  );
 }
 
 class _MemoizedHook<T> extends Hook<T> {
   const _MemoizedHook(
     this.valueBuilder, {
-    List<Object?>? keys = const <Object>[],
-  })  : assert(keys != null, 'keys cannot be null'),
-        super(keys: keys);
+    required List<Object?> keys,
+  }) : super(keys: keys);
 
   final T Function() valueBuilder;
 
@@ -28,18 +31,10 @@ class _MemoizedHook<T> extends Hook<T> {
 }
 
 class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
-  late T value;
+  late T value = hook.valueBuilder();
 
   @override
-  void initHook() {
-    super.initHook();
-    value = hook.valueBuilder();
-  }
-
-  @override
-  T build(BuildContext context) {
-    return value;
-  }
+  T build(BuildContext context) => value;
 
   @override
   String get debugLabel => 'useMemoized<$T>';
@@ -61,7 +56,7 @@ class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
 /// Color color;
 ///
 /// useValueChanged(color, (_, __)) {
-///     controller.forward();
+///   controller.forward();
 /// });
 /// ```
 R? useValueChanged<T, R>(
@@ -71,10 +66,10 @@ R? useValueChanged<T, R>(
   return use(_ValueChangedHook(value, valueChange));
 }
 
-class _ValueChangedHook<T, R> extends Hook<R> {
+class _ValueChangedHook<T, R> extends Hook<R?> {
   const _ValueChangedHook(this.value, this.valueChanged);
 
-  final R Function(T oldValue, R? oldResult) valueChanged;
+  final R? Function(T oldValue, R? oldResult) valueChanged;
   final T value;
 
   @override
@@ -82,7 +77,7 @@ class _ValueChangedHook<T, R> extends Hook<R> {
 }
 
 class _ValueChangedHookState<T, R>
-    extends HookState<R, _ValueChangedHook<T, R>> {
+    extends HookState<R?, _ValueChangedHook<T, R>> {
   R? _result;
 
   @override
@@ -233,30 +228,28 @@ class _StateHook<T> extends Hook<ValueNotifier<T>> {
 }
 
 class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
-  ValueNotifier<T>? _state;
+  late final ValueNotifier<T> _state = ValueNotifier<T>(hook.initialData);
 
   @override
   void initHook() {
     super.initHook();
-    _state = ValueNotifier<T>(hook.initialData)..addListener(_listener);
+    _state.addListener(_listener);
   }
 
   @override
   void dispose() {
-    _state?.dispose();
+    _state.dispose();
   }
 
   @override
-  ValueNotifier<T>? build(BuildContext context) {
-    return _state;
-  }
+  ValueNotifier<T> build(BuildContext context) => _state;
 
   void _listener() {
     setState(() {});
   }
 
   @override
-  Object? get debugValue => _state?.value;
+  Object? get debugValue => _state.value;
 
   @override
   String get debugLabel => 'useState<$T>';

@@ -13,11 +13,13 @@ AsyncSnapshot<T> useFuture<T>(
   required T initialData,
   bool preserveState = true,
 }) {
-  return use(_FutureHook(
-    future,
-    initialData: initialData,
-    preserveState: preserveState,
-  ));
+  return use(
+    _FutureHook(
+      future,
+      initialData: initialData,
+      preserveState: preserveState,
+    ),
+  );
 }
 
 class _FutureHook<T> extends Hook<AsyncSnapshot<T>> {
@@ -114,18 +116,26 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
 /// See also:
 ///   * [Stream], the object listened.
 ///   * [useFuture], similar to [useStream] but for [Future].
-AsyncSnapshot<T> useStream<T>(Stream<T>? stream,
-    {required T initialData, bool preserveState = true}) {
-  return use(_StreamHook(
-    stream,
-    initialData: initialData,
-    preserveState: preserveState,
-  ));
+AsyncSnapshot<T> useStream<T>(
+  Stream<T>? stream, {
+  required T initialData,
+  bool preserveState = true,
+}) {
+  return use(
+    _StreamHook(
+      stream,
+      initialData: initialData,
+      preserveState: preserveState,
+    ),
+  );
 }
 
 class _StreamHook<T> extends Hook<AsyncSnapshot<T>> {
-  const _StreamHook(this.stream,
-      {required this.initialData, this.preserveState = true});
+  const _StreamHook(
+    this.stream, {
+    required this.initialData,
+    required this.preserveState,
+  });
 
   final Stream<T>? stream;
   final T initialData;
@@ -225,23 +235,29 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
 /// See also:
 ///   * [StreamController], the created object
 ///   * [useStream], to listen to the created [StreamController]
-StreamController<T> useStreamController<T>(
-    {bool sync = false,
-    VoidCallback? onListen,
-    VoidCallback? onCancel,
-    List<Object?>? keys}) {
-  return use(_StreamControllerHook(
-    onCancel: onCancel,
-    onListen: onListen,
-    sync: sync,
-    keys: keys,
-  ));
+StreamController<T> useStreamController<T>({
+  bool sync = false,
+  VoidCallback? onListen,
+  VoidCallback? onCancel,
+  List<Object?>? keys,
+}) {
+  return use(
+    _StreamControllerHook(
+      onCancel: onCancel,
+      onListen: onListen,
+      sync: sync,
+      keys: keys,
+    ),
+  );
 }
 
 class _StreamControllerHook<T> extends Hook<StreamController<T>> {
-  const _StreamControllerHook(
-      {this.sync = false, this.onListen, this.onCancel, List<Object?>? keys})
-      : super(keys: keys);
+  const _StreamControllerHook({
+    required this.sync,
+    this.onListen,
+    this.onCancel,
+    List<Object?>? keys,
+  }) : super(keys: keys);
 
   final bool sync;
   final VoidCallback? onListen;
@@ -254,17 +270,11 @@ class _StreamControllerHook<T> extends Hook<StreamController<T>> {
 
 class _StreamControllerHookState<T>
     extends HookState<StreamController<T>, _StreamControllerHook<T>> {
-  late StreamController<T> _controller;
-
-  @override
-  void initHook() {
-    super.initHook();
-    _controller = StreamController.broadcast(
-      sync: hook.sync,
-      onCancel: hook.onCancel,
-      onListen: hook.onListen,
-    );
-  }
+  late final _controller = StreamController<T>.broadcast(
+    sync: hook.sync,
+    onCancel: hook.onCancel,
+    onListen: hook.onListen,
+  );
 
   @override
   void didUpdateHook(_StreamControllerHook<T> oldHook) {

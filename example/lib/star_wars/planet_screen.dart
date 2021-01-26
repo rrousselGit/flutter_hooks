@@ -38,6 +38,7 @@ class PlanetScreen extends HookWidget {
     final store = useReducer(
       reducer,
       initialState: AppState(),
+      initialAction: null,
     );
 
     final planetHandler = useMemoized(

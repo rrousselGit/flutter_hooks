@@ -10,14 +10,17 @@ FocusNode useFocusNode({
   bool skipTraversal = false,
   bool canRequestFocus = true,
   bool descendantsAreFocusable = true,
-}) =>
-    use(_FocusNodeHook(
+}) {
+  return use(
+    _FocusNodeHook(
       debugLabel: debugLabel,
       onKey: onKey,
       skipTraversal: skipTraversal,
       canRequestFocus: canRequestFocus,
       descendantsAreFocusable: descendantsAreFocusable,
-    ));
+    ),
+  );
+}
 
 class _FocusNodeHook extends Hook<FocusNode> {
   const _FocusNodeHook({
@@ -41,18 +44,13 @@ class _FocusNodeHook extends Hook<FocusNode> {
 }
 
 class _FocusNodeHookState extends HookState<FocusNode, _FocusNodeHook> {
-  late FocusNode _focusNode;
-
-  @override
-  void initHook() {
-    _focusNode = FocusNode(
-      debugLabel: hook.debugLabel,
-      onKey: hook.onKey,
-      skipTraversal: hook.skipTraversal,
-      canRequestFocus: hook.canRequestFocus,
-      descendantsAreFocusable: hook.descendantsAreFocusable,
-    );
-  }
+  late final FocusNode _focusNode = FocusNode(
+    debugLabel: hook.debugLabel,
+    onKey: hook.onKey,
+    skipTraversal: hook.skipTraversal,
+    canRequestFocus: hook.canRequestFocus,
+    descendantsAreFocusable: hook.descendantsAreFocusable,
+  );
 
   @override
   void didUpdateHook(_FocusNodeHook oldHook) {

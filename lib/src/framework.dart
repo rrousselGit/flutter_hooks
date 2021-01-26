@@ -78,16 +78,10 @@ R use<R>(Hook<R> hook) => Hook.use(hook);
 ///
 /// class _UsualState extends State<Usual>
 ///     with SingleTickerProviderStateMixin {
-///   AnimationController _controller;
-///
-///   @override
-///   void initState() {
-///     super.initState();
-///     _controller = AnimationController(
-///       vsync: this,
-///       duration: const Duration(seconds: 1),
-///     );
-///   }
+///   late final _controller = AnimationController(
+///     vsync: this,
+///     duration: const Duration(seconds: 1),
+///   );
 ///
 ///   @override
 ///   void dispose() {
@@ -97,9 +91,7 @@ R use<R>(Hook<R> hook) => Hook.use(hook);
 ///
 ///   @override
 ///   Widget build(BuildContext context) {
-///     return Container(
-///
-///     );
+///     return Container();
 ///   }
 /// }
 /// ```
@@ -206,10 +198,10 @@ Calling them outside of build method leads to an unstable state and is therefore
 abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   /// Equivalent of [State.context] for [HookState]
   @protected
-  BuildContext get context => _element;
-  late HookElement _element;
+  BuildContext get context => _element!;
+  HookElement? _element;
 
-  late R _debugLastBuiltValue;
+  R? _debugLastBuiltValue;
 
   /// The value shown in the devtool.
   ///
@@ -226,8 +218,8 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   bool get debugHasShortDescription => true;
 
   /// Equivalent of [State.widget] for [HookState]
-  T get hook => _hook;
-  late T _hook;
+  T get hook => _hook!;
+  T? _hook;
 
   /// Equivalent of [State.initState] for [HookState]
   @protected
@@ -241,7 +233,7 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   ///
   /// [build] is where an [HookState] may use other hooks. This restriction is made to ensure that hooks are unconditionally always requested
   @protected
-  R? build(BuildContext context);
+  R build(BuildContext context);
 
   /// Equivalent of [State.didUpdateWidget] for [HookState]
   @protected
@@ -280,21 +272,20 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   /// As opposed to [setState], the rebuild is optional and can be cancelled right
   /// before `build` is called, by having [shouldRebuild] return false.
   void markMayNeedRebuild() {
-    if (_element._isOptionalRebuild != false) {
-      _element
+    if (_element!._isOptionalRebuild != false) {
+      _element!
         .._isOptionalRebuild = true
-        .._shouldRebuildQueue ??= LinkedList()
-        .._shouldRebuildQueue!.add(_Entry(shouldRebuild))
+        .._shouldRebuildQueue.add(_Entry(shouldRebuild))
         ..markNeedsBuild();
     }
-    assert(_element.dirty, 'Bad state');
+    assert(_element!.dirty, 'Bad state');
   }
 
   /// Equivalent of [State.setState] for [HookState]
   @protected
   void setState(VoidCallback fn) {
     fn();
-    _element
+    _element!
       .._isOptionalRebuild = false
       ..markNeedsBuild();
   }
@@ -361,11 +352,11 @@ mixin HookElement on ComponentElement {
   static HookElement? _currentHookElement;
 
   _Entry<HookState>? _currentHookState;
-  final LinkedList<_Entry<HookState>> _hooks = LinkedList();
-  LinkedList<_Entry<bool Function()>>? _shouldRebuildQueue;
+  final _hooks = LinkedList<_Entry<HookState>>();
+  final _shouldRebuildQueue = LinkedList<_Entry<bool Function()>>();
   LinkedList<_Entry<HookState>>? _needDispose;
   bool? _isOptionalRebuild = false;
-  late Widget _buildCache;
+  Widget? _buildCache;
 
   bool _debugIsInitHook = false;
   bool _debugDidReassemble = false;
@@ -408,13 +399,13 @@ mixin HookElement on ComponentElement {
   Widget build() {
     // Check whether we can cancel the rebuild (caused by HookState.mayNeedRebuild).
     final mustRebuild = _isOptionalRebuild != true ||
-        (_shouldRebuildQueue?.any((cb) => cb.value()) ?? false);
+        _shouldRebuildQueue.any((cb) => cb.value());
 
     _isOptionalRebuild = null;
-    _shouldRebuildQueue?.clear();
+    _shouldRebuildQueue.clear();
 
     if (!mustRebuild) {
-      return _buildCache;
+      return _buildCache!;
     }
 
     if (kDebugMode) {
@@ -439,7 +430,7 @@ mixin HookElement on ComponentElement {
       }
     }
 
-    return _buildCache;
+    return _buildCache!;
   }
 
   R _use<R>(Hook<R> hook) {
