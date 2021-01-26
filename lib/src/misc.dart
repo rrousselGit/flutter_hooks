@@ -78,11 +78,6 @@ class _ReducerHookState<State, Action>
 
   @override
   void dispatch(Action action) {
-    assert(
-      !context.debugDoingBuild,
-      'Cannot call `dispatch` when widgets are building',
-    );
-
     final newState = hook.reducer(state, action);
 
     if (state != newState) {

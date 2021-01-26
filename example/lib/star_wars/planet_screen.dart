@@ -20,7 +20,8 @@ class _PlanetHandler {
     try {
       final page = await _starWarsApi.getPlanets(url);
       _store.dispatch(FetchPlanetPageActionSuccess(page));
-    } catch (e) {
+    } catch (e, stack) {
+      print('errpr $e $stack');
       _store.dispatch(FetchPlanetPageActionError('Error loading Planets'));
     }
   }
@@ -35,7 +36,7 @@ class PlanetScreen extends HookWidget {
   Widget build(BuildContext context) {
     final api = useMemoized(() => StarWarsApi());
 
-    final store = useReducer(
+    final store = useReducer<AppState, ReduxAction>(
       reducer,
       initialState: AppState(),
       initialAction: null,

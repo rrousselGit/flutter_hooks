@@ -151,29 +151,23 @@ void main() {
       expect(element.dirty, false);
     });
 
-    testWidgets('dispatch during build fails', (tester) async {
-      int reducer(int? state, String? action) {
-        if (state == null) {
-          return 0;
-        } else {
-          return 1;
-        }
-      }
+    testWidgets('dispatch during build works', (tester) async {
+      Store<int?, int?>? store;
 
       await tester.pumpWidget(
         HookBuilder(
           builder: (context) {
-            useReducer(
-              reducer,
-              initialAction: null,
+            store = useReducer<int?, int?>(
+              (state, action) => action,
+              initialAction: 0,
               initialState: null,
-            ).dispatch(null);
+            )..dispatch(42);
             return Container();
           },
         ),
       );
 
-      expect(tester.takeException(), isAssertionError);
+      expect(store!.state, 42);
     });
 
     testWidgets('first reducer call receive initialAction and initialState',
