@@ -7,13 +7,16 @@ class _TextEditingControllerHookCreator {
   ///
   /// The [text] parameter can be used to set the initial value of the
   /// controller.
-  TextEditingController call({String text, List<Object> keys}) {
+  TextEditingController call({String? text, List<Object?>? keys}) {
     return use(_TextEditingControllerHook(text, keys));
   }
 
   /// Creates a [TextEditingController] from the initial [value] that will
   /// be disposed automatically.
-  TextEditingController fromValue(TextEditingValue value, [List<Object> keys]) {
+  TextEditingController fromValue(
+    TextEditingValue value, [
+    List<Object?>? keys,
+  ]) {
     return use(_TextEditingControllerHook.fromValue(value, keys));
   }
 }
@@ -26,7 +29,7 @@ class _TextEditingControllerHookCreator {
 /// final controller = useTextEditingController(text: 'initial text');
 /// ```
 ///
-/// To use a [TextEditingController] with an optional inital value, use
+/// To use a [TextEditingController] with an optional initial value, use
 /// ```dart
 /// final controller = useTextEditingController
 ///   .fromValue(TextEditingValue.empty);
@@ -45,7 +48,6 @@ class _TextEditingControllerHookCreator {
 ///
 /// useEffect(() {
 ///   controller.text = update;
-///   return null; // we don't need to have a special dispose logic
 /// }, [update]);
 /// ```
 ///
@@ -56,19 +58,18 @@ const useTextEditingController = _TextEditingControllerHookCreator();
 class _TextEditingControllerHook extends Hook<TextEditingController> {
   const _TextEditingControllerHook(
     this.initialText, [
-    List<Object> keys,
+    List<Object?>? keys,
   ])  : initialValue = null,
         super(keys: keys);
 
   const _TextEditingControllerHook.fromValue(
-    this.initialValue, [
-    List<Object> keys,
+    TextEditingValue this.initialValue, [
+    List<Object?>? keys,
   ])  : initialText = null,
-        assert(initialValue != null, "initialValue can't be null"),
         super(keys: keys);
 
-  final String initialText;
-  final TextEditingValue initialValue;
+  final String? initialText;
+  final TextEditingValue? initialValue;
 
   @override
   _TextEditingControllerHookState createState() {
@@ -78,22 +79,15 @@ class _TextEditingControllerHook extends Hook<TextEditingController> {
 
 class _TextEditingControllerHookState
     extends HookState<TextEditingController, _TextEditingControllerHook> {
-  TextEditingController _controller;
-
-  @override
-  void initHook() {
-    if (hook.initialValue != null) {
-      _controller = TextEditingController.fromValue(hook.initialValue);
-    } else {
-      _controller = TextEditingController(text: hook.initialText);
-    }
-  }
+  late final _controller = hook.initialValue != null
+      ? TextEditingController.fromValue(hook.initialValue)
+      : TextEditingController(text: hook.initialText);
 
   @override
   TextEditingController build(BuildContext context) => _controller;
 
   @override
-  void dispose() => _controller?.dispose();
+  void dispose() => _controller.dispose();
 
   @override
   String get debugLabel => 'useTextEditingController';

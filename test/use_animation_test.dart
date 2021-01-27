@@ -5,17 +5,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'mock.dart';
 
 void main() {
-  testWidgets('useAnimation throws with null', (tester) async {
-    await tester.pumpWidget(HookBuilder(
-      builder: (context) {
-        useAnimation<void>(null);
-        return Container();
-      },
-    ));
-
-    expect(tester.takeException(), isAssertionError);
-  });
-
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
@@ -40,7 +29,7 @@ void main() {
 
   testWidgets('useAnimation', (tester) async {
     var listenable = AnimationController(vsync: tester);
-    double result;
+    late double result;
 
     Future<void> pump() {
       return tester.pumpWidget(HookBuilder(

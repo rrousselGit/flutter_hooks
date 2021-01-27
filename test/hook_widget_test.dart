@@ -20,15 +20,15 @@ class InheritedInitHookState extends HookState<void, InheritedInitHook> {
 }
 
 void main() {
-  final build = MockBuild<int>();
+  final build = MockBuild<int?>();
   final dispose = MockDispose();
   final deactivate = MockDeactivate();
   final initHook = MockInitHook();
   final didUpdateHook = MockDidUpdateHook();
   final reassemble = MockReassemble();
 
-  HookTest<int> createHook() {
-    return HookTest<int>(
+  HookTest<int?> createHook() {
+    return HookTest<int?>(
       build: build,
       dispose: dispose,
       didUpdateHook: didUpdateHook,
@@ -157,7 +157,7 @@ void main() {
                 child: HookBuilder(
                   key: value ? _key2 : _key1,
                   builder: (context) {
-                    use(HookTest<int>(deactivate: deactivate1));
+                    use(HookTest<int?>(deactivate: deactivate1));
                     return Container();
                   },
                 ),
@@ -165,7 +165,7 @@ void main() {
               HookBuilder(
                 key: !value ? _key2 : _key1,
                 builder: (context) {
-                  use(HookTest<int>(deactivate: deactivate2));
+                  use(HookTest<int?>(deactivate: deactivate2));
                   return Container();
                 },
               ),
@@ -202,7 +202,8 @@ void main() {
 
     final errorBuilder = ErrorWidget.builder;
     ErrorWidget.builder = MockErrorBuilder();
-    when(ErrorWidget.builder(any)).thenReturn(Container());
+    final mockError = MockFlutterErrorDetails();
+    when(ErrorWidget.builder(mockError)).thenReturn(Container());
 
     final deactivate = MockDeactivate();
     when(deactivate()).thenThrow(42);
@@ -213,8 +214,8 @@ void main() {
     final widget = HookBuilder(
       key: _key,
       builder: (context) {
-        use(HookTest<int>(deactivate: deactivate));
-        use(HookTest<int>(deactivate: deactivate2));
+        use(HookTest<int?>(deactivate: deactivate));
+        use(HookTest<int?>(deactivate: deactivate2));
         return Container();
       },
     );
@@ -273,7 +274,7 @@ void main() {
     );
   });
   testWidgets("release mode don't crash", (tester) async {
-    ValueNotifier<int> notifier;
+    late ValueNotifier<int> notifier;
     debugHotReloadHooksEnabled = false;
     addTearDown(() => debugHotReloadHooksEnabled = true);
 
@@ -297,8 +298,8 @@ void main() {
   testWidgets('HookElement exposes an immutable list of hooks', (tester) async {
     await tester.pumpWidget(
       HookBuilder(builder: (_) {
-        use(HookTest<int>());
-        use(HookTest<String>());
+        use(HookTest<int?>());
+        use(HookTest<String?>());
         return Container();
       }),
     );
@@ -306,8 +307,8 @@ void main() {
     final element = tester.element(find.byType(HookBuilder)) as HookElement;
 
     expect(element.debugHooks, [
-      isA<HookStateTest<int>>(),
-      isA<HookStateTest<String>>(),
+      isA<HookStateTest<int?>>(),
+      isA<HookStateTest<String?>>(),
     ]);
   });
   testWidgets(
@@ -322,7 +323,7 @@ void main() {
 
     await tester.pumpWidget(
       HookBuilder(builder: (_) {
-        use(HookTest<int>());
+        use(HookTest<int?>());
         throw 1;
       }),
     );
@@ -330,8 +331,8 @@ void main() {
 
     await tester.pumpWidget(
       HookBuilder(builder: (_) {
-        use(HookTest<int>());
-        use(HookTest<String>());
+        use(HookTest<int?>());
+        use(HookTest<String?>());
         throw 2;
       }),
     );
@@ -339,9 +340,9 @@ void main() {
 
     await tester.pumpWidget(
       HookBuilder(builder: (_) {
-        use(HookTest<int>());
-        use(HookTest<String>());
-        use(HookTest<double>());
+        use(HookTest<int?>());
+        use(HookTest<String?>());
+        use(HookTest<double?>());
         return Container();
       }),
     );
@@ -358,7 +359,7 @@ void main() {
 
     await tester.pumpWidget(
       HookBuilder(builder: (_) {
-        use(HookTest<int>());
+        use(HookTest<int?>());
         throw 1;
       }),
     );
@@ -366,9 +367,9 @@ void main() {
 
     await tester.pumpWidget(
       HookBuilder(builder: (_) {
-        use(HookTest<int>());
-        use(HookTest<String>());
-        use(HookTest<double>());
+        use(HookTest<int?>());
+        use(HookTest<String?>());
+        use(HookTest<double?>());
         throw 2;
       }),
     );
@@ -376,7 +377,7 @@ void main() {
   });
 
   testWidgets(
-      "After hot-reload that throws it's still possible to add hooks until one build suceed",
+      "After hot-reload that throws it's still possible to add hooks until one build succeeds",
       (tester) async {
     await tester.pumpWidget(
       HookBuilder(builder: (_) {
@@ -395,14 +396,14 @@ void main() {
 
     await tester.pumpWidget(
       HookBuilder(builder: (_) {
-        use(HookTest<int>());
+        use(HookTest<int?>());
         return Container();
       }),
     );
   });
 
   testWidgets(
-      'After hot-reload that throws, hooks are correctly disposed when build suceeeds with less hooks',
+      'After hot-reload that throws, hooks are correctly disposed when build succeeds with less hooks',
       (tester) async {
     await tester.pumpWidget(
       HookBuilder(builder: (_) {
@@ -438,8 +439,8 @@ void main() {
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        use(HookTest<int>(dispose: dispose));
-        use(HookTest<String>(dispose: dispose2));
+        use(HookTest<int?>(dispose: dispose));
+        use(HookTest<String?>(dispose: dispose2));
         return Container();
       }),
     );
@@ -449,8 +450,8 @@ void main() {
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        use(HookTest<int>(dispose: dispose, keys: const []));
-        use(HookTest<String>(dispose: dispose2));
+        use(HookTest<int?>(dispose: dispose, keys: const []));
+        use(HookTest<String?>(dispose: dispose2));
         return Container();
       }),
     );
@@ -460,8 +461,8 @@ void main() {
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        use(HookTest<int>(dispose: dispose, keys: const []));
-        use(HookTest<String>(dispose: dispose2, keys: const []));
+        use(HookTest<int?>(dispose: dispose, keys: const []));
+        use(HookTest<String?>(dispose: dispose2, keys: const []));
         return Container();
       }),
     );
@@ -470,23 +471,25 @@ void main() {
     verifyNoMoreInteractions(dispose);
   });
   testWidgets('keys recreate hookstate', (tester) async {
-    List<Object> keys;
+    List<Object?>? keys;
 
-    final createState = MockCreateState<HookStateTest<int>>();
-    when(createState()).thenReturn(HookStateTest<int>());
+    final createState =
+        MockCreateState<HookStateTest<int?>>(HookStateTest<int?>());
+    // when(createState()).thenReturn(HookStateTest<int>());
+
+    late HookTest<int?> hookTest;
 
     Widget $build() {
       return HookBuilder(builder: (context) {
-        use(
-          HookTest<int>(
-            build: build,
-            dispose: dispose,
-            didUpdateHook: didUpdateHook,
-            initHook: initHook,
-            keys: keys,
-            createStateFn: createState,
-          ),
+        hookTest = HookTest<int?>(
+          build: build,
+          dispose: dispose,
+          didUpdateHook: didUpdateHook,
+          initHook: initHook,
+          keys: keys,
+          createStateFn: createState,
         );
+        use(hookTest);
         return Container();
       });
     }
@@ -561,8 +564,8 @@ void main() {
   testWidgets('hook & setState', (tester) async {
     final setState = MockSetState();
     final hook = MyHook();
-    HookElement hookContext;
-    MyHookState state;
+    late HookElement hookContext;
+    late MyHookState state;
 
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
@@ -583,8 +586,8 @@ void main() {
   });
 
   testWidgets('life-cycles in order', (tester) async {
-    int result;
-    HookTest<int> hook;
+    late int? result;
+    late HookTest<int?> hook;
 
     when(build(any)).thenReturn(42);
 
@@ -600,7 +603,7 @@ void main() {
     expect(result, 42);
     verifyInOrder([
       initHook(),
-      build(context),
+      build(any),
     ]);
     verifyNoMoreHookInteration();
 
@@ -618,7 +621,7 @@ void main() {
     expect(result, 24);
     verifyInOrder([
       didUpdateHook(previousHook),
-      build(any),
+      build(context),
     ]);
     verifyNoMoreHookInteration();
 
@@ -641,7 +644,7 @@ void main() {
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
         use(createHook());
-        use(HookTest<int>(dispose: dispose2));
+        use(HookTest<int?>(dispose: dispose2));
         return Container();
       }),
     );
@@ -685,7 +688,7 @@ void main() {
     verifyInOrder([
       build(any),
     ]);
-    verifyNever(didUpdateHook(any));
+    verifyNever(didUpdateHook(hook));
     verifyNever(initHook());
     verifyNever(dispose());
   });
@@ -693,14 +696,14 @@ void main() {
   testWidgets('rebuild with different hooks crash', (tester) async {
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        use(HookTest<int>());
+        use(HookTest<int?>());
         return Container();
       }),
     );
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        use(HookTest<String>());
+        use(HookTest<String?>());
         return Container();
       }),
     );
@@ -758,12 +761,12 @@ void main() {
       }),
     );
 
-    expect(() => use(HookTest<int>()), throwsAssertionError);
+    expect(() => use(HookTest<int?>()), throwsAssertionError);
   });
 
   testWidgets('hot-reload triggers a build', (tester) async {
-    int result;
-    HookTest<int> previousHook;
+    late int? result;
+    late HookTest<int?> previousHook;
 
     when(build(any)).thenReturn(42);
 
@@ -803,12 +806,10 @@ void main() {
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
         use(createHook());
-        use(
-          HookTest<void>(
-            reassemble: reassemble2,
-            didUpdateHook: didUpdateHook2,
-          ),
-        );
+        use(HookTest<void>(
+          reassemble: reassemble2,
+          didUpdateHook: didUpdateHook2,
+        ));
         return Container();
       }),
     );
@@ -830,7 +831,7 @@ void main() {
   testWidgets("hot-reload don't reassemble newly added hooks", (tester) async {
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        use(HookTest<int>());
+        use(HookTest<int?>());
         return Container();
       }),
     );
@@ -840,7 +841,7 @@ void main() {
     hotReload(tester);
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        use(HookTest<int>());
+        use(HookTest<int?>());
         use(createHook());
         return Container();
       }),
@@ -852,12 +853,12 @@ void main() {
 
   testWidgets('hot-reload can add hooks at the end of the list',
       (tester) async {
-    HookTest hook1;
+    late HookTest hook1;
 
     final dispose2 = MockDispose();
     final initHook2 = MockInitHook();
     final didUpdateHook2 = MockDidUpdateHook();
-    final build2 = MockBuild<String>();
+    final build2 = MockBuild<String?>();
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
@@ -870,7 +871,7 @@ void main() {
 
     verifyInOrder([
       initHook(),
-      build(context),
+      build(any),
     ]);
     verifyZeroInteractions(dispose);
     verifyZeroInteractions(didUpdateHook);
@@ -881,7 +882,7 @@ void main() {
       HookBuilder(builder: (context) {
         use(createHook());
         use(
-          HookTest<String>(
+          HookTest<String?>(
             initHook: initHook2,
             build: build2,
             didUpdateHook: didUpdateHook2,
@@ -894,7 +895,7 @@ void main() {
 
     verifyInOrder([
       didUpdateHook(hook1),
-      build(context),
+      build(any),
       initHook2(),
       build2(context),
     ]);
@@ -909,7 +910,7 @@ void main() {
     final dispose2 = MockDispose();
     final initHook2 = MockInitHook();
     final didUpdateHook2 = MockDidUpdateHook();
-    final build2 = MockBuild<String>();
+    final build2 = MockBuild<String?>();
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
@@ -922,7 +923,7 @@ void main() {
 
     verifyInOrder([
       initHook(),
-      build(context),
+      build(any),
     ]);
     verifyZeroInteractions(dispose);
     verifyZeroInteractions(didUpdateHook);
@@ -931,7 +932,7 @@ void main() {
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        use(HookTest<String>(
+        use(HookTest<String?>(
           initHook: initHook2,
           build: build2,
           didUpdateHook: didUpdateHook2,
@@ -946,7 +947,7 @@ void main() {
       initHook2(),
       build2(context),
       initHook(),
-      build(context),
+      build(any),
       dispose(),
     ]);
     verifyNoMoreInteractions(didUpdateHook);
@@ -958,13 +959,13 @@ void main() {
     final dispose2 = MockDispose();
     final initHook2 = MockInitHook();
     final didUpdateHook2 = MockDidUpdateHook();
-    final build2 = MockBuild<int>();
+    final build2 = MockBuild<int?>();
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
         use(createHook());
         use(
-          HookTest<int>(
+          HookTest<int?>(
             initHook: initHook2,
             build: build2,
             didUpdateHook: didUpdateHook2,
@@ -978,7 +979,7 @@ void main() {
 
     verifyInOrder([
       initHook(),
-      build(context),
+      build(any),
       initHook2(),
       build2(context),
     ]);
@@ -1010,28 +1011,28 @@ void main() {
     verifyZeroInteractions(didUpdateHook2);
   });
   testWidgets('hot-reload disposes hooks when type change', (tester) async {
-    HookTest hook1;
+    late HookTest hook1;
 
     final dispose2 = MockDispose();
     final initHook2 = MockInitHook();
     final didUpdateHook2 = MockDidUpdateHook();
-    final build2 = MockBuild<int>();
+    final build2 = MockBuild<int?>();
 
     final dispose3 = MockDispose();
     final initHook3 = MockInitHook();
     final didUpdateHook3 = MockDidUpdateHook();
-    final build3 = MockBuild<int>();
+    final build3 = MockBuild<int?>();
 
     final dispose4 = MockDispose();
     final initHook4 = MockInitHook();
     final didUpdateHook4 = MockDidUpdateHook();
-    final build4 = MockBuild<int>();
+    final build4 = MockBuild<int?>();
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
         use(hook1 = createHook());
-        use(HookTest<String>(dispose: dispose2));
-        use(HookTest<Object>(dispose: dispose3));
+        use(HookTest<String?>(dispose: dispose2));
+        use(HookTest<Object?>(dispose: dispose3));
         use(HookTest<void>(dispose: dispose4));
         return Container();
       }),
@@ -1039,7 +1040,7 @@ void main() {
 
     final context = tester.element(find.byType(HookBuilder));
 
-    // We don't care about datas of the first render
+    // We don't care about the data from the first render
     clearInteractions(initHook);
     clearInteractions(didUpdateHook);
     clearInteractions(dispose);
@@ -1067,21 +1068,21 @@ void main() {
         use(createHook());
         // changed type from HookTest<String>
         use(
-          HookTest<int>(
+          HookTest<int?>(
             initHook: initHook2,
             build: build2,
             didUpdateHook: didUpdateHook2,
           ),
         );
         use(
-          HookTest<int>(
+          HookTest<int?>(
             initHook: initHook3,
             build: build3,
             didUpdateHook: didUpdateHook3,
           ),
         );
         use(
-          HookTest<int>(
+          HookTest<int?>(
             initHook: initHook4,
             build: build4,
             didUpdateHook: didUpdateHook4,
@@ -1093,7 +1094,7 @@ void main() {
 
     verifyInOrder([
       didUpdateHook(hook1),
-      build(context),
+      build(any),
       initHook2(),
       build2(context),
       initHook3(),
@@ -1112,28 +1113,28 @@ void main() {
   });
 
   testWidgets('hot-reload disposes hooks when type change', (tester) async {
-    HookTest hook1;
+    late HookTest hook1;
 
     final dispose2 = MockDispose();
     final initHook2 = MockInitHook();
     final didUpdateHook2 = MockDidUpdateHook();
-    final build2 = MockBuild<int>();
+    final build2 = MockBuild<int?>();
 
     final dispose3 = MockDispose();
     final initHook3 = MockInitHook();
     final didUpdateHook3 = MockDidUpdateHook();
-    final build3 = MockBuild<int>();
+    final build3 = MockBuild<int?>();
 
     final dispose4 = MockDispose();
     final initHook4 = MockInitHook();
     final didUpdateHook4 = MockDidUpdateHook();
-    final build4 = MockBuild<int>();
+    final build4 = MockBuild<int?>();
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
         use(hook1 = createHook());
-        use(HookTest<String>(dispose: dispose2));
-        use(HookTest<Object>(dispose: dispose3));
+        use(HookTest<String?>(dispose: dispose2));
+        use(HookTest<Object?>(dispose: dispose3));
         use(HookTest<void>(dispose: dispose4));
         return Container();
       }),
@@ -1141,7 +1142,7 @@ void main() {
 
     final context = tester.element(find.byType(HookBuilder));
 
-    // We don't care about datas of the first render
+    // We don't care about the data from the first render
     clearInteractions(initHook);
     clearInteractions(didUpdateHook);
     clearInteractions(dispose);
@@ -1167,17 +1168,17 @@ void main() {
       HookBuilder(builder: (context) {
         use(createHook());
         // changed type from HookTest<String>
-        use(HookTest<int>(
+        use(HookTest<int?>(
           initHook: initHook2,
           build: build2,
           didUpdateHook: didUpdateHook2,
         ));
-        use(HookTest<int>(
+        use(HookTest<int?>(
           initHook: initHook3,
           build: build3,
           didUpdateHook: didUpdateHook3,
         ));
-        use(HookTest<int>(
+        use(HookTest<int?>(
           initHook: initHook4,
           build: build4,
           didUpdateHook: didUpdateHook4,
@@ -1188,7 +1189,7 @@ void main() {
 
     verifyInOrder([
       didUpdateHook(hook1),
-      build(context),
+      build(any),
       initHook2(),
       build2(context),
       initHook3(),
@@ -1274,17 +1275,17 @@ class MyHookState extends HookState<MyHookState, MyHook> {
 }
 
 class MyStatefulHook extends StatefulHookWidget {
-  const MyStatefulHook({Key key, this.value, this.notifier}) : super(key: key);
+  const MyStatefulHook({Key? key, this.value, this.notifier}) : super(key: key);
 
-  final int value;
-  final ValueNotifier<int> notifier;
+  final int? value;
+  final ValueNotifier<int>? notifier;
 
   @override
   _MyStatefulHookState createState() => _MyStatefulHookState();
 }
 
 class _MyStatefulHookState extends State<MyStatefulHook> {
-  int value;
+  int? value;
 
   @override
   void initState() {
@@ -1302,7 +1303,7 @@ class _MyStatefulHookState extends State<MyStatefulHook> {
   @override
   Widget build(BuildContext context) {
     return Text(
-      '$value ${useValueListenable(widget.notifier)}',
+      '$value ${useValueListenable<int>(widget.notifier ?? ValueNotifier(value ?? 42))}',
       textDirection: TextDirection.ltr,
     );
   }

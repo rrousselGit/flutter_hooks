@@ -35,7 +35,7 @@ void main() {
 
   group('useStreamController', () {
     testWidgets('keys', (tester) async {
-      StreamController<int> controller;
+      late StreamController<int> controller;
 
       await tester.pumpWidget(HookBuilder(builder: (context) {
         controller = useStreamController();
@@ -51,7 +51,7 @@ void main() {
       expect(previous, isNot(controller));
     });
     testWidgets('basics', (tester) async {
-      StreamController<int> controller;
+      late StreamController<int> controller;
 
       await tester.pumpWidget(HookBuilder(builder: (context) {
         controller = useStreamController();
@@ -88,7 +88,7 @@ void main() {
       expect(controller.isClosed, true);
     });
     testWidgets('sync', (tester) async {
-      StreamController<int> controller;
+      late StreamController<int> controller;
 
       await tester.pumpWidget(HookBuilder(builder: (context) {
         controller = useStreamController(sync: true);

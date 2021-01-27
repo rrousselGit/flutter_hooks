@@ -24,7 +24,7 @@ class _UseAnimationStateHook extends _ListenableStateHook {
   String get debugLabel => 'useAnimation';
 
   @override
-  Object get debugValue => (hook.listenable as Animation).value;
+  Object? get debugValue => (hook.listenable as Animation).value;
 }
 
 /// Creates an [AnimationController] automatically disposed.
@@ -41,14 +41,14 @@ class _UseAnimationStateHook extends _ListenableStateHook {
 ///   * [AnimationController], the created object.
 ///   * [useAnimation], to listen to the created [AnimationController].
 AnimationController useAnimationController({
-  Duration duration,
-  String debugLabel,
+  Duration? duration,
+  String? debugLabel,
   double initialValue = 0,
   double lowerBound = 0,
   double upperBound = 1,
-  TickerProvider vsync,
+  TickerProvider? vsync,
   AnimationBehavior animationBehavior = AnimationBehavior.normal,
-  List<Object> keys,
+  List<Object?>? keys,
 }) {
   vsync ??= useSingleTickerProvider(keys: keys);
 
@@ -70,16 +70,16 @@ class _AnimationControllerHook extends Hook<AnimationController> {
   const _AnimationControllerHook({
     this.duration,
     this.debugLabel,
-    this.initialValue,
-    this.lowerBound,
-    this.upperBound,
-    this.vsync,
-    this.animationBehavior,
-    List<Object> keys,
+    required this.initialValue,
+    required this.lowerBound,
+    required this.upperBound,
+    required this.vsync,
+    required this.animationBehavior,
+    List<Object?>? keys,
   }) : super(keys: keys);
 
-  final Duration duration;
-  final String debugLabel;
+  final Duration? duration;
+  final String? debugLabel;
   final double initialValue;
   final double lowerBound;
   final double upperBound;
@@ -99,21 +99,15 @@ class _AnimationControllerHook extends Hook<AnimationController> {
 
 class _AnimationControllerHookState
     extends HookState<AnimationController, _AnimationControllerHook> {
-  AnimationController _animationController;
-
-  @override
-  void initHook() {
-    super.initHook();
-    _animationController = AnimationController(
-      vsync: hook.vsync,
-      duration: hook.duration,
-      debugLabel: hook.debugLabel,
-      lowerBound: hook.lowerBound,
-      upperBound: hook.upperBound,
-      animationBehavior: hook.animationBehavior,
-      value: hook.initialValue,
-    );
-  }
+  late final AnimationController _animationController = AnimationController(
+    vsync: hook.vsync,
+    duration: hook.duration,
+    debugLabel: hook.debugLabel,
+    lowerBound: hook.lowerBound,
+    upperBound: hook.upperBound,
+    animationBehavior: hook.animationBehavior,
+    value: hook.initialValue,
+  );
 
   @override
   void didUpdateHook(_AnimationControllerHook oldHook) {
@@ -148,7 +142,7 @@ class _AnimationControllerHookState
 ///
 /// See also:
 ///  * [SingleTickerProviderStateMixin]
-TickerProvider useSingleTickerProvider({List<Object> keys}) {
+TickerProvider useSingleTickerProvider({List<Object?>? keys}) {
   return use(
     keys != null
         ? _SingleTickerProviderHook(keys)
@@ -157,7 +151,7 @@ TickerProvider useSingleTickerProvider({List<Object> keys}) {
 }
 
 class _SingleTickerProviderHook extends Hook<TickerProvider> {
-  const _SingleTickerProviderHook([List<Object> keys]) : super(keys: keys);
+  const _SingleTickerProviderHook([List<Object?>? keys]) : super(keys: keys);
 
   @override
   _TickerProviderHookState createState() => _TickerProviderHookState();
@@ -166,7 +160,7 @@ class _SingleTickerProviderHook extends Hook<TickerProvider> {
 class _TickerProviderHookState
     extends HookState<TickerProvider, _SingleTickerProviderHook>
     implements TickerProvider {
-  Ticker _ticker;
+  Ticker? _ticker;
 
   @override
   Ticker createTicker(TickerCallback onTick) {
@@ -187,7 +181,7 @@ class _TickerProviderHookState
   @override
   void dispose() {
     assert(() {
-      if (_ticker == null || !_ticker.isActive) {
+      if (_ticker == null || !_ticker!.isActive) {
         return true;
       }
       throw FlutterError(
@@ -201,7 +195,7 @@ class _TickerProviderHookState
   @override
   TickerProvider build(BuildContext context) {
     if (_ticker != null) {
-      _ticker.muted = !TickerMode.of(context);
+      _ticker!.muted = !TickerMode.of(context);
     }
     return this;
   }

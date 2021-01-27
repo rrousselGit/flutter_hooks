@@ -31,7 +31,7 @@ class UseStreamExample extends StatelessWidget {
             // Stream. This triggers a rebuild whenever a new value is emitted.
             //
             // Like normal StreamBuilders, it returns the current AsyncSnapshot.
-            final snapshot = useStream(stream);
+            final snapshot = useStream(stream, initialData: 0);
 
             // Finally, use the data from the Stream to render a text Widget.
             // If no data is available, fallback to a default value.

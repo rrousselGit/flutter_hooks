@@ -37,7 +37,7 @@ void main() {
 
   testWidgets('useTextEditingController returns a controller', (tester) async {
     final rebuilder = ValueNotifier(0);
-    TextEditingController controller;
+    late TextEditingController controller;
 
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
@@ -61,7 +61,7 @@ void main() {
     await tester.pumpWidget(Container());
 
     expect(
-      () => controller.addListener(null),
+      () => controller.addListener(() {}),
       throwsA(isFlutterError.having(
           (e) => e.message, 'message', contains('disposed'))),
     );
@@ -69,7 +69,7 @@ void main() {
 
   testWidgets('respects initial text property', (tester) async {
     final rebuilder = ValueNotifier(0);
-    TextEditingController controller;
+    late TextEditingController controller;
     const initialText = 'hello hooks';
     var targetText = initialText;
 
@@ -83,25 +83,11 @@ void main() {
 
     expect(controller.text, targetText);
 
-    // change text and rebuild - the value of the controler shouldn't change
+    // change text and rebuild - the value of the controller shouldn't change
     targetText = "can't see me!";
     rebuilder.notifyListeners();
     await tester.pumpAndSettle();
     expect(controller.text, initialText);
-  });
-
-  testWidgets('useTextEditingController throws error on null value',
-      (tester) async {
-    await tester.pumpWidget(HookBuilder(
-      builder: (context) {
-        try {
-          useTextEditingController.fromValue(null);
-        } catch (e) {
-          expect(e, isAssertionError);
-        }
-        return Container();
-      },
-    ));
   });
 
   testWidgets('respects initial value property', (tester) async {
@@ -111,7 +97,7 @@ void main() {
       selection: TextSelection.collapsed(offset: 2),
     );
     var targetValue = initialValue;
-    TextEditingController controller;
+    late TextEditingController controller;
 
     await tester.pumpWidget(HookBuilder(
       builder: (context) {

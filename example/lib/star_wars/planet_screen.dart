@@ -20,7 +20,8 @@ class _PlanetHandler {
     try {
       final page = await _starWarsApi.getPlanets(url);
       _store.dispatch(FetchPlanetPageActionSuccess(page));
-    } catch (e) {
+    } catch (e, stack) {
+      print('errpr $e $stack');
       _store.dispatch(FetchPlanetPageActionError('Error loading Planets'));
     }
   }
@@ -35,9 +36,10 @@ class PlanetScreen extends HookWidget {
   Widget build(BuildContext context) {
     final api = useMemoized(() => StarWarsApi());
 
-    final store = useReducer(
+    final store = useReducer<AppState, ReduxAction>(
       reducer,
       initialState: AppState(),
+      initialAction: null,
     );
 
     final planetHandler = useMemoized(
@@ -100,9 +102,10 @@ class _Error extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         if (errorMsg != null) Text(errorMsg),
-        // ignore: deprecated_member_use, ElevatedButton is not available in stable yet
-        RaisedButton(
-          color: Colors.redAccent,
+        ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(Colors.redAccent),
+          ),
           onPressed: () async {
             await Provider.of<_PlanetHandler>(
               context,
@@ -125,8 +128,7 @@ class _LoadPageButton extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final state = Provider.of<AppState>(context);
-    // ignore: deprecated_member_use, ElevatedButton is not available in stable yet
-    return RaisedButton(
+    return ElevatedButton(
       onPressed: () async {
         final url = next ? state.planetPage.next : state.planetPage.previous;
         await Provider.of<_PlanetHandler>(context, listen: false)

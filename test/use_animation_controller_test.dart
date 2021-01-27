@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -6,7 +7,7 @@ import 'mock.dart';
 
 void main() {
   testWidgets('useAnimationController basic', (tester) async {
-    AnimationController controller;
+    late AnimationController controller;
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
@@ -64,13 +65,13 @@ void main() {
   });
 
   testWidgets('useAnimationController complex', (tester) async {
-    AnimationController controller;
+    late AnimationController controller;
 
     TickerProvider provider;
     provider = _TickerProvider();
-    when(provider.createTicker(any)).thenAnswer((_) {
-      return tester
-          .createTicker(_.positionalArguments[0] as void Function(Duration));
+    void onTick(Duration _) {}
+    when(provider.createTicker(onTick)).thenAnswer((_) {
+      return tester.createTicker(onTick);
     });
 
     await tester.pumpWidget(
@@ -88,7 +89,7 @@ void main() {
       }),
     );
 
-    verify(provider.createTicker(any)).called(1);
+    verify(provider.createTicker(onTick)).called(1);
     verifyNoMoreInteractions(provider);
 
     // check has a ticker
@@ -103,9 +104,8 @@ void main() {
 
     final previousController = controller;
     provider = _TickerProvider();
-    when(provider.createTicker(any)).thenAnswer((_) {
-      return tester
-          .createTicker(_.positionalArguments[0] as void Function(Duration));
+    when(provider.createTicker(onTick)).thenAnswer((_) {
+      return tester.createTicker(onTick);
     });
 
     await tester.pumpWidget(
@@ -119,7 +119,7 @@ void main() {
       }),
     );
 
-    verify(provider.createTicker(any)).called(1);
+    verify(provider.createTicker(onTick)).called(1);
     verifyNoMoreInteractions(provider);
     expect(controller, previousController);
     expect(controller.duration, const Duration(seconds: 2));
@@ -169,8 +169,8 @@ void main() {
   });
 
   testWidgets('useAnimationController pass down keys', (tester) async {
-    List<Object> keys;
-    AnimationController controller;
+    List<Object?>? keys;
+    late AnimationController controller;
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
         controller = useAnimationController(keys: keys);
@@ -192,4 +192,13 @@ void main() {
   });
 }
 
-class _TickerProvider extends Mock implements TickerProvider {}
+class _TickerProvider extends Mock implements TickerProvider {
+  @override
+  Ticker createTicker(TickerCallback onTick) =>
+      super.noSuchMethod(Invocation.getter(#createTicker), Ticker(onTick))
+          as Ticker;
+}
+
+class MockEffect extends Mock {
+  VoidCallback call();
+}

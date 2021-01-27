@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets('useIsMounted', (tester) async {
-    IsMounted isMounted;
+    late IsMounted isMounted;
 
     await tester.pumpWidget(HookBuilder(
       builder: (context) {

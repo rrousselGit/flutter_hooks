@@ -29,8 +29,8 @@ void main() {
 
   group('useValueNotifier', () {
     testWidgets('useValueNotifier basic', (tester) async {
-      ValueNotifier<int> state;
-      HookElement element;
+      late ValueNotifier<int> state;
+      late HookElement element;
       final listener = MockListener();
 
       await tester.pumpWidget(HookBuilder(
@@ -71,14 +71,14 @@ void main() {
     });
 
     testWidgets('no initial data', (tester) async {
-      ValueNotifier<int> state;
-      HookElement element;
+      late ValueNotifier<int?> state;
+      late HookElement element;
       final listener = MockListener();
 
       await tester.pumpWidget(HookBuilder(
         builder: (context) {
           element = context as HookElement;
-          state = useValueNotifier();
+          state = useValueNotifier<int?>(null);
           return Container();
         },
       ));
@@ -113,8 +113,8 @@ void main() {
     });
 
     testWidgets('creates new valuenotifier when key change', (tester) async {
-      ValueNotifier<int> state;
-      ValueNotifier<int> previous;
+      late ValueNotifier<int> state;
+      late ValueNotifier<int> previous;
 
       await tester.pumpWidget(HookBuilder(
         builder: (context) {
@@ -133,13 +133,14 @@ void main() {
 
       expect(state, isNot(previous));
     });
-    testWidgets("instance stays the same when key don' change", (tester) async {
-      ValueNotifier<int> state;
-      ValueNotifier<int> previous;
+    testWidgets("instance stays the same when keys don't change",
+        (tester) async {
+      late ValueNotifier<int> state;
+      late ValueNotifier<int> previous;
 
       await tester.pumpWidget(HookBuilder(
         builder: (context) {
-          state = useValueNotifier(null, [42]);
+          state = useValueNotifier(0, [42]);
           return Container();
         },
       ));
