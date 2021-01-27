@@ -48,7 +48,6 @@ class _TextEditingControllerHookCreator {
 ///
 /// useEffect(() {
 ///   controller.text = update;
-///   return null; // we don't need to have a special dispose logic
 /// }, [update]);
 /// ```
 ///

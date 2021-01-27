@@ -20,16 +20,15 @@ logic of say `initState` or `dispose`. An obvious example is `AnimationControlle
 class Example extends StatefulWidget {
   final Duration duration;
 
-  const Example({Key key, @required this.duration})
-      : assert(duration != null),
-        super(key: key);
+  const Example({Key key, required this.duration})
+      : super(key: key);
 
   @override
   _ExampleState createState() => _ExampleState();
 }
 
 class _ExampleState extends State<Example> with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  AnimationController? _controller;
 
   @override
   void initState() {
@@ -41,13 +40,13 @@ class _ExampleState extends State<Example> with SingleTickerProviderStateMixin {
   void didUpdateWidget(Example oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.duration != oldWidget.duration) {
-      _controller.duration = widget.duration;
+      _controller!.duration = widget.duration;
     }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller!.dispose();
     super.dispose();
   }
 
@@ -74,9 +73,8 @@ This library proposes a third solution:
 
 ```dart
 class Example extends HookWidget {
-  const Example({Key key, @required this.duration})
-      : assert(duration != null),
-        super(key: key);
+  const Example({Key key, required this.duration})
+      : super(key: key);
 
   final Duration duration;
 

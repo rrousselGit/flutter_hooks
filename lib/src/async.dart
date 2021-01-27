@@ -113,6 +113,9 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
 
 /// Subscribes to a [Stream] and return its current state in an [AsyncSnapshot].
 ///
+/// * [preserveState] defines if the current value should be preserved when changing
+/// the [Future] instance.
+///
 /// See also:
 ///   * [Stream], the object listened.
 ///   * [useFuture], similar to [useStream] but for [Future].

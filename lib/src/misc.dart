@@ -97,7 +97,7 @@ class _ReducerHookState<State, Action>
   Object? get debugValue => state;
 }
 
-/// Returns the previous argument called to [usePrevious].
+/// Returns the previous value passed to [usePrevious] (from the previous widget `build`).
 T? usePrevious<T>(T val) {
   return use(_PreviousHook(val));
 }
@@ -213,7 +213,7 @@ class _IsMountedHookState extends HookState<IsMounted, _IsMountedHook> {
   String get debugLabel => 'useIsMounted';
 
   @override
-  Object get debugValue => _mounted;
+  Object? get debugValue => _mounted;
 }
 
 /// Used by [useIsMounted] to allow widgets to determine if the widget is still
