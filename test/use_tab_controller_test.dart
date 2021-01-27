@@ -35,8 +35,8 @@ void main() {
 
   group('useTabController', () {
     testWidgets('initial values matches with real constructor', (tester) async {
-      TabController controller;
-      TabController controller2;
+      late TabController controller;
+      late TabController controller2;
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
@@ -50,8 +50,8 @@ void main() {
       expect(controller.index, controller2.index);
     });
     testWidgets("returns a TabController that doesn't change", (tester) async {
-      TabController controller;
-      TabController controller2;
+      late TabController controller;
+      late TabController controller2;
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
@@ -72,7 +72,7 @@ void main() {
       expect(identical(controller, controller2), isTrue);
     });
     testWidgets('changing length is no-op', (tester) async {
-      TabController controller;
+      late TabController controller;
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
@@ -94,7 +94,7 @@ void main() {
     });
 
     testWidgets('passes hook parameters to the TabController', (tester) async {
-      TabController controller;
+      late TabController controller;
 
       await tester.pumpWidget(
         HookBuilder(
@@ -112,7 +112,7 @@ void main() {
     testWidgets('allows passing custom vsync', (tester) async {
       final vsync = TickerProviderMock();
       final ticker = Ticker((_) {});
-      when(vsync.createTicker(any)).thenReturn(ticker);
+      when(vsync.createTicker((_) {})).thenReturn(ticker);
 
       await tester.pumpWidget(
         HookBuilder(
@@ -124,7 +124,7 @@ void main() {
         ),
       );
 
-      verify(vsync.createTicker(any)).called(1);
+      verify(vsync.createTicker((_) {})).called(1);
       verifyNoMoreInteractions(vsync);
 
       await tester.pumpWidget(
@@ -142,4 +142,9 @@ void main() {
   });
 }
 
-class TickerProviderMock extends Mock implements TickerProvider {}
+class TickerProviderMock extends Mock implements TickerProvider {
+  @override
+  Ticker createTicker(TickerCallback onTick) =>
+      super.noSuchMethod(Invocation.getter(#createTicker), Ticker(onTick))
+          as Ticker;
+}

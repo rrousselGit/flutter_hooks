@@ -14,14 +14,14 @@ duplicado.
 
 ## Motivação
 
-`StatefulWidget` sofrem de um grande problema: é bem difícil reutilizar a lógica, 
+`StatefulWidget` sofrem de um grande problema: é bem difícil reutilizar a lógica,
 por exemplo de um `initState` ou `dispose`. Um exemplo é o `AnimationController`:
 
 ```dart
 class Example extends StatefulWidget {
   final Duration duration;
 
-  const Example({Key key, @required this.duration})
+  const Example({Key? key, @required this.duration})
       : assert(duration != null),
         super(key: key);
 
@@ -76,7 +76,7 @@ Essa biblioteca propõe uma terceira solução:
 
 ```dart
 class Example extends HookWidget {
-  const Example({Key key, @required this.duration})
+  const Example({Key? key, @required this.duration})
       : assert(duration != null),
         super(key: key);
 
@@ -300,12 +300,12 @@ Eles são divididos em diferentes tipos:
 
 Um conjunto de hooks que interagem com diferentes ciclos de vida de um widget
 
-| Nome                                                                                                              | descrição                                                      |
-| ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| [useEffect](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useEffect.html)             | Útil para side-effects e opcionalmente, cancelá-los.           |
-| [useState](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useState.html)               | Cria uma variável e escuta suas mudanças.                            |
-| [useMemoized](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useMemoized.html)         | Guarda a instância de um objeto complexo.                          |
-| [useContext](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useContext.html)           | Obtém o `BuildContext` do `HookWidget`.          |
+| Nome                                                                                                              | descrição                                                    |
+| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| [useEffect](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useEffect.html)             | Útil para side-effects e opcionalmente, cancelá-los.         |
+| [useState](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useState.html)               | Cria uma variável e escuta suas mudanças.                    |
+| [useMemoized](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useMemoized.html)         | Guarda a instância de um objeto complexo.                    |
+| [useContext](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useContext.html)           | Obtém o `BuildContext` do `HookWidget`.                      |
 | [useValueChanged](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useValueChanged.html) | Observa o value e chama um callback sempre que o valor muda. |
 
 ### Object binding
@@ -315,40 +315,40 @@ Eles serão responsáveis por criar/atualizar/descartar o objeto.
 
 #### dart:async:
 
-| nome                                                                                                                      | descrição                                                                  |
-| ------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| nome                                                                                                                      | descrição                                                              |
+| ------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | [useStream](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useStream.html)                     | Inscreve em uma `Stream` e retorna o estado atual num `AsyncSnapshot`. |
-| [useStreamController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useStreamController.html) | Cria um `StreamController` automaticamente descartado.                         |
+| [useStreamController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useStreamController.html) | Cria um `StreamController` automaticamente descartado.                 |
 | [useFuture](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useFuture.html)                     | Inscreve em uma `Future` e retorna o estado atual num `AsyncSnapshot`. |
 
 #### Animação:
 
-| nome                                                                                                                              | descrição                                              |
-| --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| [useSingleTickerProvider](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useSingleTickerProvider.html) | Cria um único `TickerProvider`.                 |
+| nome                                                                                                                              | descrição                                                 |
+| --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| [useSingleTickerProvider](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useSingleTickerProvider.html) | Cria um único `TickerProvider`.                           |
 | [useAnimationController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useAnimationController.html)   | Cria um `AnimationController` automaticamente descartado. |
-| [useAnimation](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useAnimation.html)                       | Inscreve um uma `Animation` e retorna seu valor.       |
+| [useAnimation](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useAnimation.html)                       | Inscreve um uma `Animation` e retorna seu valor.          |
 
 #### Listenable:
 
-| nome                                                                                                                    | descrição                                                                                        |
-| ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| nome                                                                                                                    | descrição                                                                                 |
+| ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | [useListenable](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useListenable.html)           | Inscreve em um `Listenable` e marca o widget para um rebuild quando o listener é chamado. |
-| [useValueNotifier](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useValueNotifier.html)     | Cria um `ValueNotifier` automaticamente descartado.                                                  |
-| [useValueListenable](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useValueListenable.html) | Inscreve em um `ValueListenable` e retorna seu valor.                                            |
+| [useValueNotifier](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useValueNotifier.html)     | Cria um `ValueNotifier` automaticamente descartado.                                       |
+| [useValueListenable](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useValueListenable.html) | Inscreve em um `ValueListenable` e retorna seu valor.                                     |
 
 #### Misc
 
 São vários hooks sem um tema particular.
 
-| nome                                                                                                                                | descrição                                            |
-| ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| nome                                                                                                                                | descrição                                           |
+| ----------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
 | [useReducer](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useReducer.html)                             | Uma alternativa `useState` para estados complexos.  |
 | [usePrevious](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/usePrevious.html)                           | Retorna o argumento anterior chamado [usePrevious]. |
-| [useTextEditingController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTextEditingController-constant.html) | Cria um `TextEditingController`                       |
-| [useFocusNode](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useFocusNode.html)                         | Cria um `FocusNode`                                   |
-| [useTabController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useTabController.html)                 | Cria e descarta um `TabController`.                |
-| [useScrollController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useScrollController.html)           | Cria e descarta um `ScrollController`.             |
+| [useTextEditingController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTextEditingController-constant.html) | Cria um `TextEditingController`                     |
+| [useFocusNode](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useFocusNode.html)                         | Cria um `FocusNode`                                 |
+| [useTabController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useTabController.html)                 | Cria e descarta um `TabController`.                 |
+| [useScrollController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useScrollController.html)           | Cria e descarta um `ScrollController`.              |
 
 ## Contribuições
 

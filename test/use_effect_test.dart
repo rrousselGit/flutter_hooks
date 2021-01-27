@@ -7,7 +7,7 @@ import 'mock.dart';
 void main() {
   final effect = MockEffect();
   final unrelated = MockWidgetBuild();
-  List<Object> parameters;
+  List<Object>? parameters;
 
   Widget builder() {
     return HookBuilder(builder: (context) {
@@ -47,16 +47,6 @@ void main() {
     );
   });
 
-  testWidgets('useEffect null callback throws', (tester) async {
-    await tester.pumpWidget(
-      HookBuilder(builder: (c) {
-        useEffect(null);
-        return Container();
-      }),
-    );
-
-    expect(tester.takeException(), isAssertionError);
-  });
   testWidgets('useEffect calls callback on every build', (tester) async {
     final effect = MockEffect();
     final dispose = MockDispose();
@@ -199,7 +189,7 @@ void main() {
     ]);
     verifyNoMoreInteractions(effect);
 
-    parameters.add('bar');
+    parameters!.add('bar');
     await tester.pumpWidget(builder());
 
     verifyNoMoreInteractions(effect);
@@ -208,7 +198,7 @@ void main() {
   testWidgets('useEffect disposer called whenever callback called',
       (tester) async {
     final effect = MockEffect();
-    List<Object> parameters;
+    List<Object>? parameters;
 
     Widget builder() {
       return HookBuilder(builder: (context) {
@@ -262,7 +252,7 @@ void main() {
 }
 
 class MockEffect extends Mock {
-  VoidCallback call();
+  VoidCallback? call();
 }
 
 class MockWidgetBuild extends Mock {

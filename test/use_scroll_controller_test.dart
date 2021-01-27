@@ -32,8 +32,8 @@ void main() {
 
   group('useScrollController', () {
     testWidgets('initial values matches with real constructor', (tester) async {
-      ScrollController controller;
-      ScrollController controller2;
+      late ScrollController controller;
+      late ScrollController controller2;
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
@@ -49,8 +49,8 @@ void main() {
     });
     testWidgets("returns a ScrollController that doesn't change",
         (tester) async {
-      ScrollController controller;
-      ScrollController controller2;
+      late ScrollController controller;
+      late ScrollController controller2;
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
@@ -73,7 +73,7 @@ void main() {
 
     testWidgets('passes hook parameters to the ScrollController',
         (tester) async {
-      ScrollController controller;
+      late ScrollController controller;
 
       await tester.pumpWidget(
         HookBuilder(

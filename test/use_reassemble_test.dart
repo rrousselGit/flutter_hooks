@@ -5,17 +5,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'mock.dart';
 
 void main() {
-  testWidgets('useReassemble null callback throws', (tester) async {
-    await tester.pumpWidget(
-      HookBuilder(builder: (c) {
-        useReassemble(null);
-        return Container();
-      }),
-    );
-
-    expect(tester.takeException(), isAssertionError);
-  });
-
   testWidgets("hot-reload calls useReassemble's callback", (tester) async {
     final reassemble = MockReassemble();
 

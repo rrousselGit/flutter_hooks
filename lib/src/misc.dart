@@ -24,7 +24,7 @@ typedef Reducer<State, Action> = State Function(State state, Action action);
 /// [useReducer] manages an read only state that can be updated
 /// by dispatching actions which are interpreted by a [Reducer].
 ///
-/// [reducer] is immediatly called on first build with [initialAction]
+/// [reducer] is immediately called on first build with [initialAction]
 /// and [initialState] as parameter.
 ///
 /// It is possible to change the [reducer] by calling [useReducer]
@@ -33,13 +33,13 @@ typedef Reducer<State, Action> = State Function(State state, Action action);
 /// See also:
 ///  * [Reducer]
 ///  * [Store]
-Store<State, Action> useReducer<State extends Object, Action>(
+Store<State, Action> useReducer<State, Action>(
   Reducer<State, Action> reducer, {
-  State initialState,
-  Action initialAction,
+  required State initialState,
+  required Action initialAction,
 }) {
   return use(
-    _ReducerdHook(
+    _ReducerHook(
       reducer,
       initialAction: initialAction,
       initialState: initialState,
@@ -47,37 +47,39 @@ Store<State, Action> useReducer<State extends Object, Action>(
   );
 }
 
-class _ReducerdHook<State, Action> extends Hook<Store<State, Action>> {
-  const _ReducerdHook(this.reducer, {this.initialState, this.initialAction})
-      : assert(reducer != null, 'reducer cannot be null');
+class _ReducerHook<State, Action> extends Hook<Store<State, Action>> {
+  const _ReducerHook(
+    this.reducer, {
+    required this.initialState,
+    required this.initialAction,
+  });
 
   final Reducer<State, Action> reducer;
   final State initialState;
   final Action initialAction;
 
   @override
-  _ReducerdHookState<State, Action> createState() =>
-      _ReducerdHookState<State, Action>();
+  _ReducerHookState<State, Action> createState() =>
+      _ReducerHookState<State, Action>();
 }
 
-class _ReducerdHookState<State, Action>
-    extends HookState<Store<State, Action>, _ReducerdHook<State, Action>>
+class _ReducerHookState<State, Action>
+    extends HookState<Store<State, Action>, _ReducerHook<State, Action>>
     implements Store<State, Action> {
   @override
-  State state;
+  late State state = hook.reducer(hook.initialState, hook.initialAction);
 
   @override
   void initHook() {
     super.initHook();
-    state = hook.reducer(hook.initialState, hook.initialAction);
-    // TODO support null
-    assert(state != null, 'reducers cannot return null');
+    // ignore: unnecessary_statements, Force the late variable to compute
+    state;
   }
 
   @override
   void dispatch(Action action) {
     final newState = hook.reducer(state, action);
-    assert(newState != null, 'recuders cannot return null');
+
     if (state != newState) {
       setState(() => state = newState);
     }
@@ -92,15 +94,15 @@ class _ReducerdHookState<State, Action>
   String get debugLabel => 'useReducer';
 
   @override
-  Object get debugValue => state;
+  Object? get debugValue => state;
 }
 
-/// Returns the previous argument called to [usePrevious].
-T usePrevious<T>(T val) {
+/// Returns the previous value passed to [usePrevious] (from the previous widget `build`).
+T? usePrevious<T>(T val) {
   return use(_PreviousHook(val));
 }
 
-class _PreviousHook<T> extends Hook<T> {
+class _PreviousHook<T> extends Hook<T?> {
   const _PreviousHook(this.value);
 
   final T value;
@@ -109,8 +111,8 @@ class _PreviousHook<T> extends Hook<T> {
   _PreviousHookState<T> createState() => _PreviousHookState();
 }
 
-class _PreviousHookState<T> extends HookState<T, _PreviousHook<T>> {
-  T previous;
+class _PreviousHookState<T> extends HookState<T?, _PreviousHook<T>> {
+  T? previous;
 
   @override
   void didUpdateHook(_PreviousHook<T> old) {
@@ -118,13 +120,13 @@ class _PreviousHookState<T> extends HookState<T, _PreviousHook<T>> {
   }
 
   @override
-  T build(BuildContext context) => previous;
+  T? build(BuildContext context) => previous;
 
   @override
   String get debugLabel => 'usePrevious';
 
   @override
-  Object get debugValue => previous;
+  Object? get debugValue => previous;
 }
 
 /// Runs the callback on every hot reload
@@ -141,8 +143,7 @@ void useReassemble(VoidCallback callback) {
 }
 
 class _ReassembleHook extends Hook<void> {
-  const _ReassembleHook(this.callback)
-      : assert(callback != null, 'callback cannot be null');
+  const _ReassembleHook(this.callback);
 
   final VoidCallback callback;
 
@@ -178,7 +179,6 @@ class _ReassembleHookState extends HookState<void, _ReassembleHook> {
 ///       // Do something
 ///     }
 ///   });
-///   return null;
 /// }, []);
 /// ```
 ///
@@ -213,7 +213,7 @@ class _IsMountedHookState extends HookState<IsMounted, _IsMountedHook> {
   String get debugLabel => 'useIsMounted';
 
   @override
-  Object get debugValue => _mounted;
+  Object? get debugValue => _mounted;
 }
 
 /// Used by [useIsMounted] to allow widgets to determine if the widget is still

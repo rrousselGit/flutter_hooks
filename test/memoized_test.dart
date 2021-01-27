@@ -11,28 +11,9 @@ void main() {
     reset(valueBuilder);
   });
 
-  testWidgets('invalid parameters', (tester) async {
-    await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useMemoized<void>(null);
-        return Container();
-      }),
-    );
-
-    expect(tester.takeException(), isAssertionError);
-
-    await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useMemoized(() {}, null);
-        return Container();
-      }),
-    );
-    expect(tester.takeException(), isAssertionError);
-  });
-
   testWidgets('memoized without parameter calls valueBuilder once',
       (tester) async {
-    int result;
+    late int result;
 
     when(valueBuilder()).thenReturn(42);
 
@@ -65,7 +46,7 @@ void main() {
   testWidgets(
       'memoized with parameter call valueBuilder again on parameter change',
       (tester) async {
-    int result;
+    late int result;
 
     when(valueBuilder()).thenReturn(0);
 
@@ -154,7 +135,7 @@ void main() {
   });
 
   testWidgets('memoized parameters compared in order', (tester) async {
-    int result;
+    late int result;
 
     when(valueBuilder()).thenReturn(0);
 
@@ -181,7 +162,7 @@ void main() {
     verifyNoMoreInteractions(valueBuilder);
     expect(result, 0);
 
-    /* reoder */
+    /* reader */
 
     when(valueBuilder()).thenReturn(1);
 
@@ -247,7 +228,7 @@ void main() {
   testWidgets(
       "memoized parameter reference do not change don't call valueBuilder",
       (tester) async {
-    int result;
+    late int result;
     final parameters = <Object>[];
 
     when(valueBuilder()).thenReturn(0);
@@ -308,5 +289,5 @@ void main() {
 }
 
 class MockValueBuilder extends Mock {
-  int call();
+  int call() => super.noSuchMethod(Invocation.getter(#call), 42) as int;
 }

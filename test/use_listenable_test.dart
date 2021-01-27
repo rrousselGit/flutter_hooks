@@ -5,19 +5,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'mock.dart';
 
 void main() {
-  testWidgets('useListenable throws with null', (tester) async {
-    await tester.pumpWidget(
-      HookBuilder(
-        builder: (context) {
-          useListenable(null);
-          return Container();
-        },
-      ),
-    );
-
-    expect(tester.takeException(), isAssertionError);
-  });
-
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
       HookBuilder(builder: (context) {

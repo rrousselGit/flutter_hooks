@@ -7,8 +7,8 @@ part of 'hooks.dart';
 ScrollController useScrollController({
   double initialScrollOffset = 0.0,
   bool keepScrollOffset = true,
-  String debugLabel,
-  List<Object> keys,
+  String? debugLabel,
+  List<Object?>? keys,
 }) {
   return use(
     _ScrollControllerHook(
@@ -22,15 +22,15 @@ ScrollController useScrollController({
 
 class _ScrollControllerHook extends Hook<ScrollController> {
   const _ScrollControllerHook({
-    this.initialScrollOffset,
-    this.keepScrollOffset,
+    required this.initialScrollOffset,
+    required this.keepScrollOffset,
     this.debugLabel,
-    List<Object> keys,
+    List<Object?>? keys,
   }) : super(keys: keys);
 
   final double initialScrollOffset;
   final bool keepScrollOffset;
-  final String debugLabel;
+  final String? debugLabel;
 
   @override
   HookState<ScrollController, Hook<ScrollController>> createState() =>
@@ -39,16 +39,11 @@ class _ScrollControllerHook extends Hook<ScrollController> {
 
 class _ScrollControllerHookState
     extends HookState<ScrollController, _ScrollControllerHook> {
-  ScrollController controller;
-
-  @override
-  void initHook() {
-    controller = ScrollController(
-      initialScrollOffset: hook.initialScrollOffset,
-      keepScrollOffset: hook.keepScrollOffset,
-      debugLabel: hook.debugLabel,
-    );
-  }
+  late final controller = ScrollController(
+    initialScrollOffset: hook.initialScrollOffset,
+    keepScrollOffset: hook.keepScrollOffset,
+    debugLabel: hook.debugLabel,
+  );
 
   @override
   ScrollController build(BuildContext context) => controller;

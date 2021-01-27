@@ -6,7 +6,7 @@ import 'mock.dart';
 
 void main() {
   testWidgets('creates a focus node and disposes it', (tester) async {
-    FocusNode focusNode;
+    late FocusNode focusNode;
     await tester.pumpWidget(
       HookBuilder(builder: (_) {
         focusNode = useFocusNode();
@@ -65,7 +65,7 @@ void main() {
   testWidgets('default values matches with FocusNode', (tester) async {
     final official = FocusNode();
 
-    FocusNode focusNode;
+    late FocusNode focusNode;
     await tester.pumpWidget(
       HookBuilder(builder: (_) {
         focusNode = useFocusNode();
@@ -83,7 +83,7 @@ void main() {
   testWidgets('has all the FocusNode parameters', (tester) async {
     bool onKey(FocusNode node, RawKeyEvent event) => true;
 
-    FocusNode focusNode;
+    late FocusNode focusNode;
     await tester.pumpWidget(
       HookBuilder(builder: (_) {
         focusNode = useFocusNode(
@@ -108,7 +108,7 @@ void main() {
     bool onKey(FocusNode node, RawKeyEvent event) => true;
     bool onKey2(FocusNode node, RawKeyEvent event) => true;
 
-    FocusNode focusNode;
+    late FocusNode focusNode;
     await tester.pumpWidget(
       HookBuilder(builder: (_) {
         focusNode = useFocusNode(

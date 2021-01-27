@@ -7,7 +7,7 @@ import 'mock.dart';
 void main() {
   group('useContext', () {
     testWidgets('returns current BuildContext during build', (tester) async {
-      BuildContext res;
+      late BuildContext res;
 
       await tester.pumpWidget(HookBuilder(builder: (context) {
         res = useContext();

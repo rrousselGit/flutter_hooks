@@ -13,12 +13,4 @@ void main() {
 
     expect(find.text('42'), findsOneWidget);
   });
-
-  test('builder required', () {
-    expect(
-      // ignore: missing_required_param, prefer_const_constructors
-      () => HookBuilder(),
-      throwsAssertionError,
-    );
-  });
 }

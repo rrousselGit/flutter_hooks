@@ -26,22 +26,9 @@ void main() {
       ),
     );
   });
-
-  testWidgets('useValueListenable throws with null', (tester) async {
-    await tester.pumpWidget(
-      HookBuilder(
-        builder: (context) {
-          useValueListenable<void>(null);
-          return Container();
-        },
-      ),
-    );
-
-    expect(tester.takeException(), isAssertionError);
-  });
   testWidgets('useValueListenable', (tester) async {
     var listenable = ValueNotifier(0);
-    int result;
+    late int result;
 
     Future<void> pump() {
       return tester.pumpWidget(HookBuilder(

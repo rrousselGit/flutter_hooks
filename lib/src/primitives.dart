@@ -2,25 +2,27 @@ part of 'hooks.dart';
 
 /// Cache the instance of a complex object.
 ///
-/// [useMemoized] will immediatly call [valueBuilder] on first call and store its result.
+/// [useMemoized] will immediately call [valueBuilder] on first call and store its result.
 /// Later, when [HookWidget] rebuilds, the call to [useMemoized] will return the previously created instance without calling [valueBuilder].
 ///
 /// A later call of [useMemoized] with different [keys] will call [useMemoized] again to create a new instance.
-T useMemoized<T>(T Function() valueBuilder,
-    [List<Object> keys = const <dynamic>[]]) {
-  return use(_MemoizedHook(
-    valueBuilder,
-    keys: keys,
-  ));
+T useMemoized<T>(
+  T Function() valueBuilder, [
+  List<Object?> keys = const <Object>[],
+]) {
+  return use(
+    _MemoizedHook(
+      valueBuilder,
+      keys: keys,
+    ),
+  );
 }
 
 class _MemoizedHook<T> extends Hook<T> {
   const _MemoizedHook(
     this.valueBuilder, {
-    List<Object> keys = const <dynamic>[],
-  })  : assert(valueBuilder != null, 'valueBuilder cannot be null'),
-        assert(keys != null, 'keys cannot be null'),
-        super(keys: keys);
+    required List<Object?> keys,
+  }) : super(keys: keys);
 
   final T Function() valueBuilder;
 
@@ -29,13 +31,7 @@ class _MemoizedHook<T> extends Hook<T> {
 }
 
 class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
-  T value;
-
-  @override
-  void initHook() {
-    super.initHook();
-    value = hook.valueBuilder();
-  }
+  late final T value = hook.valueBuilder();
 
   @override
   T build(BuildContext context) {
@@ -52,7 +48,7 @@ class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
 /// [valueChange] will _not_ be called on the first [useValueChanged] call.
 ///
 /// [useValueChanged] can also be used to interpolate
-/// Whenever [useValueChanged] is called with a diffent [value], calls [valueChange].
+/// Whenever [useValueChanged] is called with a different [value], calls [valueChange].
 /// The value returned by [useValueChanged] is the latest returned value of [valueChange] or `null`.
 ///
 /// The following example calls [AnimationController.forward] whenever `color` changes
@@ -62,21 +58,20 @@ class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
 /// Color color;
 ///
 /// useValueChanged(color, (_, __)) {
-///     controller.forward();
+///   controller.forward();
 /// });
 /// ```
-R useValueChanged<T, R>(
+R? useValueChanged<T, R>(
   T value,
-  R Function(T oldValue, R oldResult) valueChange,
+  R? Function(T oldValue, R? oldResult) valueChange,
 ) {
   return use(_ValueChangedHook(value, valueChange));
 }
 
-class _ValueChangedHook<T, R> extends Hook<R> {
-  const _ValueChangedHook(this.value, this.valueChanged)
-      : assert(valueChanged != null, 'valueChanged cannot be null');
+class _ValueChangedHook<T, R> extends Hook<R?> {
+  const _ValueChangedHook(this.value, this.valueChanged);
 
-  final R Function(T oldValue, R oldResult) valueChanged;
+  final R? Function(T oldValue, R? oldResult) valueChanged;
   final T value;
 
   @override
@@ -84,8 +79,8 @@ class _ValueChangedHook<T, R> extends Hook<R> {
 }
 
 class _ValueChangedHookState<T, R>
-    extends HookState<R, _ValueChangedHook<T, R>> {
-  R _result;
+    extends HookState<R?, _ValueChangedHook<T, R>> {
+  R? _result;
 
   @override
   void didUpdateHook(_ValueChangedHook<T, R> oldHook) {
@@ -96,7 +91,7 @@ class _ValueChangedHookState<T, R>
   }
 
   @override
-  R build(BuildContext context) {
+  R? build(BuildContext context) {
     return _result;
   }
 
@@ -130,7 +125,7 @@ typedef Dispose = void Function();
 /// In which case, [effect] is called once on the first [useEffect] call and whenever something within [keys] change/
 ///
 /// The following example call [useEffect] to subscribes to a [Stream] and cancel the subscription when the widget is disposed.
-/// ALso ifthe [Stream] change, it will cancel the listening on the previous [Stream] and listen to the new one.
+/// ALso if the [Stream] change, it will cancel the listening on the previous [Stream] and listen to the new one.
 ///
 /// ```dart
 /// Stream stream;
@@ -144,23 +139,21 @@ typedef Dispose = void Function();
 ///   [stream],
 /// );
 /// ```
-void useEffect(Dispose Function() effect, [List<Object> keys]) {
+void useEffect(Dispose? Function() effect, [List<Object?>? keys]) {
   use(_EffectHook(effect, keys));
 }
 
 class _EffectHook extends Hook<void> {
-  const _EffectHook(this.effect, [List<Object> keys])
-      : assert(effect != null, 'effect cannot be null'),
-        super(keys: keys);
+  const _EffectHook(this.effect, [List<Object?>? keys]) : super(keys: keys);
 
-  final Dispose Function() effect;
+  final Dispose? Function() effect;
 
   @override
   _EffectHookState createState() => _EffectHookState();
 }
 
 class _EffectHookState extends HookState<void, _EffectHook> {
-  Dispose disposer;
+  Dispose? disposer;
 
   @override
   void initHook() {
@@ -173,9 +166,7 @@ class _EffectHookState extends HookState<void, _EffectHook> {
     super.didUpdateHook(oldHook);
 
     if (hook.keys == null) {
-      if (disposer != null) {
-        disposer();
-      }
+      disposer?.call();
       scheduleEffect();
     }
   }
@@ -184,11 +175,7 @@ class _EffectHookState extends HookState<void, _EffectHook> {
   void build(BuildContext context) {}
 
   @override
-  void dispose() {
-    if (disposer != null) {
-      disposer();
-    }
-  }
+  void dispose() => disposer?.call();
 
   void scheduleEffect() {
     disposer = hook.effect();
@@ -201,7 +188,7 @@ class _EffectHookState extends HookState<void, _EffectHook> {
   bool get debugSkipValue => true;
 }
 
-/// Create variable and subscribes to it.
+/// Creates a variable and subscribes to it.
 ///
 /// Whenever [ValueNotifier.value] updates, it will mark the caller [HookWidget]
 /// as needing build.
@@ -229,12 +216,12 @@ class _EffectHookState extends HookState<void, _EffectHook> {
 ///
 ///  * [ValueNotifier]
 ///  * [useStreamController], an alternative to [ValueNotifier] for state.
-ValueNotifier<T> useState<T>([T initialData]) {
+ValueNotifier<T> useState<T>(T initialData) {
   return use(_StateHook(initialData: initialData));
 }
 
 class _StateHook<T> extends Hook<ValueNotifier<T>> {
-  const _StateHook({this.initialData});
+  const _StateHook({required this.initialData});
 
   final T initialData;
 
@@ -243,13 +230,8 @@ class _StateHook<T> extends Hook<ValueNotifier<T>> {
 }
 
 class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
-  ValueNotifier<T> _state;
-
-  @override
-  void initHook() {
-    super.initHook();
-    _state = ValueNotifier(hook.initialData)..addListener(_listener);
-  }
+  late final _state = ValueNotifier<T>(hook.initialData)
+    ..addListener(_listener);
 
   @override
   void dispose() {
@@ -257,16 +239,14 @@ class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
   }
 
   @override
-  ValueNotifier<T> build(BuildContext context) {
-    return _state;
-  }
+  ValueNotifier<T> build(BuildContext context) => _state;
 
   void _listener() {
     setState(() {});
   }
 
   @override
-  Object get debugValue => _state.value;
+  Object? get debugValue => _state.value;
 
   @override
   String get debugLabel => 'useState<$T>';

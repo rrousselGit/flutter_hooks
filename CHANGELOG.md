@@ -1,3 +1,7 @@
+## 0.16.0-nullsafety.0
+
+Migrated flutter_hooks to null-safety (special thanks to @DevNico for the help!)
+
 ## 0.15.0
 
 - Added `usePageController` to create a `PageController`

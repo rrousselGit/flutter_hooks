@@ -7,8 +7,8 @@ import 'mock.dart';
 
 void main() {
   testWidgets('useState basic', (tester) async {
-    ValueNotifier<int> state;
-    HookElement element;
+    late ValueNotifier<int> state;
+    late HookElement element;
 
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
@@ -41,13 +41,13 @@ void main() {
   });
 
   testWidgets('no initial data', (tester) async {
-    ValueNotifier<int> state;
-    HookElement element;
+    late ValueNotifier<int?> state;
+    late HookElement element;
 
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
         element = context as HookElement;
-        state = useState();
+        state = useState<int?>(null);
         return Container();
       },
     ));
@@ -75,8 +75,8 @@ void main() {
   });
 
   testWidgets('debugFillProperties should print state hook ', (tester) async {
-    ValueNotifier<int> state;
-    HookElement element;
+    late ValueNotifier<int> state;
+    late HookElement element;
     final hookWidget = HookBuilder(
       builder: (context) {
         element = context as HookElement;

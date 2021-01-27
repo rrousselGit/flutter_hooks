@@ -29,7 +29,8 @@ class CustomHookExample extends HookWidget {
         // new value
         child: HookBuilder(
           builder: (context) {
-            final AsyncSnapshot<int> count = useStream(countController.stream);
+            final AsyncSnapshot<int> count =
+                useStream(countController.stream, initialData: 0);
 
             return !count.hasData
                 ? const CircularProgressIndicator()

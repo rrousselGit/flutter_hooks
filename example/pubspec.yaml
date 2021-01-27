@@ -14,7 +14,7 @@ dependencies:
     sdk: flutter
   flutter_hooks:
     path: ../
-  provider: 3.1.0+1
+  provider: ^4.2.0
   shared_preferences: ^0.4.3
 
 dev_dependencies:

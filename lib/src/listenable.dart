@@ -24,7 +24,7 @@ class _UseValueListenableStateHook extends _ListenableStateHook {
   String get debugLabel => 'useValueListenable';
 
   @override
-  Object get debugValue => (hook.listenable as ValueListenable).value;
+  Object? get debugValue => (hook.listenable as ValueListenable).value;
 }
 
 /// Subscribes to a [Listenable] and mark the widget as needing build
@@ -39,8 +39,7 @@ T useListenable<T extends Listenable>(T listenable) {
 }
 
 class _ListenableHook extends Hook<void> {
-  const _ListenableHook(this.listenable)
-      : assert(listenable != null, 'listenable cannot be null');
+  const _ListenableHook(this.listenable);
 
   final Listenable listenable;
 
@@ -80,7 +79,7 @@ class _ListenableStateHook extends HookState<void, _ListenableHook> {
   String get debugLabel => 'useListenable';
 
   @override
-  Object get debugValue => hook.listenable;
+  Object? get debugValue => hook.listenable;
 }
 
 /// Creates a [ValueNotifier] automatically disposed.
@@ -91,32 +90,29 @@ class _ListenableStateHook extends HookState<void, _ListenableHook> {
 /// See also:
 ///   * [ValueNotifier]
 ///   * [useValueListenable]
-ValueNotifier<T> useValueNotifier<T>([T intialData, List<Object> keys]) {
-  return use(_ValueNotifierHook(
-    initialData: intialData,
-    keys: keys,
-  ));
+ValueNotifier<T> useValueNotifier<T>(T initialData, [List<Object?>? keys]) {
+  return use(
+    _ValueNotifierHook(
+      initialData: initialData,
+      keys: keys,
+    ),
+  );
 }
 
 class _ValueNotifierHook<T> extends Hook<ValueNotifier<T>> {
-  const _ValueNotifierHook({List<Object> keys, this.initialData})
+  const _ValueNotifierHook({List<Object?>? keys, required this.initialData})
       : super(keys: keys);
 
   final T initialData;
 
   @override
-  _UseValueNotiferHookState<T> createState() => _UseValueNotiferHookState<T>();
+  _UseValueNotifierHookState<T> createState() =>
+      _UseValueNotifierHookState<T>();
 }
 
-class _UseValueNotiferHookState<T>
+class _UseValueNotifierHookState<T>
     extends HookState<ValueNotifier<T>, _ValueNotifierHook<T>> {
-  ValueNotifier<T> notifier;
-
-  @override
-  void initHook() {
-    super.initHook();
-    notifier = ValueNotifier(hook.initialData);
-  }
+  late final notifier = ValueNotifier<T>(hook.initialData);
 
   @override
   ValueNotifier<T> build(BuildContext context) {

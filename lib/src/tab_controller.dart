@@ -5,27 +5,29 @@ part of 'hooks.dart';
 /// See also:
 /// - [TabController]
 TabController useTabController({
-  @required int initialLength,
-  TickerProvider vsync,
+  required int initialLength,
+  TickerProvider? vsync,
   int initialIndex = 0,
-  List<Object> keys,
+  List<Object?>? keys,
 }) {
   vsync ??= useSingleTickerProvider(keys: keys);
 
-  return use(_TabControllerHook(
-    vsync: vsync,
-    length: initialLength,
-    initialIndex: initialIndex,
-    keys: keys,
-  ));
+  return use(
+    _TabControllerHook(
+      vsync: vsync,
+      length: initialLength,
+      initialIndex: initialIndex,
+      keys: keys,
+    ),
+  );
 }
 
 class _TabControllerHook extends Hook<TabController> {
   const _TabControllerHook({
-    @required this.length,
-    @required this.vsync,
-    this.initialIndex = 0,
-    List<Object> keys,
+    required this.length,
+    required this.vsync,
+    required this.initialIndex,
+    List<Object?>? keys,
   }) : super(keys: keys);
 
   final int length;
@@ -39,22 +41,17 @@ class _TabControllerHook extends Hook<TabController> {
 
 class _TabControllerHookState
     extends HookState<TabController, _TabControllerHook> {
-  TabController controller;
-
-  @override
-  void initHook() {
-    controller = TabController(
-      length: hook.length,
-      initialIndex: hook.initialIndex,
-      vsync: hook.vsync,
-    );
-  }
+  late final controller = TabController(
+    length: hook.length,
+    initialIndex: hook.initialIndex,
+    vsync: hook.vsync,
+  );
 
   @override
   TabController build(BuildContext context) => controller;
 
   @override
-  void dispose() => controller?.dispose();
+  void dispose() => controller.dispose();
 
   @override
   String get debugLabel => 'useTabController';
