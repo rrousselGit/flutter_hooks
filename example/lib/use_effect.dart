@@ -78,7 +78,7 @@ StreamController<int> _useLocalStorageInt(
   // to the controller
   useEffect(
     () {
-      SharedPreferences.getInstance().then((prefs) async {
+      SharedPreferences.getInstance().then<void>((prefs) async {
         final int valueFromStorage = prefs.getInt(key);
         controller.add(valueFromStorage ?? defaultValue);
       }).catchError(controller.addError);
