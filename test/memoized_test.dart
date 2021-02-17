@@ -289,5 +289,8 @@ void main() {
 }
 
 class MockValueBuilder extends Mock {
-  int call() => super.noSuchMethod(Invocation.getter(#call), 42) as int;
+  int call() => super.noSuchMethod(
+        Invocation.getter(#call),
+        returnValue: 42,
+      ) as int;
 }

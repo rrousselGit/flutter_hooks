@@ -129,8 +129,10 @@ class MockFlutterErrorDetails extends Mock implements FlutterErrorDetails {
 }
 
 class MockErrorBuilder extends Mock {
-  Widget call(FlutterErrorDetails error) =>
-      super.noSuchMethod(Invocation.getter(#call), Container()) as Widget;
+  Widget call(FlutterErrorDetails error) => super.noSuchMethod(
+        Invocation.getter(#call),
+        returnValue: Container(),
+      ) as Widget;
 }
 
 class MockOnError extends Mock {
