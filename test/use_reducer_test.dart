@@ -195,6 +195,9 @@ void main() {
 
 class MockReducer extends Mock {
   int? call(int? state, String? action) {
-    return super.noSuchMethod(Invocation.getter(#call), 0) as int?;
+    return super.noSuchMethod(
+      Invocation.getter(#call),
+      returnValue: 0,
+    ) as int?;
   }
 }

@@ -194,9 +194,10 @@ void main() {
 
 class _TickerProvider extends Mock implements TickerProvider {
   @override
-  Ticker createTicker(TickerCallback onTick) =>
-      super.noSuchMethod(Invocation.getter(#createTicker), Ticker(onTick))
-          as Ticker;
+  Ticker createTicker(TickerCallback onTick) => super.noSuchMethod(
+        Invocation.getter(#createTicker),
+        returnValue: Ticker(onTick),
+      ) as Ticker;
 }
 
 class MockEffect extends Mock {
