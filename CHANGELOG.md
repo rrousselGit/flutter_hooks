@@ -1,3 +1,7 @@
+## 0.16.0
+
+Stable null-safety release
+
 ## 0.16.0-nullsafety.0
 
 Migrated flutter_hooks to null-safety (special thanks to @DevNico for the help!)
