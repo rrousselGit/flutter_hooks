@@ -8,7 +8,7 @@ import 'models.dart';
 class StarWarsApi {
   /// load and return one page of planets
   Future<PlanetPageModel> getPlanets([String page]) async {
-    page ??= 'https://swapi.co/api/planets';
+    page ??= 'https://swapi.dev/api/planets';
 
     final response = await http.get(page);
     final dynamic json = jsonDecode(utf8.decode(response.bodyBytes));
