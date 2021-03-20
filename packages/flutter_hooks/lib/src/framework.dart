@@ -200,6 +200,7 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   @protected
   BuildContext get context => _element!;
   HookElement? _element;
+  late VoidCallback _didBuildCallback;
 
   R? _debugLastBuiltValue;
 
@@ -225,6 +226,12 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   @protected
   void initHook() {}
 
+  /// Register a callback for when [HookWidget.build] is finished
+  void setDidBuildListener(VoidCallback callback) {
+    _didBuildCallback = callback;
+    _element?.addHookForDidBuild(this);
+  }
+
   /// Equivalent of [State.dispose] for [HookState]
   @protected
   void dispose() {}
@@ -238,10 +245,6 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   /// Equivalent of [State.didUpdateWidget] for [HookState]
   @protected
   void didUpdateHook(T oldHook) {}
-
-  /// Called synchronously after the [HookWidget.build] method finished
-  @protected
-  void didBuild() {}
 
   /// Equivalent of [State.deactivate] for [HookState]
   void deactivate() {}
@@ -358,6 +361,7 @@ mixin HookElement on ComponentElement {
 
   _Entry<HookState>? _currentHookState;
   final _hooks = LinkedList<_Entry<HookState>>();
+  final _needDidBuildHooks = <HookState>{};
   final _shouldRebuildQueue = LinkedList<_Entry<bool Function()>>();
   LinkedList<_Entry<HookState>>? _needDispose;
   bool? _isOptionalRebuild = false;
@@ -376,6 +380,11 @@ mixin HookElement on ComponentElement {
     return [
       for (final hook in _hooks) hook.value,
     ];
+  }
+
+  /// Add a hook for didBuild event
+  void addHookForDidBuild(HookState hook) {
+    _needDidBuildHooks.add(hook);
   }
 
   @override
@@ -423,16 +432,16 @@ mixin HookElement on ComponentElement {
     } finally {
       _isOptionalRebuild = null;
 
-      _hooks.map((entry) {
+      _needDidBuildHooks.map((hook) {
         try {
-          entry.value.didBuild();
+          hook._didBuildCallback();
         } catch (exception, stack) {
           FlutterError.reportError(FlutterErrorDetails(
             exception: exception,
             stack: stack,
             library: 'hooks library',
             context: ErrorDescription(
-                'while calling `didBuild` on ${entry.value.runtimeType}'),
+                'while calling `didBuild` on ${hook.runtimeType}'),
           ));
         }
       });
