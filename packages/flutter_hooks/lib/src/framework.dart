@@ -239,6 +239,10 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   @protected
   void didUpdateHook(T oldHook) {}
 
+  /// Called synchronously after the [HookWidget.build] method finished
+  @protected
+  void didBuild() {}
+
   /// Equivalent of [State.deactivate] for [HookState]
   void deactivate() {}
 
@@ -303,6 +307,7 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
 
 class _Entry<T> extends LinkedListEntry<_Entry<T>> {
   _Entry(this.value);
+
   T value;
 }
 
@@ -417,6 +422,21 @@ mixin HookElement on ComponentElement {
       _buildCache = super.build();
     } finally {
       _isOptionalRebuild = null;
+
+      _hooks.map((entry) {
+        try {
+          entry.value.didBuild();
+        } catch (exception, stack) {
+          FlutterError.reportError(FlutterErrorDetails(
+            exception: exception,
+            stack: stack,
+            library: 'hooks library',
+            context: ErrorDescription(
+                'while calling `didBuild` on ${entry.value.runtimeType}'),
+          ));
+        }
+      });
+
       _unmountAllRemainingHooks();
       HookElement._currentHookElement = null;
       if (_needDispose != null && _needDispose!.isNotEmpty) {
