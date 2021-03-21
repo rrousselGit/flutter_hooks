@@ -200,7 +200,7 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   @protected
   BuildContext get context => _element!;
   HookElement? _element;
-  late VoidCallback _didBuildCallback;
+  VoidCallback? _didBuildCallback;
 
   R? _debugLastBuiltValue;
 
@@ -227,14 +227,25 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   void initHook() {}
 
   /// Register a callback for when [HookWidget.build] is finished
+  /// If dispose method has been override, super.dispose or [removeDidBuildListener] must be called
   void setDidBuildListener(VoidCallback callback) {
     _didBuildCallback = callback;
     _element?.addHookForDidBuild(this);
   }
 
+  ///Unregister the callback set by [setDidBuildListener]
+  void removeDidBuildListener() {
+    if (_didBuildCallback != null) {
+      _didBuildCallback = null;
+      _element?.removeHookForDidBuild(this);
+    }
+  }
+
   /// Equivalent of [State.dispose] for [HookState]
   @protected
-  void dispose() {}
+  void dispose() {
+    removeDidBuildListener();
+  }
 
   /// Called everytime the [HookState] is requested
   ///
@@ -382,9 +393,14 @@ mixin HookElement on ComponentElement {
     ];
   }
 
-  /// Add a hook for didBuild event
+  /// Add a hook for receiving didBuild event
   void addHookForDidBuild(HookState hook) {
     _needDidBuildHooks.add(hook);
+  }
+
+  /// Remove a hook from receiving didBuild event
+  void removeHookForDidBuild(HookState hook) {
+    _needDidBuildHooks.remove(hook);
   }
 
   @override
@@ -432,9 +448,9 @@ mixin HookElement on ComponentElement {
     } finally {
       _isOptionalRebuild = null;
 
-      _needDidBuildHooks.map((hook) {
+      for (final hook in _needDidBuildHooks) {
         try {
-          hook._didBuildCallback();
+          hook._didBuildCallback!();
         } catch (exception, stack) {
           FlutterError.reportError(FlutterErrorDetails(
             exception: exception,
@@ -444,7 +460,7 @@ mixin HookElement on ComponentElement {
                 'while calling `didBuild` on ${hook.runtimeType}'),
           ));
         }
-      });
+      }
 
       _unmountAllRemainingHooks();
       HookElement._currentHookElement = null;
