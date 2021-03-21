@@ -44,4 +44,32 @@ void main() {
 
     expect(isCalled, true);
   });
+
+  testWidgets('useDidBuild error case', (tester) async {
+    final wantedError = StateError('ok');
+    final hook = DidBuildHookTest(callback: () {
+      throw wantedError;
+    });
+
+    late FlutterErrorDetails error;
+
+    final previous = FlutterError.onError;
+
+    FlutterError.onError = (details) {
+      error = details;
+      FlutterError.onError = previous;
+    };
+
+    await tester.pumpWidget(HookBuilder(
+      builder: (context) {
+        use(hook);
+        return Container();
+      },
+    ));
+
+    expect(error.exception, wantedError);
+    expect(error.library, 'hooks library');
+    expect(error.context!.toDescription(),
+        'while calling `didBuild` on DidBuildHookStateTest');
+  });
 }
