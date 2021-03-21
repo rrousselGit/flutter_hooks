@@ -226,7 +226,7 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   @protected
   void initHook() {}
 
-  /// Register a callback for when [HookWidget.build] is finished
+  /// Register a callback for when [HookWidget] build is finished
   /// If dispose method has been override, super.dispose or [removeDidBuildListener] must be called
   void setDidBuildListener(VoidCallback callback) {
     _didBuildCallback = callback;
