@@ -13,6 +13,8 @@ jobs:
 
     strategy:
       matrix:
+        package:
+          - flutter_hooks
         channel:
           - dev
           # - stable
@@ -25,19 +27,20 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
-        working-directory: ${{ matrix.package }}
+        working-directory: packages/${{ matrix.package }}
 
       - name: Check format
         run: flutter format --set-exit-if-changed .
-        working-directory: ${{ matrix.package }}
+        working-directory: packages/${{ matrix.package }}
 
       - name: Analyze
         run: flutter analyze
-        working-directory: ${{ matrix.package }}
+        working-directory: packages/${{ matrix.package }}
 
       - name: Run tests
         run: flutter test --coverage
-        working-directory: ${{ matrix.package }}
+        working-directory: packages/${{ matrix.package }}
 
       - name: Upload coverage to codecov
         run: curl -s https://codecov.io/bash | bash
+        working-directory: packages/${{ matrix.package }}
