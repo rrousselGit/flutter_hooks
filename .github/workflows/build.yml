@@ -42,5 +42,5 @@ jobs:
         working-directory: packages/${{ matrix.package }}
 
       - name: Upload coverage to codecov
-        run: curl -s https://codecov.io/bash | bash
+        run: curl -s https://codecov.io/bash | bash -s -- -s packages/${{ matrix.package }}
         working-directory: packages/${{ matrix.package }}
