@@ -22,8 +22,5 @@ void main() {
     store.increment();
     await tester.pump();
     expect(value, 1);
-    store.increment();
-    await tester.pump();
-    expect(value, 2);
   });
 }

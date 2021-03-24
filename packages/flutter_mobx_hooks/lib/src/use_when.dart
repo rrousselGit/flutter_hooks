@@ -26,7 +26,6 @@ void useWhen(
   Predicate predicate,
   Effect effect, {
   String? name,
-  mobx.ReactiveContext? context,
   int? timeout,
   ErrorListener? onError,
 }) {
@@ -34,7 +33,6 @@ void useWhen(
     predicate,
     effect,
     name: name,
-    context: context,
     timeout: timeout,
     onError: onError,
   ));
@@ -45,7 +43,6 @@ class _WhenHook extends Hook<void> {
     this.predicate,
     this.effect, {
     this.name,
-    this.context,
     this.timeout,
     this.onError,
   });
@@ -55,7 +52,6 @@ class _WhenHook extends Hook<void> {
   final Predicate predicate;
   final Effect effect;
   final String? name;
-  final mobx.ReactiveContext? context;
   final int? timeout;
   final ErrorListener? onError;
 
@@ -76,18 +72,9 @@ class _WhenHookState extends HookState<void, _WhenHook> {
       hook.predicate,
       hook.effect,
       name: hook.name,
-      context: hook.context ?? mobx.mainContext,
       timeout: hook.timeout,
       onError: hook.onError,
     );
-  }
-
-  @override
-  void didUpdateHook(_WhenHook oldHook) {
-    if (hook.context != oldHook.context) {
-      _disposer();
-      _createWhen();
-    }
   }
 
   @override

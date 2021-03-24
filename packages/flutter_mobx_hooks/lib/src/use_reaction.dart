@@ -15,7 +15,6 @@ void useReaction<T>(ReactionSetup<T> fn, Function(T) effect,
     int? delay,
     bool? fireImmediately,
     EqualityComparer<T>? equals,
-    ReactiveContext? context,
     ErrorHandler? onError}) {
   use(
     _ReactionHook(
@@ -26,19 +25,13 @@ void useReaction<T>(ReactionSetup<T> fn, Function(T) effect,
       fireImmediately: fireImmediately,
       equals: equals,
       onError: onError,
-      context: context,
     ),
   );
 }
 
 class _ReactionHook<T> extends Hook<void> {
   const _ReactionHook(this.fn, this.effect,
-      {this.name,
-      this.delay,
-      this.fireImmediately,
-      this.equals,
-      this.context,
-      this.onError});
+      {this.name, this.delay, this.fireImmediately, this.equals, this.onError});
 
   final ReactionSetup<T> fn;
   final Function(T) effect;
@@ -46,7 +39,6 @@ class _ReactionHook<T> extends Hook<void> {
   final int? delay;
   final bool? fireImmediately;
   final EqualityComparer<T>? equals;
-  final ReactiveContext? context;
   final ErrorHandler? onError;
 
   @override
@@ -60,7 +52,6 @@ class _ReactionHookState<T> extends HookState<void, _ReactionHook<T>> {
     _disposer = reaction(
       hook.fn,
       hook.effect,
-      context: hook.context,
       equals: hook.equals,
       fireImmediately: hook.fireImmediately,
       name: hook.name,
@@ -72,14 +63,6 @@ class _ReactionHookState<T> extends HookState<void, _ReactionHook<T>> {
   @override
   void initHook() {
     _createReaction();
-  }
-
-  @override
-  void didUpdateHook(_ReactionHook<T> oldHook) {
-    if (hook.context != oldHook.context) {
-      _disposer();
-      _createReaction();
-    }
   }
 
   @override

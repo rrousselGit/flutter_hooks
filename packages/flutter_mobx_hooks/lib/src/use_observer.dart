@@ -6,19 +6,12 @@ import 'package:mobx/src/core.dart' show ReactionImpl;
 
 /// Hook usage of mobx observer, it will observe for any changes and rebuild
 /// upon them. It replace the Observer widget of mobx
-void useObserver({ReactiveContext? context}) {
-  final observer =
-      context == null ? const _ObserverHook() : _ObserverHook(context: context);
-  use(observer);
+void useObserver() {
+  use(const _ObserverHook());
 }
 
 class _ObserverHook extends Hook<void> {
-  const _ObserverHook({ReactiveContext? context}) : _context = context;
-
-  // TODO(rrousselGit): scoped constructor
-
-  final ReactiveContext? _context;
-  ReactiveContext get context => _context ?? mainContext;
+  const _ObserverHook();
 
   @override
   HookState<void, Hook> createState() => _ObserverHookState();
@@ -39,17 +32,9 @@ class _ObserverHookState extends HookState<void, _ObserverHook> {
     });
   }
 
-  @override
-  void didUpdateHook(_ObserverHook oldHook) {
-    if (hook.context != oldHook.context) {
-      _reaction.dispose();
-      _reaction = _createReaction();
-    }
-  }
-
   ReactionImpl _createReaction() {
-    final name = hook.context.nameFor('ObserverHook-Reaction');
-    return ReactionImpl(hook.context, onInvalidate, name: name);
+    final name = mainContext.nameFor('ObserverHook-Reaction');
+    return ReactionImpl(mainContext, onInvalidate, name: name);
   }
 
   void onInvalidate() => setState(_noOp);
