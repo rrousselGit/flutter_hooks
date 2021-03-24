@@ -1,6 +1,6 @@
 name: flutter_mobx_hooks
 description: MobX hooks facilitator for Flutter
-version: 0.0.1
+version: 1.0.0
 homepage: https://github.com/rrousselGit/flutter_hooks
 #once flutter_hook is published to pub remove path and this to user proper version
 publish_to: none

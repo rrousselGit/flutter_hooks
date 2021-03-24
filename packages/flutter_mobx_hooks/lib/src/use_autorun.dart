@@ -53,7 +53,7 @@ class _AutorunHook extends Hook<void> {
 }
 
 class _AutorunHookState extends HookState<void, _AutorunHook> {
-  late ReactionDisposer disposer;
+  late ReactionDisposer _disposer;
 
   ReactiveContext get _reactiveContext => hook.context ?? mainContext;
 
@@ -65,14 +65,14 @@ class _AutorunHookState extends HookState<void, _AutorunHook> {
   @override
   void didUpdateHook(_AutorunHook oldHook) {
     if (hook.context != oldHook.context) {
-      disposer();
+      _disposer();
       _run();
     }
     // TODO(rrousselGit): hot reload name/delay/onError
   }
 
   void _run() {
-    disposer = _AutorunHook.run(
+    _disposer = _AutorunHook.run(
       hook.fn,
       onError: hook.onError,
       context: _reactiveContext,
@@ -86,6 +86,6 @@ class _AutorunHookState extends HookState<void, _AutorunHook> {
 
   @override
   void dispose() {
-    disposer();
+    _disposer();
   }
 }

@@ -25,29 +25,29 @@ class _ObserverHook extends Hook<void> {
 }
 
 class _ObserverHookState extends HookState<void, _ObserverHook> {
-  late ReactionImpl reaction;
-  Derivation? prevDerivation;
+  late ReactionImpl _reaction;
+  Derivation? _prevDerivation;
 
   @override
   void initHook() {
     super.initHook();
 
-    reaction = createReaction();
+    _reaction = _createReaction();
     setDidBuildListener(() {
-      reaction.endTracking(prevDerivation);
-      prevDerivation = null;
+      _reaction.endTracking(_prevDerivation);
+      _prevDerivation = null;
     });
   }
 
   @override
   void didUpdateHook(_ObserverHook oldHook) {
     if (hook.context != oldHook.context) {
-      reaction.dispose();
-      reaction = createReaction();
+      _reaction.dispose();
+      _reaction = _createReaction();
     }
   }
 
-  ReactionImpl createReaction() {
+  ReactionImpl _createReaction() {
     final name = hook.context.nameFor('ObserverHook-Reaction');
     return ReactionImpl(hook.context, onInvalidate, name: name);
   }
@@ -58,12 +58,12 @@ class _ObserverHookState extends HookState<void, _ObserverHook> {
 
   @override
   void build(BuildContext context) {
-    prevDerivation = reaction.startTracking();
+    _prevDerivation = _reaction.startTracking();
   }
 
   @override
   void dispose() {
-    reaction.dispose();
+    _reaction.dispose();
 
     super.dispose();
   }

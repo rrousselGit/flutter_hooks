@@ -64,11 +64,15 @@ class _WhenHook extends Hook<void> {
 }
 
 class _WhenHookState extends HookState<void, _WhenHook> {
-  late mobx.ReactionDisposer disposer;
+  late mobx.ReactionDisposer _disposer;
 
   @override
   void initHook() {
-    disposer = _WhenHook.when(
+    _createWhen();
+  }
+
+  void _createWhen() {
+    _disposer = _WhenHook.when(
       hook.predicate,
       hook.effect,
       name: hook.name,
@@ -79,10 +83,18 @@ class _WhenHookState extends HookState<void, _WhenHook> {
   }
 
   @override
+  void didUpdateHook(_WhenHook oldHook) {
+    if (hook.context != oldHook.context) {
+      _disposer();
+      _createWhen();
+    }
+  }
+
+  @override
   void build(BuildContext context) {}
 
   @override
   void dispose() {
-    disposer();
+    _disposer();
   }
 }
