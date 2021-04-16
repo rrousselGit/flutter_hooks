@@ -99,4 +99,31 @@ void main() {
     expect(build, 2);
     expect(store.value, 2);
   });
+
+  testWidgets('useAutorun reaction param', (tester) async {
+    var value = 0;
+    var build = 0;
+    final store = Counter();
+
+    await tester.pumpWidget(HookBuilder(
+      builder: (context) {
+        useAutorun((reaction) {
+          store.value;
+          reaction.dispose();
+          value++;
+        });
+        build++;
+        return Container();
+      },
+    ));
+
+    expect(value, 1);
+    expect(build, 1);
+    expect(store.value, 0);
+    store.increment();
+    //reaction is disposed so it should not update anymore
+    expect(value, 1);
+    expect(build, 1);
+    expect(store.value, 1);
+  });
 }

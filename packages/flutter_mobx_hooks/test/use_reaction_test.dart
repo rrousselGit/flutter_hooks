@@ -32,6 +32,36 @@ void main() {
     expect(build, 0);
   });
 
+  testWidgets('useReaction reaction param', (tester) async {
+    var build = 0;
+    var value = 0;
+    final store = Counter();
+
+    await tester.pumpWidget(HookBuilder(
+      builder: (context) {
+        useReaction<int>((reaction) {
+          if (store.value == 1) {
+            reaction.dispose();
+          }
+          return store.value;
+        }, (newValue) {
+          value = newValue;
+        });
+        build++;
+        return Container();
+      },
+    ));
+
+    expect(value, 0);
+    expect(build, 1);
+    store.increment();
+    expect(value, 1);
+    expect(build, 1);
+    store.increment();
+    expect(value, 1);
+    expect(build, 1);
+  });
+
   testWidgets('useReaction disposed', (tester) async {
     var build = 0;
     var value = 0;
