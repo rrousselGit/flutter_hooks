@@ -30,4 +30,34 @@ void main() {
     expect(value, 2);
     expect(build, 0);
   });
+
+  testWidgets('useAutorun disposed', (tester) async {
+    var value = 0;
+    var build = 0;
+    final store = Counter();
+
+    await tester.pumpWidget(HookBuilder(
+      builder: (context) {
+        useAutorun((_) {
+          store.value;
+          value++;
+        });
+        build++;
+        return Container();
+      },
+    ));
+
+    expect(value, 1);
+    expect(build, 1);
+    expect(store.value, 0);
+    store.increment();
+    expect(value, 2);
+    expect(build, 1);
+    expect(store.value, 1);
+    await tester.pumpWidget(const SizedBox());
+    store.increment();
+    expect(value, 2);
+    expect(build, 1);
+    expect(store.value, 2);
+  });
 }

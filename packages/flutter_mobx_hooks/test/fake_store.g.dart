@@ -10,6 +10,7 @@ part of 'fake_store.dart';
 
 mixin _$Counter on _Counter, Store {
   final _$valueAtom = Atom(name: '_Counter.value');
+  final _$value2Atom = Atom(name: '_Counter.value2');
 
   @override
   int get value {
@@ -21,6 +22,19 @@ mixin _$Counter on _Counter, Store {
   set value(int value) {
     _$valueAtom.reportWrite(value, super.value, () {
       super.value = value;
+    });
+  }
+
+  @override
+  int get value2 {
+    _$value2Atom.reportRead();
+    return super.value2;
+  }
+
+  @override
+  set value2(int value) {
+    _$value2Atom.reportWrite(value, super.value, () {
+      super.value2 = value;
     });
   }
 
@@ -38,9 +52,21 @@ mixin _$Counter on _Counter, Store {
   }
 
   @override
+  void increment2() {
+    final _$actionInfo =
+    _$_CounterActionController.startAction(name: '_Counter.increment2');
+    try {
+      return super.increment2();
+    } finally {
+      _$_CounterActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 value: ${value}
+value2: ${value2}
     ''';
   }
 }

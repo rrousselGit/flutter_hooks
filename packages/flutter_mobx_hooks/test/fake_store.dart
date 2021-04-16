@@ -11,8 +11,16 @@ abstract class _Counter with Store {
   @observable
   int value = 0;
 
+  @observable
+  int value2 = 0;
+
   @action
   void increment() {
     value++;
+  }
+
+  @action
+  void increment2() {
+    value2++;
   }
 }
