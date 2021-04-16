@@ -66,6 +66,14 @@ class _AutorunHookState extends HookState<void, _AutorunHook> {
   }
 
   @override
+  void didUpdateHook(_AutorunHook oldHook) {
+    if (oldHook.fn != hook.fn) {
+      _disposer();
+      _run();
+    }
+  }
+
+  @override
   void build(BuildContext context) {}
 
   @override

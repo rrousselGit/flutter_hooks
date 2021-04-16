@@ -49,15 +49,23 @@ class _ReactionHookState<T> extends HookState<void, _ReactionHook<T>> {
   late ReactionDisposer _disposer;
 
   void _createReaction() {
-    _disposer = reaction(
+    _disposer = reaction<T>(
       hook.fn,
-      hook.effect,
+      (data) => hook.effect(data),
       equals: hook.equals,
       fireImmediately: hook.fireImmediately,
       name: hook.name,
       onError: hook.onError,
       delay: hook.delay,
     );
+  }
+
+  @override
+  void didUpdateHook(_ReactionHook<T> oldHook) {
+    if (oldHook.fn != hook.fn) {
+      _disposer();
+      _createReaction();
+    }
   }
 
   @override

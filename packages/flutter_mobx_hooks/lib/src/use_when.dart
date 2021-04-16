@@ -70,11 +70,19 @@ class _WhenHookState extends HookState<void, _WhenHook> {
   void _createWhen() {
     _disposer = _WhenHook.when(
       hook.predicate,
-      hook.effect,
+      () => hook.effect(),
       name: hook.name,
       timeout: hook.timeout,
       onError: hook.onError,
     );
+  }
+
+  @override
+  void didUpdateHook(_WhenHook oldHook) {
+    if (oldHook.predicate != hook.predicate) {
+      _disposer();
+      _createWhen();
+    }
   }
 
   @override

@@ -54,7 +54,7 @@ mixin _$Counter on _Counter, Store {
   @override
   void increment2() {
     final _$actionInfo =
-    _$_CounterActionController.startAction(name: '_Counter.increment2');
+        _$_CounterActionController.startAction(name: '_Counter.increment2');
     try {
       return super.increment2();
     } finally {

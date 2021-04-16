@@ -60,4 +60,43 @@ void main() {
     expect(build, 1);
     expect(store.value, 2);
   });
+
+  testWidgets('useAutorun update callback', (tester) async {
+    var value = 0;
+    var build = 0;
+    final store = Counter();
+
+    await tester.pumpWidget(HookBuilder(
+      builder: (context) {
+        useAutorun((_) {
+          store.value;
+          value++;
+        });
+        build++;
+        return Container();
+      },
+    ));
+
+    expect(value, 1);
+    expect(build, 1);
+    expect(store.value, 0);
+    store.increment();
+    expect(value, 2);
+    expect(build, 1);
+    expect(store.value, 1);
+    await tester.pumpWidget(HookBuilder(
+      builder: (context) {
+        useAutorun((_) {
+          store.value;
+          value += 2;
+        });
+        build++;
+        return Container();
+      },
+    ));
+    store.increment();
+    expect(value, 6);
+    expect(build, 2);
+    expect(store.value, 2);
+  });
 }
