@@ -83,11 +83,11 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
             _snapshot = AsyncSnapshot<T>.withData(ConnectionState.done, data);
           });
         }
-      }, onError: (dynamic error) {
+      }, onError: (dynamic error, dynamic stackTrace) {
         if (_activeCallbackIdentity == callbackIdentity) {
           setState(() {
-            _snapshot = AsyncSnapshot<T>.withError(
-                ConnectionState.done, error as Object);
+            _snapshot = AsyncSnapshot<T>.withError(ConnectionState.done,
+                error as Object, stackTrace as StackTrace);
           });
         }
       });
@@ -186,9 +186,9 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
         setState(() {
           _summary = afterData(data);
         });
-      }, onError: (dynamic error) {
+      }, onError: (dynamic error, dynamic stackTrace) {
         setState(() {
-          _summary = afterError(error as Object);
+          _summary = afterError(error as Object, stackTrace as StackTrace);
         });
       }, onDone: () {
         setState(() {
@@ -219,8 +219,9 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
     return AsyncSnapshot<T>.withData(ConnectionState.active, data);
   }
 
-  AsyncSnapshot<T> afterError(Object error) {
-    return AsyncSnapshot<T>.withError(ConnectionState.active, error);
+  AsyncSnapshot<T> afterError(Object error, StackTrace stackTrace) {
+    return AsyncSnapshot<T>.withError(
+        ConnectionState.active, error, stackTrace);
   }
 
   AsyncSnapshot<T> afterDone(AsyncSnapshot<T> current) =>
