@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_hooks/src/framework.dart';
 import 'package:flutter_hooks/src/hooks.dart';
@@ -94,6 +93,69 @@ void main() {
       expect(controller.keepScrollOffset, false);
     });
   });
-}
 
-class TickerProviderMock extends Mock implements TickerProvider {}
+  group('useScrollController.build', () {
+    testWidgets('initial values matches with real constructor', (tester) async {
+      late FixedExtentScrollController controller;
+      late FixedExtentScrollController controller2;
+
+      await tester.pumpWidget(
+        HookBuilder(builder: (context) {
+          controller2 = FixedExtentScrollController();
+          controller =
+              useScrollController.build(() => FixedExtentScrollController());
+          return Container();
+        }),
+      );
+
+      expect(controller.debugLabel, controller2.debugLabel);
+      expect(controller.initialScrollOffset, controller2.initialScrollOffset);
+      expect(controller.keepScrollOffset, controller2.keepScrollOffset);
+      expect(controller.initialItem, controller2.initialItem);
+    });
+    testWidgets("returns a ScrollController that doesn't change",
+        (tester) async {
+      late FixedExtentScrollController controller;
+      late FixedExtentScrollController controller2;
+
+      await tester.pumpWidget(
+        HookBuilder(builder: (context) {
+          controller =
+              useScrollController.build(() => FixedExtentScrollController());
+          return Container();
+        }),
+      );
+
+      expect(controller, isA<ScrollController>());
+
+      await tester.pumpWidget(
+        HookBuilder(builder: (context) {
+          controller2 = useScrollController.build(
+            () => FixedExtentScrollController(),
+          );
+          return Container();
+        }),
+      );
+
+      expect(identical(controller, controller2), isTrue);
+    });
+
+    testWidgets('passes hook parameters to the ScrollController',
+        (tester) async {
+      late FixedExtentScrollController controller;
+
+      await tester.pumpWidget(
+        HookBuilder(
+          builder: (context) {
+            controller = useScrollController.build(
+              () => FixedExtentScrollController(initialItem: 1),
+            );
+            return Container();
+          },
+        ),
+      );
+
+      expect(controller.initialItem, 1);
+    });
+  });
+}
