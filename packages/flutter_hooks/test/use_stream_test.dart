@@ -127,10 +127,11 @@ void main() {
         findsOneWidget);
     controller
       ..add('3')
-      ..addError('bad');
+      ..addError('bad', StackTrace.fromString('stackTrace'));
     await eventFiring(tester);
     expect(
-        find.text('AsyncSnapshot<String>(ConnectionState.active, null, bad, )'),
+        find.text(
+            'AsyncSnapshot<String>(ConnectionState.active, null, bad, stackTrace)'),
         findsOneWidget);
     controller.add('4');
     await controller.close();

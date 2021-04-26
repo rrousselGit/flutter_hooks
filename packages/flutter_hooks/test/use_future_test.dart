@@ -134,10 +134,11 @@ void main() {
         find.text(
             'AsyncSnapshot<String?>(ConnectionState.waiting, null, null, null)'),
         findsOneWidget);
-    completer.completeError('bad');
+    completer.completeError('bad', StackTrace.fromString('stackTrace'));
     await eventFiring(tester);
     expect(
-        find.text('AsyncSnapshot<String?>(ConnectionState.done, null, bad, )'),
+        find.text(
+            'AsyncSnapshot<String?>(ConnectionState.done, null, bad, stackTrace)'),
         findsOneWidget);
   });
   testWidgets('runs the builder using given initial data', (tester) async {
