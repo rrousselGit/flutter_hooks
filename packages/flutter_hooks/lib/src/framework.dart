@@ -58,7 +58,7 @@ R use<R>(Hook<R> hook) => Hook.use(hook);
 /// [Hook] is powerful tool to reuse [State] logic between multiple [Widget].
 /// They are used to extract logic that depends on a [Widget] life-cycle (such as [HookState.dispose]).
 ///
-/// While mixins are a good candidate too, they do not allow sharing values. A mixin cannot reasonnably
+/// While mixins are a good candidate too, they do not allow sharing values. A mixin cannot reasonably
 /// define a variable, as this can lead to variable conflicts on bigger widgets.
 ///
 /// Hooks are designed so that they get the benefits of mixins, but are totally independent from each others.
@@ -96,8 +96,8 @@ R use<R>(Hook<R> hook) => Hook.use(hook);
 /// }
 /// ```
 ///
-/// This is undesired because every single widget that want to use an [AnimationController] will have to
-/// rewrite this extact piece of code.
+/// This is undesired because every single widget that wants to use an [AnimationController] will have to
+/// rewrite this exact piece of code.
 ///
 /// With hooks it is possible to extract that exact piece of code into a reusable one.
 ///
@@ -114,7 +114,7 @@ R use<R>(Hook<R> hook) => Hook.use(hook);
 /// ```
 ///
 /// This is visibly less code then before. But in this example, the `animationController` is still
-/// guaranted to be disposed when the widget is removed from the tree.
+/// guaranteed to be disposed when the widget is removed from the tree.
 ///
 /// In fact this has secondary bonus: `duration` is kept updated with the latest value.
 /// If we were to pass a variable as `duration` instead of a constant, then on value change the [AnimationController] will be updated.
@@ -229,7 +229,7 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   @protected
   void dispose() {}
 
-  /// Called everytimes the [HookState] is requested
+  /// Called everytime the [HookState] is requested
   ///
   /// [build] is where an [HookState] may use other hooks. This restriction is made to ensure that hooks are unconditionally always requested
   @protected
