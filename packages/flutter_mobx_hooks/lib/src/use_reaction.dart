@@ -78,6 +78,7 @@ class _ReactionHookState<T> extends HookState<void, _ReactionHook<T>> {
 
   @override
   void dispose() {
+    super.dispose();
     _disposer();
   }
 }

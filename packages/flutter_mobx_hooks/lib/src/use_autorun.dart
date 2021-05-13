@@ -78,6 +78,7 @@ class _AutorunHookState extends HookState<void, _AutorunHook> {
 
   @override
   void dispose() {
+    super.dispose();
     _disposer();
   }
 }

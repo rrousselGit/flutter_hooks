@@ -90,6 +90,7 @@ class _WhenHookState extends HookState<void, _WhenHook> {
 
   @override
   void dispose() {
+    super.dispose();
     _disposer();
   }
 }

@@ -2,6 +2,13 @@ A package that contains utilities for using [mobx](https://pub.dev/packages/mobx
 
 ## Usage
 
+This package offers 4 utilities: 
+
+- `useAutorun`
+- `useObserver`
+- `useReaction`
+- `useWhen`
+
 `HookWidget`s can now use `useObserver` to listen to Mobx stores:
 
 

@@ -49,7 +49,10 @@ class _PageControllerHookState
   PageController build(BuildContext context) => controller;
 
   @override
-  void dispose() => controller.dispose();
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+  }
 
   @override
   String get debugLabel => 'usePageController';

@@ -55,6 +55,7 @@ class HookStateTest<R> extends HookState<R?, HookTest<R>> {
 
   @override
   void dispose() {
+    super.dispose();
     hook.dispose?.call();
   }
 

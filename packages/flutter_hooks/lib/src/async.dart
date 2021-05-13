@@ -70,6 +70,7 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T?>, _FutureHook<T>> {
 
   @override
   void dispose() {
+    super.dispose();
     _unsubscribe();
   }
 
@@ -181,6 +182,7 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T?>, _StreamHook<T>> {
 
   @override
   void dispose() {
+    super.dispose();
     _unsubscribe();
   }
 
@@ -306,6 +308,7 @@ class _StreamControllerHookState<T>
 
   @override
   void dispose() {
+    super.dispose();
     _controller.close();
   }
 

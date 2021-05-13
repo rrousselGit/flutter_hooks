@@ -226,29 +226,25 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   VoidCallback? get onDidBuild => _onDidBuild;
 
   /// Register a callback for when [HookWidget] build is finished
-  /// If dispose method has been override, super.dispose or [removeDidBuildListener] must be called
+  /// Pass null to unregister the callback
   set onDidBuild(VoidCallback? callback) {
     _onDidBuild = callback;
-    _element?.addHookForDidBuild(this);
+    if (callback != null) {
+      _element?.addHookForDidBuild(this);
+    } else {
+      _element?.removeHookForDidBuild(this);
+    }
   }
 
   /// Equivalent of [State.initState] for [HookState]
   @protected
   void initHook() {}
 
-  /// Unregister the callback set by [setDidBuildListener]
-  void removeDidBuildListener() {
-    if (_onDidBuild != null) {
-      _onDidBuild = null;
-      _element?.removeHookForDidBuild(this);
-    }
-  }
-
   /// Equivalent of [State.dispose] for [HookState]
   @protected
   @mustCallSuper
   void dispose() {
-    removeDidBuildListener();
+    onDidBuild = null;
   }
 
   /// Called everytime the [HookState] is requested

@@ -87,7 +87,10 @@ class _TextEditingControllerHookState
   TextEditingController build(BuildContext context) => _controller;
 
   @override
-  void dispose() => _controller.dispose();
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
 
   @override
   String get debugLabel => 'useTextEditingController';

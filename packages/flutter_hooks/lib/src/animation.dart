@@ -128,6 +128,7 @@ class _AnimationControllerHookState
 
   @override
   void dispose() {
+    super.dispose();
     _animationController.dispose();
   }
 
@@ -179,6 +180,7 @@ class _TickerProviderHookState
 
   @override
   void dispose() {
+    super.dispose();
     assert(() {
       if (_ticker == null || !_ticker!.isActive) {
         return true;
