@@ -1,5 +1,48 @@
 part of 'hooks.dart';
 
+/// A class that stores a single value;
+///
+/// It is typically created by [useRef].
+class ObjectRef<T> {
+  /// A mutable property that will be preserved accross rebuilds.
+  ///
+  /// Updating this property will not cause widgets to rebuild.
+  T? value;
+}
+
+/// Creates an object that contains a single mutable property.
+///
+/// Mutating the object's property has no effect.
+/// This is useful for sharing state accross `build` calls, without causing
+/// unnecessary rebuilds.
+ObjectRef<T> useRef<T>() {
+  return useMemoized(() => ObjectRef<T>());
+}
+
+/// Cache a function accross rebuilds based on a list of keys.
+///
+/// This is syntax sugar for [useMemoized], such that instead of:
+///
+/// ```dart
+/// final cachedFunction = useMemoized(() => () {
+///   print('doSomething');
+/// }, [key]);
+/// ```
+///
+/// we can directly do:
+///
+/// ```dart
+/// final cachedFunction = useCallback(() {
+///   print('doSomething');
+/// }, [key]);
+/// ```
+T useCallback<T extends Function>(
+  T callback,
+  List<Object?> keys,
+) {
+  return useMemoized(() => callback, keys);
+}
+
 /// Cache the instance of a complex object.
 ///
 /// [useMemoized] will immediately call [valueBuilder] on first call and store its result.
