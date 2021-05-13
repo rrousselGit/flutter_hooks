@@ -11,6 +11,68 @@ void main() {
     reset(valueBuilder);
   });
 
+  testWidgets('useRef', (tester) async {
+    late ObjectRef<int?> ref;
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        ref = useRef();
+        return Container();
+      }),
+    );
+
+    expect(ref.value, null);
+    ref.value = 42;
+
+    late ObjectRef<int?> ref2;
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        ref2 = useRef();
+        return Container();
+      }),
+    );
+
+    expect(ref2, ref);
+    expect(ref2.value, 42);
+  });
+
+  testWidgets('useCallback', (tester) async {
+    late int Function() fn;
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        fn = useCallback<int Function()>(() => 42, []);
+        return Container();
+      }),
+    );
+
+    expect(fn(), 42);
+
+    late int Function() fn2;
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        fn2 = useCallback<int Function()>(() => 42, []);
+        return Container();
+      }),
+    );
+
+    expect(fn2, fn);
+
+    late int Function() fn3;
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        fn3 = useCallback<int Function()>(() => 21, [42]);
+        return Container();
+      }),
+    );
+
+    expect(fn3, isNot(fn));
+    expect(fn3(), 21);
+  });
+
   testWidgets('memoized without parameter calls valueBuilder once',
       (tester) async {
     late int result;
