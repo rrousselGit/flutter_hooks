@@ -185,7 +185,7 @@ void main() {
 
     expect(
       find.text(
-        'AsyncSnapshot<String>(ConnectionState.waiting, I, null, null)',
+        'AsyncSnapshot<String?>(ConnectionState.waiting, I, null, null)',
       ),
       findsOneWidget,
     );
