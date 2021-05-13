@@ -81,7 +81,8 @@ void main() {
   });
 
   testWidgets('has all the FocusNode parameters', (tester) async {
-    bool onKey(FocusNode node, RawKeyEvent event) => true;
+    KeyEventResult onKey(FocusNode node, RawKeyEvent event) =>
+        KeyEventResult.ignored;
 
     late FocusNode focusNode;
     await tester.pumpWidget(
@@ -105,8 +106,10 @@ void main() {
   });
 
   testWidgets('handles parameter change', (tester) async {
-    bool onKey(FocusNode node, RawKeyEvent event) => true;
-    bool onKey2(FocusNode node, RawKeyEvent event) => true;
+    KeyEventResult onKey(FocusNode node, RawKeyEvent event) =>
+        KeyEventResult.ignored;
+    KeyEventResult onKey2(FocusNode node, RawKeyEvent event) =>
+        KeyEventResult.ignored;
 
     late FocusNode focusNode;
     await tester.pumpWidget(
