@@ -200,7 +200,7 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   @protected
   BuildContext get context => _element!;
   HookElement? _element;
-  VoidCallback? _didBuildCallback;
+  VoidCallback? _onDidBuild;
 
   R? _debugLastBuiltValue;
 
@@ -222,21 +222,24 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   T get hook => _hook!;
   T? _hook;
 
+  /// Callback for when [HookWidget] build is finished
+  VoidCallback? get onDidBuild => _onDidBuild;
+
+  /// Register a callback for when [HookWidget] build is finished
+  /// If dispose method has been override, super.dispose or [removeDidBuildListener] must be called
+  set onDidBuild(VoidCallback? callback) {
+    _onDidBuild = callback;
+    _element?.addHookForDidBuild(this);
+  }
+
   /// Equivalent of [State.initState] for [HookState]
   @protected
   void initHook() {}
 
-  /// Register a callback for when [HookWidget] build is finished
-  /// If dispose method has been override, super.dispose or [removeDidBuildListener] must be called
-  void setDidBuildListener(VoidCallback callback) {
-    _didBuildCallback = callback;
-    _element?.addHookForDidBuild(this);
-  }
-
   /// Unregister the callback set by [setDidBuildListener]
   void removeDidBuildListener() {
-    if (_didBuildCallback != null) {
-      _didBuildCallback = null;
+    if (_onDidBuild != null) {
+      _onDidBuild = null;
       _element?.removeHookForDidBuild(this);
     }
   }
@@ -373,8 +376,8 @@ mixin HookElement on ComponentElement {
 
   _Entry<HookState>? _currentHookState;
   final _hooks = LinkedList<_Entry<HookState>>();
-  final _needDidBuildHooks = <HookState>{};
   final _shouldRebuildQueue = LinkedList<_Entry<bool Function()>>();
+  Set<HookState>? _needDidBuildHooks;
   LinkedList<_Entry<HookState>>? _needDispose;
   bool? _isOptionalRebuild = false;
   Widget? _buildCache;
@@ -396,12 +399,13 @@ mixin HookElement on ComponentElement {
 
   /// Add a hook for receiving didBuild event
   void addHookForDidBuild(HookState hook) {
-    _needDidBuildHooks.add(hook);
+    _needDidBuildHooks ??= <HookState>{};
+    _needDidBuildHooks!.add(hook);
   }
 
   /// Remove a hook from receiving didBuild event
   void removeHookForDidBuild(HookState hook) {
-    _needDidBuildHooks.remove(hook);
+    _needDidBuildHooks?.remove(hook);
   }
 
   @override
@@ -449,17 +453,19 @@ mixin HookElement on ComponentElement {
     } finally {
       _isOptionalRebuild = null;
 
-      for (final hook in _needDidBuildHooks) {
-        try {
-          hook._didBuildCallback!();
-        } catch (exception, stack) {
-          FlutterError.reportError(FlutterErrorDetails(
-            exception: exception,
-            stack: stack,
-            library: 'hooks library',
-            context: ErrorDescription(
-                'while calling `didBuild` on ${hook.runtimeType}'),
-          ));
+      if (_needDidBuildHooks != null) {
+        for (final hook in _needDidBuildHooks!) {
+          try {
+            hook._onDidBuild?.call();
+          } catch (exception, stack) {
+            FlutterError.reportError(FlutterErrorDetails(
+              exception: exception,
+              stack: stack,
+              library: 'hooks library',
+              context: ErrorDescription(
+                  'while calling `didBuild` on ${hook.runtimeType}'),
+            ));
+          }
         }
       }
 

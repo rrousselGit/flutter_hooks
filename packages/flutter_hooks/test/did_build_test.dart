@@ -19,7 +19,7 @@ class DidBuildHookStateTest extends HookState<void, DidBuildHookTest> {
   @override
   void initHook() {
     super.initHook();
-    setDidBuildListener(hook.callback);
+    onDidBuild = hook.callback;
   }
 
   @override

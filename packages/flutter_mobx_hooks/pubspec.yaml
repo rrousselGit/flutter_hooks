@@ -5,13 +5,14 @@ homepage: https://github.com/rrousselGit/flutter_hooks
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
-  flutter: ">=1.17.0"
+  flutter: '>=1.17.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  flutter_hooks: ^0.16.0
-  mobx: ^2.0.0
+  flutter_hooks: #'>=0.17.0 <1.0.0'
+    path: ../flutter_hooks
+  mobx: '>=2.0.0 <3.0.0'
 
 dev_dependencies:
   flutter_test:

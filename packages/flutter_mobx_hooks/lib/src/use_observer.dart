@@ -26,10 +26,10 @@ class _ObserverHookState extends HookState<void, _ObserverHook> {
     super.initHook();
 
     _reaction = _createReaction();
-    setDidBuildListener(() {
+    onDidBuild = () {
       _reaction.endTracking(_prevDerivation);
       _prevDerivation = null;
-    });
+    };
   }
 
   ReactionImpl _createReaction() {
