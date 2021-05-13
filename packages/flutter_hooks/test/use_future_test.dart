@@ -138,7 +138,8 @@ void main() {
     await eventFiring(tester);
     expect(
         find.text(
-            'AsyncSnapshot<String?>(ConnectionState.done, null, bad, stackTrace)'),
+          'AsyncSnapshot<String?>(ConnectionState.done, null, bad, stackTrace)',
+        ),
         findsOneWidget);
   });
   testWidgets('runs the builder using given initial data', (tester) async {

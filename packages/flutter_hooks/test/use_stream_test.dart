@@ -131,7 +131,8 @@ void main() {
     await eventFiring(tester);
     expect(
         find.text(
-            'AsyncSnapshot<String>(ConnectionState.active, null, bad, stackTrace)'),
+          'AsyncSnapshot<String>(ConnectionState.active, null, bad, stackTrace)',
+        ),
         findsOneWidget);
     controller.add('4');
     await controller.close();
