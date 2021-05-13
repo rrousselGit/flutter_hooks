@@ -233,7 +233,7 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
     _element?.addHookForDidBuild(this);
   }
 
-  ///Unregister the callback set by [setDidBuildListener]
+  /// Unregister the callback set by [setDidBuildListener]
   void removeDidBuildListener() {
     if (_didBuildCallback != null) {
       _didBuildCallback = null;
@@ -243,6 +243,7 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
 
   /// Equivalent of [State.dispose] for [HookState]
   @protected
+  @mustCallSuper
   void dispose() {
     removeDidBuildListener();
   }
