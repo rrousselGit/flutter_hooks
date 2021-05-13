@@ -1,3 +1,7 @@
+## [Unreleased]
+
+- `useFuture`/`useStream`'s `AsynsSnapshot` now correctly expose the StackTrace when there is an error.
+
 ## 0.16.0
 
 Stable null-safety release
