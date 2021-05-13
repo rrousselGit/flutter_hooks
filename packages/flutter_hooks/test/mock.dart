@@ -112,7 +112,13 @@ class MockCreateState<T extends HookState<dynamic, Hook>> extends Mock {
   MockCreateState(this.value);
   final T value;
 
-  T call() => value;
+  T call() {
+    return super.noSuchMethod(
+      Invocation.method(#call, []),
+      returnValue: value,
+      returnValueForMissingStub: value,
+    ) as T;
+  }
 }
 
 class MockBuild<T> extends Mock {
