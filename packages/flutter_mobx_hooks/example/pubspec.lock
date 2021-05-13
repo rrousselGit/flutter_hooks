@@ -201,14 +201,14 @@ packages:
       path: "../../flutter_hooks"
       relative: true
     source: path
-    version: "0.16.0"
+    version: "0.17.0"
   flutter_mobx_hooks:
     dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "1.0.0"
+    version: "0.1.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter

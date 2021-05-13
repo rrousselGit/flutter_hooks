@@ -229,12 +229,17 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   /// Register a callback for when [HookWidget] build is finished
   /// Pass null to unregister the callback
   set onDidBuild(VoidCallback? callback) {
-    _onDidBuild = callback;
+    assert(_element != null,
+        "Cannot update onDidBuild inside HookState's constructor");
     if (callback != null) {
-      _element?.addHookForDidBuild(this);
+      //only register the hook for this event if it was not already done
+      if (onDidBuild == null) {
+        _element!.addHookForDidBuild(this);
+      }
     } else {
-      _element?.removeHookForDidBuild(this);
+      _element!.removeHookForDidBuild(this);
     }
+    _onDidBuild = callback;
   }
 
   /// Equivalent of [State.initState] for [HookState]
@@ -454,7 +459,7 @@ mixin HookElement on ComponentElement {
         for (var i = 0; i < _needDidBuildHooks!.length; i++) {
           final hook = _needDidBuildHooks![i];
           try {
-            hook._onDidBuild?.call();
+            hook.onDidBuild?.call();
           } catch (exception, stack) {
             FlutterError.reportError(FlutterErrorDetails(
               exception: exception,
