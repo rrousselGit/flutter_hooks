@@ -170,10 +170,9 @@ class _TickerProviderHookState
       }
       throw FlutterError(
           '${context.widget.runtimeType} attempted to use a useSingleTickerProvider multiple times.\n'
-          'A SingleTickerProviderStateMixin can only be used as a TickerProvider once. If a '
-          'TickerProvider is used for multiple AnimationController objects, or if it is passed to other '
-          'objects and those objects might use it more than one time in total, then instead of '
-          'using useSingleTickerProvider, use a regular useTickerProvider.');
+          'A SingleTickerProviderStateMixin can only be used as a TickerProvider once. '
+          'If you need multiple Ticker, consider using useSingleTickerProvider multiple times '
+          'to create as many Tickers as needed.');
     }(), '');
     return _ticker = Ticker(onTick, debugLabel: 'created by $context');
   }
