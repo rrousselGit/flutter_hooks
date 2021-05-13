@@ -368,7 +368,7 @@ For a custom-hook to be merged, you will need to do the following:
 
 - Write tests for your hook
 
-  A hook will not be merged unles fully tested, to avoid breaking it inadvertendly
+  A hook will not be merged unless fully tested, to avoid breaking it inadvertently
   in the future.
 
 - Add it to the Readme & write documentation for it.

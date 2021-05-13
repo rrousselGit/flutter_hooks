@@ -200,7 +200,6 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   @protected
   BuildContext get context => _element!;
   HookElement? _element;
-  VoidCallback? _onDidBuild;
 
   R? _debugLastBuiltValue;
 
@@ -221,6 +220,8 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   /// Equivalent of [State.widget] for [HookState]
   T get hook => _hook!;
   T? _hook;
+
+  VoidCallback? _onDidBuild;
 
   /// Callback for when [HookWidget] build is finished
   VoidCallback? get onDidBuild => _onDidBuild;
@@ -373,7 +374,7 @@ mixin HookElement on ComponentElement {
   _Entry<HookState>? _currentHookState;
   final _hooks = LinkedList<_Entry<HookState>>();
   final _shouldRebuildQueue = LinkedList<_Entry<bool Function()>>();
-  Set<HookState>? _needDidBuildHooks;
+  List<HookState>? _needDidBuildHooks;
   LinkedList<_Entry<HookState>>? _needDispose;
   bool? _isOptionalRebuild = false;
   Widget? _buildCache;
@@ -395,7 +396,7 @@ mixin HookElement on ComponentElement {
 
   /// Add a hook for receiving didBuild event
   void addHookForDidBuild(HookState hook) {
-    _needDidBuildHooks ??= <HookState>{};
+    _needDidBuildHooks ??= <HookState>[];
     _needDidBuildHooks!.add(hook);
   }
 
@@ -450,7 +451,8 @@ mixin HookElement on ComponentElement {
       _isOptionalRebuild = null;
 
       if (_needDidBuildHooks != null) {
-        for (final hook in _needDidBuildHooks!) {
+        for (var i = 0; i < _needDidBuildHooks!.length; i++) {
+          final hook = _needDidBuildHooks![i];
           try {
             hook._onDidBuild?.call();
           } catch (exception, stack) {
