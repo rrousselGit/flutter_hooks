@@ -2,6 +2,7 @@
 
 - `useFuture`/`useStream`'s `AsynsSnapshot` now correctly expose the StackTrace when there is an error.
 - added `useRef` and `useCallback`, similar to the React equivalents.
+- `initialData` of `useStream` and `useFuture` is now optional.
 
 ## 0.16.0
 
