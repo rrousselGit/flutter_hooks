@@ -190,6 +190,28 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('useStreamWithInitial returns NN snapshot', (tester) async {
+    final controller = StreamController<int>();
+
+    late AsyncSnapshot<int> value;
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        value = useStreamWithInitial(controller.stream, initialData: 42);
+        return const SizedBox();
+      }),
+    );
+
+    expect(
+      value,
+      isInstanceOf<AsyncSnapshot<int>>(),
+    );
+    expect(
+      value.runtimeType.toString(),
+      'AsyncSnapshot<int>',
+    );
+  });
 }
 
 Future<void> eventFiring(WidgetTester tester) async {

@@ -224,6 +224,28 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('useFutureWithInitial returns NN snapshot', (tester) async {
+    final completer = Completer<int>();
+
+    late AsyncSnapshot<int> value;
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        value = useFutureWithInitial(completer.future, initialData: 42);
+        return const SizedBox();
+      }),
+    );
+
+    expect(
+      value,
+      isInstanceOf<AsyncSnapshot<int>>(),
+    );
+    expect(
+      value.runtimeType.toString(),
+      'AsyncSnapshot<int>',
+    );
+  });
 }
 
 Future<void> eventFiring(WidgetTester tester) async {
