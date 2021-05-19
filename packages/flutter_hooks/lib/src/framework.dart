@@ -229,8 +229,10 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   /// Register a callback for when [HookWidget] build is finished
   /// Pass null to unregister the callback
   set onDidBuild(VoidCallback? callback) {
-    assert(_element != null,
-        "Cannot update onDidBuild inside HookState's constructor");
+    assert(
+      _element != null,
+      "Cannot update onDidBuild inside HookState's constructor",
+    );
     if (callback != null) {
       //only register the hook for this event if it was not already done
       if (onDidBuild == null) {
