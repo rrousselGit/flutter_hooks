@@ -129,7 +129,7 @@ class _AnimationControllerHookState
   @override
   void dispose() {
     _animationController.dispose();
-     super.dispose();
+    super.dispose();
   }
 
   @override

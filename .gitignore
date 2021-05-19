@@ -5,6 +5,8 @@
 .packages
 .pub-cache/
 .pub/
+.idea/
+coverage/
 build/
 android/
 ios/
