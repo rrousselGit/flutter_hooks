@@ -50,8 +50,8 @@ class _PageControllerHookState
 
   @override
   void dispose() {
-    super.dispose();
     controller.dispose();
+    super.dispose();
   }
 
   @override

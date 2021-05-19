@@ -219,8 +219,8 @@ class _EffectHookState extends HookState<void, _EffectHook> {
 
   @override
   void dispose() {
-    super.dispose();
     disposer?.call();
+    super.dispose();
   }
 
   void scheduleEffect() {
@@ -281,8 +281,8 @@ class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
 
   @override
   void dispose() {
-    super.dispose();
     _state.dispose();
+    super.dispose();
   }
 
   @override

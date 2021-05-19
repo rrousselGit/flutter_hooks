@@ -455,9 +455,10 @@ mixin HookElement on ComponentElement {
     } finally {
       _isOptionalRebuild = null;
 
-      if (_needDidBuildHooks != null) {
-        for (var i = 0; i < _needDidBuildHooks!.length; i++) {
-          final hook = _needDidBuildHooks![i];
+      final needDidBuildHooks = _needDidBuildHooks;
+      if (needDidBuildHooks != null) {
+        for (var i = 0; i < needDidBuildHooks.length; i++) {
+          final hook = needDidBuildHooks[i];
           try {
             hook.onDidBuild?.call();
           } catch (exception, stack) {
@@ -466,7 +467,8 @@ mixin HookElement on ComponentElement {
               stack: stack,
               library: 'hooks library',
               context: ErrorDescription(
-                  'while calling `didBuild` on ${hook.runtimeType}'),
+                'while calling `didBuild` on ${hook.runtimeType}',
+              ),
             ));
           }
         }
