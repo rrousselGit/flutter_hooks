@@ -66,8 +66,8 @@ class _FocusNodeHookState extends HookState<FocusNode, _FocusNodeHook> {
 
   @override
   void dispose() {
-    super.dispose();
     _focusNode.dispose();
+    super.dispose();
   }
 
   @override
