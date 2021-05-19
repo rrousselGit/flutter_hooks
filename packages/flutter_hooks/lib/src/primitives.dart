@@ -4,10 +4,11 @@ part of 'hooks.dart';
 ///
 /// It is typically created by [useRef].
 class ObjectRef<T> {
-  /// A mutable property that will be preserved accross rebuilds.
+  ObjectRef(this.value);
+  /// A mutable property that will be preserved across rebuilds.
   ///
   /// Updating this property will not cause widgets to rebuild.
-  T? value;
+  T value;
 }
 
 /// Creates an object that contains a single mutable property.
@@ -15,8 +16,8 @@ class ObjectRef<T> {
 /// Mutating the object's property has no effect.
 /// This is useful for sharing state accross `build` calls, without causing
 /// unnecessary rebuilds.
-ObjectRef<T> useRef<T>() {
-  return useMemoized(() => ObjectRef<T>());
+ObjectRef<T> useRef<T>(T initialValue) {
+  return useMemoized(() => ObjectRef<T>(initialValue));
 }
 
 /// Cache a function accross rebuilds based on a list of keys.
