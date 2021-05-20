@@ -30,8 +30,15 @@ void useReaction<T>(ReactionSetup<T> fn, Function(T) effect,
 }
 
 class _ReactionHook<T> extends Hook<void> {
-  const _ReactionHook(this.fn, this.effect,
-      {this.name, this.delay, this.fireImmediately, this.equals, this.onError});
+  const _ReactionHook(
+    this.fn,
+    this.effect, {
+    this.name,
+    this.delay,
+    this.fireImmediately,
+    this.equals,
+    this.onError,
+  });
 
   final ReactionSetup<T> fn;
   final Function(T) effect;
