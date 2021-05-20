@@ -180,7 +180,6 @@ class _TickerProviderHookState
 
   @override
   void dispose() {
-    super.dispose();
     assert(() {
       if (_ticker == null || !_ticker!.isActive) {
         return true;
@@ -191,6 +190,7 @@ class _TickerProviderHookState
           ' by AnimationControllers should be disposed by calling dispose() on '
           ' the AnimationController itself. Otherwise, the ticker will leak.\n');
     }(), '');
+    super.dispose();
   }
 
   @override
