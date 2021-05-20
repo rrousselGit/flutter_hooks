@@ -124,7 +124,7 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T?>, _FutureHook<T>> {
 ///   * [Stream], the object listened.
 ///   * [useFuture], similar to [useStream] but for [Future].
 AsyncSnapshot<T?> useStream<T>(
-  Stream<T>? stream, {
+  Stream<T?>? stream, {
   T? initialData,
   bool preserveState = true,
 }) {
@@ -144,7 +144,7 @@ class _StreamHook<T> extends Hook<AsyncSnapshot<T?>> {
     required this.preserveState,
   });
 
-  final Stream<T>? stream;
+  final Stream<T?>? stream;
   final T? initialData;
   final bool preserveState;
 
