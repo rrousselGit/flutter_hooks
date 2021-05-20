@@ -154,7 +154,7 @@ class _StreamHook<T> extends Hook<AsyncSnapshot<T?>> {
 
 /// a clone of [StreamBuilderBase] implementation
 class _StreamHookState<T> extends HookState<AsyncSnapshot<T?>, _StreamHook<T>> {
-  StreamSubscription<T>? _subscription;
+  StreamSubscription<T?>? _subscription;
   late AsyncSnapshot<T?> _summary = initial;
 
   @override
@@ -220,7 +220,7 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T?>, _StreamHook<T>> {
   AsyncSnapshot<T?> afterConnected(AsyncSnapshot<T?> current) =>
       current.inState(ConnectionState.waiting);
 
-  AsyncSnapshot<T?> afterData(T data) {
+  AsyncSnapshot<T?> afterData(T? data) {
     return AsyncSnapshot<T?>.withData(ConnectionState.active, data);
   }
 
