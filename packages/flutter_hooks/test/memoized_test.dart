@@ -16,7 +16,7 @@ void main() {
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        ref = useRef();
+        ref = useRef<int?>(null);
         return Container();
       }),
     );
@@ -28,7 +28,7 @@ void main() {
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        ref2 = useRef();
+        ref2 = useRef<int?>(null);
         return Container();
       }),
     );
