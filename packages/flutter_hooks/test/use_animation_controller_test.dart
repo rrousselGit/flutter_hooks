@@ -17,6 +17,7 @@ void main() {
     );
 
     expect(controller.duration, isNull);
+    expect(controller.reverseDuration, isNull);
     expect(controller.lowerBound, 0);
     expect(controller.upperBound, 1);
     expect(controller.value, 0);
@@ -25,7 +26,8 @@ void main() {
 
     controller
       ..duration = const Duration(seconds: 1)
-      // check has a ticker
+      ..reverseDuration = const Duration(seconds: 1)
+    // check has a ticker
       ..forward();
 
     // dispose
@@ -38,6 +40,7 @@ void main() {
         useAnimationController(
           animationBehavior: AnimationBehavior.preserve,
           duration: const Duration(seconds: 1),
+          reverseDuration: const Duration(milliseconds: 500),
           initialValue: 42,
           lowerBound: 24,
           upperBound: 84,
@@ -55,11 +58,12 @@ void main() {
           .toStringDeep(),
       equalsIgnoringHashCodes(
         'HookBuilder\n'
-        ' │ useSingleTickerProvider\n'
-        ' │ useAnimationController:\n'
-        ' │   _AnimationControllerHookState#00000(AnimationController#00000(▶\n'
-        ' │   42.000; paused; for Foo), duration: 0:00:01.000000)\n'
-        ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
+            ' │ useSingleTickerProvider\n'
+            ' │ useAnimationController:\n'
+            ' │   _AnimationControllerHookState#00000(AnimationController#00000(▶\n'
+            ' │   42.000; paused; for Foo), duration: 0:00:01.000000,\n'
+            ' │   reverseDuration: 0:00:00.500000)\n'
+            ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
       ),
     );
   });
@@ -80,6 +84,7 @@ void main() {
           vsync: provider,
           animationBehavior: AnimationBehavior.preserve,
           duration: const Duration(seconds: 1),
+          reverseDuration: const Duration(milliseconds: 500),
           initialValue: 42,
           lowerBound: 24,
           upperBound: 84,
@@ -96,6 +101,7 @@ void main() {
     // ignore: unawaited_futures
     controller.forward();
     expect(controller.duration, const Duration(seconds: 1));
+    expect(controller.reverseDuration, const Duration(milliseconds: 500));
     expect(controller.lowerBound, 24);
     expect(controller.upperBound, 84);
     expect(controller.value, 42);
@@ -113,6 +119,7 @@ void main() {
         controller = useAnimationController(
           vsync: provider,
           duration: const Duration(seconds: 2),
+          reverseDuration: const Duration(seconds: 1),
           debugLabel: 'Bar',
         );
         return Container();
@@ -123,6 +130,7 @@ void main() {
     verifyNoMoreInteractions(provider);
     expect(controller, previousController);
     expect(controller.duration, const Duration(seconds: 2));
+    expect(controller.reverseDuration, const Duration(seconds: 1));
     expect(controller.lowerBound, 24);
     expect(controller.upperBound, 84);
     expect(controller.value, 42);
@@ -195,9 +203,9 @@ void main() {
 class _TickerProvider extends Mock implements TickerProvider {
   @override
   Ticker createTicker(TickerCallback onTick) => super.noSuchMethod(
-        Invocation.getter(#createTicker),
-        returnValue: Ticker(onTick),
-      ) as Ticker;
+    Invocation.getter(#createTicker),
+    returnValue: Ticker(onTick),
+  ) as Ticker;
 }
 
 class MockEffect extends Mock {
