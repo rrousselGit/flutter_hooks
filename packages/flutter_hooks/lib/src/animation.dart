@@ -124,8 +124,12 @@ class _AnimationControllerHookState
 
     if (hook.duration != oldHook.duration) {
       _animationController.duration = hook.duration;
+    }
+
+    if (hook.reverseDuration != oldHook.reverseDuration) {
       _animationController.reverseDuration = hook.reverseDuration;
     }
+
   }
 
   @override
