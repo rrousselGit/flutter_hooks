@@ -42,6 +42,7 @@ class _UseAnimationStateHook extends _ListenableStateHook {
 ///   * [useAnimation], to listen to the created [AnimationController].
 AnimationController useAnimationController({
   Duration? duration,
+  Duration? reverseDuration,
   String? debugLabel,
   double initialValue = 0,
   double lowerBound = 0,
@@ -55,6 +56,7 @@ AnimationController useAnimationController({
   return use(
     _AnimationControllerHook(
       duration: duration,
+      reverseDuration: reverseDuration,
       debugLabel: debugLabel,
       initialValue: initialValue,
       lowerBound: lowerBound,
@@ -69,6 +71,7 @@ AnimationController useAnimationController({
 class _AnimationControllerHook extends Hook<AnimationController> {
   const _AnimationControllerHook({
     this.duration,
+    this.reverseDuration,
     this.debugLabel,
     required this.initialValue,
     required this.lowerBound,
@@ -79,6 +82,7 @@ class _AnimationControllerHook extends Hook<AnimationController> {
   }) : super(keys: keys);
 
   final Duration? duration;
+  final Duration? reverseDuration;
   final String? debugLabel;
   final double initialValue;
   final double lowerBound;
@@ -94,6 +98,7 @@ class _AnimationControllerHook extends Hook<AnimationController> {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(DiagnosticsProperty('duration', duration));
+    properties.add(DiagnosticsProperty('reverseDuration', reverseDuration));
   }
 }
 
@@ -102,6 +107,7 @@ class _AnimationControllerHookState
   late final AnimationController _animationController = AnimationController(
     vsync: hook.vsync,
     duration: hook.duration,
+    reverseDuration: hook.reverseDuration,
     debugLabel: hook.debugLabel,
     lowerBound: hook.lowerBound,
     upperBound: hook.upperBound,
@@ -118,6 +124,7 @@ class _AnimationControllerHookState
 
     if (hook.duration != oldHook.duration) {
       _animationController.duration = hook.duration;
+      _animationController.reverseDuration = hook.reverseDuration;
     }
   }
 
@@ -170,9 +177,9 @@ class _TickerProviderHookState
       }
       throw FlutterError(
           '${context.widget.runtimeType} attempted to use a useSingleTickerProvider multiple times.\n'
-          'A SingleTickerProviderStateMixin can only be used as a TickerProvider once. '
-          'If you need multiple Ticker, consider using useSingleTickerProvider multiple times '
-          'to create as many Tickers as needed.');
+              'A SingleTickerProviderStateMixin can only be used as a TickerProvider once. '
+              'If you need multiple Ticker, consider using useSingleTickerProvider multiple times '
+              'to create as many Tickers as needed.');
     }(), '');
     return _ticker = Ticker(onTick, debugLabel: 'created by $context');
   }
@@ -185,9 +192,9 @@ class _TickerProviderHookState
       }
       throw FlutterError(
           'useSingleTickerProvider created a Ticker, but at the time '
-          'dispose() was called on the Hook, that Ticker was still active. Tickers used '
-          ' by AnimationControllers should be disposed by calling dispose() on '
-          ' the AnimationController itself. Otherwise, the ticker will leak.\n');
+              'dispose() was called on the Hook, that Ticker was still active. Tickers used '
+              ' by AnimationControllers should be disposed by calling dispose() on '
+              ' the AnimationController itself. Otherwise, the ticker will leak.\n');
     }(), '');
   }
 
