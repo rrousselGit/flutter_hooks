@@ -40,10 +40,10 @@ void main() {
 
   testWidgets('default preserve state, changing stream keeps previous value',
       (tester) async {
-    late AsyncSnapshot<int?>? value;
-    Widget Function(BuildContext) builder(Stream<int?> stream) {
+    late AsyncSnapshot<int>? value;
+    Widget Function(BuildContext) builder(Stream<int> stream) {
       return (context) {
-        value = useStream<int?>(stream);
+        value = useStream(stream);
         return Container();
       };
     }
@@ -62,10 +62,10 @@ void main() {
   });
   testWidgets('If preserveState == false, changing stream resets value',
       (tester) async {
-    late AsyncSnapshot<int?>? value;
-    Widget Function(BuildContext) builder(Stream<int?> stream) {
+    late AsyncSnapshot<int>? value;
+    Widget Function(BuildContext) builder(Stream<int> stream) {
       return (context) {
-        value = useStream<int?>(stream, preserveState: false);
+        value = useStream(stream, preserveState: false);
         return Container();
       };
     }

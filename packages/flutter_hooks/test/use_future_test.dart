@@ -9,10 +9,10 @@ import 'mock.dart';
 void main() {
   testWidgets('default preserve state, changing future keeps previous value',
       (tester) async {
-    late AsyncSnapshot<int?> value;
-    Widget Function(BuildContext) builder(Future<int?> stream) {
+    late AsyncSnapshot<int> value;
+    Widget Function(BuildContext) builder(Future<int> stream) {
       return (context) {
-        value = useFuture<int?>(stream);
+        value = useFuture(stream);
         return Container();
       };
     }
@@ -59,10 +59,10 @@ void main() {
 
   testWidgets('If preserveState == false, changing future resets value',
       (tester) async {
-    late AsyncSnapshot<int?> value;
-    Widget Function(BuildContext) builder(Future<int?> stream) {
+    late AsyncSnapshot<int> value;
+    Widget Function(BuildContext) builder(Future<int> stream) {
       return (context) {
-        value = useFuture<int?>(stream, preserveState: false);
+        value = useFuture(stream, preserveState: false);
         return Container();
       };
     }
