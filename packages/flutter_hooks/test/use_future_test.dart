@@ -50,7 +50,7 @@ void main() {
           .toStringDeep(),
       equalsIgnoringHashCodes(
         'HookBuilder\n'
-        ' │ useFuture: AsyncSnapshot<int?>(ConnectionState.done, 42, null,\n'
+        ' │ useFuture: AsyncSnapshot<int>(ConnectionState.done, 42, null,\n'
         ' │   null)\n'
         ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
       ),
