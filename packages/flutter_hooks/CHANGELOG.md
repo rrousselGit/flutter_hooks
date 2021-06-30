@@ -1,4 +1,4 @@
-## Unreleased major
+## 0.18.0
 
 - **Breaking**: `useRef` now receive an initial value as parameter.
   To migrate, you can change:
@@ -13,6 +13,8 @@
   ```
 
 - Updated `useStream`/`useFuture` to match the behavior of `StreamBuilder`/`FutureBuilder` regarding initial values.
+
+- Added a `reverseDuration` parameter to `useAnimationController`
 
 ## 0.17.0
 
