@@ -11,30 +11,58 @@ void main() {
     reset(valueBuilder);
   });
 
-  testWidgets('useRef', (tester) async {
+  testWidgets('useRef with null initial value', (tester) async {
     late ObjectRef<int?> ref;
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        ref = useRef();
+        ref = useRef<int?>(null);
         return Container();
       }),
     );
 
-    expect(ref.value, null);
+    expect(ref.value, null, reason: 'The ref value has the initial set value.');
     ref.value = 42;
 
     late ObjectRef<int?> ref2;
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        ref2 = useRef();
+        ref2 = useRef<int?>(null);
         return Container();
       }),
     );
 
-    expect(ref2, ref);
-    expect(ref2.value, 42);
+    expect(ref2, ref, reason: 'The ref value remains the same after rebuild.');
+    expect(ref2.value, 42,
+        reason: 'The ref value has the last assigned value.');
+  });
+
+  testWidgets('useRef with non-null initial value', (tester) async {
+    late ObjectRef<int?> ref;
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        ref = useRef<int>(41);
+        return Container();
+      }),
+    );
+
+    expect(ref.value, 41, reason: 'The ref value has the initial set value.');
+    ref.value = 42;
+
+    late ObjectRef<int?> ref2;
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        ref2 = useRef<int>(43);
+        return Container();
+      }),
+    );
+
+    expect(ref2, ref, reason: 'The ref value remains the same after rebuild.');
+    expect(ref2.value, 42,
+        reason: 'The ref value has the last assigned value.');
   });
 
   testWidgets('useCallback', (tester) async {
