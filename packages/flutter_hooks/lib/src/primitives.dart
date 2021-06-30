@@ -5,6 +5,7 @@ part of 'hooks.dart';
 /// It is typically created by [useRef].
 class ObjectRef<T> {
   ObjectRef(this.value);
+
   /// A mutable property that will be preserved across rebuilds.
   ///
   /// Updating this property will not cause widgets to rebuild.
