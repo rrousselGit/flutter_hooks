@@ -27,7 +27,7 @@ void main() {
     controller
       ..duration = const Duration(seconds: 1)
       ..reverseDuration = const Duration(seconds: 1)
-    // check has a ticker
+      // check has a ticker
       ..forward();
 
     // dispose
@@ -58,12 +58,12 @@ void main() {
           .toStringDeep(),
       equalsIgnoringHashCodes(
         'HookBuilder\n'
-            ' │ useSingleTickerProvider\n'
-            ' │ useAnimationController:\n'
-            ' │   _AnimationControllerHookState#00000(AnimationController#00000(▶\n'
-            ' │   42.000; paused; for Foo), duration: 0:00:01.000000,\n'
-            ' │   reverseDuration: 0:00:00.500000)\n'
-            ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
+        ' │ useSingleTickerProvider\n'
+        ' │ useAnimationController:\n'
+        ' │   _AnimationControllerHookState#00000(AnimationController#00000(▶\n'
+        ' │   42.000; paused; for Foo), duration: 0:00:01.000000,\n'
+        ' │   reverseDuration: 0:00:00.500000)\n'
+        ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
       ),
     );
   });
@@ -203,9 +203,9 @@ void main() {
 class _TickerProvider extends Mock implements TickerProvider {
   @override
   Ticker createTicker(TickerCallback onTick) => super.noSuchMethod(
-    Invocation.getter(#createTicker),
-    returnValue: Ticker(onTick),
-  ) as Ticker;
+        Invocation.getter(#createTicker),
+        returnValue: Ticker(onTick),
+      ) as Ticker;
 }
 
 class MockEffect extends Mock {

@@ -129,7 +129,6 @@ class _AnimationControllerHookState
     if (hook.reverseDuration != oldHook.reverseDuration) {
       _animationController.reverseDuration = hook.reverseDuration;
     }
-
   }
 
   @override
@@ -181,9 +180,9 @@ class _TickerProviderHookState
       }
       throw FlutterError(
           '${context.widget.runtimeType} attempted to use a useSingleTickerProvider multiple times.\n'
-              'A SingleTickerProviderStateMixin can only be used as a TickerProvider once. '
-              'If you need multiple Ticker, consider using useSingleTickerProvider multiple times '
-              'to create as many Tickers as needed.');
+          'A SingleTickerProviderStateMixin can only be used as a TickerProvider once. '
+          'If you need multiple Ticker, consider using useSingleTickerProvider multiple times '
+          'to create as many Tickers as needed.');
     }(), '');
     return _ticker = Ticker(onTick, debugLabel: 'created by $context');
   }
@@ -196,9 +195,9 @@ class _TickerProviderHookState
       }
       throw FlutterError(
           'useSingleTickerProvider created a Ticker, but at the time '
-              'dispose() was called on the Hook, that Ticker was still active. Tickers used '
-              ' by AnimationControllers should be disposed by calling dispose() on '
-              ' the AnimationController itself. Otherwise, the ticker will leak.\n');
+          'dispose() was called on the Hook, that Ticker was still active. Tickers used '
+          ' by AnimationControllers should be disposed by calling dispose() on '
+          ' the AnimationController itself. Otherwise, the ticker will leak.\n');
     }(), '');
   }
 
