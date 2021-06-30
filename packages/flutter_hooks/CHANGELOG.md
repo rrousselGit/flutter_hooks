@@ -1,3 +1,17 @@
+## Unreleased major
+
+- **Breaking**: `useRef` now receive an initial value as parameter.
+  To migrate, you can change:
+  ```dart
+  ObjectRef<int> ref = useRef<int>();
+  ```
+
+  to:
+
+  ```dart
+  ObjectRef<int?> ref = useRef<int?>(null);
+  ```
+
 ## 0.17.0
 
 - `useFuture`/`useStream`'s `AsynsSnapshot` now correctly expose the StackTrace when there is an error.
