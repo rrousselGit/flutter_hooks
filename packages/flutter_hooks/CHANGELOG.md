@@ -12,6 +12,8 @@
   ObjectRef<int?> ref = useRef<int?>(null);
   ```
 
+- Updated `useStream`/`useFuture` to match the behavior of `StreamBuilder`/`FutureBuilder` regarding initial values.
+
 ## 0.17.0
 
 - `useFuture`/`useStream`'s `AsynsSnapshot` now correctly expose the StackTrace when there is an error.
