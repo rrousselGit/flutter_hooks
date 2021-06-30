@@ -31,7 +31,7 @@ void main() {
           .toStringDeep(),
       equalsIgnoringHashCodes(
         'HookBuilder\n'
-        ' │ useStream: AsyncSnapshot<int?>(ConnectionState.done, 42, null,\n'
+        ' │ useStream: AsyncSnapshot<int>(ConnectionState.done, 42, null,\n'
         ' │   null)\n'
         ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
       ),
@@ -40,10 +40,10 @@ void main() {
 
   testWidgets('default preserve state, changing stream keeps previous value',
       (tester) async {
-    late AsyncSnapshot<int?>? value;
-    Widget Function(BuildContext) builder(Stream<int?> stream) {
+    late AsyncSnapshot<int>? value;
+    Widget Function(BuildContext) builder(Stream<int> stream) {
       return (context) {
-        value = useStream<int?>(stream);
+        value = useStream(stream);
         return Container();
       };
     }
@@ -62,10 +62,10 @@ void main() {
   });
   testWidgets('If preserveState == false, changing stream resets value',
       (tester) async {
-    late AsyncSnapshot<int?>? value;
-    Widget Function(BuildContext) builder(Stream<int?> stream) {
+    late AsyncSnapshot<int>? value;
+    Widget Function(BuildContext) builder(Stream<int> stream) {
       return (context) {
-        value = useStream<int?>(stream, preserveState: false);
+        value = useStream(stream, preserveState: false);
         return Container();
       };
     }
@@ -98,7 +98,7 @@ void main() {
         .pumpWidget(HookBuilder(builder: snapshotText(controllerA.stream)));
     expect(
         find.text(
-          'AsyncSnapshot<String?>(ConnectionState.waiting, , null, null)',
+          'AsyncSnapshot<String>(ConnectionState.waiting, , null, null)',
         ),
         findsOneWidget);
     await tester
@@ -108,7 +108,7 @@ void main() {
     await eventFiring(tester);
     expect(
         find.text(
-            'AsyncSnapshot<String?>(ConnectionState.active, B, null, null)'),
+            'AsyncSnapshot<String>(ConnectionState.active, B, null, null)'),
         findsOneWidget);
   });
   testWidgets('tracks events and errors of stream until completion',
@@ -118,14 +118,14 @@ void main() {
         .pumpWidget(HookBuilder(builder: snapshotText(controller.stream)));
     expect(
         find.text(
-          'AsyncSnapshot<String?>(ConnectionState.waiting, , null, null)',
+          'AsyncSnapshot<String>(ConnectionState.waiting, , null, null)',
         ),
         findsOneWidget);
     controller..add('1')..add('2');
     await eventFiring(tester);
     expect(
         find.text(
-          'AsyncSnapshot<String?>(ConnectionState.active, 2, null, null)',
+          'AsyncSnapshot<String>(ConnectionState.active, 2, null, null)',
         ),
         findsOneWidget);
     controller
@@ -136,7 +136,7 @@ void main() {
 
     expect(
       find.text(
-        'AsyncSnapshot<String?>(ConnectionState.active, null, bad, stackTrace)',
+        'AsyncSnapshot<String>(ConnectionState.active, null, bad, stackTrace)',
       ),
       findsOneWidget,
     );
@@ -146,7 +146,7 @@ void main() {
     await eventFiring(tester);
 
     expect(
-      find.text('AsyncSnapshot<String?>(ConnectionState.done, 4, null, null)'),
+      find.text('AsyncSnapshot<String>(ConnectionState.done, 4, null, null)'),
       findsOneWidget,
     );
   });
@@ -160,7 +160,7 @@ void main() {
 
     expect(
       find.text(
-          'AsyncSnapshot<String?>(ConnectionState.waiting, I, null, null)'),
+          'AsyncSnapshot<String>(ConnectionState.waiting, I, null, null)'),
       findsOneWidget,
     );
   });
@@ -173,7 +173,7 @@ void main() {
 
     expect(
       find.text(
-          'AsyncSnapshot<String?>(ConnectionState.waiting, I, null, null)'),
+          'AsyncSnapshot<String>(ConnectionState.waiting, I, null, null)'),
       findsOneWidget,
     );
 
@@ -185,7 +185,7 @@ void main() {
 
     expect(
       find.text(
-        'AsyncSnapshot<String?>(ConnectionState.waiting, I, null, null)',
+        'AsyncSnapshot<String>(ConnectionState.waiting, I, null, null)',
       ),
       findsOneWidget,
     );
