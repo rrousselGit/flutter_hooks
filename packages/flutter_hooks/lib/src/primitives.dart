@@ -4,6 +4,9 @@ part of 'hooks.dart';
 ///
 /// It is typically created by [useRef].
 class ObjectRef<T> {
+  /// A class that stores a single value;
+  ///
+  /// It is typically created by [useRef].
   ObjectRef(this.value);
 
   /// A mutable property that will be preserved across rebuilds.
