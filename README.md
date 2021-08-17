@@ -300,7 +300,7 @@ A set of low-level hooks that interacts with the different life-cycles of a widg
 | [useState](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useState.html)               | Create variable and subscribes to it.                            |
 | [useMemoized](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useMemoized.html)         | Cache the instance of a complex object.                          |
 | [useRef](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useRef.html)                   | Creates an object that contains a single mutable property.       |
-| [useCallback](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useCallback.html)         | Cache a function insteance.                                      |
+| [useCallback](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useCallback.html)         | Cache a function instance.                                      |
 | [useContext](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useContext.html)           | Obtain the `BuildContext` of the building `HookWidget`.          |
 | [useValueChanged](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useValueChanged.html) | Watches a value and calls a callback whenever the value changed. |
 
