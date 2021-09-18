@@ -359,7 +359,7 @@ For a custom-hook to be merged, you will need to do the following:
 - Describe the use-case.
 
   Open an issue explaining why we need this hook, how to use it, ...
-  This is important as a hook will not get merged if the hook doens't appeal to
+  This is important as a hook will not get merged if the hook doesn't appeal to
   a large number of people.
 
   If your hook is rejected, don't worry! A rejection doesn't mean that it won't
