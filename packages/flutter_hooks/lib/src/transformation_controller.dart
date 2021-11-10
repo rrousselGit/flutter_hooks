@@ -25,8 +25,8 @@ class _TransformationControllerHook extends Hook<TransformationController> {
   final Matrix4? initialValue;
 
   @override
-  HookState<TransformationController, Hook<TransformationController>> createState() =>
-      _TransformationControllerHookState();
+  HookState<TransformationController, Hook<TransformationController>>
+      createState() => _TransformationControllerHookState();
 }
 
 class _TransformationControllerHookState
