@@ -97,7 +97,9 @@ Element _rootOf(Element element) {
 void hotReload(WidgetTester tester) {
   final root = _rootOf(tester.allElements.first);
 
-  TestWidgetsFlutterBinding.ensureInitialized().buildOwner?.reassemble(root);
+  TestWidgetsFlutterBinding.ensureInitialized()
+      .buildOwner
+      ?.reassemble(root, null);
 }
 
 class MockSetState extends Mock {

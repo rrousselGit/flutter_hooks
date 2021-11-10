@@ -121,7 +121,9 @@ void main() {
           'AsyncSnapshot<String>(ConnectionState.waiting, , null, null)',
         ),
         findsOneWidget);
-    controller..add('1')..add('2');
+    controller
+      ..add('1')
+      ..add('2');
     await eventFiring(tester);
     expect(
         find.text(
