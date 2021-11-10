@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_hooks/src/framework.dart';
 import 'package:flutter_hooks/src/hooks.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 import 'mock.dart';
 

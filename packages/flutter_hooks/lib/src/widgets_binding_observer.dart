@@ -1,36 +1,32 @@
 part of 'hooks.dart';
 
 /// A callback to call when the app lifecycle changes.
-typedef LifecycleCallback = FutureOr<void> Function(AppLifecycleState state);
+typedef LifecycleCallback = FutureOr<void> Function(
+  AppLifecycleState? previous,
+  AppLifecycleState current,
+);
+
+/// Returns the current [AppLifecycleState] value and rebuild the widget when it changes.
+AppLifecycleState? useAppLifecycleState() {
+  return use(const _AppLifecycleHook(rebuildOnChange: true));
+}
+
+/// Listens to the [AppLifecycleState].
+void useOnAppLifecycleStateChange(LifecycleCallback? onStateChanged) {
+  use(_AppLifecycleHook(onStateChanged: onStateChanged));
+}
 
 class _AppLifecycleHook extends Hook<AppLifecycleState?> {
   const _AppLifecycleHook({
-    List<Object>? keys,
-    this.onInactive,
-    this.onDetached,
-    this.onPaused,
-    this.onResumed,
+    this.rebuildOnChange = false,
     this.onStateChanged,
-  }) : super(keys: keys);
+  }) : super();
 
-  final VoidCallback? onResumed;
-  final VoidCallback? onPaused;
-  final VoidCallback? onDetached;
-  final VoidCallback? onInactive;
+  final bool rebuildOnChange;
   final LifecycleCallback? onStateChanged;
 
   @override
   __AppLifecycleStateState createState() => __AppLifecycleStateState();
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(ObjectFlagProperty<VoidCallback?>.has('onResumed', onResumed))
-      ..add(ObjectFlagProperty<VoidCallback?>.has('onPaused', onPaused))
-      ..add(ObjectFlagProperty<VoidCallback?>.has('onDetached', onDetached))
-      ..add(ObjectFlagProperty<VoidCallback?>.has('onInactive', onInactive));
-  }
 }
 
 class __AppLifecycleStateState
@@ -48,9 +44,7 @@ class __AppLifecycleStateState
   }
 
   @override
-  AppLifecycleState? build(BuildContext context) {
-    return _state;
-  }
+  AppLifecycleState? build(BuildContext context) => _state;
 
   @override
   void dispose() {
@@ -60,56 +54,12 @@ class __AppLifecycleStateState
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    hook.onStateChanged?.call(state);
-    switch (state) {
-      case AppLifecycleState.resumed:
-        hook.onResumed?.call();
-        break;
-      case AppLifecycleState.inactive:
-        hook.onInactive?.call();
-        break;
-      case AppLifecycleState.paused:
-        hook.onPaused?.call();
-        break;
-      case AppLifecycleState.detached:
-        hook.onDetached?.call();
-        break;
-    }
-    setState(() {
-      _state = state;
-    });
-  }
-}
+    final previous = _state;
+    _state = state;
+    hook.onStateChanged?.call(previous, state);
 
-/// Returns the current [AppLifecycleState] value.
-///
-/// This adds a listener to rebuild the widget when the value changes.
-///
-/// ## State change callbacks:
-///
-/// These are the accepted callbacks. All of them are run before the state update.
-///
-/// Note that these callbacks are added for convenience.
-///
-/// * **onResumed**: Called when the state changes to [AppLifecycleState.resumed].
-/// * **onPaused**: Called when the state changes to [AppLifecycleState.paused].
-/// * **onInactive**: Called when the state changes to [AppLifecycleState.inactive].
-/// * **onDetached**: Called when the state changes to [AppLifecycleState.detached]. This might not be called.
-/// * **onStateChanged**: Called for every change.
-AppLifecycleState? useAppLifecycleState({
-  List<Object>? keys,
-  VoidCallback? onResumed,
-  VoidCallback? onPaused,
-  VoidCallback? onInactive,
-  VoidCallback? onDetached,
-  LifecycleCallback? onStateChanged,
-}) {
-  return use(_AppLifecycleHook(
-    keys: keys,
-    onDetached: onDetached,
-    onInactive: onInactive,
-    onPaused: onPaused,
-    onResumed: onResumed,
-    onStateChanged: onStateChanged,
-  ));
+    if (hook.rebuildOnChange) {
+      setState(() {});
+    }
+  }
 }
