@@ -27,9 +27,8 @@ void main() {
         'HookBuilder\n'
         ' │ useTextEditingController:\n'
         ' │   TextEditingController#00000(TextEditingValue(text: ┤├,\n'
-        ' │   selection: TextSelection(baseOffset: -1, extentOffset: -1,\n'
-        ' │   affinity: TextAffinity.downstream, isDirectional: false),\n'
-        ' │   composing: TextRange(start: -1, end: -1)))\n'
+        ' │   selection: TextSelection.invalid, composing: TextRange(start:\n'
+        ' │   -1, end: -1)))\n'
         ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
       ),
     );
