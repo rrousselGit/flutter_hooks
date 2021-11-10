@@ -346,6 +346,7 @@ A series of hooks with no particular theme.
 | [useFocusNode](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useFocusNode.html)                         | Create a `FocusNode`                                   |
 | [useTabController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useTabController.html)                 | Creates and disposes a `TabController`.                |
 | [useScrollController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useScrollController.html)           | Creates and disposes a `ScrollController`.             |
+| [useTransformationController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useTransformationController.html)           | Creates and disposes a `TransformationController`.             |
 | [usePageController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/usePageController.html)               | Creates and disposes a `PageController`.               |
 | [useIsMounted](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useIsMounted.html)                         | An equivalent to `State.mounted` for hooks             |
 
