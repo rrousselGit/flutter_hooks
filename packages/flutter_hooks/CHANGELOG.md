@@ -1,7 +1,13 @@
+## 0.18.1
+
+- Added `useTransformationController`, to create a `TransformationController` (thanks to @shrouxm)
+- Added `useAppLifecycleState` and `useOnAppLifecycleStateChange` to interact with `AppLifecycleState` (thanks to @francipvb)
+
 ## 0.18.0
 
 - **Breaking**: `useRef` now receive an initial value as parameter.
   To migrate, you can change:
+
   ```dart
   ObjectRef<int> ref = useRef<int>();
   ```
