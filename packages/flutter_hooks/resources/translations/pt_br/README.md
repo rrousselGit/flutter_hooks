@@ -349,6 +349,7 @@ São vários hooks sem um tema particular.
 | [useFocusNode](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useFocusNode.html)                         | Cria um `FocusNode`                                 |
 | [useTabController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useTabController.html)                 | Cria e descarta um `TabController`.                 |
 | [useScrollController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useScrollController.html)           | Cria e descarta um `ScrollController`.              |
+| [useTransformationController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useTransformationController.html)           | Cria e descarta um `TransformationController`.              |
 
 ## Contribuições
 
