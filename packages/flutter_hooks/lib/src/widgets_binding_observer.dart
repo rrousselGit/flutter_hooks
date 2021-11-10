@@ -13,10 +13,10 @@ class _AppLifecycleHook extends Hook<AppLifecycleState?> {
     this.onStateChanged,
   }) : super(keys: keys);
 
-  final LifecycleCallback? onResumed;
-  final LifecycleCallback? onPaused;
-  final LifecycleCallback? onDetached;
-  final LifecycleCallback? onInactive;
+  final VoidCallback? onResumed;
+  final VoidCallback? onPaused;
+  final VoidCallback? onDetached;
+  final VoidCallback? onInactive;
   final LifecycleCallback? onStateChanged;
 
   @override
@@ -25,14 +25,11 @@ class _AppLifecycleHook extends Hook<AppLifecycleState?> {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(
-        ObjectFlagProperty<LifecycleCallback?>.has('onResumed', onResumed));
     properties
-        .add(ObjectFlagProperty<LifecycleCallback?>.has('onPaused', onPaused));
-    properties.add(
-        ObjectFlagProperty<LifecycleCallback?>.has('onDetached', onDetached));
-    properties.add(
-        ObjectFlagProperty<LifecycleCallback?>.has('onInactive', onInactive));
+      ..add(ObjectFlagProperty<VoidCallback?>.has('onResumed', onResumed))
+      ..add(ObjectFlagProperty<VoidCallback?>.has('onPaused', onPaused))
+      ..add(ObjectFlagProperty<VoidCallback?>.has('onDetached', onDetached))
+      ..add(ObjectFlagProperty<VoidCallback?>.has('onInactive', onInactive));
   }
 }
 
@@ -66,16 +63,16 @@ class __AppLifecycleStateState
     hook.onStateChanged?.call(state);
     switch (state) {
       case AppLifecycleState.resumed:
-        hook.onResumed?.call(state);
+        hook.onResumed?.call();
         break;
       case AppLifecycleState.inactive:
-        hook.onInactive?.call(state);
+        hook.onInactive?.call();
         break;
       case AppLifecycleState.paused:
-        hook.onPaused?.call(state);
+        hook.onPaused?.call();
         break;
       case AppLifecycleState.detached:
-        hook.onDetached?.call(state);
+        hook.onDetached?.call();
         break;
     }
     setState(() {
@@ -101,10 +98,10 @@ class __AppLifecycleStateState
 /// * **onStateChanged**: Called for every change.
 AppLifecycleState? useAppLifecycleState({
   List<Object>? keys,
-  LifecycleCallback? onResumed,
-  LifecycleCallback? onPaused,
-  LifecycleCallback? onInactive,
-  LifecycleCallback? onDetached,
+  VoidCallback? onResumed,
+  VoidCallback? onPaused,
+  VoidCallback? onInactive,
+  VoidCallback? onDetached,
   LifecycleCallback? onStateChanged,
 }) {
   return use(_AppLifecycleHook(

@@ -5,24 +5,25 @@ import 'mock.dart';
 
 void main() {
   testWidgets('sets the state', (tester) async {
-    AppLifecycleState? state;
-    var called = true;
-
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
-    await tester.pumpWidget(HookBuilder(builder: (context) {
-      state = useAppLifecycleState();
-      called = true;
-      return Container();
-    }));
 
-    expect(state, AppLifecycleState.resumed);
-    expect(called, isTrue);
-    called = false;
+    await tester.pumpWidget(
+      HookBuilder(
+        builder: (context) {
+          final state = useAppLifecycleState();
+          return Text('$state');
+        },
+      ),
+    );
+
+    expect(find.text('resumed'), findsOneWidget);
+
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
     await tester.pump();
-    expect(called, isTrue);
-    expect(state, AppLifecycleState.inactive);
+
+    expect(find.text('inactive'), findsOneWidget);
   });
+
   group('App lifecycle callbacks', () {
     var detachedCalled = false,
         resumedCalled = false,
@@ -31,14 +32,15 @@ void main() {
     AppLifecycleState? state;
     final widget = HookBuilder(builder: (context) {
       useAppLifecycleState(
-        onResumed: (_) => resumedCalled = true,
-        onDetached: (_) => detachedCalled = true,
-        onInactive: (_) => inactiveCalled = true,
-        onPaused: (_) => pausedCalled = true,
+        onResumed: () => resumedCalled = true,
+        onDetached: () => detachedCalled = true,
+        onInactive: () => inactiveCalled = true,
+        onPaused: () => pausedCalled = true,
         onStateChanged: (newState) => state = newState,
       );
       return Container();
     });
+
     tearDown(() {
       resumedCalled = inactiveCalled = detachedCalled = pausedCalled = false;
       state = null;
@@ -49,22 +51,26 @@ void main() {
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
       expect(state, AppLifecycleState.resumed);
     });
+
     testWidgets('Calls `onResumed` callback', (tester) async {
       await tester.pumpWidget(widget);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
       expect(resumedCalled, isTrue);
     });
+
     testWidgets('Calls `onDetached` callback', (tester) async {
       await tester.pumpWidget(widget);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.detached);
       expect(detachedCalled, isTrue);
     });
+
     testWidgets('Calls `onPaused` callback', (tester) async {
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
       await tester.pumpWidget(widget);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
       expect(pausedCalled, isTrue);
     });
+
     testWidgets('Calls `onInactive` callback', (tester) async {
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
       await tester.pumpWidget(widget);
