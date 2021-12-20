@@ -1,3 +1,7 @@
+## 0.18.2
+
+- Allow null in `useListenable`
+
 ## 0.18.1
 
 - Added `useTransformationController`, to create a `TransformationController` (thanks to @shrouxm)

@@ -74,4 +74,39 @@ void main() {
     listenable.dispose();
     previousListenable.dispose();
   });
+
+  testWidgets('useListenable should handle null', (tester) async {
+    ValueNotifier<int>? listenable;
+
+    Future<void> pump() {
+      return tester.pumpWidget(HookBuilder(
+        builder: (context) {
+          useListenable(listenable);
+          return Container();
+        },
+      ));
+    }
+
+    await pump();
+
+    final element = tester.firstElement(find.byType(HookBuilder));
+    expect(element.dirty, false);
+
+    final notifier = ValueNotifier(0);
+    listenable = notifier;
+    await pump();
+
+    // ignore: invalid_use_of_protected_member
+    expect(listenable.hasListeners, true);
+
+    listenable = null;
+    await pump();
+
+    // ignore: invalid_use_of_protected_member
+    expect(notifier.hasListeners, false);
+
+    await tester.pumpWidget(const SizedBox());
+
+    notifier.dispose();
+  });
 }
