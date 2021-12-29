@@ -24,7 +24,7 @@ class _UseAnimationStateHook extends _ListenableStateHook {
   String get debugLabel => 'useAnimation';
 
   @override
-  Object? get debugValue => (hook.listenable as Animation).value;
+  Object? get debugValue => (hook.listenable as Animation?)?.value;
 }
 
 /// Creates an [AnimationController] automatically disposed.

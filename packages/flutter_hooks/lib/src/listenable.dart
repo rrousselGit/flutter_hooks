@@ -24,7 +24,7 @@ class _UseValueListenableStateHook extends _ListenableStateHook {
   String get debugLabel => 'useValueListenable';
 
   @override
-  Object? get debugValue => (hook.listenable as ValueListenable).value;
+  Object? get debugValue => (hook.listenable as ValueListenable?)?.value;
 }
 
 /// Subscribes to a [Listenable] and mark the widget as needing build
@@ -33,7 +33,7 @@ class _UseValueListenableStateHook extends _ListenableStateHook {
 /// See also:
 ///   * [Listenable]
 ///   * [useValueListenable], [useAnimation]
-T useListenable<T extends Listenable>(T listenable) {
+T useListenable<T extends Listenable?>(T listenable) {
   use(_ListenableHook(listenable));
   return listenable;
 }
@@ -41,7 +41,7 @@ T useListenable<T extends Listenable>(T listenable) {
 class _ListenableHook extends Hook<void> {
   const _ListenableHook(this.listenable);
 
-  final Listenable listenable;
+  final Listenable? listenable;
 
   @override
   _ListenableStateHook createState() => _ListenableStateHook();
@@ -51,15 +51,15 @@ class _ListenableStateHook extends HookState<void, _ListenableHook> {
   @override
   void initHook() {
     super.initHook();
-    hook.listenable.addListener(_listener);
+    hook.listenable?.addListener(_listener);
   }
 
   @override
   void didUpdateHook(_ListenableHook oldHook) {
     super.didUpdateHook(oldHook);
     if (hook.listenable != oldHook.listenable) {
-      oldHook.listenable.removeListener(_listener);
-      hook.listenable.addListener(_listener);
+      oldHook.listenable?.removeListener(_listener);
+      hook.listenable?.addListener(_listener);
     }
   }
 
@@ -72,7 +72,7 @@ class _ListenableStateHook extends HookState<void, _ListenableHook> {
 
   @override
   void dispose() {
-    hook.listenable.removeListener(_listener);
+    hook.listenable?.removeListener(_listener);
   }
 
   @override
