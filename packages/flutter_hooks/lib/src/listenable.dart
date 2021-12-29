@@ -24,7 +24,7 @@ class _UseValueListenableStateHook extends _ListenableStateHook {
   String get debugLabel => 'useValueListenable';
 
   @override
-  Object? get debugValue => (hook.listenable as ValueListenable).value;
+  Object? get debugValue => (hook.listenable as ValueListenable?)?.value;
 }
 
 /// Subscribes to a [Listenable] and mark the widget as needing build
