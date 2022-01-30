@@ -1,8 +1,8 @@
 part of 'hooks.dart';
 
-/// Subscribes to a [Future] and return its current state in an [AsyncSnapshot].
+/// Subscribes to a [Future] and returns its current state as an [AsyncSnapshot].
 ///
-/// * [preserveState] defines if the current value should be preserved when changing
+/// * [preserveState] determines if the current value should be preserved when changing
 /// the [Future] instance.
 ///
 /// See also:
@@ -39,8 +39,8 @@ class _FutureHook<T> extends Hook<AsyncSnapshot<T>> {
 
 class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
   /// An object that identifies the currently active callbacks. Used to avoid
-  /// calling setState from stale callbacks, e.g. after disposal of this state,
-  /// or after widget reconfiguration to a new Future.
+  /// calling `setState` from stale callbacks, e.g. after disposal of this state,
+  /// or after widget reconfiguration to a new [Future].
   Object? _activeCallbackIdentity;
   late AsyncSnapshot<T> _snapshot = initial;
 
@@ -117,9 +117,9 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
   Object? get debugValue => _snapshot;
 }
 
-/// Subscribes to a [Stream] and return its current state in an [AsyncSnapshot].
+/// Subscribes to a [Stream] and returns its current state as an [AsyncSnapshot].
 ///
-/// * [preserveState] defines if the current value should be preserved when changing
+/// * [preserveState] determines if the current value should be preserved when changing
 /// the [Future] instance.
 ///
 /// See also:
@@ -245,7 +245,7 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
   String get debugLabel => 'useStream';
 }
 
-/// Creates a [StreamController] automatically disposed.
+/// Creates a [StreamController] which is automatically disposed when necessary.
 ///
 /// See also:
 ///   * [StreamController], the created object

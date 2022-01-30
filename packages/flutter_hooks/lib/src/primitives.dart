@@ -1,10 +1,10 @@
 part of 'hooks.dart';
 
-/// A class that stores a single value;
+/// A class that stores a single value.
 ///
 /// It is typically created by [useRef].
 class ObjectRef<T> {
-  /// A class that stores a single value;
+  /// A class that stores a single value.
   ///
   /// It is typically created by [useRef].
   ObjectRef(this.value);
@@ -26,7 +26,7 @@ ObjectRef<T> useRef<T>(T initialValue) {
 
 /// Cache a function accross rebuilds based on a list of keys.
 ///
-/// This is syntax sugar for [useMemoized], such that instead of:
+/// This is syntax sugar for [useMemoized], so that instead of:
 ///
 /// ```dart
 /// final cachedFunction = useMemoized(() => () {
@@ -48,12 +48,12 @@ T useCallback<T extends Function>(
   return useMemoized(() => callback, keys);
 }
 
-/// Cache the instance of a complex object.
+/// Caches the instance of a complex object.
 ///
 /// [useMemoized] will immediately call [valueBuilder] on first call and store its result.
-/// Later, when [HookWidget] rebuilds, the call to [useMemoized] will return the previously created instance without calling [valueBuilder].
+/// Later, when the [HookWidget] rebuilds, the call to [useMemoized] will return the previously created instance without calling [valueBuilder].
 ///
-/// A later call of [useMemoized] with different [keys] will call [useMemoized] again to create a new instance.
+/// A subsequent call of [useMemoized] with different [keys] will call [useMemoized] again to create a new instance.
 T useMemoized<T>(
   T Function() valueBuilder, [
   List<Object?> keys = const <Object>[],
@@ -90,7 +90,7 @@ class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
   String get debugLabel => 'useMemoized<$T>';
 }
 
-/// Watches a value and calls a callback whenever the value changed.
+/// Watches a value and triggers a callback whenever the value changed.
 ///
 /// [useValueChanged] takes a [valueChange] callback and calls it whenever [value] changed.
 /// [valueChange] will _not_ be called on the first [useValueChanged] call.
@@ -172,8 +172,8 @@ typedef Dispose = void Function();
 /// By default [effect] is called on every `build` call, unless [keys] is specified.
 /// In which case, [effect] is called once on the first [useEffect] call and whenever something within [keys] change/
 ///
-/// The following example call [useEffect] to subscribes to a [Stream] and cancel the subscription when the widget is disposed.
-/// ALso if the [Stream] change, it will cancel the listening on the previous [Stream] and listen to the new one.
+/// The following example call [useEffect] to subscribes to a [Stream] and cancels the subscription when the widget is disposed.
+/// Also if the [Stream] changes, it will cancel the listening on the previous [Stream] and listen to the new one.
 ///
 /// ```dart
 /// Stream stream;
@@ -183,7 +183,7 @@ typedef Dispose = void Function();
 ///     // or if the callback is called again.
 ///     return subscription.cancel;
 ///   },
-///   // when the stream change, useEffect will call the callback again.
+///   // when the stream changes, useEffect will call the callback again.
 ///   [stream],
 /// );
 /// ```
@@ -239,11 +239,11 @@ class _EffectHookState extends HookState<void, _EffectHook> {
 /// Creates a variable and subscribes to it.
 ///
 /// Whenever [ValueNotifier.value] updates, it will mark the caller [HookWidget]
-/// as needing build.
-/// On first call, inits [ValueNotifier] to [initialData]. [initialData] is ignored
+/// as needing a build.
+/// On the first call, it initializes [ValueNotifier] to [initialData]. [initialData] is ignored
 /// on subsequent calls.
 ///
-/// The following example showcase a basic counter application.
+/// The following example showcases a basic counter application:
 ///
 /// ```dart
 /// class Counter extends HookWidget {
@@ -252,7 +252,7 @@ class _EffectHookState extends HookState<void, _EffectHook> {
 ///     final counter = useState(0);
 ///
 ///     return GestureDetector(
-///       // automatically triggers a rebuild of Counter widget
+///       // automatically triggers a rebuild of the Counter widget
 ///       onTap: () => counter.value++,
 ///       child: Text(counter.value.toString()),
 ///     );

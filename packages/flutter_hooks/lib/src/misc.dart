@@ -1,6 +1,6 @@
 part of 'hooks.dart';
 
-/// A state holder that allows mutations by dispatching actions.
+/// A store of mutable state that allows mutations by dispatching actions.
 abstract class Store<State, Action> {
   /// The current state.
   ///
@@ -21,14 +21,14 @@ typedef Reducer<State, Action> = State Function(State state, Action action);
 
 /// An alternative to [useState] for more complex states.
 ///
-/// [useReducer] manages an read only state that can be updated
+/// [useReducer] manages a read only instance of state that can be updated
 /// by dispatching actions which are interpreted by a [Reducer].
 ///
 /// [reducer] is immediately called on first build with [initialAction]
 /// and [initialState] as parameter.
 ///
 /// It is possible to change the [reducer] by calling [useReducer]
-///  with a new [Reducer].
+/// with a new [Reducer].
 ///
 /// See also:
 ///  * [Reducer]
@@ -129,8 +129,8 @@ class _PreviousHookState<T> extends HookState<T?, _PreviousHook<T>> {
   Object? get debugValue => previous;
 }
 
-/// Runs the callback on every hot reload
-/// similar to reassemble in the Stateful widgets
+/// Runs the callback on every hot reload,
+/// similar to `reassemble` in the stateful widgets.
 ///
 /// See also:
 ///
@@ -216,6 +216,6 @@ class _IsMountedHookState extends HookState<IsMounted, _IsMountedHook> {
   Object? get debugValue => _mounted;
 }
 
-/// Used by [useIsMounted] to allow widgets to determine if the widget is still
+/// Used by [useIsMounted] to allow widgets to determine if the [Widget] is still
 /// in the widget tree or not.
 typedef IsMounted = bool Function();

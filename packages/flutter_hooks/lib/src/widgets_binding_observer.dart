@@ -1,12 +1,12 @@
 part of 'hooks.dart';
 
-/// A callback to call when the app lifecycle changes.
+/// A callback triggered when the app life cycle changes.
 typedef LifecycleCallback = FutureOr<void> Function(
   AppLifecycleState? previous,
   AppLifecycleState current,
 );
 
-/// Returns the current [AppLifecycleState] value and rebuild the widget when it changes.
+/// Returns the current [AppLifecycleState] value and rebuilds the widget when it changes.
 AppLifecycleState? useAppLifecycleState() {
   return use(const _AppLifecycleHook(rebuildOnChange: true));
 }

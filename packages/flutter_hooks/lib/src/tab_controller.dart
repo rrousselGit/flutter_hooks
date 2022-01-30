@@ -1,6 +1,6 @@
 part of 'hooks.dart';
 
-/// Creates and disposes a [TabController].
+/// Creates a [TabController] that will be disposed automatically.
 ///
 /// See also:
 /// - [TabController]
