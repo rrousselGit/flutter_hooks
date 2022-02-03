@@ -105,7 +105,7 @@ class _MemoizedHookState<T> extends HookState<T, _MemoizedHook<T>> {
 /// AnimationController controller;
 /// Color color;
 ///
-/// useValueChanged(color, (_, __)) {
+/// useValueChanged(color, (_, __) {
 ///   controller.forward();
 /// });
 /// ```
