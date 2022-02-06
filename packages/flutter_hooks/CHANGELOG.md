@@ -1,3 +1,7 @@
+## 0.18.2+1
+
+Improved the documentation (thanks to @Renni771)
+
 ## 0.18.2
 
 - Allow null in `useListenable`
