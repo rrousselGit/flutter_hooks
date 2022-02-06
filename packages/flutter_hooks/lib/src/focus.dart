@@ -1,6 +1,6 @@
 part of 'hooks.dart';
 
-/// Creates and dispose of a [FocusNode].
+/// Creates an automatically disposed [FocusNode].
 ///
 /// See also:
 /// - [FocusNode]

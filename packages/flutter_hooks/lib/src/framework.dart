@@ -3,15 +3,15 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-/// Wether to behave like in release mode or allow hot-reload for hooks.
+/// Whether to behave like in release mode or allow hot-reload for hooks.
 ///
 /// `true` by default. It has no impact on release builds.
 bool debugHotReloadHooksEnabled = true;
 
-/// Register a [Hook] and returns its value
+/// Registers a [Hook] and returns its value.
 ///
-/// [use] must be called withing `build` of either [HookWidget] or [StatefulHookWidget],
-/// and all calls to [use] must be made unconditionally, always on the same order.
+/// [use] must be called within the `build` method of either [HookWidget] or [StatefulHookWidget].
+/// All calls of [use] must be made outside of conditional checks and always in the same order.
 ///
 /// See [Hook] for more explanations.
 // ignore: deprecated_member_use, deprecated_member_use_from_same_package
@@ -22,7 +22,7 @@ R use<R>(Hook<R> hook) => Hook.use(hook);
 ///
 /// A [Hook] is typically the equivalent of [State] for [StatefulWidget],
 /// with the notable difference that a [HookWidget] can have more than one [Hook].
-/// A [Hook] is created within the [HookState.build] method of [HookWidget] and the creation
+/// A [Hook] is created within the [HookState.build] method of a [HookWidget] and the creation
 /// must be made unconditionally, always in the same order.
 ///
 /// ### Good:
@@ -49,19 +49,19 @@ R use<R>(Hook<R> hook) => Hook.use(hook);
 /// }
 /// ```
 ///
-/// The reason for such restriction is that [HookState] are obtained based on their index.
+/// The reason for such restrictions is that [HookState] are obtained based on their index.
 /// So the index must never ever change, or it will lead to undesired behavior.
 ///
-/// ## The usage
+/// ## Usage
 ///
-/// [Hook] is powerful tool to reuse [State] logic between multiple [Widget].
+/// [Hook] is a powerful tool which enables the reuse of [State] logic between multiple [Widget].
 /// They are used to extract logic that depends on a [Widget] life-cycle (such as [HookState.dispose]).
 ///
 /// While mixins are a good candidate too, they do not allow sharing values. A mixin cannot reasonably
-/// define a variable, as this can lead to variable conflicts on bigger widgets.
+/// define a variable, as this can lead to variable conflicts in bigger widgets.
 ///
-/// Hooks are designed so that they get the benefits of mixins, but are totally independent from each others.
-/// This means that hooks can store and expose values without fearing that the name is already taken by another mixin.
+/// Hooks are designed so that they get the benefits of mixins, but are totally independent from each other.
+/// This means that hooks can store and expose values without needing to check if the name is already taken by another mixin.
 ///
 /// ## Example
 ///
@@ -98,9 +98,9 @@ R use<R>(Hook<R> hook) => Hook.use(hook);
 /// This is undesired because every single widget that wants to use an [AnimationController] will have to
 /// rewrite this exact piece of code.
 ///
-/// With hooks it is possible to extract that exact piece of code into a reusable one.
+/// With hooks, it is possible to extract that exact piece of code into a reusable one.
 ///
-/// This means that with [HookWidget] the following code is equivalent to the previous example:
+/// This means that with [HookWidget] the following code is functionally equivalent to the previous example:
 ///
 /// ```
 /// class Usual extends HookWidget {
@@ -112,20 +112,20 @@ R use<R>(Hook<R> hook) => Hook.use(hook);
 /// }
 /// ```
 ///
-/// This is visibly less code then before. But in this example, the `animationController` is still
+/// This is visibly less code then before, but in this example, the `animationController` is still
 /// guaranteed to be disposed when the widget is removed from the tree.
 ///
-/// In fact this has secondary bonus: `duration` is kept updated with the latest value.
+/// In fact, this has a secondary bonus: `duration` is kept updated with the latest value.
 /// If we were to pass a variable as `duration` instead of a constant, then on value change the [AnimationController] will be updated.
 @immutable
 abstract class Hook<R> with Diagnosticable {
   /// Allows subclasses to have a `const` constructor
   const Hook({this.keys});
 
-  /// Register a [Hook] and returns its value
+  /// Registers a [Hook] and returns its value.
   ///
-  /// [use] must be called withing `build` of either [HookWidget] or [StatefulHookWidget],
-  /// and all calls to [use] must be made unconditionally, always on the same order.
+  /// [use] must be called within the `build` method of either [HookWidget] or [StatefulHookWidget].
+  /// All calls to [use] must be made outside of conditional statements and always on the same order.
   ///
   /// See [Hook] for more explanations.
   @Deprecated('Use `use` instead of `Hook.use`')
@@ -160,7 +160,7 @@ Calling them outside of build method leads to an unstable state and is therefore
     if (p1 == p2) {
       return true;
     }
-    // is one list is null and the other one isn't, or if they have different size
+    // if one list is null and the other one isn't, or if they have different sizes
     if (p1 == null || p2 == null || p1.length != p2.length) {
       return false;
     }
@@ -178,9 +178,9 @@ Calling them outside of build method leads to an unstable state and is therefore
     }
   }
 
-  /// Creates the mutable state for this hook linked to its widget creator.
+  /// Creates the mutable state for this [Hook] linked to its widget creator.
   ///
-  /// Subclasses should override this method to return a newly created instance of their associated State subclass:
+  /// Subclasses should override this method to return a newly created instance of their associated [State] subclass:
   ///
   /// ```
   /// @override
@@ -207,38 +207,38 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   /// Defaults to the last value returned by [build].
   Object? get debugValue => _debugLastBuiltValue;
 
-  /// A flag to not show [debugValue] in the devtool, for hooks that returns nothing.
+  /// A flag to prevent showing [debugValue] in the devtool for a [Hook] that returns nothing.
   bool get debugSkipValue => false;
 
-  /// A label used by the devtool to show the state of a hook
+  /// A label used by the devtool to show the state of a [Hook].
   String? get debugLabel => null;
 
-  /// Whether the devtool description should skip [debugFillProperties] or not.
+  /// Whether or not the devtool description should skip [debugFillProperties].
   bool get debugHasShortDescription => true;
 
-  /// Equivalent of [State.widget] for [HookState]
+  /// Equivalent of [State.widget] for [HookState].
   T get hook => _hook!;
   T? _hook;
 
-  /// Equivalent of [State.initState] for [HookState]
+  /// Equivalent of [State.initState] for [HookState].
   @protected
   void initHook() {}
 
-  /// Equivalent of [State.dispose] for [HookState]
+  /// Equivalent of [State.dispose] for [HookState].
   @protected
   void dispose() {}
 
-  /// Called everytime the [HookState] is requested
+  /// Called everytime the [HookState] is requested.
   ///
-  /// [build] is where an [HookState] may use other hooks. This restriction is made to ensure that hooks are unconditionally always requested
+  /// [build] is where a [HookState] may use other hooks. This restriction is made to ensure that hooks are always unconditionally requested.
   @protected
   R build(BuildContext context);
 
-  /// Equivalent of [State.didUpdateWidget] for [HookState]
+  /// Equivalent of [State.didUpdateWidget] for [HookState].
   @protected
   void didUpdateHook(T oldHook) {}
 
-  /// Equivalent of [State.deactivate] for [HookState]
+  /// Equivalent of [State.deactivate] for [HookState].
   void deactivate() {}
 
   /// {@macro flutter.widgets.reassemble}
@@ -280,7 +280,7 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
     assert(_element!.dirty, 'Bad state');
   }
 
-  /// Equivalent of [State.setState] for [HookState]
+  /// Equivalent of [State.setState] for [HookState].
   @protected
   void setState(VoidCallback fn) {
     fn();
@@ -360,7 +360,7 @@ mixin HookElement on ComponentElement {
   bool _debugIsInitHook = false;
   bool _debugDidReassemble = false;
 
-  /// A read-only list of all hooks available.
+  /// A read-only list of all available hooks.
   ///
   /// In release mode, returns `null`.
   List<HookState>? get debugHooks {
@@ -554,13 +554,13 @@ Type mismatch between hooks:
   }
 }
 
-/// A [Widget] that can use [Hook]
+/// A [Widget] that can use a [Hook].
 ///
-/// It's usage is very similar to [StatelessWidget].
-/// [HookWidget] do not have any life-cycle and implements
-/// only a [build] method.
+/// Its usage is very similar to [StatelessWidget].
+/// [HookWidget] does not have any life cycle and only implements
+/// the [build] method.
 ///
-/// The difference is that it can use [Hook], which allows
+/// The difference is that it can use a [Hook], which allows a
 /// [HookWidget] to store mutable data without implementing a [State].
 abstract class HookWidget extends StatelessWidget {
   /// Initializes [key] for subclasses.
@@ -574,11 +574,11 @@ class _StatelessHookElement extends StatelessElement with HookElement {
   _StatelessHookElement(HookWidget hooks) : super(hooks);
 }
 
-/// A [StatefulWidget] that can use [Hook]
+/// A [StatefulWidget] that can use a [Hook].
 ///
-/// It's usage is very similar to [StatefulWidget], but use hooks inside [State.build].
+/// Its usage is very similar to that of [StatefulWidget], but uses hooks inside [State.build].
 ///
-/// The difference is that it can use [Hook], which allows
+/// The difference is that it can use a [Hook], which allows a
 /// [HookWidget] to store mutable data without implementing a [State].
 abstract class StatefulHookWidget extends StatefulWidget {
   /// Initializes [key] for subclasses.
@@ -592,7 +592,7 @@ class _StatefulHookElement extends StatefulElement with HookElement {
   _StatefulHookElement(StatefulHookWidget hooks) : super(hooks);
 }
 
-/// Obtain the [BuildContext] of the building [HookWidget].
+/// Obtains the [BuildContext] of the building [HookWidget].
 BuildContext useContext() {
   assert(
     HookElement._currentHookElement != null,
@@ -601,7 +601,7 @@ BuildContext useContext() {
   return HookElement._currentHookElement!;
 }
 
-/// A [HookWidget] that defer its `build` to a callback
+/// A [HookWidget] that delegates its `build` to a callback.
 class HookBuilder extends HookWidget {
   /// Creates a widget that delegates its build to a callback.
   ///
@@ -611,9 +611,9 @@ class HookBuilder extends HookWidget {
     Key? key,
   }) : super(key: key);
 
-  /// The callback used by [HookBuilder] to create a widget.
+  /// The callback used by [HookBuilder] to create a [Widget].
   ///
-  /// If a [Hook] asks for a rebuild, [builder] will be called again.
+  /// If a [Hook] requests a rebuild, [builder] will be called again.
   /// [builder] must not return `null`.
   final Widget Function(BuildContext context) builder;
 

@@ -1,6 +1,6 @@
 part of 'hooks.dart';
 
-/// Creates and disposes a [PageController].
+/// Creates a [PageController] that will be disposed automatically.
 ///
 /// See also:
 /// - [PageController]
