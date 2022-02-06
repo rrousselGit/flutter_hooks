@@ -1,6 +1,6 @@
 part of 'hooks.dart';
 
-/// Creates and disposes a [ScrollController].
+/// Creates [ScrollController] that will be disposed automatically.
 ///
 /// See also:
 /// - [ScrollController]

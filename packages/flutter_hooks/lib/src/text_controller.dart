@@ -24,12 +24,12 @@ class _TextEditingControllerHookCreator {
 /// Creates a [TextEditingController], either via an initial text or an initial
 /// [TextEditingValue].
 ///
-/// To use a [TextEditingController] with an optional initial text, use
+/// To use a [TextEditingController] with an optional initial text, use:
 /// ```dart
 /// final controller = useTextEditingController(text: 'initial text');
 /// ```
 ///
-/// To use a [TextEditingController] with an optional initial value, use
+/// To use a [TextEditingController] with an optional initial value, use:
 /// ```dart
 /// final controller = useTextEditingController
 ///   .fromValue(TextEditingValue.empty);

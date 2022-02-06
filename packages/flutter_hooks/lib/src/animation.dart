@@ -1,6 +1,6 @@
 part of 'hooks.dart';
 
-/// Subscribes to an [Animation] and return its value.
+/// Subscribes to an [Animation] and returns its value.
 ///
 /// See also:
 ///   * [Animation]
@@ -27,13 +27,13 @@ class _UseAnimationStateHook extends _ListenableStateHook {
   Object? get debugValue => (hook.listenable as Animation?)?.value;
 }
 
-/// Creates an [AnimationController] automatically disposed.
+/// Creates an [AnimationController] and automatically disposes it when necessary.
 ///
 /// If no [vsync] is provided, the [TickerProvider] is implicitly obtained using [useSingleTickerProvider].
 /// If a [vsync] is specified, changing the instance of [vsync] will result in a call to [AnimationController.resync].
 /// It is not possible to switch between implicit and explicit [vsync].
 ///
-/// Changing the [duration] parameter automatically updates [AnimationController.duration].
+/// Changing the [duration] parameter automatically updates the [AnimationController.duration].
 ///
 /// [initialValue], [lowerBound], [upperBound] and [debugLabel] are ignored after the first call.
 ///

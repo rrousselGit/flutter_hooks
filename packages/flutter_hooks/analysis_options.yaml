@@ -14,7 +14,7 @@ analyzer:
 
 linter:
   rules:
-    # Uninitianalized late variables are dangerous 
+    # Uninitianalized late variables are dangerous
     use_late_for_private_fields_and_variables: false
 
     # Personal preference. I don't find it more readable

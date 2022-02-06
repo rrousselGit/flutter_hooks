@@ -1,6 +1,6 @@
 part of 'hooks.dart';
 
-/// Subscribes to a [ValueListenable] and return its value.
+/// Subscribes to a [ValueListenable] and returns its value.
 ///
 /// See also:
 ///   * [ValueListenable], the created object
@@ -27,7 +27,7 @@ class _UseValueListenableStateHook extends _ListenableStateHook {
   Object? get debugValue => (hook.listenable as ValueListenable?)?.value;
 }
 
-/// Subscribes to a [Listenable] and mark the widget as needing build
+/// Subscribes to a [Listenable] and marks the widget as needing build
 /// whenever the listener is called.
 ///
 /// See also:
@@ -82,9 +82,9 @@ class _ListenableStateHook extends HookState<void, _ListenableHook> {
   Object? get debugValue => hook.listenable;
 }
 
-/// Creates a [ValueNotifier] automatically disposed.
+/// Creates a [ValueNotifier] that is automatically disposed.
 ///
-/// As opposed to `useState`, this hook do not subscribes to [ValueNotifier].
+/// As opposed to `useState`, this hook does not subscribe to [ValueNotifier].
 /// This allows a more granular rebuild.
 ///
 /// See also:
