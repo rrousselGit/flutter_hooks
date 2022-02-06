@@ -334,7 +334,7 @@ They will take care of creating/updating/disposing an object.
 
 #### Misc hooks:
 
-These are a series of hooks with no single specific use-case.
+A series of hooks with no particular theme.
 
 | Name                                                                                                                                        | Description                                                                |
 | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------|
