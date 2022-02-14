@@ -232,7 +232,7 @@ There are two ways to create a hook:
   to the console whenever the value changes:
 
   ```dart
-  ValueNotifier<T> useLoggedState<T>(BuildContext context, [T initialData]) {
+  ValueNotifier<T> useLoggedState<T>([T initialData]) {
     final result = useState<T>(initialData);
     useValueChanged(result.value, (_, __) {
       print(result.value);
@@ -250,7 +250,7 @@ There are two ways to create a hook:
   It is usually good practice to hide the class under a function as such:
 
   ```dart
-  Result useMyHook(BuildContext context) {
+  Result useMyHook() {
     return use(const _TimeAlive());
   }
   ```
