@@ -19,3 +19,4 @@ part 'scroll_controller.dart';
 part 'page_controller.dart';
 part 'widgets_binding_observer.dart';
 part 'transformation_controller.dart';
+part 'listenable_map.dart';
