@@ -1,3 +1,7 @@
+## 0.18.3
+
+- Added `usePlatformBrightness` and `useOnPlatformBrightnessChange` to interact with platform `Brightness`
+
 ## 0.18.2+1
 
 Improved the documentation (thanks to @Renni771)
@@ -94,7 +98,7 @@ Migrated flutter_hooks to null-safety (special thanks to @DevNico for the help!)
     if (condition) {
       return Container();
     }
-    useSomething()
+    useSomething();
     return Container();
   }
   ```
