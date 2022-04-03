@@ -10,8 +10,8 @@ void main() {
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
         final listenable = ValueNotifier<int>(42);
-        final bool result =
-            useListenableMap(listenable, () => listenable.value.isOdd);
+        useListenableMap<ValueNotifier<int>, bool Function(), bool>(
+            listenable, () => listenable.value.isOdd);
         return const SizedBox();
       },
     ));
