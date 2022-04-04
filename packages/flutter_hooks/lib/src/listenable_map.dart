@@ -25,25 +25,22 @@ part of 'hooks.dart';
 ///   }
 /// }
 /// ```
-R useListenableMap<T extends Listenable, U extends R Function(), R>(
-    T listenable, U callback) {
-  return use(_ListenableMapHook<T, U, R>(listenable, callback)).value;
+R useListenableMap<R>(Listenable listenable, R Function() callback) {
+  return use(_ListenableMapHook<R>(listenable, callback)).value;
 }
 
-class _ListenableMapHook<T extends Listenable, U extends R Function(), R>
-    extends Hook<ValueNotifier<R>> {
+class _ListenableMapHook<R> extends Hook<ValueNotifier<R>> {
   const _ListenableMapHook(this.listenable, this.callback);
 
-  final T listenable;
-  final U callback;
+  final Listenable listenable;
+  final R Function() callback;
 
   @override
-  _ListenableMapHookState<T, U, R> createState() =>
-      _ListenableMapHookState<T, U, R>();
+  _ListenableMapHookState<R> createState() => _ListenableMapHookState<R>();
 }
 
-class _ListenableMapHookState<T extends Listenable, U extends R Function(), R>
-    extends HookState<ValueNotifier<R>, _ListenableMapHook<T, U, R>> {
+class _ListenableMapHookState<R>
+    extends HookState<ValueNotifier<R>, _ListenableMapHook<R>> {
   late final ValueNotifier<R> _state = ValueNotifier<R>(hook.callback())
     ..addListener(() => setState(() {}));
 
@@ -66,5 +63,5 @@ class _ListenableMapHookState<T extends Listenable, U extends R Function(), R>
   }
 
   @override
-  String get debugLabel => 'useListenableMap<$T>';
+  String get debugLabel => 'useListenableMap<$R>';
 }
