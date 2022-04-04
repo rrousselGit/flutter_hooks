@@ -23,8 +23,7 @@ void main() {
           .toStringDeep(),
       equalsIgnoringHashCodes(
         'HookBuilder\n'
-        ' │ useListenableSelector<ValueNotifier<int>>:\n'
-        ' │   ValueNotifier<bool>#00000(false)\n'
+        ' │ useListenableSelector<bool>: false\n'
         ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n'
         '',
       ),

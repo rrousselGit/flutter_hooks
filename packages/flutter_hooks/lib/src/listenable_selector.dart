@@ -26,10 +26,10 @@ part of 'hooks.dart';
 /// }
 /// ```
 R useListenableSelector<R>(Listenable listenable, R Function() callback) {
-  return use(_ListenableSelectorHook<R>(listenable, callback)).value;
+  return use(_ListenableSelectorHook<R>(listenable, callback));
 }
 
-class _ListenableSelectorHook<R> extends Hook<ValueNotifier<R>> {
+class _ListenableSelectorHook<R> extends Hook<R> {
   const _ListenableSelectorHook(this.listenable, this.callback);
 
   final Listenable listenable;
@@ -41,9 +41,8 @@ class _ListenableSelectorHook<R> extends Hook<ValueNotifier<R>> {
 }
 
 class _ListenableSelectorHookState<R>
-    extends HookState<ValueNotifier<R>, _ListenableSelectorHook<R>> {
-  late final ValueNotifier<R> _state = ValueNotifier<R>(hook.callback())
-    ..addListener(() => setState(() {}));
+    extends HookState<R, _ListenableSelectorHook<R>> {
+  late R _state = hook.callback();
 
   @override
   void initHook() {
@@ -52,10 +51,14 @@ class _ListenableSelectorHookState<R>
   }
 
   @override
-  ValueNotifier<R> build(BuildContext context) => _state;
+  R build(BuildContext context) => _state;
 
   void _listener() {
-    _state.value = hook.callback();
+    final result = hook.callback();
+    if (_state != result) {
+      _state = result;
+      setState(() {});
+    }
   }
 
   @override
