@@ -10,8 +10,7 @@ void main() {
     await tester.pumpWidget(HookBuilder(
       builder: (context) {
         final listenable = ValueNotifier<int>(42);
-        useListenableMap<ValueNotifier<int>, bool Function(), bool>(
-            listenable, () => listenable.value.isOdd);
+        useListenableSelector<bool>(listenable, () => listenable.value.isOdd);
         return const SizedBox();
       },
     ));
@@ -24,14 +23,14 @@ void main() {
           .toStringDeep(),
       equalsIgnoringHashCodes(
         'HookBuilder\n'
-        ' │ useListenableMap<ValueNotifier<int>>:\n'
+        ' │ useListenableSelector<ValueNotifier<int>>:\n'
         ' │   ValueNotifier<bool>#00000(false)\n'
         ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n'
         '',
       ),
     );
   });
-  testWidgets('useListenableMap', (tester) async {
+  testWidgets('useListenableSelector', (tester) async {
     late HookElement element;
     late ValueNotifier<int> listenable;
     late bool isOdd;
@@ -41,7 +40,8 @@ void main() {
         builder: (context) {
           element = context as HookElement;
           listenable = useState(42);
-          isOdd = useListenableMap(listenable, () => listenable.value.isOdd);
+          isOdd =
+              useListenableSelector(listenable, () => listenable.value.isOdd);
           return Container();
         },
       ));

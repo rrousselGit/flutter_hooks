@@ -12,7 +12,7 @@ part of 'hooks.dart';
 ///   Widget build(BuildContext context) {
 ///    final listenable = useTextEditingController();
 ///    final bool textIsEmpty =
-///         useListenableMap(listenable, () => listenable.text.isEmpty);
+///         useListenableSelector(listenable, () => listenable.text.isEmpty);
 ///    return Column(
 ///       children: [
 ///         TextField(controller: listenable),
@@ -25,22 +25,23 @@ part of 'hooks.dart';
 ///   }
 /// }
 /// ```
-R useListenableMap<R>(Listenable listenable, R Function() callback) {
-  return use(_ListenableMapHook<R>(listenable, callback)).value;
+R useListenableSelector<R>(Listenable listenable, R Function() callback) {
+  return use(_ListenableSelectorHook<R>(listenable, callback)).value;
 }
 
-class _ListenableMapHook<R> extends Hook<ValueNotifier<R>> {
-  const _ListenableMapHook(this.listenable, this.callback);
+class _ListenableSelectorHook<R> extends Hook<ValueNotifier<R>> {
+  const _ListenableSelectorHook(this.listenable, this.callback);
 
   final Listenable listenable;
   final R Function() callback;
 
   @override
-  _ListenableMapHookState<R> createState() => _ListenableMapHookState<R>();
+  _ListenableSelectorHookState<R> createState() =>
+      _ListenableSelectorHookState<R>();
 }
 
-class _ListenableMapHookState<R>
-    extends HookState<ValueNotifier<R>, _ListenableMapHook<R>> {
+class _ListenableSelectorHookState<R>
+    extends HookState<ValueNotifier<R>, _ListenableSelectorHook<R>> {
   late final ValueNotifier<R> _state = ValueNotifier<R>(hook.callback())
     ..addListener(() => setState(() {}));
 
@@ -63,5 +64,5 @@ class _ListenableMapHookState<R>
   }
 
   @override
-  String get debugLabel => 'useListenableMap<$R>';
+  String get debugLabel => 'useListenableSelector<$R>';
 }
