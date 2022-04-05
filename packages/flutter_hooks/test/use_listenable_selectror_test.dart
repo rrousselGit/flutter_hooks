@@ -7,13 +7,15 @@ import 'mock.dart';
 
 void main() {
   testWidgets('debugFillProperties', (tester) async {
-    await tester.pumpWidget(HookBuilder(
-      builder: (context) {
-        final listenable = ValueNotifier<int>(42);
-        useListenableSelector<bool>(listenable, () => listenable.value.isOdd);
-        return const SizedBox();
-      },
-    ));
+    await tester.pumpWidget(
+      HookBuilder(
+        builder: (context) {
+          final listenable = ValueNotifier<int>(42);
+          useListenableSelector<bool>(listenable, () => listenable.value.isOdd);
+          return const SizedBox();
+        },
+      ),
+    );
 
     final element = tester.element(find.byType(HookBuilder));
 
@@ -35,14 +37,16 @@ void main() {
     late bool isOdd;
 
     Future<void> pump() {
-      return tester.pumpWidget(HookBuilder(
-        builder: (context) {
-          element = context as HookElement;
-          isOdd =
-              useListenableSelector(listenable, () => listenable.value.isOdd);
-          return Container();
-        },
-      ));
+      return tester.pumpWidget(
+        HookBuilder(
+          builder: (context) {
+            element = context as HookElement;
+            isOdd =
+                useListenableSelector(listenable, () => listenable.value.isOdd);
+            return Container();
+          },
+        ),
+      );
     }
 
     await pump();
