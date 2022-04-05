@@ -56,8 +56,9 @@ class _ListenableSelectorHookState<R>
   void _listener() {
     final result = hook.callback();
     if (_state != result) {
-      _state = result;
-      setState(() {});
+      setState(() {
+        _state = result;
+      });
     }
   }
 
