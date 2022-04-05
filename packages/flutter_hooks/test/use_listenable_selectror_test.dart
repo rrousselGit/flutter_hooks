@@ -31,14 +31,13 @@ void main() {
   });
   testWidgets('useListenableSelector', (tester) async {
     late HookElement element;
-    late ValueNotifier<int> listenable;
+    late final listenable = ValueNotifier<int>(42);
     late bool isOdd;
 
     Future<void> pump() {
       return tester.pumpWidget(HookBuilder(
         builder: (context) {
           element = context as HookElement;
-          listenable = useState(42);
           isOdd =
               useListenableSelector(listenable, () => listenable.value.isOdd);
           return Container();
@@ -61,13 +60,14 @@ void main() {
     expect(element.dirty, false);
 
     listenable.value = listenable.value + 2;
-    expect(element.dirty, true);
+    expect(element.dirty, false);
     await tester.pump();
     expect(listenable.value, 45);
     expect(isOdd, true);
     expect(element.dirty, false);
 
     listenable.value++;
+    expect(element.dirty, true);
     await tester.pump();
     expect(listenable.value, 46);
     expect(isOdd, false);
