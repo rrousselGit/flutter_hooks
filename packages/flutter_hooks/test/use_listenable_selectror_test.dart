@@ -31,6 +31,7 @@ void main() {
       ),
     );
   });
+
   testWidgets('useListenableSelector', (tester) async {
     late HookElement element;
     late final listenable = ValueNotifier<int>(42);
