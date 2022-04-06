@@ -63,7 +63,9 @@ class _FocusNodeHookState extends HookState<FocusNode, _FocusNodeHook> {
       ..debugLabel = hook.debugLabel
       ..skipTraversal = hook.skipTraversal
       ..canRequestFocus = hook.canRequestFocus
-      ..descendantsAreFocusable = hook.descendantsAreFocusable;
+      ..descendantsAreFocusable = hook.descendantsAreFocusable
+      ..onKey = hook.onKey
+      ..onKeyEvent = hook.onKeyEvent;
   }
 
   @override

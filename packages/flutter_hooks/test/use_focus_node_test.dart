@@ -132,6 +132,7 @@ void main() {
           canRequestFocus: false,
           descendantsAreFocusable: false,
         );
+
         return Container();
       }),
     );
@@ -139,17 +140,17 @@ void main() {
     await tester.pumpWidget(
       HookBuilder(builder: (_) {
         focusNode = useFocusNode(
-            debugLabel: 'Bar', onKey: onKey2, onKeyEvent: onKeyEvent2);
+          debugLabel: 'Bar',
+          onKey: onKey2,
+          onKeyEvent: onKeyEvent2,
+        );
+
         return Container();
       }),
     );
 
-    expect(focusNode.onKey, onKey, reason: 'onKey has no setter');
-    expect(
-      focusNode.onKeyEvent,
-      onKeyEvent,
-      reason: 'onKeyEvent has no setter',
-    );
+    expect(focusNode.onKey, onKey2);
+    expect(focusNode.onKeyEvent, onKeyEvent2);
     expect(focusNode.debugLabel, 'Bar');
     expect(focusNode.skipTraversal, false);
     expect(focusNode.canRequestFocus, true);
