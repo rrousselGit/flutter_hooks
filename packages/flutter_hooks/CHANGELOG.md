@@ -1,4 +1,4 @@
-## [Unreleased]
+## 0.18.3
 
 Added `onKeyEvent` to `useFocusNode` (thanks to @kdelorey)
 
