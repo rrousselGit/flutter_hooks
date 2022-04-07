@@ -1,10 +1,19 @@
 part of 'hooks.dart';
 
-/// Subscribes to a [Listenable]
-/// and execute callback() whenever [Listenable] update.
-/// Subscribe to a Listenable.
-/// When [Listenable] update execute callback(). it result value is return value.
-/// It don't rebuild the widget unless that result of callback() does not changed. so an unnecessary rebuild not occur, performance is better.
+/// An alternative to [useListenable] for listening to a [Listenable], with the
+/// added benefit of rebuilding the widget only if a certain value has changed.
+///
+/// [useListenableSelector] will return the result of the callback.
+/// And whenever the listenable notify its listeners, the callback will be
+/// re-executed.
+/// Then, if the value returned has changed, the widget will rebuild. Otherwise,
+/// the widget will ignore the [Listenable] update.
+///
+/// The following example uses [useListenableSelector] to listen to a
+/// [TextEditingController], yet rebuild the widget only when the input changes
+/// between empty and not empty.
+/// Whereas if we used [useListenable], the widget would've rebuilt everytime
+/// the user types a character.
 ///
 /// ```dart
 /// class Example extends HookWidget {
