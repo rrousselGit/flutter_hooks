@@ -37,6 +37,9 @@ class _PlatformBrightnessState
   late Brightness _brightness;
 
   @override
+  String? get debugLabel => 'usePlatformBrightness';
+
+  @override
   void initHook() {
     super.initHook();
     _brightness = WidgetsBinding.instance!.window.platformBrightness;
