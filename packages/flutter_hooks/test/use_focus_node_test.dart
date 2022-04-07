@@ -84,12 +84,16 @@ void main() {
     KeyEventResult onKey(FocusNode node, RawKeyEvent event) =>
         KeyEventResult.ignored;
 
+    KeyEventResult onKeyEvent(FocusNode node, KeyEvent event) =>
+        KeyEventResult.ignored;
+
     late FocusNode focusNode;
     await tester.pumpWidget(
       HookBuilder(builder: (_) {
         focusNode = useFocusNode(
           debugLabel: 'Foo',
           onKey: onKey,
+          onKeyEvent: onKeyEvent,
           skipTraversal: true,
           canRequestFocus: false,
           descendantsAreFocusable: false,
@@ -100,6 +104,7 @@ void main() {
 
     expect(focusNode.debugLabel, 'Foo');
     expect(focusNode.onKey, onKey);
+    expect(focusNode.onKeyEvent, onKeyEvent);
     expect(focusNode.skipTraversal, true);
     expect(focusNode.canRequestFocus, false);
     expect(focusNode.descendantsAreFocusable, false);
@@ -111,16 +116,23 @@ void main() {
     KeyEventResult onKey2(FocusNode node, RawKeyEvent event) =>
         KeyEventResult.ignored;
 
+    KeyEventResult onKeyEvent(FocusNode node, KeyEvent event) =>
+        KeyEventResult.ignored;
+    KeyEventResult onKeyEvent2(FocusNode node, KeyEvent event) =>
+        KeyEventResult.ignored;
+
     late FocusNode focusNode;
     await tester.pumpWidget(
       HookBuilder(builder: (_) {
         focusNode = useFocusNode(
           debugLabel: 'Foo',
           onKey: onKey,
+          onKeyEvent: onKeyEvent,
           skipTraversal: true,
           canRequestFocus: false,
           descendantsAreFocusable: false,
         );
+
         return Container();
       }),
     );
@@ -130,12 +142,15 @@ void main() {
         focusNode = useFocusNode(
           debugLabel: 'Bar',
           onKey: onKey2,
+          onKeyEvent: onKeyEvent2,
         );
+
         return Container();
       }),
     );
 
-    expect(focusNode.onKey, onKey, reason: 'onKey has no setter');
+    expect(focusNode.onKey, onKey2);
+    expect(focusNode.onKeyEvent, onKeyEvent2);
     expect(focusNode.debugLabel, 'Bar');
     expect(focusNode.skipTraversal, false);
     expect(focusNode.canRequestFocus, true);
