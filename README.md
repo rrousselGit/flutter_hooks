@@ -294,7 +294,7 @@ Flutter_Hooks already comes with a list of reusable hooks which are divided into
 A set of low-level hooks that interact with the different life-cycles of a widget
 
 | Name                                                                                                              | Description                                                         |
-| ----------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------|
+| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | [useEffect](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useEffect.html)             | Useful for side-effects and optionally canceling them.              |
 | [useState](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useState.html)               | Creates a variable and subscribes to it.                            |
 | [useMemoized](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useMemoized.html)         | Caches the instance of a complex object.                            |
@@ -311,7 +311,7 @@ They will take care of creating/updating/disposing an object.
 #### dart:async related hooks:
 
 | Name                                                                                                                      | Description                                                                   |
-| ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------|
+| ------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | [useStream](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useStream.html)                     | Subscribes to a `Stream` and returns its current state as an `AsyncSnapshot`. |
 | [useStreamController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useStreamController.html) | Creates a `StreamController` which will automatically be disposed.            |
 | [useFuture](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useFuture.html)                     | Subscribes to a `Future` and returns its current state as an `AsyncSnapshot`. |
@@ -319,7 +319,7 @@ They will take care of creating/updating/disposing an object.
 #### Animation related hooks:
 
 | Name                                                                                                                              | Description                                                            |
-| --------------------------------------------------------------------------------------------------------------------------------- | -----------------------------------------------------------------------|
+| --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | [useSingleTickerProvider](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useSingleTickerProvider.html) | Creates a single usage `TickerProvider`.                               |
 | [useAnimationController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useAnimationController.html)   | Creates an `AnimationController` which will be automatically disposed. |
 | [useAnimation](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useAnimation.html)                       | Subscribes to an `Animation` and returns its value.                    |
@@ -327,7 +327,7 @@ They will take care of creating/updating/disposing an object.
 #### Listenable related hooks:
 
 | Name                                                                                                                    | Description                                                                                         |
-| ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------|
+| ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | [useListenable](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useListenable.html)           | Subscribes to a `Listenable` and marks the widget as needing build whenever the listener is called. |
 | [useValueNotifier](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useValueNotifier.html)     | Creates a `ValueNotifier` which will be automatically disposed.                                     |
 | [useValueListenable](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useValueListenable.html) | Subscribes to a `ValueListenable` and return its value.                                             |
@@ -337,7 +337,7 @@ They will take care of creating/updating/disposing an object.
 A series of hooks with no particular theme.
 
 | Name                                                                                                                                        | Description                                                                |
-| ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------|
+| ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | [useReducer](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useReducer.html)                                     | An alternative to `useState` for more complex states.                      |
 | [usePrevious](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/usePrevious.html)                                   | Returns the previous argument called to [usePrevious].                     |
 | [useTextEditingController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTextEditingController-constant.html)         | Creates a `TextEditingController`.                                         |
@@ -349,6 +349,7 @@ A series of hooks with no particular theme.
 | [useOnAppLifecycleStateChange](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useOnAppLifecycleStateChange.html) | Listens to `AppLifecycleState` changes and triggers a callback on change.  |
 | [useTransformationController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useTransformationController.html)   | Creates and disposes a `TransformationController`.                         |
 | [useIsMounted](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useIsMounted.html)                                 | An equivalent to `State.mounted` for hooks.                                |
+| [useAutomaticKeepAlive](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useAutomaticKeepAlive.html)               | An equivalent to the `AutomaticKeepAlive` widget for hooks.                |
 
 ## Contributions
 

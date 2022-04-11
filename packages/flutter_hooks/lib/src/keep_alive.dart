@@ -4,6 +4,7 @@ part of 'hooks.dart';
 /// lazy list that would otherwise remove it.
 ///
 /// See also:
+/// - [AutomaticKeepAlive]
 /// - [KeepAlive]
 void useAutomaticKeepAlive({
   bool wantKeepAlive = true,
