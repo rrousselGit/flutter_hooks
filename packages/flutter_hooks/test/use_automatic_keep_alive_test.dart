@@ -70,6 +70,8 @@ void main() {
     testWidgets(
       'start keep alive when wantKeepAlive changes to true',
       (tester) async {
+        final keepAliveNotifier = ValueNotifier(false);
+
         await tester.pumpWidget(
           Directionality(
             textDirection: TextDirection.ltr,
@@ -78,15 +80,8 @@ void main() {
               child: TabBarView(
                 children: [
                   HookBuilder(builder: (context) {
-                    final wantKeepAlive = useState(false);
-                    useAutomaticKeepAlive(wantKeepAlive: wantKeepAlive.value);
-                    useEffect(() {
-                      Future.delayed(
-                        const Duration(milliseconds: 250),
-                        () => wantKeepAlive.value = true,
-                      );
-                      return null;
-                    }, []);
+                    final wantKeepAlive = useValueListenable(keepAliveNotifier);
+                    useAutomaticKeepAlive(wantKeepAlive: wantKeepAlive);
                     return Container();
                   }),
                   Container(),
@@ -112,7 +107,8 @@ void main() {
           ),
         );
 
-        await tester.pump(const Duration(milliseconds: 250));
+        keepAliveNotifier.value = true;
+        await tester.pump();
 
         expect(findKeepAlive, findsOneWidget);
         expect(
