@@ -1,3 +1,7 @@
+## 0.18.4
+
+- Added `usePlatformBrightness` and `useOnPlatformBrightnessChange` to interact with platform `Brightness`
+
 ## 0.18.3
 
 Added `onKeyEvent` to `useFocusNode` (thanks to @kdelorey)

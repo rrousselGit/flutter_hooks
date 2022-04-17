@@ -9,7 +9,8 @@ void main() {
   group('usePlatformBrightness', () {
     testWidgets('returns initial value and rebuild widgets on change',
         (tester) async {
-      tester.binding.window.platformBrightnessTestValue = Brightness.light;
+      final binding = tester.binding;
+      binding.platformDispatcher.platformBrightnessTestValue = Brightness.light;
 
       await tester.pumpWidget(
         HookBuilder(
@@ -22,7 +23,7 @@ void main() {
 
       expect(find.text('Brightness.light'), findsOneWidget);
 
-      tester.binding.window.platformBrightnessTestValue = Brightness.dark;
+      binding.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
       await tester.pump();
 
       expect(find.text('Brightness.dark'), findsOneWidget);
@@ -33,7 +34,8 @@ void main() {
     testWidgets(
         'sends previous and new value on change, without rebuilding widgets',
         (tester) async {
-      tester.binding.window.platformBrightnessTestValue = Brightness.light;
+      final binding = tester.binding;
+      binding.platformDispatcher.platformBrightnessTestValue = Brightness.light;
       var buildCount = 0;
       final listener = PlatformBrightnessListener();
 
@@ -50,14 +52,14 @@ void main() {
       expect(buildCount, 1);
       verifyZeroInteractions(listener);
 
-      tester.binding.window.platformBrightnessTestValue = Brightness.dark;
+      binding.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
       await tester.pump();
 
       expect(buildCount, 1);
       verify(listener(Brightness.light, Brightness.dark));
       verifyNoMoreInteractions(listener);
 
-      tester.binding.window.platformBrightnessTestValue = Brightness.light;
+      binding.platformDispatcher.platformBrightnessTestValue = Brightness.light;
       await tester.pump();
 
       expect(buildCount, 1);
