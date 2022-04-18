@@ -39,7 +39,9 @@ class __AppLifecycleStateState
   @override
   void initHook() {
     super.initHook();
+    // ignore: unnecessary_non_null_assertion
     _state = WidgetsBinding.instance!.lifecycleState;
+    // ignore: unnecessary_non_null_assertion
     WidgetsBinding.instance!.addObserver(this);
   }
 
@@ -49,6 +51,7 @@ class __AppLifecycleStateState
   @override
   void dispose() {
     super.dispose();
+    // ignore: unnecessary_non_null_assertion
     WidgetsBinding.instance!.removeObserver(this);
   }
 
