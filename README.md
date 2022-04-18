@@ -21,7 +21,7 @@ logic of say `initState` or `dispose`. An obvious example is `AnimationControlle
 class Example extends StatefulWidget {
   final Duration duration;
 
-  const Example({Key key, required this.duration})
+  const Example({Key? key, required this.duration})
       : super(key: key);
 
   @override
@@ -74,7 +74,7 @@ This library proposes a third solution:
 
 ```dart
 class Example extends HookWidget {
-  const Example({Key key, required this.duration})
+  const Example({Key? key, required this.duration})
       : super(key: key);
 
   final Duration duration;
