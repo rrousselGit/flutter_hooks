@@ -215,7 +215,7 @@ useC();
 ```
 
 In this situation, `HookA` maintains its state but `HookC` gets hard reset.
-This happens because, when a hot-reload is perfomed after refactoring, all hooks _after_ the first line impacted are disposed of.
+This happens because, when a hot-reload is performed after refactoring, all hooks _after_ the first line impacted are disposed of.
 So, since `HookC` was placed _after_ `HookB`, it will be disposed.
 
 ## How to create a hook
@@ -370,7 +370,7 @@ For a custom-hook to be merged, you will need to do the following:
 
 - Write tests for your hook
 
-  A hook will not be merged unless fully tested to avoid inadvertendly breaking it
+  A hook will not be merged unless fully tested to avoid inadvertently breaking it
   in the future.
 
 - Add it to the README and write documentation for it.

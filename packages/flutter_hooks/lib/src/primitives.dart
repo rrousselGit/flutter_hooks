@@ -18,13 +18,13 @@ class ObjectRef<T> {
 /// Creates an object that contains a single mutable property.
 ///
 /// Mutating the object's property has no effect.
-/// This is useful for sharing state accross `build` calls, without causing
+/// This is useful for sharing state across `build` calls, without causing
 /// unnecessary rebuilds.
 ObjectRef<T> useRef<T>(T initialValue) {
   return useMemoized(() => ObjectRef<T>(initialValue));
 }
 
-/// Cache a function accross rebuilds based on a list of keys.
+/// Cache a function across rebuilds based on a list of keys.
 ///
 /// This is syntax sugar for [useMemoized], so that instead of:
 ///
