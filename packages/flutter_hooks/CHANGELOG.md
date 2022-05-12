@@ -1,3 +1,7 @@
+## 0.18.4
+
+Upgrade to Flutter 3.0.0
+
 ## 0.18.3
 
 Added `onKeyEvent` to `useFocusNode` (thanks to @kdelorey)
