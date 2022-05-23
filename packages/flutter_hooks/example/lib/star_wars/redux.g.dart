@@ -15,17 +15,14 @@ class _$AppState extends AppState {
   final PlanetPageModel planetPage;
 
   factory _$AppState([void Function(AppStateBuilder) updates]) =>
-      (new AppStateBuilder()..update(updates)).build();
+      (new AppStateBuilder()..update(updates))._build();
 
   _$AppState._(
       {this.isFetchingPlanets, this.errorFetchingPlanets, this.planetPage})
       : super._() {
-    if (isFetchingPlanets == null) {
-      throw new BuiltValueNullFieldError('AppState', 'isFetchingPlanets');
-    }
-    if (planetPage == null) {
-      throw new BuiltValueNullFieldError('AppState', 'planetPage');
-    }
+    BuiltValueNullFieldError.checkNotNull(
+        isFetchingPlanets, 'AppState', 'isFetchingPlanets');
+    BuiltValueNullFieldError.checkNotNull(planetPage, 'AppState', 'planetPage');
   }
 
   @override
@@ -83,10 +80,11 @@ class AppStateBuilder implements Builder<AppState, AppStateBuilder> {
   AppStateBuilder();
 
   AppStateBuilder get _$this {
-    if (_$v != null) {
-      _isFetchingPlanets = _$v.isFetchingPlanets;
-      _errorFetchingPlanets = _$v.errorFetchingPlanets;
-      _planetPage = _$v.planetPage?.toBuilder();
+    final $v = _$v;
+    if ($v != null) {
+      _isFetchingPlanets = $v.isFetchingPlanets;
+      _errorFetchingPlanets = $v.errorFetchingPlanets;
+      _planetPage = $v.planetPage.toBuilder();
       _$v = null;
     }
     return this;
@@ -94,9 +92,7 @@ class AppStateBuilder implements Builder<AppState, AppStateBuilder> {
 
   @override
   void replace(AppState other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$AppState;
   }
 
@@ -106,12 +102,15 @@ class AppStateBuilder implements Builder<AppState, AppStateBuilder> {
   }
 
   @override
-  _$AppState build() {
+  AppState build() => _build();
+
+  _$AppState _build() {
     _$AppState _$result;
     try {
       _$result = _$v ??
           new _$AppState._(
-              isFetchingPlanets: isFetchingPlanets,
+              isFetchingPlanets: BuiltValueNullFieldError.checkNotNull(
+                  isFetchingPlanets, 'AppState', 'isFetchingPlanets'),
               errorFetchingPlanets: errorFetchingPlanets,
               planetPage: planetPage.build());
     } catch (_) {
@@ -130,4 +129,4 @@ class AppStateBuilder implements Builder<AppState, AppStateBuilder> {
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,no_leading_underscores_for_local_identifiers,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
