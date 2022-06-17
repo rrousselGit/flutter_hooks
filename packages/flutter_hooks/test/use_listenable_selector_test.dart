@@ -149,8 +149,10 @@ void main() {
       ),
     );
 
+    expect(isOdd, false);
+
     final previousListenable = listenable;
-    listenable = ValueNotifier(0);
+    listenable = ValueNotifier(1);
 
     await tester.pumpWidget(
       HookBuilder(
@@ -163,6 +165,7 @@ void main() {
 
     // ignore: invalid_use_of_protected_member
     expect(previousListenable.hasListeners, false);
+    expect(isOdd, true);
 
     listenable.dispose();
     previousListenable.dispose();
