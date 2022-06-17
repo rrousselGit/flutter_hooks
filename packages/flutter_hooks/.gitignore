@@ -12,3 +12,4 @@ ios/
 pubspec.lock
 .vscode/
 .fvm
+.idea/

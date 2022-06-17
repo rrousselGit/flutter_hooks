@@ -16,8 +16,7 @@ jobs:
         package:
           - flutter_hooks
         channel:
-          - dev
-          # - stable
+          - stable
 
     steps:
       - uses: actions/checkout@v2
