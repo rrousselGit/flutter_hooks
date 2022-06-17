@@ -38,7 +38,7 @@ void main() {
     );
   }
 
-  void verifyNoMoreHookInteration() {
+  void verifyNoMoreHookInteraction() {
     verifyNoMoreInteractions(build);
     verifyNoMoreInteractions(dispose);
     verifyNoMoreInteractions(initHook);
@@ -503,7 +503,7 @@ void main() {
       initHook(),
       build(context),
     ]);
-    verifyNoMoreHookInteration();
+    verifyNoMoreHookInteraction();
 
     await tester.pumpWidget($build());
 
@@ -511,7 +511,7 @@ void main() {
       didUpdateHook(any),
       build(context),
     ]);
-    verifyNoMoreHookInteration();
+    verifyNoMoreHookInteraction();
 
     // from null to array
     keys = [];
@@ -523,7 +523,7 @@ void main() {
       build(context),
       dispose(),
     ]);
-    verifyNoMoreHookInteration();
+    verifyNoMoreHookInteraction();
 
     // array immutable
     keys.add(42);
@@ -534,7 +534,7 @@ void main() {
       didUpdateHook(any),
       build(context),
     ]);
-    verifyNoMoreHookInteration();
+    verifyNoMoreHookInteraction();
 
     // new array but content equal
     keys = [42];
@@ -545,7 +545,7 @@ void main() {
       didUpdateHook(any),
       build(context),
     ]);
-    verifyNoMoreHookInteration();
+    verifyNoMoreHookInteraction();
 
     // new array new content
     keys = [44];
@@ -558,7 +558,7 @@ void main() {
       build(context),
       dispose(),
     ]);
-    verifyNoMoreHookInteration();
+    verifyNoMoreHookInteraction();
   });
 
   testWidgets('hook & setState', (tester) async {
@@ -605,7 +605,7 @@ void main() {
       initHook(),
       build(any),
     ]);
-    verifyNoMoreHookInteration();
+    verifyNoMoreHookInteraction();
 
     when(build(context)).thenReturn(24);
     var previousHook = hook;
@@ -623,17 +623,17 @@ void main() {
       didUpdateHook(previousHook),
       build(context),
     ]);
-    verifyNoMoreHookInteration();
+    verifyNoMoreHookInteraction();
 
     previousHook = hook;
     await tester.pump();
 
-    verifyNoMoreHookInteration();
+    verifyNoMoreHookInteraction();
 
     await tester.pumpWidget(const SizedBox());
 
     verify(dispose()).called(1);
-    verifyNoMoreHookInteration();
+    verifyNoMoreHookInteraction();
   });
 
   testWidgets('dispose all called even on failed', (tester) async {

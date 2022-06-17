@@ -1,3 +1,11 @@
+## 0.18.4
+
+Upgrade to Flutter 3.0.0
+
+## 0.18.3
+
+Added `onKeyEvent` to `useFocusNode` (thanks to @kdelorey)
+
 ## 0.18.2+1
 
 Improved the documentation (thanks to @Renni771)
@@ -58,7 +66,7 @@ Migrated flutter_hooks to null-safety (special thanks to @DevNico for the help!)
 ## 0.14.0
 
 - added all `FocusNode` parameters to `useFocusNode`
-- Fixed a bug where on hot-reload, a `HookWidget` could potentailly not rebuild
+- Fixed a bug where on hot-reload, a `HookWidget` could potentially not rebuild
 - Allow hooks to integrate with the devtool using the `Diagnosticable` API, and
   implement it for all built-in hooks.
 
@@ -133,7 +141,7 @@ Migrated flutter_hooks to null-safety (special thanks to @DevNico for the help!)
   ```dart
   // Creates an AnimationController
   final animationController = useAnimationController();
-  // Immediatly listen to the AnimationController
+  // Immediately listen to the AnimationController
   useListenable(animationController);
   ```
 
@@ -183,7 +191,7 @@ Added `useFocusNode`
 - NEW: If a widget throws on the first build or after a hot-reload, next rebuilds can still add/edit hooks until one `build` finishes entirely.
 - NEW: new life-cycle available on `HookState`: `didBuild`.
   This life-cycle is called synchronously right after `build` method of `HookWidget` finished.
-- NEW: new `reassemble` life-cycle on `HookState`. It is equivalent to `State.ressemble` of statefulwidgets.
+- NEW: new `reassemble` life-cycle on `HookState`. It is equivalent to `State.reassemble` of statefulwidgets.
 - NEW: `useStream` and `useFuture` now have an optional `preserveState` flag.
   This toggle how these hooks behave when changing the stream/future:
   If true (default) they keep the previous value, else they reset to initialState.

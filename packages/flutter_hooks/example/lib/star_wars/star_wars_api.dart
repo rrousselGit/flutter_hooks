@@ -10,7 +10,7 @@ class StarWarsApi {
   Future<PlanetPageModel> getPlanets([String page]) async {
     page ??= 'https://swapi.dev/api/planets';
 
-    final response = await http.get(page);
+    final response = await http.get(Uri.parse(page));
     final dynamic json = jsonDecode(utf8.decode(response.bodyBytes));
 
     return serializers.deserializeWith(PlanetPageModel.serializer, json);
