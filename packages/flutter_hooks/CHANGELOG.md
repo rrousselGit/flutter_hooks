@@ -1,3 +1,8 @@
+## Unreleased minor
+
+Added `useListenableSelector`, similar to `useListenable`, for listening to a
+`Listenable` but rebuilding the widget only if a certain data has changed (thanks to @ronnieeeeee)
+
 ## 0.18.4
 
 Upgrade to Flutter 3.0.0
