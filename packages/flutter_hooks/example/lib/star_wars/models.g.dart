@@ -33,16 +33,19 @@ class _$PlanetPageModelSerializer
           specifiedType:
               const FullType(BuiltList, const [const FullType(PlanetModel)])),
     ];
-    if (object.next != null) {
+    Object value;
+    value = object.next;
+    if (value != null) {
       result
         ..add('next')
-        ..add(serializers.serialize(object.next,
+        ..add(serializers.serialize(value,
             specifiedType: const FullType(String)));
     }
-    if (object.previous != null) {
+    value = object.previous;
+    if (value != null) {
       result
         ..add('previous')
-        ..add(serializers.serialize(object.previous,
+        ..add(serializers.serialize(value,
             specifiedType: const FullType(String)));
     }
     return result;
@@ -58,7 +61,7 @@ class _$PlanetPageModelSerializer
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'next':
           result.next = serializers.deserialize(value,
@@ -72,7 +75,7 @@ class _$PlanetPageModelSerializer
           result.results.replace(serializers.deserialize(value,
                   specifiedType: const FullType(
                       BuiltList, const [const FullType(PlanetModel)]))
-              as BuiltList<dynamic>);
+              as BuiltList<Object>);
           break;
       }
     }
@@ -107,7 +110,7 @@ class _$PlanetModelSerializer implements StructuredSerializer<PlanetModel> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'name':
           result.name = serializers.deserialize(value,
@@ -129,12 +132,11 @@ class _$PlanetPageModel extends PlanetPageModel {
   final BuiltList<PlanetModel> results;
 
   factory _$PlanetPageModel([void Function(PlanetPageModelBuilder) updates]) =>
-      (new PlanetPageModelBuilder()..update(updates)).build();
+      (new PlanetPageModelBuilder()..update(updates))._build();
 
   _$PlanetPageModel._({this.next, this.previous, this.results}) : super._() {
-    if (results == null) {
-      throw new BuiltValueNullFieldError('PlanetPageModel', 'results');
-    }
+    BuiltValueNullFieldError.checkNotNull(
+        results, r'PlanetPageModel', 'results');
   }
 
   @override
@@ -162,7 +164,7 @@ class _$PlanetPageModel extends PlanetPageModel {
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper('PlanetPageModel')
+    return (newBuiltValueToStringHelper(r'PlanetPageModel')
           ..add('next', next)
           ..add('previous', previous)
           ..add('results', results))
@@ -190,10 +192,11 @@ class PlanetPageModelBuilder
   PlanetPageModelBuilder();
 
   PlanetPageModelBuilder get _$this {
-    if (_$v != null) {
-      _next = _$v.next;
-      _previous = _$v.previous;
-      _results = _$v.results?.toBuilder();
+    final $v = _$v;
+    if ($v != null) {
+      _next = $v.next;
+      _previous = $v.previous;
+      _results = $v.results.toBuilder();
       _$v = null;
     }
     return this;
@@ -201,9 +204,7 @@ class PlanetPageModelBuilder
 
   @override
   void replace(PlanetPageModel other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$PlanetPageModel;
   }
 
@@ -213,7 +214,9 @@ class PlanetPageModelBuilder
   }
 
   @override
-  _$PlanetPageModel build() {
+  PlanetPageModel build() => _build();
+
+  _$PlanetPageModel _build() {
     _$PlanetPageModel _$result;
     try {
       _$result = _$v ??
@@ -226,7 +229,7 @@ class PlanetPageModelBuilder
         results.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
-            'PlanetPageModel', _$failedField, e.toString());
+            r'PlanetPageModel', _$failedField, e.toString());
       }
       rethrow;
     }
@@ -240,12 +243,10 @@ class _$PlanetModel extends PlanetModel {
   final String name;
 
   factory _$PlanetModel([void Function(PlanetModelBuilder) updates]) =>
-      (new PlanetModelBuilder()..update(updates)).build();
+      (new PlanetModelBuilder()..update(updates))._build();
 
   _$PlanetModel._({this.name}) : super._() {
-    if (name == null) {
-      throw new BuiltValueNullFieldError('PlanetModel', 'name');
-    }
+    BuiltValueNullFieldError.checkNotNull(name, r'PlanetModel', 'name');
   }
 
   @override
@@ -268,7 +269,7 @@ class _$PlanetModel extends PlanetModel {
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper('PlanetModel')..add('name', name))
+    return (newBuiltValueToStringHelper(r'PlanetModel')..add('name', name))
         .toString();
   }
 }
@@ -283,8 +284,9 @@ class PlanetModelBuilder implements Builder<PlanetModel, PlanetModelBuilder> {
   PlanetModelBuilder();
 
   PlanetModelBuilder get _$this {
-    if (_$v != null) {
-      _name = _$v.name;
+    final $v = _$v;
+    if ($v != null) {
+      _name = $v.name;
       _$v = null;
     }
     return this;
@@ -292,9 +294,7 @@ class PlanetModelBuilder implements Builder<PlanetModel, PlanetModelBuilder> {
 
   @override
   void replace(PlanetModel other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$PlanetModel;
   }
 
@@ -304,11 +304,16 @@ class PlanetModelBuilder implements Builder<PlanetModel, PlanetModelBuilder> {
   }
 
   @override
-  _$PlanetModel build() {
-    final _$result = _$v ?? new _$PlanetModel._(name: name);
+  PlanetModel build() => _build();
+
+  _$PlanetModel _build() {
+    final _$result = _$v ??
+        new _$PlanetModel._(
+            name: BuiltValueNullFieldError.checkNotNull(
+                name, r'PlanetModel', 'name'));
     replace(_$result);
     return _$result;
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,no_leading_underscores_for_local_identifiers,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new,unnecessary_lambdas
