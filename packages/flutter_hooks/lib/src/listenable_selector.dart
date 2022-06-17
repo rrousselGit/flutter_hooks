@@ -65,6 +65,7 @@ class _ListenableSelectorHookState<R>
     if (hook.listenable != oldHook.listenable) {
       oldHook.listenable.removeListener(_listener);
       hook.listenable.addListener(_listener);
+      _selectorResult = hook.selector();
     }
   }
 
