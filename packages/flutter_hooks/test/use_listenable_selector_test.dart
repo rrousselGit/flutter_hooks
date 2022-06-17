@@ -87,14 +87,11 @@ void main() {
 
   testWidgets('update selector', (tester) async {
     final listenable = ValueNotifier(0);
-    // ignore: unused_local_variable
     var isOdd = false;
     // ignore: prefer_function_declarations_over_variables
-    final isOddSelector = () => listenable.value.isOdd;
-    // ignore: unused_local_variable
+    bool isOddSelector() => listenable.value.isOdd;
     var isEven = false;
-    // ignore: prefer_function_declarations_over_variables
-    final isEvenSelector = () => listenable.value.isEven;
+    bool isEvenSelector() => listenable.value.isEven;
 
     await tester.pumpWidget(
       HookBuilder(
@@ -140,9 +137,7 @@ void main() {
 
   testWidgets('update listenable', (tester) async {
     var listenable = ValueNotifier(0);
-    // ignore: prefer_function_declarations_over_variables
-    final isOddSelector = () => listenable.value.isOdd;
-    // ignore: unused_local_variable
+    bool isOddSelector() => listenable.value.isOdd;
     var isOdd = false;
 
     await tester.pumpWidget(
