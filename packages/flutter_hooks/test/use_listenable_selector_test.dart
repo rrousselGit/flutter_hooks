@@ -53,22 +53,32 @@ void main() {
     expect(listenable.value, 0);
     expect(isOdd, false);
     expect(element.dirty, false);
+
     listenable.value++;
+
     expect(element.dirty, true);
     expect(listenable.value, 1);
+
     await tester.pump();
+
     expect(isOdd, true);
     expect(element.dirty, false);
 
     listenable.value++;
+
     expect(element.dirty, true);
+
     await tester.pump();
+
     expect(listenable.value, 2);
     expect(isOdd, false);
 
     listenable.value = listenable.value + 2;
+
     expect(element.dirty, false);
+
     await tester.pump();
+
     expect(listenable.value, 4);
     expect(isOdd, false);
 
@@ -102,10 +112,14 @@ void main() {
     expect(listenable.value, 0);
     expect(isOdd, false);
     expect(element.dirty, false);
+
     listenable.value++;
+
     expect(element.dirty, true);
     expect(listenable.value, 1);
+
     await tester.pump();
+
     expect(isOdd, true);
     expect(element.dirty, false);
 
