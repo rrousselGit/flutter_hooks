@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart' show TabController;
+import 'package:flutter/material.dart' show Brightness, TabController;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
@@ -19,5 +19,6 @@ part 'scroll_controller.dart';
 part 'page_controller.dart';
 part 'widgets_binding_observer.dart';
 part 'transformation_controller.dart';
+part 'platform_brightness.dart';
 part 'keep_alive.dart';
 part 'listenable_selector.dart';
