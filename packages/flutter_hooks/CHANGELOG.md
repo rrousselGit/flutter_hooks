@@ -1,4 +1,4 @@
-## Unreleased minor
+## 0.18.5
 
 - Added `useListenableSelector`, similar to `useListenable`, for listening to a
 `Listenable` but rebuilding the widget only if a certain data has changed (thanks to @ronnieeeeee)
