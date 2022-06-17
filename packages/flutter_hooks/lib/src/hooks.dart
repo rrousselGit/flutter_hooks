@@ -20,3 +20,4 @@ part 'page_controller.dart';
 part 'widgets_binding_observer.dart';
 part 'transformation_controller.dart';
 part 'keep_alive.dart';
+part 'listenable_selector.dart';

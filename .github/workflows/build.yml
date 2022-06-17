@@ -16,7 +16,6 @@ jobs:
         package:
           - flutter_hooks
         channel:
-          - dev
           - stable
 
     steps:
