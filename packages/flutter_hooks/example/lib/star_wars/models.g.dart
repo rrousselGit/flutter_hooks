@@ -136,7 +136,7 @@ class _$PlanetPageModel extends PlanetPageModel {
 
   _$PlanetPageModel._({this.next, this.previous, this.results}) : super._() {
     BuiltValueNullFieldError.checkNotNull(
-        results, 'PlanetPageModel', 'results');
+        results, r'PlanetPageModel', 'results');
   }
 
   @override
@@ -164,7 +164,7 @@ class _$PlanetPageModel extends PlanetPageModel {
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper('PlanetPageModel')
+    return (newBuiltValueToStringHelper(r'PlanetPageModel')
           ..add('next', next)
           ..add('previous', previous)
           ..add('results', results))
@@ -229,7 +229,7 @@ class PlanetPageModelBuilder
         results.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
-            'PlanetPageModel', _$failedField, e.toString());
+            r'PlanetPageModel', _$failedField, e.toString());
       }
       rethrow;
     }
@@ -246,7 +246,7 @@ class _$PlanetModel extends PlanetModel {
       (new PlanetModelBuilder()..update(updates))._build();
 
   _$PlanetModel._({this.name}) : super._() {
-    BuiltValueNullFieldError.checkNotNull(name, 'PlanetModel', 'name');
+    BuiltValueNullFieldError.checkNotNull(name, r'PlanetModel', 'name');
   }
 
   @override
@@ -269,7 +269,7 @@ class _$PlanetModel extends PlanetModel {
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper('PlanetModel')..add('name', name))
+    return (newBuiltValueToStringHelper(r'PlanetModel')..add('name', name))
         .toString();
   }
 }
@@ -310,10 +310,10 @@ class PlanetModelBuilder implements Builder<PlanetModel, PlanetModelBuilder> {
     final _$result = _$v ??
         new _$PlanetModel._(
             name: BuiltValueNullFieldError.checkNotNull(
-                name, 'PlanetModel', 'name'));
+                name, r'PlanetModel', 'name'));
     replace(_$result);
     return _$result;
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,no_leading_underscores_for_local_identifiers,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,no_leading_underscores_for_local_identifiers,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new,unnecessary_lambdas
