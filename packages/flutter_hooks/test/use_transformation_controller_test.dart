@@ -21,7 +21,7 @@ void main() {
           .toDiagnosticsNode(style: DiagnosticsTreeStyle.offstage)
           .toStringDeep(),
       equalsIgnoringHashCodes(
-        'HookBuilder\n',
+        'HookBuilder\n'
         ' │ useTransformationController:\n'
         ' │   TransformationController#00000([0] 1.0,0.0,0.0,0.0\n'
         ' │   [1] 0.0,1.0,0.0,0.0\n'
