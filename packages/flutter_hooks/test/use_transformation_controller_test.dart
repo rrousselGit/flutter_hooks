@@ -22,7 +22,12 @@ void main() {
           .toStringDeep(),
       equalsIgnoringHashCodes(
         'HookBuilder\n'
-        ' │ useTransformationController: TransformationController#00000(no clients)\n'
+        ' │ useTransformationController:\n'
+        ' │   TransformationController#00000([0] 1.0,0.0,0.0,0.0\n'
+        ' │   [1] 0.0,1.0,0.0,0.0\n'
+        ' │   [2] 0.0,0.0,1.0,0.0\n'
+        ' │   [3] 0.0,0.0,0.0,1.0\n'
+        ' │   )\n'
         ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
       ),
     );
