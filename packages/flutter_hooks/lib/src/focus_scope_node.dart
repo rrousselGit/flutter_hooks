@@ -10,7 +10,6 @@ FocusScopeNode useFocusScopeNode({
   FocusOnKeyEventCallback? onKeyEvent,
   bool skipTraversal = false,
   bool canRequestFocus = true,
-  bool descendantsAreFocusable = true,
 }) {
   return use(
     _FocusScopeNodeHook(
@@ -19,7 +18,6 @@ FocusScopeNode useFocusScopeNode({
       onKeyEvent: onKeyEvent,
       skipTraversal: skipTraversal,
       canRequestFocus: canRequestFocus,
-      descendantsAreFocusable: descendantsAreFocusable,
     ),
   );
 }
@@ -31,7 +29,6 @@ class _FocusScopeNodeHook extends Hook<FocusScopeNode> {
     this.onKeyEvent,
     required this.skipTraversal,
     required this.canRequestFocus,
-    required this.descendantsAreFocusable,
   });
 
   final String? debugLabel;
@@ -39,7 +36,6 @@ class _FocusScopeNodeHook extends Hook<FocusScopeNode> {
   final FocusOnKeyEventCallback? onKeyEvent;
   final bool skipTraversal;
   final bool canRequestFocus;
-  final bool descendantsAreFocusable;
 
   @override
   _FocusScopeNodeHookState createState() {

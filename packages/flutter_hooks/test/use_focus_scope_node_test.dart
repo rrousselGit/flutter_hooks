@@ -77,14 +77,13 @@ void main() {
     expect(focusScopeNode.onKey, official.onKey);
     expect(focusScopeNode.skipTraversal, official.skipTraversal);
     expect(focusScopeNode.canRequestFocus, official.canRequestFocus);
-    expect(focusScopeNode.descendantsAreFocusable, official.descendantsAreFocusable);
   });
 
   testWidgets('has all the FocusScopeNode parameters', (tester) async {
-    KeyEventResult onKey(FocusScopeNode node, RawKeyEvent event) =>
+    KeyEventResult onKey(FocusNode node, RawKeyEvent event) =>
         KeyEventResult.ignored;
 
-    KeyEventResult onKeyEvent(FocusScopeNode node, KeyEvent event) =>
+    KeyEventResult onKeyEvent(FocusNode node, KeyEvent event) =>
         KeyEventResult.ignored;
 
     late FocusScopeNode focusScopeNode;
@@ -96,7 +95,6 @@ void main() {
           onKeyEvent: onKeyEvent,
           skipTraversal: true,
           canRequestFocus: false,
-          descendantsAreFocusable: false,
         );
         return Container();
       }),
@@ -107,18 +105,17 @@ void main() {
     expect(focusScopeNode.onKeyEvent, onKeyEvent);
     expect(focusScopeNode.skipTraversal, true);
     expect(focusScopeNode.canRequestFocus, false);
-    expect(focusScopeNode.descendantsAreFocusable, false);
   });
 
   testWidgets('handles parameter change', (tester) async {
-    KeyEventResult onKey(FocusScopeNode node, RawKeyEvent event) =>
+    KeyEventResult onKey(FocusNode node, RawKeyEvent event) =>
         KeyEventResult.ignored;
-    KeyEventResult onKey2(FocusScopeNode node, RawKeyEvent event) =>
+    KeyEventResult onKey2(FocusNode node, RawKeyEvent event) =>
         KeyEventResult.ignored;
 
-    KeyEventResult onKeyEvent(FocusScopeNode node, KeyEvent event) =>
+    KeyEventResult onKeyEvent(FocusNode node, KeyEvent event) =>
         KeyEventResult.ignored;
-    KeyEventResult onKeyEvent2(FocusScopeNode node, KeyEvent event) =>
+    KeyEventResult onKeyEvent2(FocusNode node, KeyEvent event) =>
         KeyEventResult.ignored;
 
     late FocusScopeNode focusScopeNode;
@@ -130,7 +127,6 @@ void main() {
           onKeyEvent: onKeyEvent,
           skipTraversal: true,
           canRequestFocus: false,
-          descendantsAreFocusable: false,
         );
 
         return Container();
@@ -154,6 +150,5 @@ void main() {
     expect(focusScopeNode.debugLabel, 'Bar');
     expect(focusScopeNode.skipTraversal, false);
     expect(focusScopeNode.canRequestFocus, true);
-    expect(focusScopeNode.descendantsAreFocusable, true);
   });
 }
