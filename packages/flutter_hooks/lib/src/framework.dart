@@ -153,7 +153,7 @@ Calling them outside of build method leads to an unstable state and is therefore
   ///
   /// - `hook1.keys == hook2.keys` (typically if the list is immutable)
   /// - If there's any difference in the content of [Hook.keys], using `operator==`.
-  static bool shouldPreserveState(Hook hook1, Hook hook2) {
+  static bool shouldPreserveState(Hook<Object?> hook1, Hook<Object?> hook2) {
     final p1 = hook1.keys;
     final p2 = hook2.keys;
 
@@ -350,10 +350,10 @@ extension on HookElement {
 mixin HookElement on ComponentElement {
   static HookElement? _currentHookElement;
 
-  _Entry<HookState>? _currentHookState;
-  final _hooks = LinkedList<_Entry<HookState>>();
+  _Entry<HookState<Object?, Hook<Object?>>>? _currentHookState;
+  final _hooks = LinkedList<_Entry<HookState<Object?, Hook<Object?>>>>();
   final _shouldRebuildQueue = LinkedList<_Entry<bool Function()>>();
-  LinkedList<_Entry<HookState>>? _needDispose;
+  LinkedList<_Entry<HookState<Object?, Hook<Object?>>>>? _needDispose;
   bool? _isOptionalRebuild = false;
   Widget? _buildCache;
 
@@ -363,7 +363,7 @@ mixin HookElement on ComponentElement {
   /// A read-only list of all available hooks.
   ///
   /// In release mode, returns `null`.
-  List<HookState>? get debugHooks {
+  List<HookState<Object?, Hook<Object?>>>? get debugHooks {
     if (!kDebugMode) {
       return null;
     }

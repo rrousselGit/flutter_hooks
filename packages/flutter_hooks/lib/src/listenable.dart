@@ -11,7 +11,8 @@ T useValueListenable<T>(ValueListenable<T> valueListenable) {
 }
 
 class _UseValueListenableHook extends _ListenableHook {
-  const _UseValueListenableHook(ValueListenable animation) : super(animation);
+  const _UseValueListenableHook(ValueListenable<Object?> animation)
+      : super(animation);
 
   @override
   _UseValueListenableStateHook createState() {

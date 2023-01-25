@@ -28,14 +28,13 @@ void main() {
     );
 
     expect(previousValue, focusNode);
-    // ignore: invalid_use_of_protected_member
-    expect(focusNode.hasListeners, isFalse);
+    // check you can add listener (only possible if not disposed)
+    focusNode.addListener(() {});
 
     await tester.pumpWidget(Container());
 
     expect(
-      // ignore: invalid_use_of_protected_member
-      () => focusNode.hasListeners,
+      () => focusNode.addListener(() {}),
       throwsAssertionError,
     );
   });

@@ -853,7 +853,7 @@ void main() {
 
   testWidgets('hot-reload can add hooks at the end of the list',
       (tester) async {
-    late HookTest hook1;
+    late HookTest<Object?> hook1;
 
     final dispose2 = MockDispose();
     final initHook2 = MockInitHook();
@@ -1011,7 +1011,7 @@ void main() {
     verifyZeroInteractions(didUpdateHook2);
   });
   testWidgets('hot-reload disposes hooks when type change', (tester) async {
-    late HookTest hook1;
+    late HookTest<Object?> hook1;
 
     final dispose2 = MockDispose();
     final initHook2 = MockInitHook();
@@ -1113,7 +1113,7 @@ void main() {
   });
 
   testWidgets('hot-reload disposes hooks when type change', (tester) async {
-    late HookTest hook1;
+    late HookTest<Object?> hook1;
 
     final dispose2 = MockDispose();
     final initHook2 = MockInitHook();

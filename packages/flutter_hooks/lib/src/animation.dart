@@ -10,8 +10,8 @@ T useAnimation<T>(Animation<T> animation) {
   return animation.value;
 }
 
-class _UseAnimationHook extends _ListenableHook {
-  const _UseAnimationHook(Animation animation) : super(animation);
+class _UseAnimationHook<T> extends _ListenableHook {
+  const _UseAnimationHook(Animation<T> animation) : super(animation);
 
   @override
   _UseAnimationStateHook createState() {

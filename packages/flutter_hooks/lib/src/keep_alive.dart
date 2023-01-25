@@ -34,7 +34,7 @@ class _AutomaticKeepAliveHookState
   }
 
   void _releaseKeepAlive() {
-    _keepAliveHandle?.release();
+    _keepAliveHandle?.dispose();
     _keepAliveHandle = null;
   }
 
