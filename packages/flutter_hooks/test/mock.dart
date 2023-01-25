@@ -110,7 +110,8 @@ class MockInitHook extends Mock {
   void call();
 }
 
-class MockCreateState<T extends HookState<dynamic, Hook>> extends Mock {
+class MockCreateState<T extends HookState<dynamic, Hook<Object?>>>
+    extends Mock {
   MockCreateState(this.value);
   final T value;
 
@@ -152,7 +153,7 @@ class MockReassemble extends Mock {
 }
 
 class MockDidUpdateHook extends Mock {
-  void call(HookTest? hook);
+  void call(HookTest<Object?>? hook);
 }
 
 class MockDispose extends Mock {

@@ -58,7 +58,10 @@ void main() {
         return Container();
       }));
 
-      expect(controller, isNot(isInstanceOf<SynchronousStreamController>()));
+      expect(
+        controller,
+        isNot(isInstanceOf<SynchronousStreamController<Object?>>()),
+      );
       expect(controller.onListen, isNull);
       expect(controller.onCancel, isNull);
       expect(() => controller.onPause, throwsUnsupportedError);
@@ -77,7 +80,10 @@ void main() {
       }));
 
       expect(controller, previousController);
-      expect(controller, isNot(isInstanceOf<SynchronousStreamController>()));
+      expect(
+        controller,
+        isNot(isInstanceOf<SynchronousStreamController<Object?>>()),
+      );
       expect(controller.onListen, onListen);
       expect(controller.onCancel, onCancel);
       expect(() => controller.onPause, throwsUnsupportedError);
@@ -95,7 +101,7 @@ void main() {
         return Container();
       }));
 
-      expect(controller, isInstanceOf<SynchronousStreamController>());
+      expect(controller, isInstanceOf<SynchronousStreamController<Object?>>());
       expect(controller.onListen, isNull);
       expect(controller.onCancel, isNull);
       expect(() => controller.onPause, throwsUnsupportedError);
@@ -113,7 +119,7 @@ void main() {
       }));
 
       expect(controller, previousController);
-      expect(controller, isInstanceOf<SynchronousStreamController>());
+      expect(controller, isInstanceOf<SynchronousStreamController<Object?>>());
       expect(controller.onListen, onListen);
       expect(controller.onCancel, onCancel);
       expect(() => controller.onPause, throwsUnsupportedError);
