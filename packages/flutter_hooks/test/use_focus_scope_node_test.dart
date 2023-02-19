@@ -34,8 +34,7 @@ void main() {
     await tester.pumpWidget(Container());
 
     expect(
-      // ignore: invalid_use_of_protected_member
-      () => focusScopeNode.hasListeners,
+      () => focusScopeNode.dispose(),
       throwsAssertionError,
     );
   });
