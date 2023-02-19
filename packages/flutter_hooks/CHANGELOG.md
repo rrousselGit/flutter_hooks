@@ -1,3 +1,7 @@
+## Unreleased docs
+
+Added korean translation thanks to @sejun2
+
 ## 0.18.5+1
 
 Update links to the repository
