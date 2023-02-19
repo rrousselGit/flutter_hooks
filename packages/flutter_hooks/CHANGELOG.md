@@ -1,7 +1,7 @@
-## Unreleased docs
+## Unreleased minor
 
-Added korean translation thanks to @sejun2
-
+- Added korean translation (thanks to @sejun2)
+- Add `useFocusScopeNode` hook (thanks to @iamsahilsonawane)
 ## 0.18.5+1
 
 Update links to the repository
