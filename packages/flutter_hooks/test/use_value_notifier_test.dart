@@ -66,8 +66,7 @@ void main() {
       // dispose
       await tester.pumpWidget(const SizedBox());
 
-      // ignore: invalid_use_of_protected_member
-      expect(() => state.hasListeners, throwsFlutterError);
+      expect(() => state.addListener(() {}), throwsFlutterError);
     });
 
     testWidgets('no initial data', (tester) async {
@@ -108,8 +107,7 @@ void main() {
       // dispose
       await tester.pumpWidget(const SizedBox());
 
-      // ignore: invalid_use_of_protected_member
-      expect(() => state.hasListeners, throwsFlutterError);
+      expect(() => state.addListener(() {}), throwsFlutterError);
     });
 
     testWidgets('creates new valuenotifier when key change', (tester) async {
