@@ -1,7 +1,8 @@
-## Unreleased minor
+## 0.18.6
 
 - Added korean translation (thanks to @sejun2)
 - Add `useFocusScopeNode` hook (thanks to @iamsahilsonawane)
+
 ## 0.18.5+1
 
 Update links to the repository
@@ -9,7 +10,7 @@ Update links to the repository
 ## 0.18.5
 
 - Added `useListenableSelector`, similar to `useListenable`, for listening to a
-`Listenable` but rebuilding the widget only if a certain data has changed (thanks to @ronnieeeeee)
+  `Listenable` but rebuilding the widget only if a certain data has changed (thanks to @ronnieeeeee)
 - Added `useAutomaticKeepAlive` (thanks to @DevNico)
 - Added `usePlatformBrightness` and `useOnPlatformBrightnessChange` to interact with platform `Brightness` (thanks to @AhmedLSayed9)
 
