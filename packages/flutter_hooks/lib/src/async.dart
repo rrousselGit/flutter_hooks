@@ -122,6 +122,11 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
 /// * [preserveState] determines if the current value should be preserved when changing
 /// the [Stream] instance.
 ///
+/// When [preserveState] is true (the default) update jank is reduced when switching
+/// streams, but this may result in inconsistent state when using multiple
+/// or nested streams. See https://github.com/rrousselGit/flutter_hooks/issues/312
+/// for more context.
+///
 /// See also:
 ///   * [Stream], the object listened.
 ///   * [useFuture], similar to [useStream] but for [Future].
