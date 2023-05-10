@@ -164,7 +164,7 @@ typedef Dispose = void Function();
 ///
 /// [useEffect] is called synchronously on every `build`, unless
 /// [keys] is specified. In which case [useEffect] is called again only if
-/// any value inside [keys] as changed.
+/// any value inside [keys] has changed.
 ///
 /// It takes an [effect] callback and calls it synchronously.
 /// That [effect] may optionally return a function, which will be called when the [effect] is called again or if the widget is disposed.
