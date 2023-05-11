@@ -28,11 +28,9 @@ abstract class PlanetPageModel
   static Serializer<PlanetPageModel> get serializer =>
       _$planetPageModelSerializer;
 
-  @nullable
-  String get next;
+  String? get next;
 
-  @nullable
-  String get previous;
+  String? get previous;
 
   BuiltList<PlanetModel> get results;
 }

@@ -25,15 +25,15 @@ class _$PlanetPageModelSerializer
   final String wireName = 'PlanetPageModel';
 
   @override
-  Iterable<Object> serialize(Serializers serializers, PlanetPageModel object,
+  Iterable<Object?> serialize(Serializers serializers, PlanetPageModel object,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = <Object>[
+    final result = <Object?>[
       'results',
       serializers.serialize(object.results,
           specifiedType:
               const FullType(BuiltList, const [const FullType(PlanetModel)])),
     ];
-    Object value;
+    Object? value;
     value = object.next;
     if (value != null) {
       result
@@ -53,29 +53,29 @@ class _$PlanetPageModelSerializer
 
   @override
   PlanetPageModel deserialize(
-      Serializers serializers, Iterable<Object> serialized,
+      Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
     final result = new PlanetPageModelBuilder();
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
-      final key = iterator.current as String;
+      final key = iterator.current! as String;
       iterator.moveNext();
-      final Object value = iterator.current;
+      final Object? value = iterator.current;
       switch (key) {
         case 'next':
           result.next = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
+              specifiedType: const FullType(String)) as String?;
           break;
         case 'previous':
           result.previous = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
+              specifiedType: const FullType(String)) as String?;
           break;
         case 'results':
           result.results.replace(serializers.deserialize(value,
                   specifiedType: const FullType(
-                      BuiltList, const [const FullType(PlanetModel)]))
-              as BuiltList<Object>);
+                      BuiltList, const [const FullType(PlanetModel)]))!
+              as BuiltList<Object?>);
           break;
       }
     }
@@ -91,9 +91,9 @@ class _$PlanetModelSerializer implements StructuredSerializer<PlanetModel> {
   final String wireName = 'PlanetModel';
 
   @override
-  Iterable<Object> serialize(Serializers serializers, PlanetModel object,
+  Iterable<Object?> serialize(Serializers serializers, PlanetModel object,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = <Object>[
+    final result = <Object?>[
       'name',
       serializers.serialize(object.name, specifiedType: const FullType(String)),
     ];
@@ -102,19 +102,19 @@ class _$PlanetModelSerializer implements StructuredSerializer<PlanetModel> {
   }
 
   @override
-  PlanetModel deserialize(Serializers serializers, Iterable<Object> serialized,
+  PlanetModel deserialize(Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
     final result = new PlanetModelBuilder();
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
-      final key = iterator.current as String;
+      final key = iterator.current! as String;
       iterator.moveNext();
-      final Object value = iterator.current;
+      final Object? value = iterator.current;
       switch (key) {
         case 'name':
           result.name = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
+              specifiedType: const FullType(String))! as String;
           break;
       }
     }
@@ -125,16 +125,17 @@ class _$PlanetModelSerializer implements StructuredSerializer<PlanetModel> {
 
 class _$PlanetPageModel extends PlanetPageModel {
   @override
-  final String next;
+  final String? next;
   @override
-  final String previous;
+  final String? previous;
   @override
   final BuiltList<PlanetModel> results;
 
-  factory _$PlanetPageModel([void Function(PlanetPageModelBuilder) updates]) =>
+  factory _$PlanetPageModel([void Function(PlanetPageModelBuilder)? updates]) =>
       (new PlanetPageModelBuilder()..update(updates))._build();
 
-  _$PlanetPageModel._({this.next, this.previous, this.results}) : super._() {
+  _$PlanetPageModel._({this.next, this.previous, required this.results})
+      : super._() {
     BuiltValueNullFieldError.checkNotNull(
         results, r'PlanetPageModel', 'results');
   }
@@ -158,8 +159,12 @@ class _$PlanetPageModel extends PlanetPageModel {
 
   @override
   int get hashCode {
-    return $jf(
-        $jc($jc($jc(0, next.hashCode), previous.hashCode), results.hashCode));
+    var _$hash = 0;
+    _$hash = $jc(_$hash, next.hashCode);
+    _$hash = $jc(_$hash, previous.hashCode);
+    _$hash = $jc(_$hash, results.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
   }
 
   @override
@@ -174,20 +179,20 @@ class _$PlanetPageModel extends PlanetPageModel {
 
 class PlanetPageModelBuilder
     implements Builder<PlanetPageModel, PlanetPageModelBuilder> {
-  _$PlanetPageModel _$v;
+  _$PlanetPageModel? _$v;
 
-  String _next;
-  String get next => _$this._next;
-  set next(String next) => _$this._next = next;
+  String? _next;
+  String? get next => _$this._next;
+  set next(String? next) => _$this._next = next;
 
-  String _previous;
-  String get previous => _$this._previous;
-  set previous(String previous) => _$this._previous = previous;
+  String? _previous;
+  String? get previous => _$this._previous;
+  set previous(String? previous) => _$this._previous = previous;
 
-  ListBuilder<PlanetModel> _results;
+  ListBuilder<PlanetModel>? _results;
   ListBuilder<PlanetModel> get results =>
       _$this._results ??= new ListBuilder<PlanetModel>();
-  set results(ListBuilder<PlanetModel> results) => _$this._results = results;
+  set results(ListBuilder<PlanetModel>? results) => _$this._results = results;
 
   PlanetPageModelBuilder();
 
@@ -209,7 +214,7 @@ class PlanetPageModelBuilder
   }
 
   @override
-  void update(void Function(PlanetPageModelBuilder) updates) {
+  void update(void Function(PlanetPageModelBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
@@ -223,7 +228,7 @@ class PlanetPageModelBuilder
           new _$PlanetPageModel._(
               next: next, previous: previous, results: results.build());
     } catch (_) {
-      String _$failedField;
+      late String _$failedField;
       try {
         _$failedField = 'results';
         results.build();
@@ -242,10 +247,10 @@ class _$PlanetModel extends PlanetModel {
   @override
   final String name;
 
-  factory _$PlanetModel([void Function(PlanetModelBuilder) updates]) =>
+  factory _$PlanetModel([void Function(PlanetModelBuilder)? updates]) =>
       (new PlanetModelBuilder()..update(updates))._build();
 
-  _$PlanetModel._({this.name}) : super._() {
+  _$PlanetModel._({required this.name}) : super._() {
     BuiltValueNullFieldError.checkNotNull(name, r'PlanetModel', 'name');
   }
 
@@ -264,7 +269,10 @@ class _$PlanetModel extends PlanetModel {
 
   @override
   int get hashCode {
-    return $jf($jc(0, name.hashCode));
+    var _$hash = 0;
+    _$hash = $jc(_$hash, name.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
   }
 
   @override
@@ -275,11 +283,11 @@ class _$PlanetModel extends PlanetModel {
 }
 
 class PlanetModelBuilder implements Builder<PlanetModel, PlanetModelBuilder> {
-  _$PlanetModel _$v;
+  _$PlanetModel? _$v;
 
-  String _name;
-  String get name => _$this._name;
-  set name(String name) => _$this._name = name;
+  String? _name;
+  String? get name => _$this._name;
+  set name(String? name) => _$this._name = name;
 
   PlanetModelBuilder();
 
@@ -299,7 +307,7 @@ class PlanetModelBuilder implements Builder<PlanetModel, PlanetModelBuilder> {
   }
 
   @override
-  void update(void Function(PlanetModelBuilder) updates) {
+  void update(void Function(PlanetModelBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
@@ -316,4 +324,4 @@ class PlanetModelBuilder implements Builder<PlanetModel, PlanetModelBuilder> {
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,no_leading_underscores_for_local_identifiers,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new,unnecessary_lambdas
+// ignore_for_file: deprecated_member_use_from_same_package,type=lint

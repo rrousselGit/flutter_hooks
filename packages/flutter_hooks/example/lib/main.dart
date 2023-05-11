@@ -46,7 +46,10 @@ class HooksGalleryApp extends HookWidget {
 }
 
 class _GalleryItem extends StatelessWidget {
-  const _GalleryItem({this.title, this.builder});
+  const _GalleryItem({
+    required this.title,
+    required this.builder,
+  });
 
   final String title;
   final WidgetBuilder builder;

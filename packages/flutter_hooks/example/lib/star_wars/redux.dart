@@ -28,7 +28,7 @@ class FetchPlanetPageActionSuccess extends ReduxAction {
 
 @immutable
 abstract class AppState implements Built<AppState, AppStateBuilder> {
-  factory AppState([void Function(AppStateBuilder) updates]) =>
+  factory AppState([void Function(AppStateBuilder)? updates]) =>
       _$AppState((u) => u
         ..isFetchingPlanets = false
         ..update(updates));
@@ -37,13 +37,15 @@ abstract class AppState implements Built<AppState, AppStateBuilder> {
 
   bool get isFetchingPlanets;
 
-  @nullable
-  String get errorFetchingPlanets;
+  String? get errorFetchingPlanets;
 
   PlanetPageModel get planetPage;
 }
 
-AppState reducer<S extends AppState, A extends ReduxAction>(S state, A action) {
+AppState reducer<S extends AppState, A extends ReduxAction?>(
+  S state,
+  A action,
+) {
   final b = state.toBuilder();
   if (action is FetchPlanetPageActionStart) {
     b

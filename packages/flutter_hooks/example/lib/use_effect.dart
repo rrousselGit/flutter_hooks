@@ -35,7 +35,7 @@ class CustomHookExample extends HookWidget {
             return !count.hasData
                 ? const CircularProgressIndicator()
                 : GestureDetector(
-                    onTap: () => countController.add(count.data + 1),
+                    onTap: () => countController.add(count.requireData + 1),
                     child: Text('You tapped me ${count.data} times.'),
                   );
           },
@@ -79,7 +79,7 @@ StreamController<int> _useLocalStorageInt(
   useEffect(
     () {
       SharedPreferences.getInstance().then<void>((prefs) async {
-        final int valueFromStorage = prefs.getInt(key);
+        final int? valueFromStorage = prefs.getInt(key);
         controller.add(valueFromStorage ?? defaultValue);
       }).catchError(controller.addError);
       return null;
