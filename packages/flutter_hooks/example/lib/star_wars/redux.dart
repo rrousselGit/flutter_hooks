@@ -23,7 +23,7 @@ class FetchPlanetPageActionError extends ReduxAction {
 class FetchPlanetPageActionSuccess extends ReduxAction {
   FetchPlanetPageActionSuccess(this.page);
 
-  final PlanetPageModel? page;
+  final PlanetPageModel page;
 }
 
 @immutable
