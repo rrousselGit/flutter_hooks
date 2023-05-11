@@ -10,12 +10,12 @@ import 'star_wars_api.dart';
 class _PlanetHandler {
   _PlanetHandler(this._store, this._starWarsApi);
 
-  final Store<AppState, ReduxAction> _store;
+  final Store<AppState, ReduxAction?> _store;
   final StarWarsApi _starWarsApi;
 
   /// This will load all planets and will dispatch all necessary actions
   /// on the redux store.
-  Future<void> fetchAndDispatch([String url]) async {
+  Future<void> fetchAndDispatch([String? url]) async {
     _store.dispatch(FetchPlanetPageActionStart());
     try {
       final page = await _starWarsApi.getPlanets(url);
@@ -36,7 +36,7 @@ class PlanetScreen extends HookWidget {
   Widget build(BuildContext context) {
     final api = useMemoized(() => StarWarsApi());
 
-    final store = useReducer<AppState, ReduxAction>(
+    final store = useReducer<AppState, ReduxAction?>(
       reducer,
       initialState: AppState(),
       initialAction: null,
@@ -92,16 +92,19 @@ class _PlanetScreenBody extends HookWidget {
 }
 
 class _Error extends StatelessWidget {
-  const _Error({Key key, this.errorMsg}) : super(key: key);
+  const _Error({
+    Key? key,
+    required this.errorMsg,
+  }) : super(key: key);
 
-  final String errorMsg;
+  final String? errorMsg;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        if (errorMsg != null) Text(errorMsg),
+        if (errorMsg != null) Text(errorMsg!),
         ElevatedButton(
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Colors.redAccent),
@@ -120,8 +123,7 @@ class _Error extends StatelessWidget {
 }
 
 class _LoadPageButton extends HookWidget {
-  const _LoadPageButton({this.next = true})
-      : assert(next != null, 'next cannot be null');
+  const _LoadPageButton({this.next = true});
 
   final bool next;
 

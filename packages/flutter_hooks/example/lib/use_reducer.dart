@@ -14,15 +14,16 @@ class State {
 
 // Create the actions you wish to dispatch to the reducer
 class IncrementCounter {
-  IncrementCounter({this.counter});
-  int counter;
+  IncrementCounter({required this.counter});
+
+  final int counter;
 }
 
 class UseReducerExample extends HookWidget {
   @override
   Widget build(BuildContext context) {
     // Create the reducer function that will handle the actions you dispatch
-    State _reducer(State state, IncrementCounter action) {
+    State _reducer(State state, IncrementCounter? action) {
       if (action is IncrementCounter) {
         return State(counter: state.counter + action.counter);
       }
@@ -32,7 +33,7 @@ class UseReducerExample extends HookWidget {
     // Next, invoke the `useReducer` function with the reducer function and initial state to create a
     // `_store` variable that contains the current state and dispatch. Whenever the value is
     // changed, this Widget will be rebuilt!
-    final _store = useReducer<State, IncrementCounter>(
+    final _store = useReducer<State, IncrementCounter?>(
       _reducer,
       initialState: const State(),
       initialAction: null,
