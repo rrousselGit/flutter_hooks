@@ -4,11 +4,9 @@ part of 'hooks.dart';
 ///
 /// See also:
 /// - [SearchController]
-SearchController useSearchController({List<Object?>? keys}) => use(
-      _SearchControllerHook(
-        keys: keys,
-      ),
-    );
+SearchController useSearchController({List<Object?>? keys}) {
+  return use(_SearchControllerHook(keys: keys));
+}
 
 class _SearchControllerHook extends Hook<SearchController> {
   const _SearchControllerHook({List<Object?>? keys}) : super(keys: keys);
@@ -20,7 +18,7 @@ class _SearchControllerHook extends Hook<SearchController> {
 
 class _SearchControllerHookState
     extends HookState<SearchController, _SearchControllerHook> {
-  late final controller = SearchController();
+  final controller = SearchController();
 
   @override
   String get debugLabel => 'useSearchController';

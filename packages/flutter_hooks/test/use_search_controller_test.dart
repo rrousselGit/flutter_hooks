@@ -10,6 +10,7 @@ void main() {
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
         useSearchController();
+
         return const SizedBox();
       }),
     );
@@ -62,8 +63,9 @@ void main() {
           controller = useSearchController();
 
           return SearchAnchor.bar(
-              searchController: controller,
-              suggestionsBuilder: (context, controller) => []);
+            searchController: controller,
+            suggestionsBuilder: (context, controller) => [],
+          );
         }),
       ));
 
@@ -76,8 +78,9 @@ void main() {
           controller = useSearchController();
 
           return SearchAnchor.bar(
-              searchController: controller,
-              suggestionsBuilder: (context, controller) => []);
+            searchController: controller,
+            suggestionsBuilder: (context, controller) => [],
+          );
         }),
       ));
 
