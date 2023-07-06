@@ -37,12 +37,11 @@ void main() {
   group('useSearchController', () {
     testWidgets('initial values matches with real constructor', (tester) async {
       late SearchController controller;
-      late SearchController controller2;
+      final controller2 = SearchController();
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
           controller = useSearchController();
-          controller2 = SearchController();
 
           return Container();
         }),
