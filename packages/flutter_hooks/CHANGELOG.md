@@ -1,3 +1,7 @@
+## Unreleased minor
+
+- Added `useSearchController` (thanks to @snapsl)
+
 ## 0.18.6
 
 - Added korean translation (thanks to @sejun2)

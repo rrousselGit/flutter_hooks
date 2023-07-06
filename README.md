@@ -352,6 +352,7 @@ A series of hooks with no particular theme.
 | [useIsMounted](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useIsMounted.html)                                   | An equivalent to `State.mounted` for hooks.                                |
 | [useAutomaticKeepAlive](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAutomaticKeepAlive.html)                 | An equivalent to the `AutomaticKeepAlive` widget for hooks.                |
 | [useOnPlatformBrightnessChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnPlatformBrightnessChange.html) | Listens to platform `Brightness` changes and triggers a callback on change.|
+| [useSearchController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useSearchController.html)                     | Creates and disposes a `SearchController`.                                 |
 
 ## Contributions
 
