@@ -42,7 +42,7 @@ class _PlatformBrightnessState
   @override
   void initHook() {
     super.initHook();
-    _brightness = WidgetsBinding.instance.window.platformBrightness;
+    _brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -59,7 +59,7 @@ class _PlatformBrightnessState
   void didChangePlatformBrightness() {
     super.didChangePlatformBrightness();
     final _previous = _brightness;
-    _brightness = WidgetsBinding.instance.window.platformBrightness;
+    _brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
     hook.onBrightnessChange?.call(_previous, _brightness);
 
     if (hook.rebuildOnChange) {
