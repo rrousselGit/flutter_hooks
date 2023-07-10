@@ -1,4 +1,4 @@
-## Unreleased minor
+## 0.19.0 - 2023-07-10
 
 - Added `useSearchController` (thanks to @snapsl)
 - Keys on `useCallback` are now optional, to match `useMemoized` (thanks to @jezsung)
