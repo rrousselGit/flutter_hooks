@@ -42,9 +42,9 @@ ObjectRef<T> useRef<T>(T initialValue) {
 /// }, [key]);
 /// ```
 T useCallback<T extends Function>(
-  T callback,
-  List<Object?> keys,
-) {
+  T callback, [
+  List<Object?> keys = const <Object>[],
+]) {
   return useMemoized(() => callback, keys);
 }
 
