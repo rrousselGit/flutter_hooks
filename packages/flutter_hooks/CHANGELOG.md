@@ -2,6 +2,7 @@
 
 - Added `useSearchController` (thanks to @snapsl)
 - Keys on `useCallback` are now optional, to match `useMemoized` (thanks to @jezsung)
+- Update `usePlatformBrightness` to stop relying on deprecated code
 
 ## 0.18.6
 
