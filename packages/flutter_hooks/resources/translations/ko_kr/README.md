@@ -88,12 +88,12 @@ class Example extends HookWidget {
 
 > 다른 로직들은 어디에 있지?
 
-그 로직들은 `useAnimationController` 함수로 옮겨 졌습니다. 이 함수는 이 라이브러리에 내장되어 있습니다 ( [기본적인 훅들](https://github.com/rrousselGit/flutter_hooks#existing-hooks) 보기) - 이것이 훅 입니다.
+그 로직들은 `useAnimationController` 함수로 옮겨 졌습니다. 이 함수는 이 라이브러리에 내장되어 있습니다. ( [기본적인 훅들](https://github.com/rrousselGit/flutter_hooks#existing-hooks) 보기) - 이것이 훅 입니다.
 
 훅은 몇가지의 특별함(Sepcification)을 가지고 있는 새로운 종류의 객체입니다.
 
 - Mixin한 위젯의 `build` 메소드 안에서만 사용할 수 있습니다.
-- 동일한 훅이라도 여러번 재사용될 수 있습니다. 아래에는 두개의 `AnimationController` 가 있습니다. 각각의 훅은 위젯이 리빌드 될 때 다른 훅의 상태를 보존합니다.
+- 동일한 훅이라도 여러번 재사용될 수 있습니다. 아래에는 두개의 `AnimationController` 가 있습니다. 각각의 훅은 위젯이 리빌드 될 때 다른 훅의 상태를 보존합니다:
 
   ```dart
   Widget build(BuildContext context) {
