@@ -250,6 +250,103 @@ class _StreamHookState<T> extends HookState<AsyncSnapshot<T>, _StreamHook<T>> {
   String get debugLabel => 'useStream';
 }
 
+/// Subscribes to a [Stream] and calls the [Stream.listen] to register the [onData],
+/// [onError], and [onDone].
+///
+/// See also:
+///   * [Stream], the object listened.
+///   * [Stream.listen], calls the provided handlers.
+///   * [useStream], subscribes to a [Stream] returns its current state as an [AsyncSnapshot].
+void useStreamListener<T>(
+  Stream<T>? stream, {
+  void Function(T event)? onData,
+  void Function(Object error, StackTrace stackTrace)? onError,
+  void Function()? onDone,
+  bool? cancelOnError,
+}) {
+  use(
+    _StreamListenerHook<T>(
+      stream,
+      onData: onData,
+      onError: onError,
+      onDone: onDone,
+      cancelOnError: cancelOnError,
+    ),
+  );
+}
+
+class _StreamListenerHook<T> extends Hook<void> {
+  const _StreamListenerHook(
+    this.stream, {
+    this.onData,
+    this.onError,
+    this.onDone,
+    this.cancelOnError,
+  });
+
+  final Stream<T>? stream;
+  final void Function(T event)? onData;
+  final void Function(Object error, StackTrace stackTrace)? onError;
+  final void Function()? onDone;
+  final bool? cancelOnError;
+
+  @override
+  _StreamListenerHookState<T> createState() => _StreamListenerHookState<T>();
+}
+
+class _StreamListenerHookState<T>
+    extends HookState<void, _StreamListenerHook<T>> {
+  StreamSubscription<T>? _subscription;
+
+  @override
+  void initHook() {
+    super.initHook();
+    _subscribe();
+  }
+
+  @override
+  void didUpdateHook(_StreamListenerHook<T> oldWidget) {
+    super.didUpdateHook(oldWidget);
+    if (oldWidget.stream != hook.stream ||
+        oldWidget.cancelOnError != hook.cancelOnError) {
+      if (_subscription != null) {
+        _unsubscribe();
+      }
+      _subscribe();
+    }
+  }
+
+  @override
+  void dispose() {
+    _unsubscribe();
+  }
+
+  void _subscribe() {
+    if (hook.stream != null) {
+      _subscription = hook.stream!.listen(
+        hook.onData?.call,
+        onError: hook.onError?.call,
+        onDone: hook.onDone?.call,
+        cancelOnError: hook.cancelOnError,
+      );
+    }
+  }
+
+  void _unsubscribe() {
+    _subscription?.cancel();
+    _subscription = null;
+  }
+
+  @override
+  void build(BuildContext context) {}
+
+  @override
+  String get debugLabel => 'useStreamListener';
+
+  @override
+  bool get debugSkipValue => true;
+}
+
 /// Creates a [StreamController] which is automatically disposed when necessary.
 ///
 /// See also:
