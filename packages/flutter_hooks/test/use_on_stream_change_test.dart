@@ -98,31 +98,33 @@ void main() {
   });
 
   testWidgets(
-      'cancels subscription when cancelOnError is true and error occurrs',
-      (tester) async {
-    // ignore: close_sinks
-    final streamController = StreamController<int>();
+    'cancels subscription when cancelOnError is true and error occurrs',
+    (tester) => tester.runAsync(() async {
+      final streamController = StreamController<int>();
 
-    await tester.pumpWidget(
-      HookBuilder(builder: (context) {
-        useOnStreamChange<int>(
-          streamController.stream,
-          // onError needs to be set to prevent unhandled errors from propagating.
-          onError: (error, stackTrace) {},
-          cancelOnError: true,
-        );
-        return const SizedBox();
-      }),
-    );
+      await tester.pumpWidget(
+        HookBuilder(builder: (context) {
+          useOnStreamChange<int>(
+            streamController.stream,
+            // onError needs to be set to prevent unhandled errors from propagating.
+            onError: (error, stackTrace) {},
+            cancelOnError: true,
+          );
+          return const SizedBox();
+        }),
+      );
 
-    expect(streamController.hasListener, isTrue);
+      expect(streamController.hasListener, isTrue);
 
-    streamController.addError(Exception());
+      streamController.addError(Exception());
 
-    await tester.pump();
+      await tester.pump();
 
-    expect(streamController.hasListener, isFalse);
-  });
+      expect(streamController.hasListener, isFalse);
+
+      await streamController.close();
+    }),
+  );
 
   testWidgets(
     'listens new stream when stream is changed',
