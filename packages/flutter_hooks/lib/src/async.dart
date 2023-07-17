@@ -329,7 +329,7 @@ class _StreamControllerHookState<T>
 /// See also:
 ///   * [Stream], the object listened.
 ///   * [Stream.listen], calls the provided handlers.
-StreamSubscription<T> useStreamSubscription<T>(
+StreamSubscription<T> useOnStreamChange<T>(
   Stream<T> stream, {
   void Function(T event)? onData,
   void Function(Object error, StackTrace stackTrace)? onError,
@@ -337,7 +337,7 @@ StreamSubscription<T> useStreamSubscription<T>(
   bool? cancelOnError,
 }) {
   return use<StreamSubscription<T>>(
-    _StreamSubscriptionHook<T>(
+    _OnStreamChangeHook<T>(
       stream,
       onData: onData,
       onError: onError,
@@ -347,8 +347,8 @@ StreamSubscription<T> useStreamSubscription<T>(
   );
 }
 
-class _StreamSubscriptionHook<T> extends Hook<StreamSubscription<T>> {
-  const _StreamSubscriptionHook(
+class _OnStreamChangeHook<T> extends Hook<StreamSubscription<T>> {
+  const _OnStreamChangeHook(
     this.stream, {
     this.onData,
     this.onError,
@@ -367,7 +367,7 @@ class _StreamSubscriptionHook<T> extends Hook<StreamSubscription<T>> {
 }
 
 class _StreamListenerHookState<T>
-    extends HookState<StreamSubscription<T>, _StreamSubscriptionHook<T>> {
+    extends HookState<StreamSubscription<T>, _OnStreamChangeHook<T>> {
   late StreamSubscription<T> _subscription;
 
   @override
@@ -377,7 +377,7 @@ class _StreamListenerHookState<T>
   }
 
   @override
-  void didUpdateHook(_StreamSubscriptionHook<T> oldWidget) {
+  void didUpdateHook(_OnStreamChangeHook<T> oldWidget) {
     super.didUpdateHook(oldWidget);
     if (oldWidget.stream != hook.stream ||
         oldWidget.cancelOnError != hook.cancelOnError) {
@@ -410,5 +410,5 @@ class _StreamListenerHookState<T>
   }
 
   @override
-  String get debugLabel => 'useStreamSubscription';
+  String get debugLabel => 'useOnStreamChange';
 }

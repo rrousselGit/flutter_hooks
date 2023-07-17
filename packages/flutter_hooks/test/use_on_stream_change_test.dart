@@ -14,7 +14,7 @@ void main() {
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
-          useStreamSubscription(stream);
+          useOnStreamChange(stream);
           return const SizedBox();
         }),
       );
@@ -29,7 +29,7 @@ void main() {
             .toStringDeep(),
         equalsIgnoringHashCodes(
           'HookBuilder\n'
-          " │ useStreamSubscription: Instance of '_ControllerSubscription<int>'\n"
+          " │ useOnStreamChange: Instance of '_ControllerSubscription<int>'\n"
           ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
         ),
       );
@@ -46,7 +46,7 @@ void main() {
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
-          useStreamSubscription<int>(
+          useOnStreamChange<int>(
             stream,
             onData: (data) {
               value = data;
@@ -70,7 +70,7 @@ void main() {
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
-          useStreamSubscription<int>(
+          useOnStreamChange<int>(
             stream,
             onError: (error, stackTrace) {
               receivedError = error;
@@ -93,7 +93,7 @@ void main() {
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
-          useStreamSubscription<int>(
+          useOnStreamChange<int>(
             streamController.stream,
             onDone: () {
               onDoneCalled = true;
@@ -117,7 +117,7 @@ void main() {
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
-          useStreamSubscription<int>(
+          useOnStreamChange<int>(
             streamController.stream,
             // onError needs to be set to prevent unhandled errors from propagating.
             onError: (error, stackTrace) {},
@@ -152,7 +152,7 @@ void main() {
         HookBuilder(
           key: const Key('hook_builder'),
           builder: (context) {
-            useStreamSubscription<int>(
+            useOnStreamChange<int>(
               stream1,
               onData: (data) => receivedValue = data,
             );
@@ -168,7 +168,7 @@ void main() {
         HookBuilder(
           key: const Key('hook_builder'),
           builder: (context) {
-            useStreamSubscription<int>(
+            useOnStreamChange<int>(
               stream2,
               onData: (data) => receivedValue = data,
             );
@@ -195,7 +195,7 @@ void main() {
         HookBuilder(
           key: const Key('hook_builder'),
           builder: (context) {
-            subscription = useStreamSubscription<int>(
+            subscription = useOnStreamChange<int>(
               controller.stream,
               onData: (data) => receivedValue = data,
             );
