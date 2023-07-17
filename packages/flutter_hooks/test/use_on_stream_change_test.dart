@@ -124,46 +124,47 @@ void main() {
     expect(streamController.hasListener, isFalse);
   });
 
-  testWidgets('listens new stream when stream is changed', (tester) async {
-    const value1 = 42;
-    const value2 = 43;
+  testWidgets(
+    'listens new stream when stream is changed',
+    (tester) => tester.runAsync(() async {
+      final streamController1 = StreamController<int>();
+      final streamController2 = StreamController<int>();
 
-    final stream1 = Stream<int>.value(value1);
-    final stream2 = Stream<int>.value(value2);
+      late StreamSubscription<int> subscription1;
+      late StreamSubscription<int> subscription2;
 
-    late int receivedValue;
+      await tester.pumpWidget(
+        HookBuilder(
+          key: const Key('hook_builder'),
+          builder: (context) {
+            subscription1 = useOnStreamChange<int>(streamController1.stream);
+            return const SizedBox();
+          },
+        ),
+      );
 
-    await tester.pumpWidget(
-      HookBuilder(
-        key: const Key('hook_builder'),
-        builder: (context) {
-          useOnStreamChange<int>(
-            stream1,
-            onData: (data) => receivedValue = data,
-          );
-          return const SizedBox();
-        },
-      ),
-    );
+      expect(streamController1.hasListener, isTrue);
+      expect(streamController2.hasListener, isFalse);
 
-    expect(receivedValue, value1);
+      await tester.pumpWidget(
+        HookBuilder(
+          key: const Key('hook_builder'),
+          builder: (context) {
+            subscription2 = useOnStreamChange<int>(streamController2.stream);
+            return const SizedBox();
+          },
+        ),
+      );
 
-    // Listens to the stream2
-    await tester.pumpWidget(
-      HookBuilder(
-        key: const Key('hook_builder'),
-        builder: (context) {
-          useOnStreamChange<int>(
-            stream2,
-            onData: (data) => receivedValue = data,
-          );
-          return const SizedBox();
-        },
-      ),
-    );
+      expect(streamController1.hasListener, isFalse);
+      expect(streamController2.hasListener, isTrue);
 
-    expect(receivedValue, value2);
-  });
+      expect(subscription1, isNot(same(subscription2)));
+
+      await streamController1.close();
+      await streamController2.close();
+    }),
+  );
 
   testWidgets(
     'resubscribes stream when cancelOnError changed',
