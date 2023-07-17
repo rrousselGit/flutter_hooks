@@ -139,7 +139,7 @@ void main() {
         HookBuilder(
           key: const Key('hook_builder'),
           builder: (context) {
-            subscription1 = useOnStreamChange<int>(streamController1.stream);
+            subscription1 = useOnStreamChange<int>(streamController1.stream)!;
             return const SizedBox();
           },
         ),
@@ -152,7 +152,7 @@ void main() {
         HookBuilder(
           key: const Key('hook_builder'),
           builder: (context) {
-            subscription2 = useOnStreamChange<int>(streamController2.stream);
+            subscription2 = useOnStreamChange<int>(streamController2.stream)!;
             return const SizedBox();
           },
         ),
@@ -227,7 +227,7 @@ void main() {
         HookBuilder(
           key: const Key('hook_builder'),
           builder: (context) {
-            subscription = useOnStreamChange<int>(streamController.stream);
+            subscription = useOnStreamChange<int>(streamController.stream)!;
             return const SizedBox();
           },
         ),
@@ -236,6 +236,56 @@ void main() {
       await subscription.cancel();
 
       expect(streamController.hasListener, isFalse);
+
+      await streamController.close();
+    }),
+  );
+
+  testWidgets('returns null when stream is null', (tester) async {
+    StreamSubscription<int>? subscription;
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        subscription = useOnStreamChange<int>(null);
+        return const SizedBox();
+      }),
+    );
+
+    expect(subscription, isNull);
+  });
+
+  testWidgets(
+    'unsubscribes when stream changed to null',
+    (tester) => tester.runAsync(() async {
+      final streamController = StreamController<int>();
+
+      StreamSubscription<int>? subscription;
+
+      await tester.pumpWidget(
+        HookBuilder(
+          key: const Key('hook_builder'),
+          builder: (context) {
+            subscription = useOnStreamChange<int>(streamController.stream);
+            return const SizedBox();
+          },
+        ),
+      );
+
+      expect(streamController.hasListener, isTrue);
+      expect(subscription, isNotNull);
+
+      await tester.pumpWidget(
+        HookBuilder(
+          key: const Key('hook_builder'),
+          builder: (context) {
+            subscription = useOnStreamChange<int>(null);
+            return const SizedBox();
+          },
+        ),
+      );
+
+      expect(streamController.hasListener, isFalse);
+      expect(subscription, isNotNull);
 
       await streamController.close();
     }),
