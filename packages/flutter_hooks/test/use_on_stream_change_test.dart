@@ -165,6 +165,54 @@ void main() {
     expect(receivedValue, value2);
   });
 
+  testWidgets(
+    'resubscribes stream when cancelOnError changed',
+    (tester) => tester.runAsync(() async {
+      var listenCount = 0;
+      var cancelCount = 0;
+
+      final streamController = StreamController<int>.broadcast(
+        onListen: () => listenCount++,
+        onCancel: () => cancelCount++,
+      );
+      final stream = streamController.stream;
+
+      await tester.pumpWidget(
+        HookBuilder(
+          key: const Key('hook'),
+          builder: (context) {
+            useOnStreamChange<int>(
+              stream,
+              cancelOnError: false,
+            );
+            return const SizedBox();
+          },
+        ),
+      );
+
+      expect(listenCount, 1);
+      expect(cancelCount, isZero);
+
+      await tester.pumpWidget(
+        HookBuilder(
+          key: const Key('hook'),
+          builder: (context) {
+            useOnStreamChange<int>(
+              stream,
+              cancelOnError: true,
+            );
+            return const SizedBox();
+          },
+        ),
+      );
+
+      expect(listenCount, 2);
+      expect(cancelCount, 1);
+
+      await streamController.close();
+    }),
+  );
+
   testWidgets('stop listening when cancel is called on StreamSubscription',
       (tester) async {
     final controller = StreamController<int>();
