@@ -214,38 +214,38 @@ void main() {
     }),
   );
 
-  testWidgets('stop listening when cancel is called on StreamSubscription',
-      (tester) async {
-    final controller = StreamController<int>();
-    late StreamSubscription<int> subscription;
+  testWidgets(
+    'stop listening when cancel is called on StreamSubscription',
+    (tester) => tester.runAsync(() async {
+      final controller = StreamController<int>();
+      late StreamSubscription<int> subscription;
 
-    const value1 = 42;
+      const value1 = 42;
 
-    var receivedValue = 0;
+      var receivedValue = 0;
 
-    await tester.pumpWidget(
-      HookBuilder(
-        key: const Key('hook_builder'),
-        builder: (context) {
-          subscription = useOnStreamChange<int>(
-            controller.stream,
-            onData: (data) => receivedValue = data,
-          );
-          return const SizedBox();
-        },
-      ),
-    );
+      await tester.pumpWidget(
+        HookBuilder(
+          key: const Key('hook_builder'),
+          builder: (context) {
+            subscription = useOnStreamChange<int>(
+              controller.stream,
+              onData: (data) => receivedValue = data,
+            );
+            return const SizedBox();
+          },
+        ),
+      );
 
-    // Awaiting on subscription.cancel never ends.
-    // Needs to be checked if this is expected.
-    unawaited(subscription.cancel());
+      await subscription.cancel();
 
-    controller.add(value1);
+      controller.add(value1);
 
-    await tester.pump();
+      await tester.pump();
 
-    expect(receivedValue, isZero);
+      expect(receivedValue, isZero);
 
-    unawaited(controller.close());
-  });
+      await controller.close();
+    }),
+  );
 }
