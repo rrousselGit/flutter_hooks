@@ -217,21 +217,15 @@ void main() {
   testWidgets(
     'stop listening when cancel is called on StreamSubscription',
     (tester) => tester.runAsync(() async {
-      final controller = StreamController<int>();
+      final streamController = StreamController<int>();
+
       late StreamSubscription<int> subscription;
-
-      const value1 = 42;
-
-      var receivedValue = 0;
 
       await tester.pumpWidget(
         HookBuilder(
           key: const Key('hook_builder'),
           builder: (context) {
-            subscription = useOnStreamChange<int>(
-              controller.stream,
-              onData: (data) => receivedValue = data,
-            );
+            subscription = useOnStreamChange<int>(streamController.stream);
             return const SizedBox();
           },
         ),
@@ -239,13 +233,9 @@ void main() {
 
       await subscription.cancel();
 
-      controller.add(value1);
+      expect(streamController.hasListener, isFalse);
 
-      await tester.pump();
-
-      expect(receivedValue, isZero);
-
-      await controller.close();
+      await streamController.close();
     }),
   );
 }
