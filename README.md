@@ -314,6 +314,7 @@ They will take care of creating/updating/disposing an object.
 | ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | [useStream](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useStream.html)                     | Subscribes to a `Stream` and returns its current state as an `AsyncSnapshot`. |
 | [useStreamController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useStreamController.html) | Creates a `StreamController` which will automatically be disposed.            |
+| [useOnStreamChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnStreamChange.html) | Subscribes to a `Stream`, registers handlers, and returns the `StreamSubscription`.
 | [useFuture](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useFuture.html)                     | Subscribes to a `Future` and returns its current state as an `AsyncSnapshot`. |
 
 #### Animation related hooks:
