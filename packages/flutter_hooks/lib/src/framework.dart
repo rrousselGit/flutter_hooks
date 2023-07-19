@@ -172,7 +172,23 @@ Calling them outside of build method leads to an unstable state and is therefore
       if (!i1.moveNext() || !i2.moveNext()) {
         return true;
       }
-      if (i1.current != i2.current) {
+
+      final curr1 = i1.current;
+      final curr2 = i2.current;
+
+      if (curr1 is num && curr2 is num) {
+        // Checks if both are NaN
+        if (curr1.isNaN && curr2.isNaN) {
+          return true;
+        }
+
+        // Checks if one is 0.0 and the other is -0.0
+        if (curr1 == 0 && curr2 == 0) {
+          return curr1.isNegative == curr2.isNegative;
+        }
+      }
+
+      if (curr1 != curr2) {
         return false;
       }
     }
