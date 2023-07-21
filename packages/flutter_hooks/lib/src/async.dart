@@ -395,9 +395,9 @@ class _StreamListenerHookState<T>
     final stream = hook.stream;
     if (stream != null) {
       _subscription = stream.listen(
-        hook.onData?.call,
-        onError: hook.onError?.call,
-        onDone: hook.onDone?.call,
+        hook.onData,
+        onError: hook.onError,
+        onDone: hook.onDone,
         cancelOnError: hook.cancelOnError,
       );
     }
