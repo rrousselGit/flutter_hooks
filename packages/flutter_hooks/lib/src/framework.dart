@@ -153,6 +153,10 @@ Calling them outside of build method leads to an unstable state and is therefore
   ///
   /// - `hook1.keys == hook2.keys` (typically if the list is immutable)
   /// - If there's any difference in the content of [Hook.keys], using `operator==`.
+  ///
+  /// There are exceptions when comparing [Hook.keys] before using `operator==`:
+  /// - A state is preserved when one of the [Hook.keys] is [double.nan].
+  /// - A state is NOT preserved when one of the [Hook.keys] is changed from 0.0 to -0.0.
   static bool shouldPreserveState(Hook<Object?> hook1, Hook<Object?> hook2) {
     final p1 = hook1.keys;
     final p2 = hook2.keys;
