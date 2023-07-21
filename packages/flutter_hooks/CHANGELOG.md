@@ -1,3 +1,7 @@
+## Unreleased minor
+
+- Added `useOnStreamChange` (thanks to @jezsung)
+
 ## 0.19.0 - 2023-07-10
 
 - Added `useSearchController` (thanks to @snapsl)
