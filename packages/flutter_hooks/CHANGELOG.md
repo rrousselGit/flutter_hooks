@@ -1,4 +1,4 @@
-## Unreleased major
+## 0.20.0 - 2023-07-25
 
 - **Breaking**: `keys` comparison has changed under the following conditions:
   - Change from `double.nan` to `double.nan` preserves the state.
