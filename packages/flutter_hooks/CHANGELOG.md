@@ -3,6 +3,7 @@
 - **Breaking**: `keys` comparison has changed under the following conditions:
   - Change from `double.nan` to `double.nan` preserves the state.
   - Change from `0.0` to `-0.0` or vice versa does NOT preserve the state.
+- Added `useOnStreamChange` (thanks to @jezsung)
 
 ## 0.19.0 - 2023-07-10
 
