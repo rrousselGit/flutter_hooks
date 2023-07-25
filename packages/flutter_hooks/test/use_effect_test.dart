@@ -249,6 +249,55 @@ void main() {
     verifyNoMoreInteractions(disposerA);
     verifyNoMoreInteractions(effect);
   });
+
+  testWidgets(
+      'does NOT call effect when one of keys is NaN and others are same',
+      (tester) async {
+    parameters = [double.nan];
+    await tester.pumpWidget(builder());
+
+    verifyInOrder([
+      effect(),
+      unrelated(),
+    ]);
+    verifyNoMoreInteractions(effect);
+
+    parameters = [double.nan];
+    await tester.pumpWidget(builder());
+
+    verifyNoMoreInteractions(effect);
+  });
+
+  testWidgets(
+      'calls effect when one of keys is changed from 0.0 to -0.0 and vice versa',
+      (tester) async {
+    parameters = [0.0];
+    await tester.pumpWidget(builder());
+
+    verifyInOrder([
+      effect(),
+      unrelated(),
+    ]);
+    verifyNoMoreInteractions(effect);
+
+    parameters = [-0.0];
+    await tester.pumpWidget(builder());
+
+    verifyInOrder([
+      effect(),
+      unrelated(),
+    ]);
+    verifyNoMoreInteractions(effect);
+
+    parameters = [0.0];
+    await tester.pumpWidget(builder());
+
+    verifyInOrder([
+      effect(),
+      unrelated(),
+    ]);
+    verifyNoMoreInteractions(effect);
+  });
 }
 
 class MockEffect extends Mock {

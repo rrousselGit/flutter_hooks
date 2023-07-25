@@ -153,6 +153,10 @@ Calling them outside of build method leads to an unstable state and is therefore
   ///
   /// - `hook1.keys == hook2.keys` (typically if the list is immutable)
   /// - If there's any difference in the content of [Hook.keys], using `operator==`.
+  ///
+  /// There are exceptions when comparing [Hook.keys] before using `operator==`:
+  /// - A state is preserved when one of the [Hook.keys] is [double.nan].
+  /// - A state is NOT preserved when one of the [Hook.keys] is changed from 0.0 to -0.0.
   static bool shouldPreserveState(Hook<Object?> hook1, Hook<Object?> hook2) {
     final p1 = hook1.keys;
     final p2 = hook2.keys;
@@ -172,7 +176,23 @@ Calling them outside of build method leads to an unstable state and is therefore
       if (!i1.moveNext() || !i2.moveNext()) {
         return true;
       }
-      if (i1.current != i2.current) {
+
+      final curr1 = i1.current;
+      final curr2 = i2.current;
+
+      if (curr1 is num && curr2 is num) {
+        // Checks if both are NaN
+        if (curr1.isNaN && curr2.isNaN) {
+          return true;
+        }
+
+        // Checks if one is 0.0 and the other is -0.0
+        if (curr1 == 0 && curr2 == 0) {
+          return curr1.isNegative == curr2.isNegative;
+        }
+      }
+
+      if (curr1 != curr2) {
         return false;
       }
     }
