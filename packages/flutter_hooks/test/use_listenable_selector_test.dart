@@ -106,7 +106,7 @@ void main() {
 
           return Container();
         },
-      )
+      ),
     );
 
     expect(result, notFoundValue);
