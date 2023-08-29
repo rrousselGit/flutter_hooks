@@ -1,3 +1,7 @@
+## 0.20.1 - 2023-08-29
+
+- `useListenableSelector` now supports `null` listeners (thanks to @JWo1F)
+
 ## 0.20.0 - 2023-07-25
 
 - **Breaking**: `keys` comparison has changed under the following conditions:
