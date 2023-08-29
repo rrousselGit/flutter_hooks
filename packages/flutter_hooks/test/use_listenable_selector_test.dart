@@ -85,6 +85,38 @@ void main() {
     listenable.dispose();
   });
 
+  testWidgets('null as Listener', (tester) async {
+    const notFoundValue = -1;
+    final testListener = ValueNotifier(false);
+    final listenable = ValueNotifier(777);
+    var result = 0;
+
+    await tester.pumpWidget(
+      HookBuilder(
+        builder: (context) {
+          final shouldUseListener = useListenableSelector(testListener, () {
+            return testListener.value;
+          });
+
+          final actualListener = shouldUseListener ? listenable : null;
+
+          result = useListenableSelector(actualListener, () {
+            return actualListener?.value ?? notFoundValue;
+          });
+
+          return Container();
+        },
+      ),
+    );
+
+    expect(result, notFoundValue);
+    testListener.value = true;
+
+    await tester.pump();
+
+    expect(result, listenable.value);
+  });
+
   testWidgets('update selector', (tester) async {
     final listenable = ValueNotifier(0);
     var isOdd = false;

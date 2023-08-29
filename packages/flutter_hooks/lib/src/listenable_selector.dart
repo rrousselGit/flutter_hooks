@@ -25,7 +25,7 @@ part of 'hooks.dart';
 ///
 
 R useListenableSelector<R>(
-  Listenable listenable,
+  Listenable? listenable,
   R Function() selector,
 ) {
   return use(_ListenableSelectorHook(listenable, selector));
@@ -34,7 +34,7 @@ R useListenableSelector<R>(
 class _ListenableSelectorHook<R> extends Hook<R> {
   const _ListenableSelectorHook(this.listenable, this.selector);
 
-  final Listenable listenable;
+  final Listenable? listenable;
   final R Function() selector;
 
   @override
@@ -49,7 +49,7 @@ class _ListenableSelectorHookState<R>
   @override
   void initHook() {
     super.initHook();
-    hook.listenable.addListener(_listener);
+    hook.listenable?.addListener(_listener);
   }
 
   @override
@@ -63,8 +63,8 @@ class _ListenableSelectorHookState<R>
     }
 
     if (hook.listenable != oldHook.listenable) {
-      oldHook.listenable.removeListener(_listener);
-      hook.listenable.addListener(_listener);
+      oldHook.listenable?.removeListener(_listener);
+      hook.listenable?.addListener(_listener);
       _selectorResult = hook.selector();
     }
   }
@@ -83,7 +83,7 @@ class _ListenableSelectorHookState<R>
 
   @override
   void dispose() {
-    hook.listenable.removeListener(_listener);
+    hook.listenable?.removeListener(_listener);
   }
 
   @override
