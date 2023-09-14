@@ -125,7 +125,7 @@ The hook returned by `use` is based on the number of times it has been called.
 The first call returns the first hook; the second call returns the second hook,
 the third call returns the third hook and so on.
 
-If this idea is still unclear, a naive implementation of hooks could look as follows:
+If this idea is still unclear, a native implementation of hooks could look as follows:
 
 ```dart
 class HookElement extends Element {
