@@ -269,6 +269,29 @@ void main() {
   });
 
   testWidgets(
+      'calls effect when first key is two matching NaN but second key is different',
+      (tester) async {
+    // Regression test for https://github.com/rrousselGit/flutter_hooks/issues/384
+    parameters = [double.nan, 0];
+    await tester.pumpWidget(builder());
+
+    verifyInOrder([
+      effect(),
+      unrelated(),
+    ]);
+    verifyNoMoreInteractions(effect);
+
+    parameters = [double.nan, 1];
+    await tester.pumpWidget(builder());
+
+    verifyInOrder([
+      effect(),
+      unrelated(),
+    ]);
+    verifyNoMoreInteractions(effect);
+  });
+
+  testWidgets(
       'calls effect when one of keys is changed from 0.0 to -0.0 and vice versa',
       (tester) async {
     parameters = [0.0];
@@ -290,6 +313,29 @@ void main() {
     verifyNoMoreInteractions(effect);
 
     parameters = [0.0];
+    await tester.pumpWidget(builder());
+
+    verifyInOrder([
+      effect(),
+      unrelated(),
+    ]);
+    verifyNoMoreInteractions(effect);
+  });
+
+  testWidgets(
+      'calls effect when first key is two matching 0 with same sign, but second key is different',
+      (tester) async {
+    // Regression test for https://github.com/rrousselGit/flutter_hooks/issues/384
+    parameters = [-0, 42];
+    await tester.pumpWidget(builder());
+
+    verifyInOrder([
+      effect(),
+      unrelated(),
+    ]);
+    verifyNoMoreInteractions(effect);
+
+    parameters = [-0, 43];
     await tester.pumpWidget(builder());
 
     verifyInOrder([
