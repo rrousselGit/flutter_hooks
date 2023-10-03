@@ -354,6 +354,7 @@ A series of hooks with no particular theme.
 | [useAutomaticKeepAlive](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAutomaticKeepAlive.html)                 | An equivalent to the `AutomaticKeepAlive` widget for hooks.                |
 | [useOnPlatformBrightnessChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnPlatformBrightnessChange.html) | Listens to platform `Brightness` changes and triggers a callback on change.|
 | [useSearchController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useSearchController.html)                     | Creates and disposes a `SearchController`.                                 |
+| [useMaterialStatesController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useMaterialStatesController.html)     | Creates and disposes a `MaterialStatesController`.                         |
 
 ## Contributions
 
