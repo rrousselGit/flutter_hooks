@@ -5,9 +5,10 @@ import 'package:flutter/material.dart'
     show
         Brightness,
         ExpansionTileController,
+        MaterialState,
+        MaterialStatesController,
         SearchController,
-        TabController,
-        MaterialStatesController;
+        TabController;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
