@@ -183,12 +183,15 @@ Calling them outside of build method leads to an unstable state and is therefore
       if (curr1 is num && curr2 is num) {
         // Checks if both are NaN
         if (curr1.isNaN && curr2.isNaN) {
-          return true;
+          continue;
         }
 
         // Checks if one is 0.0 and the other is -0.0
         if (curr1 == 0 && curr2 == 0) {
-          return curr1.isNegative == curr2.isNegative;
+          if (curr1.isNegative != curr2.isNegative) {
+            return false;
+          }
+          continue;
         }
       }
 

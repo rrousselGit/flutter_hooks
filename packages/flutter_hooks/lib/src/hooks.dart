@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'
-    show Brightness, SearchController, TabController, MaterialState, MaterialStatesController;
+    show Brightness, ExpansionTileController, SearchController, TabController, MaterialStatesController;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
@@ -10,6 +10,7 @@ import 'framework.dart';
 
 part 'animation.dart';
 part 'async.dart';
+part 'expansion_tile_controller.dart';
 part 'focus_node.dart';
 part 'focus_scope_node.dart';
 part 'keep_alive.dart';
