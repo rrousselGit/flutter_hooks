@@ -1,6 +1,7 @@
 ## Unreleased patch
 
 - Added `useExpansionTileController` (thanks to @droidbg)
+- Added `useMaterialStateController` (thanks to @AdamHavlicek)
 
 ## 0.20.2 - 2023-10-02
 
