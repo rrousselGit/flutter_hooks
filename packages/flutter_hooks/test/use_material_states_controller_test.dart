@@ -44,7 +44,8 @@ void main() {
 
       expect(controller.value, controller2.value);
     });
-    testWidgets("returns a MaterialStatesController that doesn't change", (tester) async {
+    testWidgets("returns a MaterialStatesController that doesn't change",
+        (tester) async {
       late MaterialStatesController controller;
       late MaterialStatesController controller2;
 
@@ -67,7 +68,8 @@ void main() {
       expect(identical(controller, controller2), isTrue);
     });
 
-    testWidgets('passes hook parameters to the MaterialStatesController', (tester) async {
+    testWidgets('passes hook parameters to the MaterialStatesController',
+        (tester) async {
       late MaterialStatesController controller;
 
       await tester.pumpWidget(
@@ -85,7 +87,8 @@ void main() {
       expect(controller.value, {MaterialState.selected});
     });
 
-    testWidgets('disposes the MaterialStatesController on unmount', (tester) async {
+    testWidgets('disposes the MaterialStatesController on unmount',
+        (tester) async {
       late MaterialStatesController controller;
 
       await tester.pumpWidget(
