@@ -2,7 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'
-    show Brightness, ExpansionTileController, SearchController, TabController;
+    show
+        Brightness,
+        ExpansionTileController,
+        MaterialState,
+        MaterialStatesController,
+        SearchController,
+        TabController;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
@@ -26,3 +32,4 @@ part 'tab_controller.dart';
 part 'text_controller.dart';
 part 'transformation_controller.dart';
 part 'widgets_binding_observer.dart';
+part 'material_states_controller.dart';
