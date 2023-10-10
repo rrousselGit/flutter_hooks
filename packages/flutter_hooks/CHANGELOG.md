@@ -1,3 +1,7 @@
+## Unreleased patch
+
+- Added `useExpansionTileController` (thanks to @droidbg)
+
 ## 0.20.2 - 2023-10-02
 
 - Fixed key matching algorithm incorrectly not checking all keys if a 0 or a NaN is present (thanks to @AlexDochioiu)
