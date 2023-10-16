@@ -116,7 +116,7 @@ class Example extends HookWidget {
 由 `use` 返回的钩子由其被调用的次数决定。\
 第一次调用返回第一个钩子，第二次返回第二个，第三次返回第三个这样。
 
-如果还是不太能理解的话，钩子的一个原生实现可能长下面这样：
+如果还是不太能理解的话，钩子的一个雏形可能长下面这样：
 
 ```dart
 class HookElement extends Element {
