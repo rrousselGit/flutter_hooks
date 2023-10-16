@@ -90,12 +90,11 @@ class Example extends HookWidget {
 
 那些逻辑都已经被移入了 `useAnimationController` 里，这是这个库直接带有的（看看 [已有的钩子](https://github.com/rrousselGit/flutter_hooks#existing-hooks)）——这就是我们所说的 _钩子_。
 
-Hooks are a new kind of object with some specificities:
+钩子是一种有着如下部分特性的新对象：
 
-- They can only be used in the `build` method of a widget that mix-in `Hooks`.
-- The same hook can be reused arbitrarily many times.
-  The following code defines two independent `AnimationController`, and they are
-  correctly preserved when the widget rebuild.
+- 只能在混入了 `Hooks` 的组件的 `build` 方法内使用
+- 同类的钩子能复用任意多次
+  如下的代码定义了两个独立的 `AnimationController`，并且都在组件重建时被正确的保留
 
   ```dart
   Widget build(BuildContext context) {
@@ -105,15 +104,13 @@ Hooks are a new kind of object with some specificities:
   }
   ```
 
-- Hooks are entirely independent of each other and from the widget.\
-  This means that they can easily be extracted into a package and published on
-  [pub](https://pub.dev/) for others to use.
+- 钩子和其它钩子与组件完全独立\
+  这说明他们能被很简单的抽离到一个包并发布到 [pub](https://pub.dev/) 上去给其他人用
 
-## Principle
+## 原理
 
-Similar to `State`, hooks are stored in the `Element` of a `Widget`. However, instead
-of having one `State`, the `Element` stores a `List<Hook>`. Then in order to use a `Hook`,
-one must call `Hook.use`.
+与 `State` 类似，钩子被存在 `Widget` 的 `Element` 里。但和存个 `State` 不一样，`Element` 存的是 `List<Hook>`。
+再就是想要使用 `Hook` 的话，就必须调用 `Hook.use`。
 
 The hook returned by `use` is based on the number of times it has been called.
 The first call returns the first hook; the second call returns the second hook,
