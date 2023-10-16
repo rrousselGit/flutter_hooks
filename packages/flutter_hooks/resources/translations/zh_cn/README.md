@@ -83,7 +83,8 @@ class Example extends HookWidget {
 }
 ```
 
-这段代码和之前的例子有一样的功能。它仍然会 dispose `AnimationController`，并在 `Example.duration` 改变时更新它的 `duration`。
+这段代码和之前的例子有一样的功能。\
+它仍然会 dispose `AnimationController`，并在 `Example.duration` 改变时更新它的 `duration`。\
 但猜你在想：
 
 > 那些逻辑都哪去了？
@@ -93,7 +94,7 @@ class Example extends HookWidget {
 钩子是一种有着如下部分特性的新对象：
 
 - 只能在混入了 `Hooks` 的组件的 `build` 方法内使用
-- 同类的钩子能复用任意多次
+- 同类的钩子能复用任意多次\
   如下的代码定义了两个独立的 `AnimationController`，并且都在组件重建时被正确的保留
 
   ```dart
@@ -109,10 +110,10 @@ class Example extends HookWidget {
 
 ## 原理
 
-与 `State` 类似，钩子被存在 `Widget` 的 `Element` 里。但和存个 `State` 不一样，`Element` 存的是 `List<Hook>`。
+与 `State` 类似，钩子被存在 `Widget` 的 `Element` 里。但和存个 `State` 不一样，`Element` 存的是 `List<Hook>`。\
 再就是想要使用 `Hook` 的话，就必须调用 `Hook.use`。
 
-由 `use` 返回的钩子由其被调用的次数决定。
+由 `use` 返回的钩子由其被调用的次数决定。\
 第一次调用返回第一个钩子，第二次返回第二个，第三次返回第三个这样。
 
 如果还是不太能理解的话，钩子的一个原生实现可能长下面这样：
@@ -132,7 +133,7 @@ class HookElement extends Element {
 }
 ```
 
-想要知道有关钩子是怎么实现的更多解释的话，这里有篇挺不错的讲钩子在 React 是怎么实现的 [文章](https://medium.com/@ryardley/react-hooks-not-magic-just-arrays-cd4f1857236e)。
+想要知道有关钩子是怎么实现的更多解释的话，这里有篇挺不错的 [文章](https://medium.com/@ryardley/react-hooks-not-magic-just-arrays-cd4f1857236e) 讲钩子在 React 是怎么实现的。
 
 ## 规定
 
@@ -176,7 +177,7 @@ Widget build(BuildContext context) {
 
 由于钩子由它们的 index 保留，可能有人认为在重构时热重载会搞崩程序。
 
-但是冇问题，为了能使用钩子，`HookWidget` 重写了默认的热重载行为，但还有一些情况下钩子的状态会被重置。
+但是冇问题，为了能使用钩子，`HookWidget` 覆写了默认的热重载行为，但还有一些情况下钩子的状态会被重置。
 
 设想如下三个钩子：
 
@@ -203,8 +204,8 @@ useA();
 useC();
 ```
 
-在这种情况下，`HookA` 会保留它的状态，但 `HookC` 会被强制重置。
-这是因为重构并热重载后，在第一个被影响的钩子 _之后_ 的所有钩子都会被 dispose 掉。
+在这种情况下，`HookA` 会保留它的状态，但 `HookC` 会被强制重置。\
+这是因为重构并热重载后，在第一个被影响的钩子 _之后_ 的所有钩子都会被 dispose 掉。\
 因此，由于 `HookC` 在 `HookB` _之后_，所以它会被 dispose 掉。
 
 ## 如何创建钩子
@@ -213,7 +214,8 @@ useC();
 
 - 函数式钩子
 
-  函数是目前用来写钩子的最常用方法，幸亏钩子能被自然的组合，一个函数就能将其他的钩子组合为一个复杂的自定义钩子。
+  函数是目前用来写钩子的最常用方法。\
+  多亏钩子能被自然的组合，一个函数就能将其他的钩子组合为一个复杂的自定义钩子。\
   而且我们规定好了这些函数都以 `use` 为前缀。
 
   如下代码构建了一个自定义钩子，其创建了一个变量，并在变量改变时在终端显示日志。
@@ -230,11 +232,10 @@ useC();
 
 - 类钩子
 
-  当一个钩子变得过于复杂时，可以将其转化为一个继承 `Hook` 的类——然后就能拿来调用 `Hook.use`\
-  As a class, the hook will look very similar to a `State` class and have access to widget
-  life-cycle and methods such as `initHook`, `dispose` and `setState`.
+  当一个钩子变得过于复杂时，可以将其转化为一个继承 `Hook` 的类——然后就能拿来调用 `Hook.use`。\
+  作为一个类，钩子看起来和 `State` 类差不多，有着组件的生命周期和方法，比如 `initHook`、`dispose`和`setState`。
 
-  It is usually good practice to hide the class under a function as such:
+  而且一个好的实践是将类藏在一个函数后面：
 
   ```dart
   Result useMyHook() {
@@ -242,7 +243,7 @@ useC();
   }
   ```
 
-  The following code defines a hook that prints the total time a `State` has been alive on its dispose.
+  如下代码构建了一个自定义钩子，其能在其被 dispose 时打印其状态存在的总时长。
 
   ```dart
   class _TimeAlive extends Hook<void> {
