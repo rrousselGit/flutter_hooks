@@ -345,32 +345,29 @@ Flutter_Hooks 已经包含一些不同类别的可复用的钩子：
 | [useMaterialStatesController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useMaterialStatesController.html)     | Creates and disposes a `MaterialStatesController`.                         |
 | [useExpansionTileController](https://api.flutter.dev/flutter/material/ExpansionTileController-class.html)                            | Creates a `ExpansionTileController`.                                       |
 
-## Contributions
+## 贡献
 
-Contributions are welcomed!
+还有贡献！
 
-If you feel that a hook is missing, feel free to open a pull-request.
+如果你觉得少了某个钩子，别多想直接开个 Pull Request。
 
-For a custom-hook to be merged, you will need to do the following:
+为了合并新的自定义钩子，你需要按如下规则办事：
 
-- Describe the use-case.
+- 介绍使用例
 
-  Open an issue explaining why we need this hook, how to use it, ...
-  This is important as a hook will not get merged if the hook doesn't appeal to
-  a large number of people.
+  开个 issue 解释一下为什么我们需要这个钩子，怎么用它……\
+  这很重要，如果这个钩子对很多人没有吸引力，那么它就不会被合并。
 
-  If your hook is rejected, don't worry! A rejection doesn't mean that it won't
-  be merged later in the future if more people show interest in it.
-  In the mean-time, feel free to publish your hook as a package on https://pub.dev.
+  如果你被拒了也没关系！这并不意味着以后也被拒绝，如果越来越多的人感兴趣。\
+  在这之前，你也可以把你的钩子发布到 [pub](https://pub.dev/) 上。
 
-- Write tests for your hook
+- 为你的钩子写测试
 
-  A hook will not be merged unless fully tested to avoid inadvertently breaking it
-  in the future.
+  除非钩子被完全测试好，不然不会合并，以防未来不经意破坏了它也没法发现。
 
-- Add it to the README and write documentation for it.
+- 把它加到 README 并写介绍
 
-## Sponsors
+## 赞助
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/rrousselGit/freezed/master/sponsorkit/sponsors.svg">
