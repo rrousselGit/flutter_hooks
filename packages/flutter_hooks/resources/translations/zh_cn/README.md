@@ -133,7 +133,7 @@ class HookElement extends Element {
 }
 ```
 
-想要知道有关钩子是怎么实现的更多解释的话，这里有篇挺不错的 [文章](https://medium.com/@ryardley/react-hooks-not-magic-just-arrays-cd4f1857236e) 讲钩子在 React 是怎么实现的。
+想要更多有关钩子是怎么实现的解释的话，这里有篇挺不错的 [文章](https://medium.com/@ryardley/react-hooks-not-magic-just-arrays-cd4f1857236e) 讲钩子在 React 是怎么实现的。
 
 ## 规定
 
@@ -279,9 +279,9 @@ Flutter_Hooks 已经包含一些不同类别的可复用的钩子：
 
 ### 基础类别
 
-A set of low-level hooks that interact with the different life-cycles of a widget
+与组件不同生命周期交互的低级钩子。
 
-| Name                                                                                                     | Description                                                         |
+| 名称                                                                                                     | 介绍                                                         |
 | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | [useEffect](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useEffect.html)             | Useful for side-effects and optionally canceling them.              |
 | [useState](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useState.html)               | Creates a variable and subscribes to it.                            |
@@ -291,7 +291,7 @@ A set of low-level hooks that interact with the different life-cycles of a widge
 | [useContext](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useContext.html)           | Obtains the `BuildContext` of the building `HookWidget`.            |
 | [useValueChanged](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useValueChanged.html) | Watches a value and triggers a callback whenever its value changed. |
 
-### Object-binding
+### 绑定对象
 
 This category of hooks the manipulation of existing Flutter/Dart objects with hooks.
 They will take care of creating/updating/disposing an object.
