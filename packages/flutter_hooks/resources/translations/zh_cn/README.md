@@ -88,7 +88,7 @@ class Example extends HookWidget {
 
 > 那些逻辑都哪去了？
 
-那些逻辑都已经被移入了 `useAnimationController` 里，这是这个库直接带有的（看看 [已有的钩子](https://github.com/rrousselGit/flutter_hooks#existing-hooks)）——这就是我们所说的 _钩子_。
+那些逻辑都已经被移入了 `useAnimationController` 里，这是这个库直接带有的（看看 [已有的钩子](https://github.com/Cierra-Runis/flutter_hooks/blob/master/packages/flutter_hooks/resources/translations/zh_cn/README.md#%E5%B7%B2%E6%9C%89%E7%9A%84%E9%92%A9%E5%AD%90) ）——这就是我们所说的 _钩子_。
 
 钩子是一种有着如下部分特性的新对象：
 
@@ -112,11 +112,10 @@ class Example extends HookWidget {
 与 `State` 类似，钩子被存在 `Widget` 的 `Element` 里。但和存个 `State` 不一样，`Element` 存的是 `List<Hook>`。
 再就是想要使用 `Hook` 的话，就必须调用 `Hook.use`。
 
-The hook returned by `use` is based on the number of times it has been called.
-The first call returns the first hook; the second call returns the second hook,
-the third call returns the third hook and so on.
+由 `use` 返回的钩子由其被调用的次数决定。
+第一次调用返回第一个钩子，第二次返回第二个，第三次返回第三个这样。
 
-If this idea is still unclear, a naive implementation of hooks could look as follows:
+如果还是不太能理解的话，钩子的一个原生实现可能长下面这样：
 
 ```dart
 class HookElement extends Element {
@@ -133,26 +132,25 @@ class HookElement extends Element {
 }
 ```
 
-For more explanation of how hooks are implemented, here's a great article about
-how is was done in React: https://medium.com/@ryardley/react-hooks-not-magic-just-arrays-cd4f1857236e
+想要知道有关钩子是怎么实现的更多解释的话，这里有篇挺不错的讲钩子在 React 是怎么实现的 [文章](https://medium.com/@ryardley/react-hooks-not-magic-just-arrays-cd4f1857236e)。
 
-## Rules
+## 规定
 
-Due to hooks being obtained from their index, some rules must be respected:
+由于钩子由它们的 index 保留，有些规定是必须要遵守的：
 
-### DO always prefix your hooks with `use`:
+### _要_ 一直使用 `use` 作为你钩子的前缀
 
 ```dart
 Widget build(BuildContext context) {
-  // starts with `use`, good name
+  // 以 `use` 开头，非常好名字
   useMyHook();
-  // doesn't start with `use`, could confuse people into thinking that this isn't a hook
+  // 不以 `use` 开头，会让人以为这不是一个钩子
   myHook();
   // ....
 }
 ```
 
-### DO call hooks unconditionally
+### _要_ 直接调用钩子
 
 ```dart
 Widget build(BuildContext context) {
@@ -161,7 +159,7 @@ Widget build(BuildContext context) {
 }
 ```
 
-### DON'T wrap `use` into a condition
+### _不要_ 将 `use` 包到条件语句里
 
 ```dart
 Widget build(BuildContext context) {
@@ -174,13 +172,13 @@ Widget build(BuildContext context) {
 
 ---
 
-### About hot-reload
+### 有关热重载
 
-Since hooks are obtained from their index, one may think that hot-reloads while refactoring will break the application.
+由于钩子由它们的 index 保留，可能有人认为在重构时热重载会搞崩程序。
 
-But worry not, a `HookWidget` overrides the default hot-reload behavior to work with hooks. Still, there are some situations in which the state of a Hook may be reset.
+但是冇问题，为了能使用钩子，`HookWidget` 重写了默认的热重载行为，但还有一些情况下钩子的状态会被重置。
 
-Consider the following list of hooks:
+设想如下三个钩子：
 
 ```dart
 useA();
@@ -188,7 +186,7 @@ useB(0);
 useC();
 ```
 
-Then consider that we edited the parameter of `HookB` after performing a hot-reload:
+然后我们在热重载后修改 `HookB` 的参数：
 
 ```dart
 useA();
@@ -196,31 +194,29 @@ useB(42);
 useC();
 ```
 
-Here everything works fine and all hooks maintain their state.
+那么一切正常，所有的钩子都保留了他们的状态。
 
-Now consider that we removed `HookB`. We now have:
+现在再删掉 `HookB` 试试：
 
 ```dart
 useA();
 useC();
 ```
 
-In this situation, `HookA` maintains its state but `HookC` gets hard reset.
-This happens because, when a hot-reload is performed after refactoring, all hooks _after_ the first line impacted are disposed of.
-So, since `HookC` was placed _after_ `HookB`, it will be disposed.
+在这种情况下，`HookA` 会保留它的状态，但 `HookC` 会被强制重置。
+这是因为重构并热重载后，在第一个被影响的钩子 _之后_ 的所有钩子都会被 dispose 掉。
+因此，由于 `HookC` 在 `HookB` _之后_，所以它会被 dispose 掉。
 
-## How to create a hook
+## 如何创建钩子
 
-There are two ways to create a hook:
+这有两种方法：
 
-- A function
+- 函数式钩子
 
-  Functions are by far the most common way to write hooks. Thanks to hooks being
-  composable by nature, a function will be able to combine other hooks to create
-  a more complex custom hook. By convention, these functions will be prefixed by `use`.
+  函数是目前用来写钩子的最常用方法，幸亏钩子能被自然的组合，一个函数就能将其他的钩子组合为一个复杂的自定义钩子。
+  而且我们规定好了这些函数都以 `use` 为前缀。
 
-  The following code defines a custom hook that creates a variable and logs its value
-  to the console whenever the value changes:
+  如下代码构建了一个自定义钩子，其创建了一个变量，并在变量改变时在终端显示日志。
 
   ```dart
   ValueNotifier<T> useLoggedState<T>([T initialData]) {
@@ -232,9 +228,9 @@ There are two ways to create a hook:
   }
   ```
 
-- A class
+- 类钩子
 
-  When a hook becomes too complex, it is possible to convert it into a class that extends `Hook` - which can then be used using `Hook.use`.\
+  当一个钩子变得过于复杂时，可以将其转化为一个继承 `Hook` 的类——然后就能拿来调用 `Hook.use`\
   As a class, the hook will look very similar to a `State` class and have access to widget
   life-cycle and methods such as `initHook`, `dispose` and `setState`.
 
@@ -280,7 +276,7 @@ There are two ways to create a hook:
 
 Flutter_Hooks 已经包含一些不同类别的可复用的钩子：
 
-### Primitives
+### 基础类别
 
 A set of low-level hooks that interact with the different life-cycles of a widget
 
