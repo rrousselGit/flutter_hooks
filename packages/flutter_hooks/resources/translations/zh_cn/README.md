@@ -276,9 +276,9 @@ There are two ways to create a hook:
   }
   ```
 
-## Existing hooks
+## 已有的钩子
 
-Flutter_Hooks already comes with a list of reusable hooks which are divided into different kinds:
+Flutter_Hooks 已经包含一些不同类别的可复用的钩子：
 
 ### Primitives
 
