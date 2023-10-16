@@ -7,9 +7,9 @@
 
 # Flutter Hooks
 
-一个 React 钩子在 Flutter 上的实现：<https://medium.com/@dan_abramov/making-sense-of-react-hooks-fdbde8803889>
+一个 React 钩子在 Flutter 上的实现：[Making Sense of React Hooks](https://medium.com/@dan_abramov/making-sense-of-react-hooks-fdbde8803889)
 
-钩子是一种用来管理 `Widget` 生命周期的新对象，为减少重复代码、增加组件间复用性而存在。
+钩子是一种用来管理 `Widget` 生命周期的新对象，以减少重复代码、增加组件间复用性。
 
 ## 动机
 
@@ -58,7 +58,7 @@ class _ExampleState extends State<Example> with SingleTickerProviderStateMixin {
 
 所有想要使用 `AnimationController` 的组件都几乎必须从头开始重新实现这些逻辑，这当然不是我们想要的。
 
-Dart 的 mixins 特性能部分解决这个问题，但随之又有其它问题：
+Dart 的 mixin 能部分解决这个问题，但随之又有其它问题：
 
 - 一个给定的 mixin 只能被一个类使用一次
 - Mixin 和类共用一个对象\
@@ -89,7 +89,7 @@ class Example extends HookWidget {
 
 > 那些逻辑都哪去了？
 
-那些逻辑都已经被移入了 `useAnimationController` 里，这是这个库直接带有的（看看 [已有的钩子](https://github.com/Cierra-Runis/flutter_hooks/blob/master/packages/flutter_hooks/resources/translations/zh_cn/README.md#%E5%B7%B2%E6%9C%89%E7%9A%84%E9%92%A9%E5%AD%90) ）——这就是我们所说的 _钩子_。
+那些逻辑都已经被移入了 `useAnimationController` 里，这是这个库直接带有的（见 [已有的钩子](https://github.com/Cierra-Runis/flutter_hooks/blob/master/packages/flutter_hooks/resources/translations/zh_cn/README.md#%E5%B7%B2%E6%9C%89%E7%9A%84%E9%92%A9%E5%AD%90) ）——这就是我们所说的 _钩子_。
 
 钩子是一种有着如下部分特性的新对象：
 
@@ -133,11 +133,11 @@ class HookElement extends Element {
 }
 ```
 
-想要更多有关钩子是怎么实现的解释的话，这里有篇挺不错的 [文章](https://medium.com/@ryardley/react-hooks-not-magic-just-arrays-cd4f1857236e) 讲钩子在 React 是怎么实现的。
+想要更多有关钩子是怎么实现的解释的话，这里有篇讲钩子在 React 是怎么实现的挺不错的 [文章](https://medium.com/@ryardley/react-hooks-not-magic-just-arrays-cd4f1857236e)。
 
-## 规定
+## 约定
 
-由于钩子由它们的 index 保留，有些规定是必须要遵守的：
+由于钩子由它们的 index 保留，有些约定是必须要遵守的：
 
 ### _要_ 一直使用 `use` 作为你钩子的前缀
 
@@ -177,7 +177,7 @@ Widget build(BuildContext context) {
 
 由于钩子由它们的 index 保留，可能有人认为在重构时热重载会搞崩程序。
 
-但是冇问题，为了能使用钩子，`HookWidget` 覆写了默认的热重载行为，但还有一些情况下钩子的状态会被重置。
+冇问题的，为了能使用钩子，`HookWidget` 覆写了默认的热重载行为，但还有一些情况下钩子的状态会被重置。
 
 设想如下三个钩子：
 
@@ -187,7 +187,7 @@ useB(0);
 useC();
 ```
 
-然后我们在热重载后修改 `HookB` 的参数：
+接下来我们在热重载后修改 `HookB` 的参数：
 
 ```dart
 useA();
@@ -216,7 +216,7 @@ useC();
 
   函数是目前用来写钩子的最常用方法。\
   多亏钩子能被自然的组合，一个函数就能将其他的钩子组合为一个复杂的自定义钩子。\
-  而且我们规定好了这些函数都以 `use` 为前缀。
+  而且我们约定好了这些函数都以 `use` 为前缀。
 
   如下代码构建了一个自定义钩子，其创建了一个变量，并在变量改变时在终端显示日志。
 
@@ -347,9 +347,9 @@ Flutter_Hooks 已经包含一些不同类别的可复用的钩子：
 
 ## 贡献
 
-还有贡献！
+欢迎贡献！
 
-如果你觉得少了某个钩子，别多想直接开个 Pull Request。
+如果你觉得少了某个钩子，别多想直接开个 Pull Request～
 
 为了合并新的自定义钩子，你需要按如下规则办事：
 
@@ -359,7 +359,7 @@ Flutter_Hooks 已经包含一些不同类别的可复用的钩子：
   这很重要，如果这个钩子对很多人没有吸引力，那么它就不会被合并。
 
   如果你被拒了也没关系！这并不意味着以后也被拒绝，如果越来越多的人感兴趣。\
-  在这之前，你也可以把你的钩子发布到 [pub](https://pub.dev/) 上。
+  在这之前，你也可以把你的钩子发布到 [pub](https://pub.dev/) 上～
 
 - 为你的钩子写测试
 
