@@ -128,3 +128,15 @@ class _UseValueNotifierHookState<T>
   @override
   String get debugLabel => 'useValueNotifier';
 }
+
+/// Subscribes to a [Listenable] and registers `listener` to the passed `listenable`.
+///
+/// See also:
+///   * [useListenable]
+void useOnListenableChange(void Function() listener, Listenable listenable) {
+  useEffect(() {
+    listenable.addListener(listener);
+
+    return () => listenable.removeListener(listener);
+  }, listenable);
+}
