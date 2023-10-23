@@ -139,8 +139,7 @@ void useOnListenableChange(VoidCallback listener, Listenable listenable) {
 }
 
 class _OnListenableChangeHook extends Hook<void> {
-  _OnListenableChangeHook(this.listener, this.listenable)
-      : super(keys: [listenable]);
+  _OnListenableChangeHook(this.listener, this.listenable);
 
   final VoidCallback listener;
   final Listenable listenable;
@@ -163,7 +162,7 @@ class _OnListenableChangeHookState
   void didUpdateHook(_OnListenableChangeHook oldHook) {
     super.didUpdateHook(oldHook);
 
-    if (hook.keys == null) {
+    if (hook.listenable != oldHook.listenable) {
       disposer?.call();
       scheduleEffect();
     }
@@ -176,8 +175,10 @@ class _OnListenableChangeHookState
   void dispose() => disposer?.call();
 
   void scheduleEffect() {
-    hook.listenable.addListener(hook.listener);
-    disposer = () => hook.listenable.removeListener(hook.listener);
+    void listener() => hook.listener();
+
+    hook.listenable.addListener(listener);
+    disposer = () => hook.listenable.removeListener(listener);
   }
 
   @override
