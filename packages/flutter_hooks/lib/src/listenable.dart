@@ -133,10 +133,56 @@ class _UseValueNotifierHookState<T>
 ///
 /// See also:
 ///   * [useListenable]
-void useOnListenableChange(void Function() listener, Listenable listenable) {
-  useEffect(() {
-    listenable.addListener(listener);
+///   * [useEffect]
+void useOnListenableChange(VoidCallback listener, Listenable listenable) {
+  use(_OnListenableChangeHook(listener, listenable));
+}
 
-    return () => listenable.removeListener(listener);
-  }, listenable);
+class _OnListenableChangeHook extends Hook<void> {
+  _OnListenableChangeHook(this.listener, this.listenable)
+      : super(keys: [listenable]);
+
+  final VoidCallback listener;
+  final Listenable listenable;
+
+  @override
+  _OnListenableChangeHookState createState() => _OnListenableChangeHookState();
+}
+
+class _OnListenableChangeHookState
+    extends HookState<void, _OnListenableChangeHook> {
+  Dispose? disposer;
+
+  @override
+  void initHook() {
+    super.initHook();
+    scheduleEffect();
+  }
+
+  @override
+  void didUpdateHook(_OnListenableChangeHook oldHook) {
+    super.didUpdateHook(oldHook);
+
+    if (hook.keys == null) {
+      disposer?.call();
+      scheduleEffect();
+    }
+  }
+
+  @override
+  void build(BuildContext context) {}
+
+  @override
+  void dispose() => disposer?.call();
+
+  void scheduleEffect() {
+    hook.listenable.addListener(hook.listener);
+    disposer = () => hook.listenable.removeListener(hook.listener);
+  }
+
+  @override
+  String get debugLabel => 'useOnListenableChange';
+
+  @override
+  bool get debugSkipValue => true;
 }
