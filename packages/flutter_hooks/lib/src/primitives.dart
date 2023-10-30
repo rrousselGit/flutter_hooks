@@ -53,7 +53,7 @@ T useCallback<T extends Function>(
 /// [useMemoized] will immediately call [valueBuilder] on first call and store its result.
 /// Later, when the [HookWidget] rebuilds, the call to [useMemoized] will return the previously created instance without calling [valueBuilder].
 ///
-/// A subsequent call of [useMemoized] with different [keys] will call [useMemoized] again to create a new instance.
+/// A subsequent call of [useMemoized] with different [keys] will re-invoke the function to create a new instance.
 T useMemoized<T>(
   T Function() valueBuilder, [
   List<Object?> keys = const <Object>[],
