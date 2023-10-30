@@ -143,7 +143,7 @@ class HookElement extends Element {
 ```
 
 For more explanation of how hooks are implemented, here's a great article about
-how is was done in React: https://medium.com/@ryardley/react-hooks-not-magic-just-arrays-cd4f1857236e
+how it was done in React: https://medium.com/@ryardley/react-hooks-not-magic-just-arrays-cd4f1857236e
 
 ## Rules
 
