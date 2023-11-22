@@ -1,11 +1,27 @@
 part of 'hooks.dart';
 
-/// Returns a [ValueNotifier] that updates its value with a timeout
-/// for the given input [toDebounce] and triggers widget rebuilds accordingly.
-ValueNotifier<T?> useDebounced<T>(
-  T toDebounce, {
-  Duration timeout = const Duration(milliseconds: 500),
-}) {
+/// Returns a debounced version of the provided value [toDebounce], triggering
+/// widget updates accordingly after a specified [timeout] duration.
+///
+/// Example:
+/// ```dart
+/// String userInput = ''; // Your input value
+///
+/// // Create a debounced version of userInput
+/// final debouncedInput = useDebounced(
+///   userInput,
+///   Duration(milliseconds: 500), // Set your desired timeout
+/// );
+/// // Assume a fetch method fetchData(String query) exists
+/// useEffect(() {
+///   fetchData(debouncedInput); // Use debouncedInput as a dependency
+///   return null;
+/// }, [debouncedInput]);
+/// ```
+T? useDebounced<T>(
+  T toDebounce,
+  Duration timeout,
+) {
   return use(
     _DebouncedHook(
       toDebounce: toDebounce,
@@ -14,7 +30,7 @@ ValueNotifier<T?> useDebounced<T>(
   );
 }
 
-class _DebouncedHook<T> extends Hook<ValueNotifier<T?>> {
+class _DebouncedHook<T> extends Hook<T?> {
   const _DebouncedHook({
     required this.toDebounce,
     required this.timeout,
@@ -27,9 +43,8 @@ class _DebouncedHook<T> extends Hook<ValueNotifier<T?>> {
   _DebouncedHookState<T> createState() => _DebouncedHookState();
 }
 
-class _DebouncedHookState<T>
-    extends HookState<ValueNotifier<T?>, _DebouncedHook<T>> {
-  final ValueNotifier<T?> _state = ValueNotifier(null);
+class _DebouncedHookState<T> extends HookState<T?, _DebouncedHook<T>> {
+  T? _state;
   Timer? _timer;
 
   @override
@@ -41,25 +56,25 @@ class _DebouncedHookState<T>
   void _startDebounce(T toDebounce) {
     _timer?.cancel();
     _timer = Timer(hook.timeout, () {
-      if (context.mounted) {
-        _state.value = toDebounce;
-        setState(() {});
-      }
+      setState(() {
+        _state = toDebounce;
+      });
     });
   }
 
   @override
   void didUpdateHook(_DebouncedHook<T> oldHook) {
-    if (hook.toDebounce != oldHook.toDebounce) {
+    if (hook.toDebounce != oldHook.toDebounce ||
+        hook.timeout != oldHook.timeout) {
       _startDebounce(hook.toDebounce);
     }
   }
 
   @override
-  ValueNotifier<T?> build(BuildContext context) => _state;
+  T? build(BuildContext context) => _state;
 
   @override
-  Object? get debugValue => _state.value;
+  Object? get debugValue => _state;
 
   @override
   String get debugLabel => 'useDebounced<$T>';
@@ -68,7 +83,6 @@ class _DebouncedHookState<T>
   void dispose() {
     _timer?.cancel();
     _timer = null;
-    _state.dispose();
     super.dispose();
   }
 }

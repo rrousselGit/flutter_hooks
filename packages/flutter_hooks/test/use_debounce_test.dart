@@ -7,7 +7,7 @@ void main() {
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        useDebounced(42, timeout: const Duration(milliseconds: 500));
+        useDebounced(42, const Duration(milliseconds: 500));
         return const SizedBox();
       }),
     );
@@ -33,17 +33,16 @@ void main() {
     testWidgets('default value is null', (tester) async {
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
+          final debounced = useDebounced(
+            'test',
+            const Duration(milliseconds: 500),
+          );
           return Text(
-            useDebounced(
-              null,
-              timeout: const Duration(milliseconds: 500),
-            ).value.toString(),
+            debounced.toString(),
             textDirection: TextDirection.ltr,
           );
         }),
       );
-      await tester.pumpAndSettle(const Duration(milliseconds: 500));
-
       expect(find.text('null'), findsOneWidget);
     });
     testWidgets('basic', (tester) async {
@@ -51,9 +50,9 @@ void main() {
         HookBuilder(
           builder: (context) {
             final textValueNotifier = useState('Hello');
-            final debouncedNotifier = useDebounced(
+            final debounced = useDebounced(
               textValueNotifier.value,
-              timeout: const Duration(milliseconds: 500),
+              const Duration(milliseconds: 500),
             );
 
             useEffect(() {
@@ -62,7 +61,7 @@ void main() {
             }, [textValueNotifier.value]);
 
             return Text(
-              debouncedNotifier.value.toString(),
+              debounced.toString(),
               textDirection: TextDirection.ltr,
             );
           },
@@ -73,12 +72,12 @@ void main() {
       expect(find.text('null'), findsOneWidget);
 
       // Ensure that after a 500ms delay, the value 'Hello' of 'textValueNotifier'
-      // is reflected in 'debouncedNotifier' and displayed
+      // is reflected in 'debounced' and displayed
       await tester.pumpAndSettle(const Duration(milliseconds: 500));
       expect(find.text('Hello'), findsOneWidget);
 
       // Ensure that after another 500ms delay, the value 'World' assigned to
-      // 'textValueNotifier' in the useEffect is reflected in 'debouncedNotifier'
+      // 'textValueNotifier' in the useEffect is reflected in 'debounced'
       // and displayed
       await tester.pumpAndSettle(const Duration(milliseconds: 500));
       expect(find.text('World'), findsOneWidget);
