@@ -33,3 +33,4 @@ part 'text_controller.dart';
 part 'transformation_controller.dart';
 part 'widgets_binding_observer.dart';
 part 'material_states_controller.dart';
+part 'debounced.dart';
