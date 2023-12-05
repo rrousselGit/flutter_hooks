@@ -1,3 +1,7 @@
+## Unreleased fix
+
+- Added `useDebounced` (thanks to @itisnajim)
+
 ## 0.20.3 - 2023-10-10
 
 - Added `useExpansionTileController` (thanks to @droidbg)
