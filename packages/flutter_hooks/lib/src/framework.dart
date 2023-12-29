@@ -369,7 +369,6 @@ extension on HookElement {
 }
 
 /// An [Element] that uses a [HookWidget] as its configuration.
-@visibleForTesting
 mixin HookElement on ComponentElement {
   static HookElement? _currentHookElement;
 
