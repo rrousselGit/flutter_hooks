@@ -1,4 +1,4 @@
-## Unreleased fix
+## 0.20.4 - 2023-12-29
 
 - Added `useDebounced` (thanks to @itisnajim)
 - Removed `@visibleForTesting` on `HookMixin`
