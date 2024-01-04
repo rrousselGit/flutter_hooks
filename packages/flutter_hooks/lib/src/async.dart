@@ -5,6 +5,20 @@ part of 'hooks.dart';
 /// * [preserveState] determines if the current value should be preserved when changing
 /// the [Future] instance.
 ///
+/// The [Future] needs to be created outside of [useFuture].
+/// If the [Future] is created inside [useFuture], then, every time the build
+/// method gets called, the [Future] will be called again. One way to create
+/// the [Future] outside of [useFuture] is by using [useMemoized].
+///
+/// ```dart
+/// // BAD
+/// useFuture(fetchFromDatabase());
+///
+/// // GOOD
+/// final result = useMemoized(() => fetchFromDatabase());
+/// useFuture(result);
+/// ```
+///
 /// See also:
 ///   * [Future], the listened object.
 ///   * [useStream], similar to [useFuture] but for [Stream].
