@@ -184,10 +184,12 @@ class _ReassembleHookState extends HookState<void, _ReassembleHook> {
 ///
 /// See also:
 ///   * The [State.mounted] property.
+@Deprecated('Use BuildContext.mounted instead')
 IsMounted useIsMounted() {
   return use(const _IsMountedHook());
 }
 
+// ignore: deprecated_member_use_from_same_package
 class _IsMountedHook extends Hook<IsMounted> {
   const _IsMountedHook();
 
@@ -195,10 +197,12 @@ class _IsMountedHook extends Hook<IsMounted> {
   _IsMountedHookState createState() => _IsMountedHookState();
 }
 
+// ignore: deprecated_member_use_from_same_package
 class _IsMountedHookState extends HookState<IsMounted, _IsMountedHook> {
   bool _mounted = true;
 
   @override
+  // ignore: deprecated_member_use_from_same_package
   IsMounted build(BuildContext context) => _isMounted;
 
   bool _isMounted() => _mounted;
@@ -216,6 +220,8 @@ class _IsMountedHookState extends HookState<IsMounted, _IsMountedHook> {
   Object? get debugValue => _mounted;
 }
 
+// ignore: deprecated_member_use_from_same_package
 /// Used by [useIsMounted] to allow widgets to determine if the [Widget] is still
 /// in the widget tree or not.
+@Deprecated('Use BuildContext.mounted instead')
 typedef IsMounted = bool Function();
