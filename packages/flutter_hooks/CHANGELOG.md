@@ -1,6 +1,7 @@
 ## 0.21.0 - unreleased
 
 - Upgrade Flutter to 3.7.0 and Dart 2.19.0 (thanks to @Reprevise)
+- Deprecate the `useIsMounted` hook as you should use `BuildContext.mounted` instead
 
 ## 0.20.4 - 2023-12-29
 
