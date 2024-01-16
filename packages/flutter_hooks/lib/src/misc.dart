@@ -184,7 +184,9 @@ class _ReassembleHookState extends HookState<void, _ReassembleHook> {
 ///
 /// See also:
 ///   * The [State.mounted] property.
-@Deprecated('Use BuildContext.mounted instead')
+@Deprecated(
+  "Use BuildContext.mounted instead if you're on Flutter 3.7.0 or greater",
+)
 IsMounted useIsMounted() {
   return use(const _IsMountedHook());
 }
@@ -223,5 +225,7 @@ class _IsMountedHookState extends HookState<IsMounted, _IsMountedHook> {
 // ignore: deprecated_member_use_from_same_package
 /// Used by [useIsMounted] to allow widgets to determine if the [Widget] is still
 /// in the widget tree or not.
-@Deprecated('Use BuildContext.mounted instead')
+@Deprecated(
+  "Use BuildContext.mounted instead if you're on Flutter 3.7.0 or greater",
+)
 typedef IsMounted = bool Function();
