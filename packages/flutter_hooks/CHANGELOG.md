@@ -1,3 +1,7 @@
+## 0.21.0 - unreleased
+
+- Deprecate the `useIsMounted` hook as you should use `BuildContext.mounted` instead if you're on Flutter 3.7.0 or greater
+
 ## 0.20.4 - 2023-12-29
 
 - Added `useDebounced` (thanks to @itisnajim)
@@ -134,7 +138,7 @@ Migrated flutter_hooks to null-safety (special thanks to @DevNico for the help!)
 
 **Breaking change**:
 
-- Removed `HookState.didBuild`.  
+- Removed `HookState.didBuild`.
   If you still need it, use `addPostFrameCallback` or `Future.microtask`.
 
 **Non-breaking changes**:
