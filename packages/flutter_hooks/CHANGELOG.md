@@ -1,4 +1,4 @@
-## 0.21.0 - unreleased
+## 0.20.5 - 2024-02-05
 
 - Deprecate the `useIsMounted` hook as you should use `BuildContext.mounted` instead if you're on Flutter 3.7.0 or greater
 
