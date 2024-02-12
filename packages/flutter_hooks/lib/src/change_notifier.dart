@@ -9,12 +9,12 @@ part of 'hooks.dart';
 /// ```
 /// And:
 /// ```dart
-/// useDisposable(() => TextEditingController(text: 'Hello'));
+/// useChangeNotifier(() => TextEditingController(text: 'Hello'));
 /// ```
 /// This is very useful if you can't find a "common controller" class in Flutter
 /// which has not a hook implementation, for example `CupertinoTabController`:
 /// ```dart
-/// useDisposable(() => CupertinoTabController());
+/// useChangeNotifier(() => CupertinoTabController());
 /// ```
 T useChangeNotifier<T extends ChangeNotifier>(
   T Function() factory, [
