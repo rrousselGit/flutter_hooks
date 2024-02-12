@@ -34,3 +34,5 @@ part 'transformation_controller.dart';
 part 'widgets_binding_observer.dart';
 part 'material_states_controller.dart';
 part 'debounced.dart';
+part 'use_dispose.dart';
+part 'change_notifier.dart';
