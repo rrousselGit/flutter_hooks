@@ -11,8 +11,7 @@ DraggableScrollableController useDraggableScrollableController(
 
 class _DraggableScrollableControllerHook
     extends Hook<DraggableScrollableController> {
-  const _DraggableScrollableControllerHook({List<Object?>? keys})
-      : super(keys: keys);
+  const _DraggableScrollableControllerHook({super.keys});
 
   @override
   HookState<DraggableScrollableController, Hook<DraggableScrollableController>>
