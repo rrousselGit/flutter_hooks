@@ -310,12 +310,12 @@ They will take care of creating/updating/disposing an object.
 
 #### dart:async related hooks:
 
-| Name                                                                                                             | Description                                                                   |
-| ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| [useStream](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useStream.html)                     | Subscribes to a `Stream` and returns its current state as an `AsyncSnapshot`. |
-| [useStreamController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useStreamController.html) | Creates a `StreamController` which will automatically be disposed.            |
-| [useOnStreamChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnStreamChange.html) | Subscribes to a `Stream`, registers handlers, and returns the `StreamSubscription`.
-| [useFuture](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useFuture.html)                     | Subscribes to a `Future` and returns its current state as an `AsyncSnapshot`. |
+| Name                                                                                                             | Description                                                                         |
+| ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| [useStream](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useStream.html)                     | Subscribes to a `Stream` and returns its current state as an `AsyncSnapshot`.       |
+| [useStreamController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useStreamController.html) | Creates a `StreamController` which will automatically be disposed.                  |
+| [useOnStreamChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnStreamChange.html)     | Subscribes to a `Stream`, registers handlers, and returns the `StreamSubscription`. |
+| [useFuture](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useFuture.html)                     | Subscribes to a `Future` and returns its current state as an `AsyncSnapshot`.       |
 
 #### Animation related hooks:
 
@@ -338,25 +338,26 @@ They will take care of creating/updating/disposing an object.
 
 A series of hooks with no particular theme.
 
-| Name                                                                                                                                 | Description                                                                |
-| ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
-| [useReducer](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useReducer.html)                                       | An alternative to `useState` for more complex states.                      |
-| [usePrevious](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/usePrevious.html)                                     | Returns the previous argument called to [usePrevious].                     |
-| [useTextEditingController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTextEditingController-constant.html)  | Creates a `TextEditingController`.                                         |
-| [useFocusNode](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useFocusNode.html)                                   | Creates a `FocusNode`.                                                     |
-| [useTabController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTabController.html)                           | Creates and disposes a `TabController`.                                    |
-| [useScrollController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useScrollController.html)                     | Creates and disposes a `ScrollController`.                                 |
-| [usePageController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/usePageController.html)                         | Creates and disposes a `PageController`.                                   |
-| [useAppLifecycleState](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAppLifecycleState.html)                   | Returns the current `AppLifecycleState` and rebuilds the widget on change. |
-| [useOnAppLifecycleStateChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnAppLifecycleStateChange.html)   | Listens to `AppLifecycleState` changes and triggers a callback on change.  |
-| [useTransformationController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTransformationController.html)     | Creates and disposes a `TransformationController`.                         |
-| [useIsMounted](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useIsMounted.html)                                   | An equivalent to `State.mounted` for hooks.                                |
-| [useAutomaticKeepAlive](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAutomaticKeepAlive.html)                 | An equivalent to the `AutomaticKeepAlive` widget for hooks.                |
-| [useOnPlatformBrightnessChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnPlatformBrightnessChange.html) | Listens to platform `Brightness` changes and triggers a callback on change.|
-| [useSearchController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useSearchController.html)                     | Creates and disposes a `SearchController`.                                 |
-| [useMaterialStatesController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useMaterialStatesController.html)     | Creates and disposes a `MaterialStatesController`.                         |
-| [useExpansionTileController](https://api.flutter.dev/flutter/material/ExpansionTileController-class.html)                            | Creates a `ExpansionTileController`.                                       |
-| [useDebounced](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useDebounced.html)                             | Returns a debounced version of the provided value, triggering widget updates accordingly after a specified timeout duration  |
+| Name                                                                                                                                 | Description                                                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| [useReducer](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useReducer.html)                                       | An alternative to `useState` for more complex states.                                                                       |
+| [usePrevious](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/usePrevious.html)                                     | Returns the previous argument called to [usePrevious].                                                                      |
+| [useTextEditingController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTextEditingController-constant.html)  | Creates a `TextEditingController`.                                                                                          |
+| [useFocusNode](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useFocusNode.html)                                   | Creates a `FocusNode`.                                                                                                      |
+| [useTabController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTabController.html)                           | Creates and disposes a `TabController`.                                                                                     |
+| [useScrollController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useScrollController.html)                     | Creates and disposes a `ScrollController`.                                                                                  |
+| [usePageController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/usePageController.html)                         | Creates and disposes a `PageController`.                                                                                    |
+| [useAppLifecycleState](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAppLifecycleState.html)                   | Returns the current `AppLifecycleState` and rebuilds the widget on change.                                                  |
+| [useOnAppLifecycleStateChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnAppLifecycleStateChange.html)   | Listens to `AppLifecycleState` changes and triggers a callback on change.                                                   |
+| [useTransformationController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTransformationController.html)     | Creates and disposes a `TransformationController`.                                                                          |
+| [useIsMounted](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useIsMounted.html)                                   | An equivalent to `State.mounted` for hooks.                                                                                 |
+| [useAutomaticKeepAlive](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAutomaticKeepAlive.html)                 | An equivalent to the `AutomaticKeepAlive` widget for hooks.                                                                 |
+| [useOnPlatformBrightnessChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnPlatformBrightnessChange.html) | Listens to platform `Brightness` changes and triggers a callback on change.                                                 |
+| [useSearchController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useSearchController.html)                     | Creates and disposes a `SearchController`.                                                                                  |
+| [useMaterialStatesController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useMaterialStatesController.html)     | Creates and disposes a `MaterialStatesController`.                                                                          |
+| [useExpansionTileController](https://api.flutter.dev/flutter/material/ExpansionTileController-class.html)                            | Creates a `ExpansionTileController`.                                                                                        |
+| [useDraggableScrollableController](https://api.flutter.dev/flutter/widgets/DraggableScrollableController-class.html)                 | Creates a `DraggableScrollableController`.                                                                                  |
+| [useDebounced](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useDebounced.html)                                   | Returns a debounced version of the provided value, triggering widget updates accordingly after a specified timeout duration |
 
 ## Contributions
 
