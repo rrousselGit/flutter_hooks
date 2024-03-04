@@ -8,37 +8,9 @@ MaterialStatesController useMaterialStatesController({
   Set<MaterialState>? values,
   List<Object?>? keys,
 }) {
-  return use(
-    _MaterialStatesControllerHook(
-      values: values,
-      keys: keys,
-    ),
+  return useChangeNotifier(
+    () => MaterialStatesController(values),
+    'useMaterialStatesController',
+    keys,
   );
-}
-
-class _MaterialStatesControllerHook extends Hook<MaterialStatesController> {
-  const _MaterialStatesControllerHook({
-    required this.values,
-    super.keys,
-  });
-
-  final Set<MaterialState>? values;
-
-  @override
-  HookState<MaterialStatesController, Hook<MaterialStatesController>>
-      createState() => _MaterialStateControllerHookState();
-}
-
-class _MaterialStateControllerHookState
-    extends HookState<MaterialStatesController, _MaterialStatesControllerHook> {
-  late final controller = MaterialStatesController(hook.values);
-
-  @override
-  MaterialStatesController build(BuildContext context) => controller;
-
-  @override
-  void dispose() => controller.dispose();
-
-  @override
-  String get debugLabel => 'useMaterialStatesController';
 }

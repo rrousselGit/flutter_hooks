@@ -8,7 +8,11 @@ class _TextEditingControllerHookCreator {
   /// The [text] parameter can be used to set the initial value of the
   /// controller.
   TextEditingController call({String? text, List<Object?>? keys}) {
-    return use(_TextEditingControllerHook(text, keys));
+    return useChangeNotifier(
+      () => TextEditingController(text: text),
+      'useTextEditingController',
+       keys,
+    );
   }
 
   /// Creates a [TextEditingController] from the initial [value] that will
@@ -17,7 +21,11 @@ class _TextEditingControllerHookCreator {
     TextEditingValue value, [
     List<Object?>? keys,
   ]) {
-    return use(_TextEditingControllerHook.fromValue(value, keys));
+    return useChangeNotifier(
+      () => TextEditingController.fromValue(value),
+      'useTextEditingController',
+      keys,
+    );
   }
 }
 
@@ -54,41 +62,3 @@ class _TextEditingControllerHookCreator {
 /// See also:
 /// - [TextEditingController], which this hook creates.
 const useTextEditingController = _TextEditingControllerHookCreator();
-
-class _TextEditingControllerHook extends Hook<TextEditingController> {
-  const _TextEditingControllerHook(
-    this.initialText, [
-    List<Object?>? keys,
-  ])  : initialValue = null,
-        super(keys: keys);
-
-  const _TextEditingControllerHook.fromValue(
-    TextEditingValue this.initialValue, [
-    List<Object?>? keys,
-  ])  : initialText = null,
-        super(keys: keys);
-
-  final String? initialText;
-  final TextEditingValue? initialValue;
-
-  @override
-  _TextEditingControllerHookState createState() {
-    return _TextEditingControllerHookState();
-  }
-}
-
-class _TextEditingControllerHookState
-    extends HookState<TextEditingController, _TextEditingControllerHook> {
-  late final _controller = hook.initialValue != null
-      ? TextEditingController.fromValue(hook.initialValue)
-      : TextEditingController(text: hook.initialText);
-
-  @override
-  TextEditingController build(BuildContext context) => _controller;
-
-  @override
-  void dispose() => _controller.dispose();
-
-  @override
-  String get debugLabel => 'useTextEditingController';
-}
