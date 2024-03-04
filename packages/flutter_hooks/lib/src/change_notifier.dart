@@ -3,18 +3,13 @@ part of 'hooks.dart';
 /// Creates a general purpose hook on a [ChangeNotifier] subclass that will be
 /// disposed automatically.
 ///
-/// For example, these are equivalent:
+/// For example, this hook:
 /// ```dart
 /// useTextEditingController(text: 'Hello');
 /// ```
-/// And:
+/// which is actually implemented by using `useChangeNotifier`:
 /// ```dart
 /// useChangeNotifier(() => TextEditingController(text: 'Hello'));
-/// ```
-/// This is very useful if you can't find a "common controller" class in Flutter
-/// which has not a hook implementation, for example `CupertinoTabController`:
-/// ```dart
-/// useChangeNotifier(() => CupertinoTabController());
 /// ```
 T useChangeNotifier<T extends ChangeNotifier>(
   T Function() factory, [
