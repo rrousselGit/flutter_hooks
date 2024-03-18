@@ -21,10 +21,17 @@ void main() {
       element
           .toDiagnosticsNode(style: DiagnosticsTreeStyle.offstage)
           .toStringDeep(),
-      equalsIgnoringHashCodes(
-        'HookBuilder\n'
-        ' │ useMaterialStatesController: MaterialStatesController#00000({})\n'
-        ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
+      anyOf(
+        equalsIgnoringHashCodes(
+          'HookBuilder\n'
+          ' │ useMaterialStatesController: MaterialStatesController#00000({})\n'
+          ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
+        ),
+        equalsIgnoringHashCodes(
+          'HookBuilder\n'
+          ' │ useMaterialStatesController: WidgetStatesController#00000({})\n'
+          ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
+        )
       ),
     );
   });
