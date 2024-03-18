@@ -22,17 +22,16 @@ void main() {
           .toDiagnosticsNode(style: DiagnosticsTreeStyle.offstage)
           .toStringDeep(),
       anyOf(
-        equalsIgnoringHashCodes(
-          'HookBuilder\n'
-          ' │ useMaterialStatesController: MaterialStatesController#00000({})\n'
-          ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
-        ),
-        equalsIgnoringHashCodes(
-          'HookBuilder\n'
-          ' │ useMaterialStatesController: WidgetStatesController#00000({})\n'
-          ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
-        )
-      ),
+          equalsIgnoringHashCodes(
+            'HookBuilder\n'
+            ' │ useMaterialStatesController: MaterialStatesController#00000({})\n'
+            ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
+          ),
+          equalsIgnoringHashCodes(
+            'HookBuilder\n'
+            ' │ useMaterialStatesController: WidgetStatesController#00000({})\n'
+            ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
+          )),
     );
   });
 
