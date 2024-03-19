@@ -71,8 +71,8 @@ void main() {
       controller.openView();
 
       expect(controller.isOpen, true);
-      await tester.pump();
-      await tester.pump(const Duration(seconds: 150)); // Advance fade animation duration.
+       // Advance fade animation duration.
+      await tester.pumpAndSettle(const Duration(seconds: 150));
 
       await tester.pumpWidget(MaterialApp(
         home: HookBuilder(builder: (context) {
