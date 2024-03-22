@@ -1,4 +1,4 @@
-## Unreleased minor
+## 0.21.0 - 2024-03-22
 
 - Renamed `useMaterialStatesController` to `useWidgetStatesController` to follow the rename in Flutter.
 
