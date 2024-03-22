@@ -14,7 +14,7 @@
 ## 0.20.3 - 2023-10-10
 
 - Added `useExpansionTileController` (thanks to @droidbg)
-- Added `useWidgetStatesController` (thanks to @AdamHavlicek)
+- Added `useMaterialStatesController` (thanks to @AdamHavlicek)
 
 ## 0.20.2 - 2023-10-02
 
