@@ -107,7 +107,7 @@ class _Error extends StatelessWidget {
         if (errorMsg != null) Text(errorMsg!),
         ElevatedButton(
           style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Colors.redAccent),
+            backgroundColor: WidgetStateProperty.all(Colors.redAccent),
           ),
           onPressed: () async {
             await Provider.of<_PlanetHandler>(

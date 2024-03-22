@@ -73,15 +73,11 @@ void main() {
     );
 
     expect(focusScopeNode.debugLabel, official.debugLabel);
-    expect(focusScopeNode.onKey, official.onKey);
     expect(focusScopeNode.skipTraversal, official.skipTraversal);
     expect(focusScopeNode.canRequestFocus, official.canRequestFocus);
   });
 
   testWidgets('has all the FocusScopeNode parameters', (tester) async {
-    KeyEventResult onKey(FocusNode node, RawKeyEvent event) =>
-        KeyEventResult.ignored;
-
     KeyEventResult onKeyEvent(FocusNode node, KeyEvent event) =>
         KeyEventResult.ignored;
 
@@ -90,7 +86,6 @@ void main() {
       HookBuilder(builder: (_) {
         focusScopeNode = useFocusScopeNode(
           debugLabel: 'Foo',
-          onKey: onKey,
           onKeyEvent: onKeyEvent,
           skipTraversal: true,
           canRequestFocus: false,
@@ -100,18 +95,12 @@ void main() {
     );
 
     expect(focusScopeNode.debugLabel, 'Foo');
-    expect(focusScopeNode.onKey, onKey);
     expect(focusScopeNode.onKeyEvent, onKeyEvent);
     expect(focusScopeNode.skipTraversal, true);
     expect(focusScopeNode.canRequestFocus, false);
   });
 
   testWidgets('handles parameter change', (tester) async {
-    KeyEventResult onKey(FocusNode node, RawKeyEvent event) =>
-        KeyEventResult.ignored;
-    KeyEventResult onKey2(FocusNode node, RawKeyEvent event) =>
-        KeyEventResult.ignored;
-
     KeyEventResult onKeyEvent(FocusNode node, KeyEvent event) =>
         KeyEventResult.ignored;
     KeyEventResult onKeyEvent2(FocusNode node, KeyEvent event) =>
@@ -122,7 +111,6 @@ void main() {
       HookBuilder(builder: (_) {
         focusScopeNode = useFocusScopeNode(
           debugLabel: 'Foo',
-          onKey: onKey,
           onKeyEvent: onKeyEvent,
           skipTraversal: true,
           canRequestFocus: false,
@@ -136,7 +124,6 @@ void main() {
       HookBuilder(builder: (_) {
         focusScopeNode = useFocusScopeNode(
           debugLabel: 'Bar',
-          onKey: onKey2,
           onKeyEvent: onKeyEvent2,
         );
 
@@ -144,7 +131,6 @@ void main() {
       }),
     );
 
-    expect(focusScopeNode.onKey, onKey2);
     expect(focusScopeNode.onKeyEvent, onKeyEvent2);
     expect(focusScopeNode.debugLabel, 'Bar');
     expect(focusScopeNode.skipTraversal, false);
