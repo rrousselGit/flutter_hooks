@@ -1,3 +1,7 @@
+## Unreleased minor
+
+- Renamed `useMaterialStatesController` to `useWidgetStatesController` to follow the rename in Flutter.
+
 ## 0.20.5 - 2024-02-05
 
 - Deprecate the `useIsMounted` hook as you should use `BuildContext.mounted` instead if you're on Flutter 3.7.0 or greater
@@ -10,7 +14,7 @@
 ## 0.20.3 - 2023-10-10
 
 - Added `useExpansionTileController` (thanks to @droidbg)
-- Added `useMaterialStateController` (thanks to @AdamHavlicek)
+- Added `useMaterialStatesController` (thanks to @AdamHavlicek)
 
 ## 0.20.2 - 2023-10-02
 

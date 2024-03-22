@@ -345,7 +345,7 @@ Flutter_Hooks 已经包含一些不同类别的可复用的钩子：
 | [useIsMounted](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useIsMounted.html)                                   | 对钩子而言和 `State.mounted` 一样                  |
 | [useAutomaticKeepAlive](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAutomaticKeepAlive.html)                 | 对钩子而言和 `AutomaticKeepAlive` 一样             |
 | [useOnPlatformBrightnessChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnPlatformBrightnessChange.html) | 监听平台 `Brightness` 并在其改变时触发回调         |
-| [useMaterialStatesController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useMaterialStatesController.html)     | 创建并自动 dispose 一个 `MaterialStatesController` |
+| [useWidgetStatesController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useWidgetStatesController.html)     | 创建并自动 dispose 一个 `WidgetStatesController` |
 | [useExpansionTileController](https://api.flutter.dev/flutter/material/ExpansionTileController-class.html)                            | 创建一个 `ExpansionTileController`                 |
 
 ## 贡献

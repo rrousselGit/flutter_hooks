@@ -10,7 +10,7 @@ void main() {
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        useMaterialStatesController();
+        useWidgetStatesController();
         return const SizedBox();
       }),
     );
@@ -23,44 +23,44 @@ void main() {
           .toStringDeep(),
       equalsIgnoringHashCodes(
         'HookBuilder\n'
-        ' │ useMaterialStatesController: MaterialStatesController#00000({})\n'
+        ' │ useWidgetStatesController: WidgetStatesController#00000({})\n'
         ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
       ),
     );
   });
 
-  group('useMaterialStatesController', () {
+  group('useWidgetStatesController', () {
     testWidgets('initial values matches with real constructor', (tester) async {
-      late MaterialStatesController controller;
-      late MaterialStatesController controller2;
+      late WidgetStatesController controller;
+      late WidgetStatesController controller2;
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
-          controller2 = MaterialStatesController();
-          controller = useMaterialStatesController();
+          controller2 = WidgetStatesController();
+          controller = useWidgetStatesController();
           return Container();
         }),
       );
 
       expect(controller.value, controller2.value);
     });
-    testWidgets("returns a MaterialStatesController that doesn't change",
+    testWidgets("returns a WidgetStatesController that doesn't change",
         (tester) async {
-      late MaterialStatesController controller;
-      late MaterialStatesController controller2;
+      late WidgetStatesController controller;
+      late WidgetStatesController controller2;
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
-          controller = useMaterialStatesController();
+          controller = useWidgetStatesController();
           return Container();
         }),
       );
 
-      expect(controller, isA<MaterialStatesController>());
+      expect(controller, isA<WidgetStatesController>());
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
-          controller2 = useMaterialStatesController();
+          controller2 = useWidgetStatesController();
           return Container();
         }),
       );
@@ -68,15 +68,15 @@ void main() {
       expect(identical(controller, controller2), isTrue);
     });
 
-    testWidgets('passes hook parameters to the MaterialStatesController',
+    testWidgets('passes hook parameters to the WidgetStatesController',
         (tester) async {
-      late MaterialStatesController controller;
+      late WidgetStatesController controller;
 
       await tester.pumpWidget(
         HookBuilder(
           builder: (context) {
-            controller = useMaterialStatesController(
-              values: {MaterialState.selected},
+            controller = useWidgetStatesController(
+              values: {WidgetState.selected},
             );
 
             return Container();
@@ -84,17 +84,17 @@ void main() {
         ),
       );
 
-      expect(controller.value, {MaterialState.selected});
+      expect(controller.value, {WidgetState.selected});
     });
 
-    testWidgets('disposes the MaterialStatesController on unmount',
+    testWidgets('disposes the WidgetStatesController on unmount',
         (tester) async {
-      late MaterialStatesController controller;
+      late WidgetStatesController controller;
 
       await tester.pumpWidget(
         HookBuilder(
           builder: (context) {
-            controller = useMaterialStatesController();
+            controller = useWidgetStatesController();
             return Container();
           },
         ),

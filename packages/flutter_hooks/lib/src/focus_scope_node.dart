@@ -6,7 +6,6 @@ part of 'hooks.dart';
 /// - [FocusScopeNode]
 FocusScopeNode useFocusScopeNode({
   String? debugLabel,
-  FocusOnKeyCallback? onKey,
   FocusOnKeyEventCallback? onKeyEvent,
   bool skipTraversal = false,
   bool canRequestFocus = true,
@@ -14,7 +13,6 @@ FocusScopeNode useFocusScopeNode({
   return use(
     _FocusScopeNodeHook(
       debugLabel: debugLabel,
-      onKey: onKey,
       onKeyEvent: onKeyEvent,
       skipTraversal: skipTraversal,
       canRequestFocus: canRequestFocus,
@@ -25,14 +23,12 @@ FocusScopeNode useFocusScopeNode({
 class _FocusScopeNodeHook extends Hook<FocusScopeNode> {
   const _FocusScopeNodeHook({
     this.debugLabel,
-    this.onKey,
     this.onKeyEvent,
     required this.skipTraversal,
     required this.canRequestFocus,
   });
 
   final String? debugLabel;
-  final FocusOnKeyCallback? onKey;
   final FocusOnKeyEventCallback? onKeyEvent;
   final bool skipTraversal;
   final bool canRequestFocus;
@@ -47,7 +43,6 @@ class _FocusScopeNodeHookState
     extends HookState<FocusScopeNode, _FocusScopeNodeHook> {
   late final FocusScopeNode _focusScopeNode = FocusScopeNode(
     debugLabel: hook.debugLabel,
-    onKey: hook.onKey,
     onKeyEvent: hook.onKeyEvent,
     skipTraversal: hook.skipTraversal,
     canRequestFocus: hook.canRequestFocus,
@@ -59,7 +54,6 @@ class _FocusScopeNodeHookState
       ..debugLabel = hook.debugLabel
       ..skipTraversal = hook.skipTraversal
       ..canRequestFocus = hook.canRequestFocus
-      ..onKey = hook.onKey
       ..onKeyEvent = hook.onKeyEvent;
   }
 
