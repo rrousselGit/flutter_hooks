@@ -1,4 +1,8 @@
-## 0.21.0 - 2024-03-22
+## 0.21.1-pre.0
+
+- Bump minimum Flutter SDK to 3.21.0-13.0.pre.4
+
+## 0.21.0 - 2024-03-22 (retracted)
 
 - Renamed `useMaterialStatesController` to `useWidgetStatesController` to follow the rename in Flutter.
 
