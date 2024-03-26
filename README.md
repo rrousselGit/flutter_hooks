@@ -333,6 +333,7 @@ They will take care of creating/updating/disposing an object.
 | [useListenableSelector](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useListenableSelector.html) | Similar to `useListenable`, but allows filtering UI rebuilds                                        |
 | [useValueNotifier](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useValueNotifier.html)           | Creates a `ValueNotifier` which will be automatically disposed.                                     |
 | [useValueListenable](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useValueListenable.html)       | Subscribes to a `ValueListenable` and return its value.                                             |
+| [useOnListenableChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnListenableChange.html) | Subscribes to a `Listenable` and registers `listener` to the passed `listenable`.                   |
 
 #### Misc hooks:
 
