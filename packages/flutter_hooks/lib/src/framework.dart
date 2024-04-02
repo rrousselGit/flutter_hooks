@@ -601,7 +601,7 @@ class _StatelessHookElement extends StatelessElement with HookElement {
 /// Its usage is very similar to that of [StatefulWidget], but uses hooks inside [State.build].
 ///
 /// The difference is that it can use a [Hook], which allows a
-/// [HookWidget] to store mutable data without implementing a [State].
+/// [StatefulWidget] to store mutable data without implementing a [State].
 abstract class StatefulHookWidget extends StatefulWidget {
   /// Initializes [key] for subclasses.
   const StatefulHookWidget({Key? key}) : super(key: key);
