@@ -1,6 +1,15 @@
+
 ## Unreleased patch
 
 - Added `useDraggableScrollableController`
+
+## 0.21.1-pre.0
+
+- Bump minimum Flutter SDK to 3.21.0-13.0.pre.4
+
+## 0.21.0 - 2024-03-22 (retracted)
+
+- Renamed `useMaterialStatesController` to `useWidgetStatesController` to follow the rename in Flutter.
 
 ## 0.20.5 - 2024-02-05
 
@@ -14,7 +23,7 @@
 ## 0.20.3 - 2023-10-10
 
 - Added `useExpansionTileController` (thanks to @droidbg)
-- Added `useMaterialStateController` (thanks to @AdamHavlicek)
+- Added `useMaterialStatesController` (thanks to @AdamHavlicek)
 
 ## 0.20.2 - 2023-10-02
 

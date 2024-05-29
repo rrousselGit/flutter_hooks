@@ -6,10 +6,10 @@ import 'package:flutter/material.dart'
         Brightness,
         DraggableScrollableController,
         ExpansionTileController,
-        MaterialState,
-        MaterialStatesController,
+        WidgetStatesController,
         SearchController,
-        TabController;
+        TabController,
+        WidgetState;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
@@ -34,5 +34,5 @@ part 'tab_controller.dart';
 part 'text_controller.dart';
 part 'transformation_controller.dart';
 part 'widgets_binding_observer.dart';
-part 'material_states_controller.dart';
+part 'widget_states_controller.dart';
 part 'debounced.dart';

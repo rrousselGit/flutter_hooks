@@ -73,16 +73,12 @@ void main() {
     );
 
     expect(focusNode.debugLabel, official.debugLabel);
-    expect(focusNode.onKey, official.onKey);
     expect(focusNode.skipTraversal, official.skipTraversal);
     expect(focusNode.canRequestFocus, official.canRequestFocus);
     expect(focusNode.descendantsAreFocusable, official.descendantsAreFocusable);
   });
 
   testWidgets('has all the FocusNode parameters', (tester) async {
-    KeyEventResult onKey(FocusNode node, RawKeyEvent event) =>
-        KeyEventResult.ignored;
-
     KeyEventResult onKeyEvent(FocusNode node, KeyEvent event) =>
         KeyEventResult.ignored;
 
@@ -91,7 +87,6 @@ void main() {
       HookBuilder(builder: (_) {
         focusNode = useFocusNode(
           debugLabel: 'Foo',
-          onKey: onKey,
           onKeyEvent: onKeyEvent,
           skipTraversal: true,
           canRequestFocus: false,
@@ -102,7 +97,6 @@ void main() {
     );
 
     expect(focusNode.debugLabel, 'Foo');
-    expect(focusNode.onKey, onKey);
     expect(focusNode.onKeyEvent, onKeyEvent);
     expect(focusNode.skipTraversal, true);
     expect(focusNode.canRequestFocus, false);
@@ -110,11 +104,6 @@ void main() {
   });
 
   testWidgets('handles parameter change', (tester) async {
-    KeyEventResult onKey(FocusNode node, RawKeyEvent event) =>
-        KeyEventResult.ignored;
-    KeyEventResult onKey2(FocusNode node, RawKeyEvent event) =>
-        KeyEventResult.ignored;
-
     KeyEventResult onKeyEvent(FocusNode node, KeyEvent event) =>
         KeyEventResult.ignored;
     KeyEventResult onKeyEvent2(FocusNode node, KeyEvent event) =>
@@ -125,7 +114,6 @@ void main() {
       HookBuilder(builder: (_) {
         focusNode = useFocusNode(
           debugLabel: 'Foo',
-          onKey: onKey,
           onKeyEvent: onKeyEvent,
           skipTraversal: true,
           canRequestFocus: false,
@@ -140,7 +128,6 @@ void main() {
       HookBuilder(builder: (_) {
         focusNode = useFocusNode(
           debugLabel: 'Bar',
-          onKey: onKey2,
           onKeyEvent: onKeyEvent2,
         );
 
@@ -148,7 +135,6 @@ void main() {
       }),
     );
 
-    expect(focusNode.onKey, onKey2);
     expect(focusNode.onKeyEvent, onKeyEvent2);
     expect(focusNode.debugLabel, 'Bar');
     expect(focusNode.skipTraversal, false);
