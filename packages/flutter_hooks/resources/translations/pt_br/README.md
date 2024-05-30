@@ -19,18 +19,16 @@ por exemplo de um `initState` ou `dispose`. Um exemplo é o `AnimationController
 
 ```dart
 class Example extends StatefulWidget {
-  final Duration duration;
+  const Example({super.key, required this.duration});
 
-  const Example({Key? key, @required this.duration})
-      : assert(duration != null),
-        super(key: key);
+  final Duration duration;
 
   @override
   _ExampleState createState() => _ExampleState();
 }
 
 class _ExampleState extends State<Example> with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  late final AnimationController _controller;
 
   @override
   void initState() {
@@ -76,9 +74,7 @@ Essa biblioteca propõe uma terceira solução:
 
 ```dart
 class Example extends HookWidget {
-  const Example({Key? key, @required this.duration})
-      : assert(duration != null),
-        super(key: key);
+  const Example({super.key, required this.duration});
 
   final Duration duration;
 
