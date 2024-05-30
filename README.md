@@ -308,12 +308,12 @@ They will take care of creating/updating/disposing an object.
 
 #### dart:async related hooks:
 
-| Name                                                                                                             | Description                                                                   |
-| ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| [useStream](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useStream.html)                     | Subscribes to a `Stream` and returns its current state as an `AsyncSnapshot`. |
-| [useStreamController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useStreamController.html) | Creates a `StreamController` which will automatically be disposed.            |
-| [useOnStreamChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnStreamChange.html) | Subscribes to a `Stream`, registers handlers, and returns the `StreamSubscription`.
-| [useFuture](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useFuture.html)                     | Subscribes to a `Future` and returns its current state as an `AsyncSnapshot`. |
+| Name                                                                                                             | Description                                                                         |
+| ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| [useStream](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useStream.html)                     | Subscribes to a `Stream` and returns its current state as an `AsyncSnapshot`.       |
+| [useStreamController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useStreamController.html) | Creates a `StreamController` which will automatically be disposed.                  |
+| [useOnStreamChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnStreamChange.html)     | Subscribes to a `Stream`, registers handlers, and returns the `StreamSubscription`. |
+| [useFuture](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useFuture.html)                     | Subscribes to a `Future` and returns its current state as an `AsyncSnapshot`.       |
 
 #### Animation related hooks:
 
@@ -336,6 +336,7 @@ They will take care of creating/updating/disposing an object.
 
 A series of hooks with no particular theme.
 
+
 | Name                                                                                                                                 | Description                                                                |
 | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
 | [useReducer](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useReducer.html)                                       | An alternative to `useState` for more complex states.                      |
@@ -355,6 +356,7 @@ A series of hooks with no particular theme.
 | [useWidgetStatesController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useWidgetStatesController.html)     | Creates and disposes a `WidgetStatesController`.                         |
 | [useExpansionTileController](https://api.flutter.dev/flutter/material/ExpansionTileController-class.html)                            | Creates a `ExpansionTileController`.                                       |
 | [useDebounced](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useDebounced.html)                             | Returns a debounced version of the provided value, triggering widget updates accordingly after a specified timeout duration  |
+| [useDraggableScrollableController](https://api.flutter.dev/flutter/widgets/DraggableScrollableController-class.html)                 | Creates a `DraggableScrollableController`.        
 
 ## Contributions
 
