@@ -42,54 +42,57 @@ void main() {
             return Column(
               children: [
                 ElevatedButton(
-                    onPressed: () {
-                      showBottomSheet(
-                          context: context,
-                          builder: (context) {
-                            // Using a builder here to ensure that the controller is
-                            // disposed when the sheet is closed.
-                            return HookBuilder(builder: (context) {
-                              controller = useDraggableScrollableController();
-                              return DraggableScrollableSheet(
-                                controller: controller,
-                                builder: (context, scrollController) {
-                                  return ListView.builder(
-                                    controller: scrollController,
-                                    itemCount: 100,
-                                    itemBuilder: (context, index) {
-                                      return ListTile(
-                                        title: Text('Item $index on Sheet 1'),
-                                      );
-                                    },
-                                  );
-                                },
-                              );
-                            });
-                          });
-                    },
-                    child: Text("Open Sheet 1")),
-                ElevatedButton(
-                    onPressed: () {
-                      showBottomSheet(
-                          context: context,
-                          builder: (context) {
+                  onPressed: () {
+                    showBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          // Using a builder here to ensure that the controller is
+                          // disposed when the sheet is closed.
+                          return HookBuilder(builder: (context) {
+                            controller = useDraggableScrollableController();
                             return DraggableScrollableSheet(
-                              controller: controller2,
+                              controller: controller,
                               builder: (context, scrollController) {
                                 return ListView.builder(
                                   controller: scrollController,
                                   itemCount: 100,
                                   itemBuilder: (context, index) {
                                     return ListTile(
-                                      title: Text('Item $index on Sheet 2'),
+                                      title: Text('Item $index on Sheet 1'),
                                     );
                                   },
                                 );
                               },
                             );
                           });
-                    },
-                    child: Text("Open Sheet 2"))
+                        });
+                  },
+                  child: const Text('Open Sheet 1'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    showBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return DraggableScrollableSheet(
+                          controller: controller2,
+                          builder: (context, scrollController) {
+                            return ListView.builder(
+                              controller: scrollController,
+                              itemCount: 100,
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  title: Text('Item $index on Sheet 2'),
+                                );
+                              },
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
+                  child: const Text('Open Sheet 2'),
+                )
               ],
             );
           }),
@@ -115,7 +118,10 @@ void main() {
       final controller2IsAttached = controller2.isAttached;
       // Close Sheet 2 by dragging it down
       await tester.fling(
-          find.byType(DraggableScrollableSheet), const Offset(0, 500), 300);
+        find.byType(DraggableScrollableSheet),
+        const Offset(0, 500),
+        300,
+      );
       await tester.pumpAndSettle();
 
       // Compare the initial values of the two controllers
