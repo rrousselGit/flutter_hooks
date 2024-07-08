@@ -1,6 +1,7 @@
-## Unreleased patch
+## 0.21.1-pre.1 - 2024-07-08
 
 - Added `useDraggableScrollableController` (@thanks to @dickermoshe)
+- Fix TickerMode not getting muted by hooks (thanks to @dev-tatsuya)
 
 ## 0.21.1-pre.0
 
