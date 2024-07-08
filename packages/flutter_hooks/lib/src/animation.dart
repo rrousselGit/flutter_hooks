@@ -171,6 +171,7 @@ class _TickerProviderHookState
     extends HookState<TickerProvider, _SingleTickerProviderHook>
     implements TickerProvider {
   Ticker? _ticker;
+  ValueListenable<bool>? _tickerModeNotifier;
 
   @override
   Ticker createTicker(TickerCallback onTick) {
@@ -184,7 +185,10 @@ class _TickerProviderHookState
           'If you need multiple Ticker, consider using useSingleTickerProvider multiple times '
           'to create as many Tickers as needed.');
     }(), '');
-    return _ticker = Ticker(onTick, debugLabel: 'created by $context');
+    _ticker = Ticker(onTick, debugLabel: 'created by $context');
+    _updateTickerModeNotifier();
+    _updateTicker();
+    return _ticker!;
   }
 
   @override
@@ -199,14 +203,32 @@ class _TickerProviderHookState
           ' by AnimationControllers should be disposed by calling dispose() on '
           ' the AnimationController itself. Otherwise, the ticker will leak.\n');
     }(), '');
+    _tickerModeNotifier?.removeListener(_updateTicker);
+    _tickerModeNotifier = null;
+    super.dispose();
   }
 
   @override
   TickerProvider build(BuildContext context) {
-    if (_ticker != null) {
-      _ticker!.muted = !TickerMode.of(context);
-    }
+    _updateTickerModeNotifier();
+    _updateTicker();
     return this;
+  }
+
+  void _updateTicker() {
+    if (_ticker != null) {
+      _ticker!.muted = !_tickerModeNotifier!.value;
+    }
+  }
+
+  void _updateTickerModeNotifier() {
+    final newNotifier = TickerMode.getNotifier(context);
+    if (newNotifier == _tickerModeNotifier) {
+      return;
+    }
+    _tickerModeNotifier?.removeListener(_updateTicker);
+    newNotifier.addListener(_updateTicker);
+    _tickerModeNotifier = newNotifier;
   }
 
   @override
