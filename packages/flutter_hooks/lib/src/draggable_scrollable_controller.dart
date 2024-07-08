@@ -4,8 +4,9 @@ part of 'hooks.dart';
 ///
 /// See also:
 /// - [DraggableScrollableController]
-DraggableScrollableController useDraggableScrollableController(
-    {List<Object?>? keys,}) {
+DraggableScrollableController useDraggableScrollableController({
+  List<Object?>? keys,
+}) {
   return use(_DraggableScrollableControllerHook(keys: keys));
 }
 

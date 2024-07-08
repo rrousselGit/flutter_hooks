@@ -1,7 +1,6 @@
-
 ## Unreleased patch
 
-- Added `useDraggableScrollableController`
+- Added `useDraggableScrollableController` (@thanks to @dickermoshe)
 
 ## 0.21.1-pre.0
 
