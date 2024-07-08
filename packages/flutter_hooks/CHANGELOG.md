@@ -1,3 +1,7 @@
+## Unreleased patch
+
+- Added `useDraggableScrollableController` (@thanks to @dickermoshe)
+
 ## 0.21.1-pre.0
 
 - Bump minimum Flutter SDK to 3.21.0-13.0.pre.4
