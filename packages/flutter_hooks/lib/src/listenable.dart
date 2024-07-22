@@ -182,7 +182,7 @@ class _OnListenableChangeHookState
 
   @override
   void dispose() {
-    hook.listenable?.removeListener(hook.listener);
+    hook.listenable?.removeListener(_listener);
   }
 
   /// Wraps `hook.listener` so we have a non-changing reference to it.
