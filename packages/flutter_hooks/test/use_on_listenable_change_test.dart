@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -81,6 +83,46 @@ void main() {
       expect(listenable1.hasListeners, isFalse);
       // ignore: invalid_use_of_protected_member
       expect(listenable2.hasListeners, isTrue);
+    }),
+  );
+
+  testWidgets(
+    'listens new listener when listener is changed',
+    (tester) => tester.runAsync(() async {
+      final listenable = ValueNotifier(42);
+      late final int value;
+
+      void listener1() {
+        throw StateError('listener1 should not have been called');
+      }
+
+      void listener2() {
+        value = listenable.value;
+      }
+
+      await tester.pumpWidget(
+        HookBuilder(
+          key: const Key('hook_builder'),
+          builder: (context) {
+            useOnListenableChange(listenable, listener1);
+            return const SizedBox();
+          },
+        ),
+      );
+
+      await tester.pumpWidget(
+        HookBuilder(
+          key: const Key('hook_builder'),
+          builder: (context) {
+            useOnListenableChange(listenable, listener2);
+            return const SizedBox();
+          },
+        ),
+      );
+
+      listenable.value++;
+      // By now, we should have subscribed to listener2, which sets the value
+      expect(value, 43);
     }),
   );
 

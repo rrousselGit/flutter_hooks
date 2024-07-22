@@ -142,10 +142,9 @@ class _UseValueNotifierHookState<T>
 ///  * [useListenable]
 void useOnListenableChange(
   Listenable? listenable,
-  VoidCallback listener, {
-  List<Object?>? keys,
-}) {
-  return use(_OnListenableChangeHook(listenable, listener, keys: keys));
+  VoidCallback listener,
+) {
+  return use(_OnListenableChangeHook(listenable, listener));
 }
 
 class _OnListenableChangeHook extends Hook<void> {
@@ -172,7 +171,8 @@ class _OnListenableChangeHookState
   @override
   void didUpdateHook(_OnListenableChangeHook oldHook) {
     super.didUpdateHook(oldHook);
-    if (hook.listenable != oldHook.listenable) {
+    if (hook.listenable != oldHook.listenable ||
+        oldHook.listener != hook.listener) {
       oldHook.listenable?.removeListener(oldHook.listener);
       hook.listenable?.addListener(hook.listener);
     }
