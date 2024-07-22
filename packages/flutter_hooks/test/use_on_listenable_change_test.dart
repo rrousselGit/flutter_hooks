@@ -147,4 +147,25 @@ void main() {
     // ignore: invalid_use_of_protected_member
     expect(listenable.hasListeners, isFalse);
   });
+
+  testWidgets('unsubscribes when disposed', (tester) async {
+    final listenable = ValueNotifier(42);
+
+    await tester.pumpWidget(
+      HookBuilder(builder: (context) {
+        useOnListenableChange(listenable, () {});
+        return const SizedBox();
+      }),
+    );
+
+    // ignore: invalid_use_of_protected_member
+    expect(listenable.hasListeners, isTrue);
+
+    await tester.pumpWidget(
+      Container(),
+    );
+
+    // ignore: invalid_use_of_protected_member
+    expect(listenable.hasListeners, isFalse);
+  });
 }
