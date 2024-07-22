@@ -165,16 +165,15 @@ class _OnListenableChangeHookState
   @override
   void initHook() {
     super.initHook();
-    hook.listenable?.addListener(hook.listener);
+    hook.listenable?.addListener(_listener);
   }
 
   @override
   void didUpdateHook(_OnListenableChangeHook oldHook) {
     super.didUpdateHook(oldHook);
-    if (hook.listenable != oldHook.listenable ||
-        oldHook.listener != hook.listener) {
-      oldHook.listenable?.removeListener(oldHook.listener);
-      hook.listenable?.addListener(hook.listener);
+    if (hook.listenable != oldHook.listenable) {
+      oldHook.listenable?.removeListener(_listener);
+      hook.listenable?.addListener(_listener);
     }
   }
 
@@ -184,6 +183,11 @@ class _OnListenableChangeHookState
   @override
   void dispose() {
     hook.listenable?.removeListener(hook.listener);
+  }
+
+  /// Wraps `hook.listener` so we have a non-changing reference to it.
+  void _listener() {
+    hook.listener();
   }
 
   @override
