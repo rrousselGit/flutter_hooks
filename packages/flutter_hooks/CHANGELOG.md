@@ -1,3 +1,6 @@
+## Unreleased patch
+- Added `onAttach` and `onDetach` to `useScrollController` and `usePageController` (thanks to @whynotmake-it)
+
 ## 0.21.1-pre.1 - 2024-07-08
 
 - Added `useDraggableScrollableController` (thanks to @dickermoshe)

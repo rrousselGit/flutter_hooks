@@ -72,6 +72,9 @@ void main() {
     testWidgets('passes hook parameters to the PageController', (tester) async {
       late PageController controller;
 
+      void onAttach(ScrollPosition position) {}
+      void onDetach(ScrollPosition position) {}
+
       await tester.pumpWidget(
         HookBuilder(
           builder: (context) {
@@ -79,6 +82,8 @@ void main() {
               initialPage: 42,
               keepPage: false,
               viewportFraction: 3.4,
+              onAttach: onAttach,
+              onDetach: onDetach,
             );
 
             return Container();
@@ -89,6 +94,25 @@ void main() {
       expect(controller.initialPage, 42);
       expect(controller.keepPage, false);
       expect(controller.viewportFraction, 3.4);
+      expect(controller.onAttach, onAttach);
+      expect(controller.onDetach, onDetach);
+    });
+
+    testWidgets('onAttach and onDetach are null by default', (tester) async {
+      late PageController controller;
+
+      await tester.pumpWidget(
+        HookBuilder(
+          builder: (context) {
+            controller = usePageController();
+
+            return Container();
+          },
+        ),
+      );
+
+      expect(controller.onAttach, isNull);
+      expect(controller.onDetach, isNull);
     });
 
     testWidgets('disposes the PageController on unmount', (tester) async {

@@ -73,6 +73,9 @@ void main() {
         (tester) async {
       late ScrollController controller;
 
+      void onAttach(ScrollPosition position) {}
+      void onDetach(ScrollPosition position) {}
+
       await tester.pumpWidget(
         HookBuilder(
           builder: (context) {
@@ -80,6 +83,8 @@ void main() {
               initialScrollOffset: 42,
               debugLabel: 'Hello',
               keepScrollOffset: false,
+              onAttach: onAttach,
+              onDetach: onDetach,
             );
 
             return Container();
@@ -90,6 +95,24 @@ void main() {
       expect(controller.initialScrollOffset, 42);
       expect(controller.debugLabel, 'Hello');
       expect(controller.keepScrollOffset, false);
+      expect(controller.onAttach, onAttach);
+      expect(controller.onDetach, onDetach);
+    });
+
+    testWidgets('onAttach and onDetach are null by default', (tester) async {
+      late ScrollController controller;
+
+      await tester.pumpWidget(
+        HookBuilder(
+          builder: (context) {
+            controller = useScrollController();
+
+            return Container();
+          },
+        ),
+      );
+      expect(controller.onAttach, isNull);
+      expect(controller.onDetach, isNull);
     });
   });
 }
