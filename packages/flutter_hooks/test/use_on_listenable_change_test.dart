@@ -99,7 +99,7 @@ void main() {
 
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        useOnListenableChange<ValueNotifier<int>>(null, () {});
+        useOnListenableChange(null, () {});
         return const SizedBox();
       }),
     );
