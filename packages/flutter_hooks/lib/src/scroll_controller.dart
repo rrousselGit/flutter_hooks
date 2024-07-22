@@ -8,6 +8,8 @@ ScrollController useScrollController({
   double initialScrollOffset = 0.0,
   bool keepScrollOffset = true,
   String? debugLabel,
+  ScrollControllerCallback? onAttach,
+  ScrollControllerCallback? onDetach,
   List<Object?>? keys,
 }) {
   return use(
@@ -15,6 +17,8 @@ ScrollController useScrollController({
       initialScrollOffset: initialScrollOffset,
       keepScrollOffset: keepScrollOffset,
       debugLabel: debugLabel,
+      onAttach: onAttach,
+      onDetach: onDetach,
       keys: keys,
     ),
   );
@@ -25,12 +29,16 @@ class _ScrollControllerHook extends Hook<ScrollController> {
     required this.initialScrollOffset,
     required this.keepScrollOffset,
     this.debugLabel,
+    this.onAttach,
+    this.onDetach,
     List<Object?>? keys,
   }) : super(keys: keys);
 
   final double initialScrollOffset;
   final bool keepScrollOffset;
   final String? debugLabel;
+  final ScrollControllerCallback? onAttach;
+  final ScrollControllerCallback? onDetach;
 
   @override
   HookState<ScrollController, Hook<ScrollController>> createState() =>
@@ -43,6 +51,8 @@ class _ScrollControllerHookState
     initialScrollOffset: hook.initialScrollOffset,
     keepScrollOffset: hook.keepScrollOffset,
     debugLabel: hook.debugLabel,
+    onAttach: hook.onAttach,
+    onDetach: hook.onDetach,
   );
 
   @override
