@@ -44,6 +44,8 @@ void main() {
       expect(controller.debugLabel, controller2.debugLabel);
       expect(controller.initialScrollOffset, controller2.initialScrollOffset);
       expect(controller.keepScrollOffset, controller2.keepScrollOffset);
+      expect(controller.onAttach, controller2.onAttach);
+      expect(controller.onDetach, controller2.onDetach);
     });
     testWidgets("returns a ScrollController that doesn't change",
         (tester) async {
@@ -97,22 +99,6 @@ void main() {
       expect(controller.keepScrollOffset, false);
       expect(controller.onAttach, onAttach);
       expect(controller.onDetach, onDetach);
-    });
-
-    testWidgets('onAttach and onDetach are null by default', (tester) async {
-      late ScrollController controller;
-
-      await tester.pumpWidget(
-        HookBuilder(
-          builder: (context) {
-            controller = useScrollController();
-
-            return Container();
-          },
-        ),
-      );
-      expect(controller.onAttach, isNull);
-      expect(controller.onDetach, isNull);
     });
   });
 }
