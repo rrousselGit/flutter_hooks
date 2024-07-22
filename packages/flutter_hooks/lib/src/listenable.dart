@@ -151,9 +151,8 @@ void useOnListenableChange(
 class _OnListenableChangeHook extends Hook<void> {
   const _OnListenableChangeHook(
     this.listenable,
-    this.listener, {
-    super.keys,
-  });
+    this.listener,
+  );
 
   final Listenable? listenable;
   final VoidCallback listener;
