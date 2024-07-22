@@ -53,13 +53,12 @@ void main() {
 
   testWidgets(
     'listens new Listenable when Listenable is changed',
-    (tester) => tester.runAsync(() async {
+    (tester) async {
       final listenable1 = ValueNotifier(42);
       final listenable2 = ValueNotifier(42);
 
       await tester.pumpWidget(
         HookBuilder(
-          key: const Key('hook_builder'),
           builder: (context) {
             useOnListenableChange(listenable1, () {});
             return const SizedBox();
@@ -69,7 +68,6 @@ void main() {
 
       await tester.pumpWidget(
         HookBuilder(
-          key: const Key('hook_builder'),
           builder: (context) {
             useOnListenableChange(listenable2, () {});
             return const SizedBox();
@@ -81,12 +79,12 @@ void main() {
       expect(listenable1.hasListeners, isFalse);
       // ignore: invalid_use_of_protected_member
       expect(listenable2.hasListeners, isTrue);
-    }),
+    },
   );
 
   testWidgets(
     'listens new listener when listener is changed',
-    (tester) => tester.runAsync(() async {
+    (tester) async {
       final listenable = ValueNotifier(42);
       late final int value;
 
@@ -100,7 +98,6 @@ void main() {
 
       await tester.pumpWidget(
         HookBuilder(
-          key: const Key('hook_builder'),
           builder: (context) {
             useOnListenableChange(listenable, listener1);
             return const SizedBox();
@@ -110,7 +107,6 @@ void main() {
 
       await tester.pumpWidget(
         HookBuilder(
-          key: const Key('hook_builder'),
           builder: (context) {
             useOnListenableChange(listenable, listener2);
             return const SizedBox();
@@ -121,7 +117,7 @@ void main() {
       listenable.value++;
       // By now, we should have subscribed to listener2, which sets the value
       expect(value, 43);
-    }),
+    },
   );
 
   testWidgets('unsubscribes when listenable becomes null', (tester) async {
@@ -161,9 +157,7 @@ void main() {
     // ignore: invalid_use_of_protected_member
     expect(listenable.hasListeners, isTrue);
 
-    await tester.pumpWidget(
-      Container(),
-    );
+    await tester.pumpWidget(Container());
 
     // ignore: invalid_use_of_protected_member
     expect(listenable.hasListeners, isFalse);
