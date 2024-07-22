@@ -140,8 +140,8 @@ class _UseValueNotifierHookState<T>
 ///  * [Listenable]
 ///  * [ValueListenable]
 ///  * [useListenable]
-void useOnListenableChange<T extends Listenable>(
-  T? listenable,
+void useOnListenableChange(
+  Listenable? listenable,
   VoidCallback listener, {
   List<Object?>? keys,
 }) {
