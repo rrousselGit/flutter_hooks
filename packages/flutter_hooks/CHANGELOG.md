@@ -2,6 +2,10 @@
 
 - Added `useFixedExtentScrollController` (thanks to @whynotmake-it)
 
+## 0.21.1-pre.3 - 2024-07-30
+
+- Added `useOnListenableChange` (thanks to @whynotmake-it)
+
 ## 0.21.1-pre.2 - 2024-07-22
 
 - Added `onAttach` and `onDetach` to `useScrollController` and `usePageController` (thanks to @whynotmake-it)
