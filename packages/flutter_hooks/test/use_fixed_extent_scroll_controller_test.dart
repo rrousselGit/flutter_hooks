@@ -9,7 +9,7 @@ void main() {
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        useScrollController();
+        useFixedExtentScrollController();
         return const SizedBox();
       }),
     );
@@ -22,48 +22,48 @@ void main() {
           .toStringDeep(),
       equalsIgnoringHashCodes(
         'HookBuilder\n'
-        ' │ useScrollController: ScrollController#00000(no clients)\n'
+        ' │ useFixedExtentScrollController:\n'
+        ' │   FixedExtentScrollController#00000(no clients)\n'
         ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
       ),
     );
   });
 
-  group('useScrollController', () {
+  group('useFixedExtentScrollController', () {
     testWidgets('initial values matches with real constructor', (tester) async {
-      late ScrollController controller;
-      late ScrollController controller2;
+      late FixedExtentScrollController controller;
+      late FixedExtentScrollController controller2;
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
-          controller2 = ScrollController();
-          controller = useScrollController();
+          controller2 = FixedExtentScrollController();
+          controller = useFixedExtentScrollController();
           return Container();
         }),
       );
 
       expect(controller.debugLabel, controller2.debugLabel);
-      expect(controller.initialScrollOffset, controller2.initialScrollOffset);
-      expect(controller.keepScrollOffset, controller2.keepScrollOffset);
+      expect(controller.initialItem, controller2.initialItem);
       expect(controller.onAttach, controller2.onAttach);
       expect(controller.onDetach, controller2.onDetach);
     });
-    testWidgets("returns a ScrollController that doesn't change",
+    testWidgets("returns a FixedExtentScrollController that doesn't change",
         (tester) async {
-      late ScrollController controller;
-      late ScrollController controller2;
+      late FixedExtentScrollController controller;
+      late FixedExtentScrollController controller2;
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
-          controller = useScrollController();
+          controller2 = FixedExtentScrollController();
+          controller = useFixedExtentScrollController();
           return Container();
         }),
       );
-
-      expect(controller, isA<ScrollController>());
+      expect(controller, isA<FixedExtentScrollController>());
 
       await tester.pumpWidget(
         HookBuilder(builder: (context) {
-          controller2 = useScrollController();
+          controller2 = useFixedExtentScrollController();
           return Container();
         }),
       );
@@ -71,9 +71,9 @@ void main() {
       expect(identical(controller, controller2), isTrue);
     });
 
-    testWidgets('passes hook parameters to the ScrollController',
+    testWidgets('passes hook parameters to the FixedExtentScrollController',
         (tester) async {
-      late ScrollController controller;
+      late FixedExtentScrollController controller;
 
       void onAttach(ScrollPosition position) {}
       void onDetach(ScrollPosition position) {}
@@ -81,10 +81,8 @@ void main() {
       await tester.pumpWidget(
         HookBuilder(
           builder: (context) {
-            controller = useScrollController(
-              initialScrollOffset: 42,
-              debugLabel: 'Hello',
-              keepScrollOffset: false,
+            controller = useFixedExtentScrollController(
+              initialItem: 42,
               onAttach: onAttach,
               onDetach: onDetach,
             );
@@ -94,9 +92,7 @@ void main() {
         ),
       );
 
-      expect(controller.initialScrollOffset, 42);
-      expect(controller.debugLabel, 'Hello');
-      expect(controller.keepScrollOffset, false);
+      expect(controller.initialItem, 42);
       expect(controller.onAttach, onAttach);
       expect(controller.onDetach, onDetach);
     });
