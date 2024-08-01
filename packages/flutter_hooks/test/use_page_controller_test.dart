@@ -45,6 +45,8 @@ void main() {
       expect(controller.initialPage, controller2.initialPage);
       expect(controller.keepPage, controller2.keepPage);
       expect(controller.viewportFraction, controller2.viewportFraction);
+      expect(controller.onAttach, controller2.onAttach);
+      expect(controller.onDetach, controller2.onDetach);
     });
     testWidgets("returns a PageController that doesn't change", (tester) async {
       late PageController controller;
@@ -96,23 +98,6 @@ void main() {
       expect(controller.viewportFraction, 3.4);
       expect(controller.onAttach, onAttach);
       expect(controller.onDetach, onDetach);
-    });
-
-    testWidgets('onAttach and onDetach are null by default', (tester) async {
-      late PageController controller;
-
-      await tester.pumpWidget(
-        HookBuilder(
-          builder: (context) {
-            controller = usePageController();
-
-            return Container();
-          },
-        ),
-      );
-
-      expect(controller.onAttach, isNull);
-      expect(controller.onDetach, isNull);
     });
 
     testWidgets('disposes the PageController on unmount', (tester) async {

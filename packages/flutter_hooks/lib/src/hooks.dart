@@ -19,6 +19,7 @@ part 'animation.dart';
 part 'async.dart';
 part 'draggable_scrollable_controller.dart';
 part 'expansion_tile_controller.dart';
+part 'fixed_extent_scroll_controller.dart';
 part 'focus_node.dart';
 part 'focus_scope_node.dart';
 part 'keep_alive.dart';
