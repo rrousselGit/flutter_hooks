@@ -1,4 +1,4 @@
-## Unreleased build
+## 0.21.1-pre.4 - 2024-08-01
 
 - Added `useFixedExtentScrollController` (thanks to @whynotmake-it)
 
