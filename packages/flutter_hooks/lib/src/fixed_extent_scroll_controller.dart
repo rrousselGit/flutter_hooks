@@ -26,8 +26,8 @@ class _FixedExtentScrollControllerHook
     required this.initialItem,
     this.onAttach,
     this.onDetach,
-    List<Object?>? keys,
-  }) : super(keys: keys);
+    super.keys,
+  });
 
   final int initialItem;
   final ScrollControllerCallback? onAttach;
