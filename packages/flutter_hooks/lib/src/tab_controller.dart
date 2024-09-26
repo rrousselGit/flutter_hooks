@@ -6,6 +6,7 @@ part of 'hooks.dart';
 /// - [TabController]
 TabController useTabController({
   required int initialLength,
+  Duration? animationDuration = kTabScrollDuration,
   TickerProvider? vsync,
   int initialIndex = 0,
   List<Object?>? keys,
@@ -17,6 +18,7 @@ TabController useTabController({
       vsync: vsync,
       length: initialLength,
       initialIndex: initialIndex,
+      animationDuration: animationDuration,
       keys: keys,
     ),
   );
@@ -27,23 +29,24 @@ class _TabControllerHook extends Hook<TabController> {
     required this.length,
     required this.vsync,
     required this.initialIndex,
-    List<Object?>? keys,
-  }) : super(keys: keys);
+    required this.animationDuration,
+    super.keys,
+  });
 
   final int length;
   final TickerProvider vsync;
   final int initialIndex;
+  final Duration? animationDuration;
 
   @override
-  HookState<TabController, Hook<TabController>> createState() =>
-      _TabControllerHookState();
+  HookState<TabController, Hook<TabController>> createState() => _TabControllerHookState();
 }
 
-class _TabControllerHookState
-    extends HookState<TabController, _TabControllerHook> {
+class _TabControllerHookState extends HookState<TabController, _TabControllerHook> {
   late final controller = TabController(
     length: hook.length,
     initialIndex: hook.initialIndex,
+    animationDuration: hook.animationDuration,
     vsync: hook.vsync,
   );
 
