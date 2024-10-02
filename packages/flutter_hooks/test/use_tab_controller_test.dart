@@ -158,7 +158,6 @@ void main() {
       );
 
       expect(controller.animationDuration, controller2.animationDuration);
-
     });
   });
 }
