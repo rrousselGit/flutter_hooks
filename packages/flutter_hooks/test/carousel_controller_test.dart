@@ -49,7 +49,8 @@ void main() {
       expect(controller.onDetach, controller2.onDetach);
     });
 
-    testWidgets("returns a CarouselController that doesn't change", (tester) async {
+    testWidgets("returns a CarouselController that doesn't change",
+        (tester) async {
       late CarouselController controller;
       late CarouselController controller2;
 
@@ -72,7 +73,8 @@ void main() {
       expect(identical(controller, controller2), isTrue);
     });
 
-    testWidgets('passes hook parameters to the CarouselController', (tester) async {
+    testWidgets('passes hook parameters to the CarouselController',
+        (tester) async {
       late CarouselController controller;
 
       await tester.pumpWidget(
