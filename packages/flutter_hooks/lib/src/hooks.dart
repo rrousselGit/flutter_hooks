@@ -2,14 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'
-    show
-        Brightness,
-        DraggableScrollableController,
-        ExpansionTileController,
-        WidgetStatesController,
-        SearchController,
-        TabController,
-        WidgetState;
+    show Brightness, DraggableScrollableController, ExpansionTileController, SearchController, TabController, WidgetState, WidgetStatesController, kTabScrollDuration;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
