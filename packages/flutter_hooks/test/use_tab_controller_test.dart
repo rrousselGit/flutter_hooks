@@ -138,6 +138,27 @@ void main() {
       verifyNoMoreInteractions(vsync);
       ticker.dispose();
     });
+    testWidgets('initial animationDuration matches with real constructor', (tester) async {
+      late TabController controller;
+      late TabController controller2;
+
+      final vsync = TickerProviderMock();
+      final ticker = Ticker((_) {});
+      when(vsync.createTicker((_) {})).thenReturn(ticker);
+
+      await tester.pumpWidget(
+        HookBuilder(
+          builder: (context) {
+            controller = useTabController(initialLength: 4);
+            controller2 = TabController(length: 4, vsync: vsync);
+            return Container();
+          },
+        ),
+      );
+
+      expect(controller.animationDuration, controller2.animationDuration);
+
+    });
   });
 }
 
