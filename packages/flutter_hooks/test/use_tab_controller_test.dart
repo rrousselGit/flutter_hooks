@@ -138,6 +138,7 @@ void main() {
       verifyNoMoreInteractions(vsync);
       ticker.dispose();
     });
+
     testWidgets('initial animationDuration matches with real constructor', (tester) async {
       late TabController controller;
       late TabController controller2;
