@@ -358,6 +358,7 @@ A series of hooks with no particular theme.
 | [useExpansionTileController](https://api.flutter.dev/flutter/material/ExpansionTileController-class.html)                            | Creates a `ExpansionTileController`.                                                                                        |
 | [useDebounced](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useDebounced.html)                                   | Returns a debounced version of the provided value, triggering widget updates accordingly after a specified timeout duration |
 | [useDraggableScrollableController](https://api.flutter.dev/flutter/widgets/DraggableScrollableController-class.html)                 | Creates a `DraggableScrollableController`.                                                                                  |
+| [useOverlayPortalController](https://api.flutter.dev/flutter/widgets/OverlayPortalController-class.html)                 | Creates a `useOverlayPortalController`.  |
 
 ## Contributions
 
