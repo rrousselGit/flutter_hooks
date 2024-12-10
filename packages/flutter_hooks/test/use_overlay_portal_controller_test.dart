@@ -44,12 +44,12 @@ void main() {
                 OverlayPortal(
                   controller: controller,
                   overlayChildBuilder: (context) =>
-                      const Text('Expansion Tile'),
+                      const Text('Overlay Portal'),
                 ),
                 OverlayPortal(
                   controller: controller2,
                   overlayChildBuilder: (context) =>
-                      const Text('Expansion Tile 2'),
+                      const Text('Overlay Portal 2'),
                 ),
               ],
             );
@@ -68,7 +68,7 @@ void main() {
             controller = useOverlayPortalController();
             return OverlayPortal(
               controller: controller,
-              overlayChildBuilder: (context) => const Text('Expansion Tile 2'),
+              overlayChildBuilder: (context) => const Text('Overlay Portal 2'),
             );
           }),
         ),
