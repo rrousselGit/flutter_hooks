@@ -68,17 +68,24 @@ void main() {
             controller = useOverlayPortalController();
             return OverlayPortal(
               controller: controller,
-              overlayChildBuilder: (context) => const Text('Overlay Portal 2'),
+              overlayChildBuilder: (context) => const Text('Overlay Content'),
             );
           }),
         ),
       ));
 
       expect(controller.isShowing, false);
+      expect(find.text('Overlay Content'), findsNothing);
+
       controller.show();
+      await tester.pump();
       expect(controller.isShowing, true);
+      expect(find.text('Overlay Content'), findsOneWidget);
+
       controller.hide();
+      await tester.pump();
       expect(controller.isShowing, false);
+      expect(find.text('Overlay Content'), findsNothing);
     });
   });
 }
