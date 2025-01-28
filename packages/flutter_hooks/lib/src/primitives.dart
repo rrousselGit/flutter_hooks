@@ -241,7 +241,8 @@ class _EffectHookState extends HookState<void, _EffectHook> {
 /// Whenever [ValueNotifier.value] updates, it will mark the caller [HookWidget]
 /// as needing a build.
 /// On the first call, it initializes [ValueNotifier] to [initialData]. [initialData] is ignored
-/// on subsequent calls.
+/// on subsequent calls when [weak] is `false`. Weak state is useful when you
+/// want to update the state when the widget changes (didUpdateWidget).
 ///
 /// The following example showcases a basic counter application:
 ///
@@ -264,14 +265,16 @@ class _EffectHookState extends HookState<void, _EffectHook> {
 ///
 ///  * [ValueNotifier]
 ///  * [useStreamController], an alternative to [ValueNotifier] for state.
-ValueNotifier<T> useState<T>(T initialData) {
-  return use(_StateHook(initialData: initialData));
+ValueNotifier<T> useState<T>(T initialData, {bool weak = false}) {
+  return use(
+      _StateHook(initialData: initialData, weak: weak));
 }
 
 class _StateHook<T> extends Hook<ValueNotifier<T>> {
-  const _StateHook({required this.initialData});
+  const _StateHook({required this.initialData, required this.weak});
 
   final T initialData;
+  final bool weak;
 
   @override
   _StateHookState<T> createState() => _StateHookState();
@@ -280,6 +283,14 @@ class _StateHook<T> extends Hook<ValueNotifier<T>> {
 class _StateHookState<T> extends HookState<ValueNotifier<T>, _StateHook<T>> {
   late final _state = ValueNotifier<T>(hook.initialData)
     ..addListener(_listener);
+
+  @override
+  void didUpdateHook(_StateHook<T> oldHook) {
+    super.didUpdateHook(oldHook);
+    if (hook.weak && hook.initialData != oldHook.initialData) {
+      _state.value = hook.initialData;
+    }
+  }
 
   @override
   void dispose() {
