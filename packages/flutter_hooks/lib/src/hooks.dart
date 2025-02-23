@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'
     show
         Brightness,
+        CarouselController,
         DraggableScrollableController,
         ExpansionTileController,
         SearchController,
