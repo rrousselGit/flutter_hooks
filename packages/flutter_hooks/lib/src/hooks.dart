@@ -10,6 +10,7 @@ import 'package:flutter/material.dart'
         WidgetStatesController,
         SearchController,
         TabController,
+        TreeSliverController,
         WidgetState;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
@@ -19,6 +20,7 @@ import 'framework.dart';
 part 'animation.dart';
 part 'async.dart';
 part 'carousel_controller.dart';
+part 'debounced.dart';
 part 'draggable_scrollable_controller.dart';
 part 'expansion_tile_controller.dart';
 part 'fixed_extent_scroll_controller.dart';
@@ -36,6 +38,6 @@ part 'search_controller.dart';
 part 'tab_controller.dart';
 part 'text_controller.dart';
 part 'transformation_controller.dart';
-part 'widgets_binding_observer.dart';
+part 'tree_sliver_controller.dart';
 part 'widget_states_controller.dart';
-part 'debounced.dart';
+part 'widgets_binding_observer.dart';
