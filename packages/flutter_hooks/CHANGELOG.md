@@ -3,6 +3,7 @@
 - Add `useCarouselController` (thanks to @riscait)
 - Add `useTreeSliverController` (thanks to @benthillerkus)
 - Added `useOverlayPortalController` (thanks to @offich)
+- Add animationDuration property to useTabController hook (thanks to @d-polikhranidi)
 
 ## 0.21.1-pre.4 - 2024-08-01
 
