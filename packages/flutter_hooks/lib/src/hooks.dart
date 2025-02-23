@@ -7,11 +7,11 @@ import 'package:flutter/material.dart'
         CarouselController,
         DraggableScrollableController,
         ExpansionTileController,
-        WidgetStatesController,
         SearchController,
         TabController,
-        TreeSliverController,
-        WidgetState;
+        WidgetState,
+        WidgetStatesController,
+        kTabScrollDuration;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
