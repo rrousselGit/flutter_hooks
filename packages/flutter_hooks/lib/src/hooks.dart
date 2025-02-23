@@ -26,7 +26,6 @@ part 'keep_alive.dart';
 part 'listenable.dart';
 part 'listenable_selector.dart';
 part 'misc.dart';
-part 'overlay_portal_controller.dart';
 part 'page_controller.dart';
 part 'platform_brightness.dart';
 part 'primitives.dart';
