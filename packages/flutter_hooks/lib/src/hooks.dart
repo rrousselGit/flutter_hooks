@@ -17,6 +17,7 @@ import 'framework.dart';
 
 part 'animation.dart';
 part 'async.dart';
+part 'change_notifier.dart';
 part 'draggable_scrollable_controller.dart';
 part 'expansion_tile_controller.dart';
 part 'fixed_extent_scroll_controller.dart';
