@@ -1,4 +1,4 @@
-## Unreleased 0.21.2
+## 0.21.2 - 2025-02-23
 
 - Add `useCarouselController` (thanks to @riscait)
 
