@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'
     show
         Brightness,
+        CarouselController,
         DraggableScrollableController,
         ExpansionTileController,
         WidgetStatesController,
@@ -18,6 +19,7 @@ import 'framework.dart';
 
 part 'animation.dart';
 part 'async.dart';
+part 'carousel_controller.dart';
 part 'debounced.dart';
 part 'draggable_scrollable_controller.dart';
 part 'expansion_tile_controller.dart';
