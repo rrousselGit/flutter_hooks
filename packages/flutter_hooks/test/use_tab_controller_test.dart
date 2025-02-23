@@ -20,7 +20,9 @@ void main() {
     final element = tester.element(find.byType(HookBuilder));
 
     expect(
-      element.toDiagnosticsNode(style: DiagnosticsTreeStyle.offstage).toStringDeep(),
+      element
+          .toDiagnosticsNode(style: DiagnosticsTreeStyle.offstage)
+          .toStringDeep(),
       equalsIgnoringHashCodes(
         'HookBuilder\n'
         ' │ useSingleTickerProvider\n'
@@ -137,7 +139,8 @@ void main() {
       ticker.dispose();
     });
 
-    testWidgets('initial animationDuration matches with real constructor', (tester) async {
+    testWidgets('initial animationDuration matches with real constructor',
+        (tester) async {
       late TabController controller;
       late TabController controller2;
 
