@@ -1,6 +1,7 @@
 ## 0.21.2 - 2025-02-23
 
 - Add `useCarouselController` (thanks to @riscait)
+- Add `useTreeSliverController` (thanks to @benthillerkus)
 
 ## 0.21.1-pre.4 - 2024-08-01
 
