@@ -10,20 +10,27 @@ bool debugHotReloadHooksEnabled = true;
 
 /// Registers a [Hook] and returns its value.
 ///
-/// [use] must be called within the `build` method of either [HookWidget] or [StatefulHookWidget].
+/// This function must be called inside the `build` method of a widget
+/// that uses a [HookElement] as its build context.
 /// All calls of [use] must be made outside of conditional checks and always in the same order.
 ///
 /// See [Hook] for more explanations.
 // ignore: deprecated_member_use, deprecated_member_use_from_same_package
 R use<R>(Hook<R> hook) => Hook.use(hook);
 
-/// [Hook] is similar to a [StatelessWidget], but is not associated
-/// to an [Element].
+/// Allows a [Widget] to create and access its own mutable data
+/// without implementing a [State].
 ///
-/// A [Hook] is typically the equivalent of [State] for [StatefulWidget],
-/// with the notable difference that a [HookWidget] can have more than one [Hook].
-/// A [Hook] is created within the [HookState.build] method of a [HookWidget] and the creation
-/// must be made unconditionally, always in the same order.
+/// Whereas [Widget]s store the immutable configuration for UI components,
+/// [Hook]s store immutable configuration for any type of object.
+/// The [HookState] of a [Hook] is analogous to the [State] of a [StatefulWidget],
+/// and a single [HookWidget] can use more than one [Hook].
+///
+/// Hooks can be used by replacing `extends StatelessWidget` with `extends HookWidget`,
+/// or by replacing `Builder()` with `HookBuilder()`.
+///
+/// Hook functions must be called unconditionally during the `build()` method,
+/// and always in the same order.
 ///
 /// ### Good:
 /// ```
@@ -210,13 +217,17 @@ Calling them outside of build method leads to an unstable state and is therefore
   /// HookState createState() => _MyHookState();
   /// ```
   ///
-  /// The framework can call this method multiple times over the lifetime of a [HookWidget]. For example,
+  /// The framework can call this method multiple times over the lifetime of a [HookElement]. For example,
   /// if the hook is used multiple times, a separate [HookState] must be created for each usage.
   @protected
   HookState<R, Hook<R>> createState();
 }
 
-/// The logic and internal state for a [HookWidget]
+/// The logic and internal state of a [Hook].
+///
+/// This class is similar to a [State], but instead of building a [Widget]
+/// subtree, the [build] method can return a value of any type, as specified
+/// by the "result" type argument `R`.
 abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   /// Equivalent of [State.context] for [HookState]
   @protected
@@ -277,22 +288,19 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
 
   /// Called before a [build] triggered by [markMayNeedRebuild].
   ///
-  /// If [shouldRebuild] returns `false` on all the hooks that called [markMayNeedRebuild]
-  /// then this aborts the rebuild of the associated [HookWidget].
+  /// If [shouldRebuild] returns `false` on all the hooks that called [markMayNeedRebuild],
+  /// [HookElement.build] will return a cached value instead of rebuilding each [Hook].
   ///
-  /// There is no guarantee that this method will be called after [markMayNeedRebuild]
-  /// was called.
-  /// Some situations where [shouldRebuild] will not be called:
-  ///
-  /// - [setState] was called
-  /// - a previous hook's [shouldRebuild] returned `true`
-  /// - the associated [HookWidget] changed.
+  /// This method is not evaluated if a previous Hook called [markMayNeedRebuild]
+  /// and its [shouldRebuild] method returned `true`.
+  /// Additionally, if [setState], [didUpdateHook], or [HookElement.didChangeDependencies] is called,
+  /// the build is unconditional and the `shouldRebuild()` call is skipped.
   bool shouldRebuild() => true;
 
-  /// Mark the associated [HookWidget] as **potentially** needing to rebuild.
+  /// Mark the associated [context] as **potentially** needing to rebuild.
   ///
   /// As opposed to [setState], the rebuild is optional and can be cancelled right
-  /// before `build` is called, by having [shouldRebuild] return false.
+  /// before [build] is called, by having [shouldRebuild] return false.
   void markMayNeedRebuild() {
     if (_element!._isOptionalRebuild != false) {
       _element!
@@ -368,7 +376,10 @@ extension on HookElement {
   }
 }
 
-/// An [Element] that uses a [HookWidget] as its configuration.
+/// An [Element] that manages [Hook]s by storing the associated [HookState]s in a [LinkedList].
+///
+/// [use] and [useContext] can only be called during this element's [build] method.
+/// The `_buildCache` enables the behavior described in [HookState.shouldRebuild].
 mixin HookElement on ComponentElement {
   static HookElement? _currentHookElement;
 
@@ -576,14 +587,12 @@ Type mismatch between hooks:
   }
 }
 
-/// A [Widget] that can use a [Hook].
+/// A [Widget] that can use [Hook]s.
 ///
-/// Its usage is very similar to [StatelessWidget].
-/// [HookWidget] does not have any life cycle and only implements
-/// the [build] method.
+/// Similar to [StatelessWidget], a `HookWidget` is created by extending this class.
 ///
-/// The difference is that it can use a [Hook], which allows a
-/// [HookWidget] to store mutable data without implementing a [State].
+/// The [HookWidget.build] method can [use] Hook functions, allowing this widget
+/// to store mutable data without implementing a [State].
 abstract class HookWidget extends StatelessWidget {
   /// Initializes [key] for subclasses.
   const HookWidget({Key? key}) : super(key: key);
@@ -596,12 +605,13 @@ class _StatelessHookElement extends StatelessElement with HookElement {
   _StatelessHookElement(HookWidget hooks) : super(hooks);
 }
 
-/// A [StatefulWidget] that can use a [Hook].
+/// A [StatefulWidget] that can use [Hook]s.
 ///
-/// Its usage is very similar to that of [StatefulWidget], but uses hooks inside [State.build].
+/// Similar to [StatefulWidget], this widget creates a [State] which
+/// can store mutable data.
 ///
-/// The difference is that it can use a [Hook], which allows a
-/// [HookWidget] to store mutable data without implementing a [State].
+/// The difference is that [Hook] functions can be called from within [State.build],
+/// similar to [HookWidget.build].
 abstract class StatefulHookWidget extends StatefulWidget {
   /// Initializes [key] for subclasses.
   const StatefulHookWidget({Key? key}) : super(key: key);
@@ -614,11 +624,17 @@ class _StatefulHookElement extends StatefulElement with HookElement {
   _StatefulHookElement(StatefulHookWidget hooks) : super(hooks);
 }
 
-/// Obtains the [BuildContext] of the building [HookWidget].
+/// Returns the [HookElement] that is currently running its `build()` method.
+///
+/// Throws an error if no hook widget is currently building.
+///
+/// Generally, Hook functions must be called unconditionally, in the same order.
+/// That rule does not apply to `useContext()`, however, since instead of accessing a [Hook],
+/// it merely returns the relevant [BuildContext].
 BuildContext useContext() {
   assert(
     HookElement._currentHookElement != null,
-    '`useContext` can only be called from the build method of HookWidget',
+    '`useContext` can only be called while a Hook widget is building.',
   );
   return HookElement._currentHookElement!;
 }
