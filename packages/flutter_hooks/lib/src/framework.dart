@@ -216,7 +216,7 @@ Calling them outside of build method leads to an unstable state and is therefore
   /// HookState createState() => _MyHookState();
   /// ```
   ///
-  /// The framework can call this method multiple times over the lifetime of a [HookElement]. For example,
+  /// The framework can call this method multiple times over the lifetime of a [HookWidget]. For example,
   /// if the hook is used multiple times, a separate [HookState] must be created for each usage.
   @protected
   HookState<R, Hook<R>> createState();
