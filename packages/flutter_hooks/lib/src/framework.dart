@@ -627,9 +627,11 @@ class _StatefulHookElement extends StatefulElement with HookElement {
 ///
 /// Throws an error if no hook widget is currently building.
 ///
-/// Generally, Hook functions must be called unconditionally, in the same order.
-/// That rule does not apply to `useContext()`, however, since instead of accessing a [Hook],
-/// it merely returns the relevant [BuildContext].
+/// Most Hook functions call [use] to construct a [Hook] object,
+/// but `useContext()` only returns a [BuildContext], so the requirement to
+/// make calls unconditionally does not apply here.
+/// But for the sake of convention, the best practice is to invoke `use*` functions
+/// unconditionally across the board.
 BuildContext useContext() {
   assert(
     HookElement._currentHookElement != null,
