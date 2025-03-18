@@ -10,8 +10,7 @@ bool debugHotReloadHooksEnabled = true;
 
 /// Registers a [Hook] and returns its value.
 ///
-/// This function must be called inside the `build` method of a widget
-/// that uses a [HookElement] as its build context.
+/// [use] must be called within the `build` method of either [HookWidget] or [StatefulHookWidget].
 /// All calls of [use] must be made outside of conditional checks and always in the same order.
 ///
 /// See [Hook] for more explanations.
