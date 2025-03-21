@@ -41,3 +41,4 @@ part 'transformation_controller.dart';
 part 'tree_sliver_controller.dart';
 part 'widget_states_controller.dart';
 part 'widgets_binding_observer.dart';
+part 'snapshot_controller.dart';
