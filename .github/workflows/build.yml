@@ -17,6 +17,7 @@ jobs:
           - flutter_hooks
         channel:
           - master
+          - stable
 
     steps:
       - uses: actions/checkout@v2
@@ -30,11 +31,12 @@ jobs:
 
       - name: Check format
         run: dart format --set-exit-if-changed .
-        if: matrix.channel == 'master'
+        if: matrix.channel == 'stable'
         working-directory: packages/${{ matrix.package }}
 
       - name: Analyze
         run: dart analyze .
+        if: matrix.channel == 'stable'
         working-directory: packages/${{ matrix.package }}
 
       - name: Run tests
