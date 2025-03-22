@@ -1,14 +1,14 @@
 part of 'hooks.dart';
 
 /// Creates and disposes a [SnapshotController].
-/// 
+///
 /// Note that [allowSnapshotting] must be set to `true`
 /// in order for this controller to actually do anything.
 /// This is consistent with [SnapshotController.new].
-/// 
+///
 /// If [allowSnapshotting] changes on subsequent calls to [useSnapshotController],
 /// [SnapshotController.allowSnapshotting] will be called to update accordingly.
-/// 
+///
 /// ```dart
 /// final controller = useSnapshotController(allowSnapshotting: true);
 /// // is equivalent to
@@ -36,13 +36,14 @@ class _SnapshotControllerHook extends Hook<SnapshotController> {
   final bool allowSnapshotting;
 
   @override
-  HookState<SnapshotController, Hook<SnapshotController>>
-      createState() => _SnapshotControllerHookState();
+  HookState<SnapshotController, Hook<SnapshotController>> createState() =>
+      _SnapshotControllerHookState();
 }
 
 class _SnapshotControllerHookState
     extends HookState<SnapshotController, _SnapshotControllerHook> {
-  late final controller = SnapshotController(allowSnapshotting: hook.allowSnapshotting);
+  late final controller =
+      SnapshotController(allowSnapshotting: hook.allowSnapshotting);
 
   @override
   void didUpdateHook(_SnapshotControllerHook oldHook) {
