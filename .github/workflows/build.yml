@@ -45,4 +45,5 @@ jobs:
 
       - name: Upload coverage to codecov
         run: curl -s https://codecov.io/bash | bash
+        if: matrix.channel == 'stable'
         working-directory: packages/${{ matrix.package }}
