@@ -296,7 +296,7 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   /// the build is unconditional and the `shouldRebuild()` call is skipped.
   bool shouldRebuild() => true;
 
-  /// Mark the associated [context] as **potentially** needing to rebuild.
+  /// Mark the associated [HookWidget] as **potentially** needing to rebuild.
   ///
   /// As opposed to [setState], the rebuild is optional and can be cancelled right
   /// before [build] is called, by having [shouldRebuild] return false.
@@ -623,19 +623,11 @@ class _StatefulHookElement extends StatefulElement with HookElement {
   _StatefulHookElement(StatefulHookWidget hooks) : super(hooks);
 }
 
-/// Returns the [HookElement] that is currently running its `build()` method.
-///
-/// Throws an error if no hook widget is currently building.
-///
-/// Most Hook functions call [use] to construct a [Hook] object,
-/// but `useContext()` only returns a [BuildContext], so the requirement to
-/// make calls unconditionally does not apply here.
-/// But for the sake of convention, the best practice is to invoke `use*` functions
-/// unconditionally across the board.
+/// Obtains the [BuildContext] of the building [HookWidget].
 BuildContext useContext() {
   assert(
     HookElement._currentHookElement != null,
-    '`useContext` can only be called while a Hook widget is building.',
+    '`useContext` can only be called from the build method of HookWidget',
   );
   return HookElement._currentHookElement!;
 }
