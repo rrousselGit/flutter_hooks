@@ -37,6 +37,7 @@ part 'scroll_controller.dart';
 part 'search_controller.dart';
 part 'tab_controller.dart';
 part 'text_controller.dart';
+part 'throttled.dart';
 part 'transformation_controller.dart';
 part 'tree_sliver_controller.dart';
 part 'widget_states_controller.dart';
