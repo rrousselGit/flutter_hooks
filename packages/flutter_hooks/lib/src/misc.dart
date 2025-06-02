@@ -1,17 +1,17 @@
 part of 'hooks.dart';
 
 /// A store of mutable state that allows mutations by dispatching actions.
-abstract class Store<State, Action> {
+abstract class Store<StateT, ActionT> {
   /// The current state.
   ///
   /// This value may change after a call to [dispatch].
-  State get state;
+  StateT get state;
 
   /// Dispatches an action.
   ///
   /// Actions are dispatched synchronously.
   /// It is impossible to try to dispatch actions during `build`.
-  void dispatch(Action action);
+  void dispatch(ActionT action);
 }
 
 /// Composes an [Action] and a [State] to create a new [State].
@@ -33,10 +33,10 @@ typedef Reducer<State, Action> = State Function(State state, Action action);
 /// See also:
 ///  * [Reducer]
 ///  * [Store]
-Store<State, Action> useReducer<State, Action>(
-  Reducer<State, Action> reducer, {
-  required State initialState,
-  required Action initialAction,
+Store<StateT, ActionT> useReducer<StateT, ActionT>(
+  Reducer<StateT, ActionT> reducer, {
+  required StateT initialState,
+  required ActionT initialAction,
 }) {
   return use(
     _ReducerHook(
@@ -47,27 +47,27 @@ Store<State, Action> useReducer<State, Action>(
   );
 }
 
-class _ReducerHook<State, Action> extends Hook<Store<State, Action>> {
+class _ReducerHook<StateT, ActionT> extends Hook<Store<StateT, ActionT>> {
   const _ReducerHook(
     this.reducer, {
     required this.initialState,
     required this.initialAction,
   });
 
-  final Reducer<State, Action> reducer;
-  final State initialState;
-  final Action initialAction;
+  final Reducer<StateT, ActionT> reducer;
+  final StateT initialState;
+  final ActionT initialAction;
 
   @override
-  _ReducerHookState<State, Action> createState() =>
-      _ReducerHookState<State, Action>();
+  _ReducerHookState<StateT, ActionT> createState() =>
+      _ReducerHookState<StateT, ActionT>();
 }
 
-class _ReducerHookState<State, Action>
-    extends HookState<Store<State, Action>, _ReducerHook<State, Action>>
-    implements Store<State, Action> {
+class _ReducerHookState<StateT, ActionT>
+    extends HookState<Store<StateT, ActionT>, _ReducerHook<StateT, ActionT>>
+    implements Store<StateT, ActionT> {
   @override
-  late State state = hook.reducer(hook.initialState, hook.initialAction);
+  late StateT state = hook.reducer(hook.initialState, hook.initialAction);
 
   @override
   void initHook() {
@@ -77,7 +77,7 @@ class _ReducerHookState<State, Action>
   }
 
   @override
-  void dispatch(Action action) {
+  void dispatch(ActionT action) {
     final newState = hook.reducer(state, action);
 
     if (state != newState) {
@@ -86,7 +86,7 @@ class _ReducerHookState<State, Action>
   }
 
   @override
-  Store<State, Action> build(BuildContext context) {
+  Store<StateT, ActionT> build(BuildContext context) {
     return this;
   }
 
