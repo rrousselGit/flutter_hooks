@@ -9,7 +9,7 @@ void main() {
   testWidgets('debugFillProperties', (tester) async {
     await tester.pumpWidget(
       HookBuilder(builder: (context) {
-        useExpansionTileController();
+        useExpansibleController();
         return const SizedBox();
       }),
     );
@@ -24,21 +24,21 @@ void main() {
           .toStringDeep(),
       equalsIgnoringHashCodes(
         'HookBuilder\n'
-        " │ useExpansionTileController: Instance of 'ExpansionTileController'\n"
+        " │ useExpansibleController: Instance of 'ExpansibleController'\n"
         ' └SizedBox(renderObject: RenderConstrainedBox#00000)\n',
       ),
     );
   });
 
-  group('useExpansionTileController', () {
+  group('useExpansibleController', () {
     testWidgets('initial values matches with real constructor', (tester) async {
-      late ExpansionTileController controller;
-      final controller2 = ExpansionTileController();
+      late ExpansibleController controller;
+      final controller2 = ExpansibleController();
 
       await tester.pumpWidget(MaterialApp(
         home: Scaffold(
           body: HookBuilder(builder: (context) {
-            controller = useExpansionTileController();
+            controller = useExpansibleController();
             return Column(
               children: [
                 ExpansionTile(
@@ -54,16 +54,16 @@ void main() {
           }),
         ),
       ));
-      expect(controller, isA<ExpansionTileController>());
+      expect(controller, isA<ExpansibleController>());
       expect(controller.isExpanded, controller2.isExpanded);
     });
 
     testWidgets('check expansion/collapse of tile', (tester) async {
-      late ExpansionTileController controller;
+      late ExpansibleController controller;
       await tester.pumpWidget(MaterialApp(
         home: Scaffold(
           body: HookBuilder(builder: (context) {
-            controller = useExpansionTileController();
+            controller = useExpansibleController();
             return ExpansionTile(
               controller: controller,
               title: const Text('Expansion Tile'),

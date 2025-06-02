@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -41,8 +43,10 @@ void main() {
     ));
 
     final animationController = AnimationController(
-        vsync: provider, duration: const Duration(seconds: 1))
-      ..forward();
+      vsync: provider,
+      duration: const Duration(seconds: 1),
+    );
+    unawaited(animationController.forward());
 
     expect(() => AnimationController(vsync: provider), throwsFlutterError);
 
