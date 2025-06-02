@@ -1,3 +1,7 @@
+## Unreleased patch
+
+Deprecated `useExpansionTileController` in favor of `useExpansibleController`.
+
 ## 0.21.2 - 2025-02-23
 
 - Add `useCarouselController` (thanks to @riscait)
