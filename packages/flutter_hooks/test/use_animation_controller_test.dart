@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
@@ -26,9 +28,10 @@ void main() {
 
     controller
       ..duration = const Duration(seconds: 1)
-      ..reverseDuration = const Duration(seconds: 1)
-      // check has a ticker
-      ..forward();
+      ..reverseDuration = const Duration(seconds: 1);
+
+    // check has a ticker
+    unawaited(controller.forward());
 
     // dispose
     await tester.pumpWidget(const SizedBox());
