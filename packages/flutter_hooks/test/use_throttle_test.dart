@@ -3,10 +3,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('useThrottle', () {
+  group('useThrottled', () {
     testWidgets('no update when tapping multiple times', (tester) async {
       await tester.runAsync<void>(() async {
-        await tester.pumpWidget(const _UseThrottleTestWidget());
+        await tester.pumpWidget(const _UseThrottledTestWidget());
 
         final text = find.byType(GestureDetector);
         expect(find.text('1'), findsOneWidget);
@@ -32,7 +32,7 @@ void main() {
 
     testWidgets('update number after duration', (tester) async {
       await tester.runAsync<void>(() async {
-        await tester.pumpWidget(const _UseThrottleTestWidget());
+        await tester.pumpWidget(const _UseThrottledTestWidget());
 
         final text = find.byType(GestureDetector);
         expect(find.text('1'), findsOneWidget);
@@ -49,13 +49,13 @@ void main() {
   });
 }
 
-class _UseThrottleTestWidget extends HookWidget {
-  const _UseThrottleTestWidget();
+class _UseThrottledTestWidget extends HookWidget {
+  const _UseThrottledTestWidget();
 
   @override
   Widget build(BuildContext context) {
     final textNumber = useState(1);
-    final throttle = useThrottle();
+    final throttle = useThrottled(duration: _duration);
 
     void updateText() {
       textNumber.value++;
