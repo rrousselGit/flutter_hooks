@@ -30,7 +30,7 @@ void main() {
     );
   });
 
-  group('useCupertinoCupertinoCupertinoTabController', () {
+  group('useCupertinoTabController', () {
     testWidgets('initial values matches with real constructor', (tester) async {
       late CupertinoTabController controller;
       late CupertinoTabController controller2;
