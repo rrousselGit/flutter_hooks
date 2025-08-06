@@ -10,6 +10,7 @@ FocusNode useFocusNode({
   bool skipTraversal = false,
   bool canRequestFocus = true,
   bool descendantsAreFocusable = true,
+  bool descendantsAreTraversable = true,
 }) {
   return use(
     _FocusNodeHook(
@@ -18,6 +19,7 @@ FocusNode useFocusNode({
       skipTraversal: skipTraversal,
       canRequestFocus: canRequestFocus,
       descendantsAreFocusable: descendantsAreFocusable,
+      descendantsAreTraversable: descendantsAreTraversable,
     ),
   );
 }
@@ -29,6 +31,7 @@ class _FocusNodeHook extends Hook<FocusNode> {
     required this.skipTraversal,
     required this.canRequestFocus,
     required this.descendantsAreFocusable,
+    required this.descendantsAreTraversable,
   });
 
   final String? debugLabel;
@@ -36,6 +39,7 @@ class _FocusNodeHook extends Hook<FocusNode> {
   final bool skipTraversal;
   final bool canRequestFocus;
   final bool descendantsAreFocusable;
+  final bool descendantsAreTraversable;
 
   @override
   _FocusNodeHookState createState() {
@@ -50,6 +54,7 @@ class _FocusNodeHookState extends HookState<FocusNode, _FocusNodeHook> {
     skipTraversal: hook.skipTraversal,
     canRequestFocus: hook.canRequestFocus,
     descendantsAreFocusable: hook.descendantsAreFocusable,
+    descendantsAreTraversable: hook.descendantsAreTraversable,
   );
 
   @override
@@ -59,6 +64,7 @@ class _FocusNodeHookState extends HookState<FocusNode, _FocusNodeHook> {
       ..skipTraversal = hook.skipTraversal
       ..canRequestFocus = hook.canRequestFocus
       ..descendantsAreFocusable = hook.descendantsAreFocusable
+      ..descendantsAreTraversable = hook.descendantsAreTraversable
       ..onKeyEvent = hook.onKeyEvent;
   }
 
