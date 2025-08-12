@@ -3,6 +3,7 @@
 - Deprecated `useExpansionTileController` in favor of `useExpansibleController`.
 - Added `useCupertinoTabController` thanks to @Erengun
 - Added `useSnapshotController` thanks to @benthillerkus
+- Added `descendantsAreTraversable` to `useFocusNode` thanks to @gabber235
 
 ## 0.21.2 - 2025-02-23
 
