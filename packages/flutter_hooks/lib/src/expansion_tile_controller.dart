@@ -1,28 +1,37 @@
 part of 'hooks.dart';
 
+/// Creates a [ExpansibleController] that will be disposed automatically.
+///
+/// See also:
+/// - [ExpansibleController]
+ExpansibleController useExpansibleController({List<Object?>? keys}) {
+  return use(_ExpansibleControllerHook(keys: keys));
+}
+
 /// Creates a [ExpansionTileController] that will be disposed automatically.
 ///
 /// See also:
 /// - [ExpansionTileController]
+@Deprecated('Use `useExpansibleController` instead.')
 ExpansionTileController useExpansionTileController({List<Object?>? keys}) {
-  return use(_ExpansionTileControllerHook(keys: keys));
+  return use(_ExpansibleControllerHook(keys: keys));
 }
 
-class _ExpansionTileControllerHook extends Hook<ExpansionTileController> {
-  const _ExpansionTileControllerHook({List<Object?>? keys}) : super(keys: keys);
+class _ExpansibleControllerHook extends Hook<ExpansibleController> {
+  const _ExpansibleControllerHook({List<Object?>? keys}) : super(keys: keys);
 
   @override
-  HookState<ExpansionTileController, Hook<ExpansionTileController>>
-      createState() => _ExpansionTileControllerHookState();
+  HookState<ExpansibleController, Hook<ExpansibleController>> createState() =>
+      _ExpansibleControllerHookState();
 }
 
-class _ExpansionTileControllerHookState
-    extends HookState<ExpansionTileController, _ExpansionTileControllerHook> {
-  final controller = ExpansionTileController();
+class _ExpansibleControllerHookState
+    extends HookState<ExpansibleController, _ExpansibleControllerHook> {
+  final controller = ExpansibleController();
 
   @override
-  String get debugLabel => 'useExpansionTileController';
+  String get debugLabel => 'useExpansibleController';
 
   @override
-  ExpansionTileController build(BuildContext context) => controller;
+  ExpansibleController build(BuildContext context) => controller;
 }
