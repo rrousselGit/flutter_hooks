@@ -76,6 +76,8 @@ void main() {
     expect(focusNode.skipTraversal, official.skipTraversal);
     expect(focusNode.canRequestFocus, official.canRequestFocus);
     expect(focusNode.descendantsAreFocusable, official.descendantsAreFocusable);
+    expect(focusNode.descendantsAreTraversable,
+        official.descendantsAreTraversable);
   });
 
   testWidgets('has all the FocusNode parameters', (tester) async {
@@ -91,6 +93,7 @@ void main() {
           skipTraversal: true,
           canRequestFocus: false,
           descendantsAreFocusable: false,
+          descendantsAreTraversable: false,
         );
         return Container();
       }),
@@ -101,6 +104,7 @@ void main() {
     expect(focusNode.skipTraversal, true);
     expect(focusNode.canRequestFocus, false);
     expect(focusNode.descendantsAreFocusable, false);
+    expect(focusNode.descendantsAreTraversable, false);
   });
 
   testWidgets('handles parameter change', (tester) async {
@@ -118,6 +122,7 @@ void main() {
           skipTraversal: true,
           canRequestFocus: false,
           descendantsAreFocusable: false,
+          descendantsAreTraversable: false,
         );
 
         return Container();
@@ -140,5 +145,6 @@ void main() {
     expect(focusNode.skipTraversal, false);
     expect(focusNode.canRequestFocus, true);
     expect(focusNode.descendantsAreFocusable, true);
+    expect(focusNode.descendantsAreTraversable, true);
   });
 }
