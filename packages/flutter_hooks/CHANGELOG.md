@@ -1,4 +1,4 @@
-## Unreleased patch
+## 0.21.3 - 2025-08-12
 
 - Deprecated `useExpansionTileController` in favor of `useExpansibleController`.
 - Added `useCupertinoTabController` thanks to @Erengun
