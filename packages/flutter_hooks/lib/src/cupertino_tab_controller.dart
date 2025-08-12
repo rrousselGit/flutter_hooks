@@ -1,6 +1,5 @@
 part of 'hooks.dart';
 
-
 /// Creates a [CupertinoTabController] that will be disposed automatically.
 ///
 /// See also:
@@ -26,8 +25,8 @@ class _CupertinoTabControllerHook extends Hook<CupertinoTabController> {
   final int initialIndex;
 
   @override
-  HookState<CupertinoTabController, Hook<CupertinoTabController>> createState() =>
-      _CupertinoTabControllerHookState();
+  HookState<CupertinoTabController, Hook<CupertinoTabController>>
+      createState() => _CupertinoTabControllerHookState();
 }
 
 class _CupertinoTabControllerHookState

@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart'
-    show CupertinoTabController;
+import 'package:flutter/cupertino.dart' show CupertinoTabController;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'
     show
