@@ -316,7 +316,7 @@ Flutter_Hooks 已经包含一些不同类别的可复用的钩子：
 | [useAnimationController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAnimationController.html)   | 创建并会自动释放的 `AnimationController` |
 | [useAnimation](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAnimation.html)                       | 订阅一个 `Animation` 并返回其当前值      |
 
-#### Listenable 相关 Hook
+#### Listenable 相关
 
 | 名称                                                                                                                 | 描述                                                  |
 | -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
