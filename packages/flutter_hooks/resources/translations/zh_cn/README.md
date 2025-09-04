@@ -276,7 +276,7 @@ useC();
   }
   ```
 
-## 已有的钩子
+## 已有的 Hook
 
 Flutter_Hooks 已经包含一些不同类别的可复用的钩子：
 
@@ -284,68 +284,78 @@ Flutter_Hooks 已经包含一些不同类别的可复用的钩子：
 
 与组件不同生命周期交互的低级钩子。
 
-| 名称                                                                                                     | 介绍                                        |
-| -------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| [useEffect](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useEffect.html)             | 对副作用很有用，可以选择取消它们            |
-| [useState](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useState.html)               | 创建并订阅一个变量                          |
-| [useMemoized](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useMemoized.html)         | 缓存复杂对象的实例                          |
-| [useRef](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useRef.html)                   | 创建一个包含单个可变属性的对象              |
-| [useCallback](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useCallback.html)         | 缓存一个函数的实例                          |
-| [useContext](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useContext.html)           | 包含构建中的 `HookWidget` 的 `BuildContext` |
-| [useValueChanged](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useValueChanged.html) | 监听一个值并在其改变时触发回调              |
+| 名称                                                                                                     | 描述                                         |
+| -------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| [useEffect](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useEffect.html)             | 用于处理副作用，并可选择性地进行清理       |
+| [useState](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useState.html)               | 创建一个变量并订阅它的变化                 |
+| [useMemoized](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useMemoized.html)         | 缓存复杂对象的实例                         |
+| [useRef](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useRef.html)                   | 创建一个包含单个可变属性的对象           |
+| [useCallback](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useCallback.html)         | 缓存函数实例                               |
+| [useContext](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useContext.html)           | 获取当前 `HookWidget` 的 `BuildContext`    |
+| [useValueChanged](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useValueChanged.html) | 监听某个值的变化，并在值发生变化时触发回调 |
 
-### 绑定对象
+### 对象绑定（Object-binding）
 
-这类钩子用以操作现有的 Flutter 及 Dart 对象。\
-它们负责创建、更新以及 dispose 对象。
+这类钩子用于操作现有的 Flutter 及 Dart 对象\
+它们负责创建、更新以及 dispose 对象
 
 #### dart:async 相关
 
-| 名称                                                                                                             | 介绍                                                       |
+| 名称                                                                                                             | 描述                                                       |
 | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| [useStream](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useStream.html)                     | 订阅一个 `Stream`，并以 `AsyncSnapshot` 返回它目前的状态   |
-| [useStreamController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useStreamController.html) | 创建一个会自动 dispose 的 `StreamController`               |
-| [useOnStreamChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnStreamChange.html)     | 订阅一个 `Stream`，注册处理函数，返回 `StreamSubscription` |
-| [useFuture](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useFuture.html)                     | 订阅一个 `Future` 并以 `AsyncSnapshot` 返回它目前的状态    |
+| [useStream](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useStream.html)                     | 订阅一个 `Stream` 并返回其当前状态（`AsyncSnapshot`）    |
+| [useStreamController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useStreamController.html) | 创建一个 `StreamController`，会在不再使用时自动释放      |
+| [useOnStreamChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnStreamChange.html)     | 订阅 `Stream`，注册处理函数，并返回 `StreamSubscription` |
+| [useFuture](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useFuture.html)                     | 订阅一个 `Future` 并返回其当前状态（`AsyncSnapshot`）    |
 
 #### Animation 相关
 
-| 名称                                                                                                                     | 介绍                                            |
-| ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------- |
-| [useSingleTickerProvider](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useSingleTickerProvider.html) | 创建单一用途的 `TickerProvider`                 |
-| [useAnimationController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAnimationController.html)   | 创建一个会自动 dispose 的 `AnimationController` |
-| [useAnimation](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAnimation.html)                       | 订阅一个 `Animation` 并返回它的值               |
+| 名称                                                                                                                     | 描述                                       |
+| ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------ |
+| [useSingleTickerProvider](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useSingleTickerProvider.html) | 创建单次使用的 `TickerProvider`          |
+| [useAnimationController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAnimationController.html)   | 创建并会自动释放的 `AnimationController` |
+| [useAnimation](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAnimation.html)                       | 订阅一个 `Animation` 并返回其当前值      |
 
-#### Listenable 相关
+#### Listenable 相关 Hook
 
-| 名称                                                                                                                 | 介绍                                                 |
-| -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| [useListenable](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useListenable.html)                 | 订阅一个 `Listenable` 并在 listener 调用时将组件标脏 |
-| [useListenableSelector](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useListenableSelector.html) | 和 `useListenable` 类似，但支持过滤 UI 重建          |
-| [useValueNotifier](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useValueNotifier.html)           | 创建一个会自动 dispose 的 `ValueNotifier`            |
-| [useValueListenable](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useValueListenable.html)       | 订阅一个 `ValueListenable` 并返回它的值              |
+| 名称                                                                                                                 | 描述                                                  |
+| -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| [useListenable](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useListenable.html)                 | 订阅一个 `Listenable`，当回调触发时标记组件需要重建 |
+| [useListenableSelector](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useListenableSelector.html) | 类似于 `useListenable`，但允许过滤 UI 重建          |
+| [useValueNotifier](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useValueNotifier.html)           | 创建一个 `ValueNotifier`，并在不再使用时自动释放    |
+| [useValueListenable](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useValueListenable.html)       | 订阅一个 `ValueListenable` 并返回其值               |
+| [useOnListenableChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnListenableChange.html) | 为 `Listenable` 添加回调，并在不再需要时自动移除    |
 
 #### 杂项
 
-一组无明确主题的钩子。
+一组无明确主题的钩子
 
-| 名称                                                                                                                                 | 介绍                                               |
-| ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------- |
-| [useReducer](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useReducer.html)                                       | 对于更复杂的状态，用以替代 `useState`              |
-| [usePrevious](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/usePrevious.html)                                     | 返回调用 `usePrevious` 的上一个参数                |
-| [useTextEditingController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTextEditingController-constant.html)  | 创建一个 `TextEditingController`                   |
-| [useFocusNode](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useFocusNode.html)                                   | 创建一个 `FocusNode`                               |
-| [useTabController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTabController.html)                           | 创建并自动 dispose 一个 `TabController`            |
-| [useScrollController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useScrollController.html)                     | 创建并自动 dispose 一个 `ScrollController`         |
-| [usePageController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/usePageController.html)                         | 创建并自动 dispose 一个 `PageController`           |
-| [useAppLifecycleState](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAppLifecycleState.html)                   | 返回当前的 `AppLifecycleState`，并在改变时重建组件 |
-| [useOnAppLifecycleStateChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnAppLifecycleStateChange.html)   | 监听 `AppLifecycleState` 并在其改变时触发回调      |
-| [useTransformationController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTransformationController.html)     | 创建并自动 dispose 一个 `TransformationController` |
-| [useIsMounted](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useIsMounted.html)                                   | 对钩子而言和 `State.mounted` 一样                  |
-| [useAutomaticKeepAlive](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAutomaticKeepAlive.html)                 | 对钩子而言和 `AutomaticKeepAlive` 一样             |
-| [useOnPlatformBrightnessChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnPlatformBrightnessChange.html) | 监听平台 `Brightness` 并在其改变时触发回调         |
-| [useWidgetStatesController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useWidgetStatesController.html)     | 创建并自动 dispose 一个 `WidgetStatesController` |
-| [useExpansionTileController](https://api.flutter.dev/flutter/material/ExpansionTileController-class.html)                            | 创建一个 `ExpansionTileController`                 |
+| 名称                                                                                                                                   | 描述                                                                                           |
+| -------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| [useReducer](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useReducer.html)                                         | `useState` 的替代方案，适用于更复杂的状态管理                                                |
+| [usePrevious](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/usePrevious.html)                                       | 返回上一次调用 `usePrevious` 时的参数                                                        |
+| [useTextEditingController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTextEditingController-constant.html)    | 创建一个 `TextEditingController`                                                             |
+| [useFocusNode](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useFocusNode.html)                                     | 创建一个 `FocusNode`                                                                         |
+| [useTabController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTabController.html)                             | 创建并自动释放一个 `TabController`                                                           |
+| [useScrollController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useScrollController.html)                       | 创建并自动释放一个 `ScrollController`                                                        |
+| [usePageController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/usePageController.html)                           | 创建并自动释放一个 `PageController`                                                          |
+| [useFixedExtentScrollController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useFixedExtentScrollController.html) | 创建并自动释放一个 `FixedExtentScrollController`                                             |
+| [useAppLifecycleState](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAppLifecycleState.html)                     | 返回当前的 `AppLifecycleState`，并在其变化时触发组件重建                                     |
+| [useOnAppLifecycleStateChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnAppLifecycleStateChange.html)     | 监听 `AppLifecycleState` 的变化，并在变化时触发回调                                          |
+| [useTransformationController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTransformationController.html)       | 创建并自动释放一个 `TransformationController`                                                |
+| [useIsMounted](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useIsMounted.html)                                     | Hook 版本的 `State.mounted`                                                                  |
+| [useAutomaticKeepAlive](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAutomaticKeepAlive.html)                   | Hook 版本的 `AutomaticKeepAlive` 组件                                                        |
+| [useOnPlatformBrightnessChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnPlatformBrightnessChange.html)   | 监听平台亮度（`Brightness`）变化，并在变化时触发回调                                         |
+| [useSearchController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useSearchController.html)                       | 创建并自动释放一个 `SearchController`                                                        |
+| [useWidgetStatesController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useWidgetStatesController.html)           | 创建并自动释放一个 `WidgetStatesController`                                                  |
+| [useExpansibleController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useExpansibleController.html)               | 创建一个 `ExpansibleController`                                                              |
+| [useDebounced](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useDebounced.html)                                     | 返回一个防抖后的值，在指定延时后触发更新                                                     |
+| [useDraggableScrollableController](https://api.flutter.dev/flutter/widgets/DraggableScrollableController-class.html)                   | 创建一个 `DraggableScrollableController`                                                     |
+| [useCarouselController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useCarouselController.html)                   | 创建并自动释放一个 `CarouselController`                                                      |
+| [useTreeSliverController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTreeSliverController.html)               | 创建一个 `TreeSliverController`                                                              |
+| [useOverlayPortalController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOverlayPortalController.html)         | 创建并管理一个 `OverlayPortalController`，用于控制覆盖层内容的可见性，会在不再需要时自动释放 |
+| [useSnapshotController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useSnapshotController.html)                   | 创建并管理一个 `SnapshotController`                                                          |
+| [useCupertinoController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useCupertinoController.html)                 | 创建并管理一个 `CupertinoController`                                                         |
 
 ## 贡献
 
