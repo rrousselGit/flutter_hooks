@@ -27,11 +27,17 @@ class _ExpansibleControllerHook extends Hook<ExpansibleController> {
 
 class _ExpansibleControllerHookState
     extends HookState<ExpansibleController, _ExpansibleControllerHook> {
-  final controller = ExpansibleController();
+  final _controller = ExpansibleController();
 
   @override
   String get debugLabel => 'useExpansibleController';
 
   @override
-  ExpansibleController build(BuildContext context) => controller;
+  ExpansibleController build(BuildContext context) => _controller;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 }

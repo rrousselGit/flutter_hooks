@@ -78,5 +78,33 @@ void main() {
       controller.collapse();
       expect(controller.isExpanded, false);
     });
+
+    testWidgets('check ExpansibleController gets disposed', (tester) async {
+      late ExpansibleController controller;
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: HookBuilder(builder: (context) {
+            controller = useExpansibleController();
+            return ExpansionTile(
+              controller: controller,
+              title: const Text('Expansion Tile'),
+            );
+          }),
+        ),
+      ));
+
+      await tester.pumpWidget(const SizedBox());
+
+      expect(
+        () => controller.addListener(() {}),
+        throwsA(
+          isFlutterError.having(
+            (e) => e.message,
+            'message',
+            contains('disposed'),
+          ),
+        ),
+      );
+    });
   });
 }
