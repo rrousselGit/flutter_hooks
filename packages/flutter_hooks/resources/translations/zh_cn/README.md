@@ -10,13 +10,13 @@
 
 # Flutter Hooks
 
-一个 React 钩子在 Flutter 上的实现：[Making Sense of React Hooks](https://medium.com/@dan_abramov/making-sense-of-react-hooks-fdbde8803889)
+这是一个 React Hooks 在 Flutter 中的实现：[Making Sense of React Hooks](https://medium.com/@dan_abramov/making-sense-of-react-hooks-fdbde8803889)
 
-钩子是一种用来管理 `Widget` 生命周期的新对象，以减少重复代码、增加组件间复用性。
+Hooks 是一种管理 `Widget` 生命周期的新对象，以减少重复代码、增加组件间复用性。
 
 ## 动机
 
-`StatefulWidget` 有个大问题，它很难减少 `initState` 或 `dispose` 的调用，一个简明的例子就是 `AnimationController`：
+`StatefulWidget` 存在一个大问题：很难重用 `initState` 或 `dispose` 的逻辑，一个典型的例子就是 `AnimationController`：
 
 ```dart
 class Example extends StatefulWidget {
@@ -60,15 +60,15 @@ class _ExampleState extends State<Example> with SingleTickerProviderStateMixin {
 
 所有想要使用 `AnimationController` 的组件都几乎必须从头开始重新实现这些逻辑，这当然不是我们想要的。
 
-Dart 的 mixin 能部分解决这个问题，但随之又有其它问题：
+Dart 的 mixin 能部分解决这个问题，但它们也存在其他问题：
 
-- 一个给定的 mixin 只能被一个类使用一次
-- Mixin 和类共用一个对象\
-  这意味着如果两个 mixin 用一个变量名分别定义自己的变量，结果要么是编译失败，要么行为诡异。
+- 一个给定的 mixin 在每个类中只能使用一次。
+- Mixin 和类共用一个对象。\
+  这意味着如果两个 mixin 定义了同名变量，结果要么是编译失败，要么引起未知行为。
 
 ---
 
-这个库提供了另一个解决方法：
+本库提供了另一个解决方法：
 
 ```dart
 class Example extends HookWidget {
@@ -85,20 +85,20 @@ class Example extends HookWidget {
 }
 ```
 
-这段代码和之前的例子有一样的功能。\
-它仍然会 dispose `AnimationController`，并在 `Example.duration` 改变时更新它的 `duration`。
+这段代码在功能上等同于前面的例子。\
+它仍然会在适当的时候 dispose `AnimationController`，并在 `Example.duration` 改变时仍会更新其 `duration`。
 
-但猜你在想：
+但你可能会想：
 
-> 那些逻辑都哪去了？
+> 所有逻辑都去哪了？
 
-那些逻辑都已经被移入了 `useAnimationController` 里，这是这个库直接带有的（见 [已有的钩子](https://github.com/Cierra-Runis/flutter_hooks/blob/master/packages/flutter_hooks/resources/translations/zh_cn/README.md#%E5%B7%B2%E6%9C%89%E7%9A%84%E9%92%A9%E5%AD%90) ）——这就是我们所说的 _钩子_。
+这些逻辑已经被移到了 `useAnimationController` 中，这是本库中直接包含的一个函数（参见 [现有 hooks](#已有的 Hook) ）————这就是我们所说的 _钩子_。
 
-钩子是一种有着如下部分特性的新对象：
+钩子是一种具有以下特定性质的新对象：
 
-- 只能在混入了 `Hooks` 的组件的 `build` 方法内使用
-- 同类的钩子能复用任意多次\
-  如下的代码定义了两个独立的 `AnimationController`，并且都在组件重建时被正确的保留
+- 它们只能在混入 `Hooks` 的 widget 的 `build` 方法中使用。
+- 同一个钩子可以任意多次重复使用。\
+  以下代码定义了两个独立的 `AnimationController`，并且都在 widget 重建时能正确保留它们。
 
   ```dart
   Widget build(BuildContext context) {
@@ -108,18 +108,18 @@ class Example extends HookWidget {
   }
   ```
 
-- 钩子和其它钩子与组件完全独立\
-  这说明他们能被很简单的抽离到一个包并发布到 [pub](https://pub.dev/) 上去给其他人用
+- 钩子彼此之间以及与 widget 完全独立。\
+  这意味着它们可以轻松提取为包并在 [pub](https://pub.dev/) 上发布供他人使用。
 
 ## 原理
 
-与 `State` 类似，钩子被存在 `Widget` 的 `Element` 里。但和存个 `State` 不一样，`Element` 存的是 `List<Hook>`。\
-再就是想要使用 `Hook` 的话，就必须调用 `Hook.use`。
+与 `State` 类似，钩子存储在 `Widget` 的 `Element` 中。但是，`Element` 存储的是 `List<Hook>` 而不是一个 `State`。\
+要使用 `Hook`，必须调用 `Hook.use`。
 
-由 `use` 返回的钩子由其被调用的次数决定。\
-第一次调用返回第一个钩子，第二次返回第二个，第三次返回第三个这样。
+通过 `use` 返回的钩子基于被调用的次数。\
+第一次调用返回第一个钩子，第二次返回第二个钩子，第三次返回第三个钩子，以此类推。
 
-如果还是不太能理解的话，钩子的一个雏形可能长下面这样：
+如果这个概念还不清楚，钩子的简单实现可能如下所示：
 
 ```dart
 class HookElement extends Element {
@@ -136,19 +136,19 @@ class HookElement extends Element {
 }
 ```
 
-想要更多有关钩子是怎么实现的解释的话，这里有篇讲钩子在 React 是怎么实现的挺不错的 [文章](https://medium.com/@ryardley/react-hooks-not-magic-just-arrays-cd4f1857236e)。
+有关 hooks 实现的更多解释，这里有一篇关于 React 中如何实现的 [文章](https://medium.com/@ryardley/react-hooks-not-magic-just-arrays-cd4f1857236e)。
 
-## 约定
+## 规则
 
-由于钩子由它们的 index 保留，有些约定是必须要遵守的：
+由于钩子通过它们的 index 保留，因此必须遵守一些规则：
 
-### _要_ 一直使用 `use` 作为你钩子的前缀
+### _要_ 始终以 `use` 作为钩子的前缀
 
 ```dart
 Widget build(BuildContext context) {
-  // 以 `use` 开头，非常好名字
+  // 以 `use` 开头，非常好的名字
   useMyHook();
-  // 不以 `use` 开头，会让人以为这不是一个钩子
+  // 不以 `use` 开头，可能让人误以为这不是一个 hook
   myHook();
   // ....
 }
@@ -163,7 +163,7 @@ Widget build(BuildContext context) {
 }
 ```
 
-### _不要_ 将 `use` 包到条件语句里
+### _不要_ 将 `use` 包在条件语句中
 
 ```dart
 Widget build(BuildContext context) {
@@ -176,11 +176,11 @@ Widget build(BuildContext context) {
 
 ---
 
-### 有关热重载
+### 关于热重载
 
-由于钩子由它们的 index 保留，可能有人认为在重构时热重载会搞崩程序。
+由于钩子通过它们的 index 保留，可能有人认为在重构时热重载会搞崩程序。
 
-冇问题的，为了能使用钩子，`HookWidget` 覆写了默认的热重载行为，但还有一些情况下钩子的状态会被重置。
+但不用担心，`HookWidget` 会覆盖默认的热重载行为以适配 hooks。不过，在某些情况下钩子的状态可能会被重置。
 
 设想如下三个钩子：
 
@@ -190,7 +190,7 @@ useB(0);
 useC();
 ```
 
-接下来我们在热重载后修改 `HookB` 的参数：
+接下来，我们在热重载后修改 `HookB` 的参数：
 
 ```dart
 useA();
@@ -198,7 +198,7 @@ useB(42);
 useC();
 ```
 
-那么一切正常，所有的钩子都保留了他们的状态。
+这里一切正常，所有的钩子都保留了它们的状态。
 
 现在再删掉 `HookB` 试试：
 
@@ -208,8 +208,8 @@ useC();
 ```
 
 在这种情况下，`HookA` 会保留它的状态，但 `HookC` 会被强制重置。\
-这是因为重构并热重载后，在第一个被影响的钩子 _之后_ 的所有钩子都会被 dispose 掉。\
-因此，由于 `HookC` 在 `HookB` _之后_，所以它会被 dispose 掉。
+这是因为当重构后执行热重载时，在第一个被影响的钩子 _之后_ 的所有钩子都会被 dispose 掉。\
+因此，由于 `HookC` 放在 `HookB` _之后_，所以它会被 dispose 掉。
 
 ## 如何创建钩子
 
@@ -218,10 +218,10 @@ useC();
 - 函数式钩子
 
   函数是目前用来写钩子的最常用方法。\
-  多亏钩子能被自然的组合，一个函数就能将其他的钩子组合为一个复杂的自定义钩子。\
-  而且我们约定好了这些函数都以 `use` 为前缀。
+  得益于钩子天然的可组合性，函数能够组合其他钩子来创建更复杂的自定义钩子。\
+  按照惯例，这些函数将以 `use` 为前缀。
 
-  如下代码构建了一个自定义钩子，其创建了一个变量，并在变量改变时在终端显示日志。
+  如下代码构建了一个自定义钩子，其创建了一个变量，并在值改变时将其打印到控制台：
 
   ```dart
   ValueNotifier<T> useLoggedState<T>([T initialData]) {
@@ -235,10 +235,10 @@ useC();
 
 - 类钩子
 
-  当一个钩子变得过于复杂时，可以将其转化为一个继承 `Hook` 的类——然后就能拿来调用 `Hook.use`。\
-  作为一个类，钩子看起来和 `State` 类差不多，有着组件的生命周期和方法，比如 `initHook`、`dispose`和`setState`。
+  当一个钩子变得过于复杂时，可以将其转化为一个继承 `Hook` 的类——然后可以通过 `Hook.use` 使用。\
+  作为一个类，钩子看起来和 `State` 类差不多，并且可以访问 widget 生命周期和方法，比如 `initHook`、`dispose`和`setState`。
 
-  而且一个好的实践是将类藏在一个函数后面：
+  通常的做法是将类隐藏在函数之下，如下所示：
 
   ```dart
   Result useMyHook() {
@@ -246,7 +246,7 @@ useC();
   }
   ```
 
-  如下代码构建了一个自定义钩子，其能在其被 dispose 时打印其状态存在的总时长。
+  如下代码构建了一个自定义钩子，它在被 dispose 时打印其状态存活的总时长。
 
   ```dart
   class _TimeAlive extends Hook<void> {
@@ -276,13 +276,13 @@ useC();
   }
   ```
 
-## 已有的 Hook
+## 现有 Hooks
 
-Flutter_Hooks 已经包含一些不同类别的可复用的钩子：
+Flutter_Hooks 已经附带了一系列可重用的 hooks，它们分为不同的种类：
 
 ### 基础类别
 
-与组件不同生命周期交互的低级钩子。
+一组与 widget 不同生命周期交互的低级钩子。
 
 | 名称                                                                                                     | 描述                                         |
 | -------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
@@ -361,23 +361,23 @@ Flutter_Hooks 已经包含一些不同类别的可复用的钩子：
 
 欢迎贡献！
 
-如果你觉得少了某个钩子，别多想直接开个 Pull Request ～
+如果你觉得缺少某个钩子，可以随时发起 [Pull Request](https://github.com/rrousselGit/flutter_hooks/pulls) ～
 
 为了合并新的自定义钩子，你需要按如下规则办事：
 
-- 介绍使用例
+- 描述使用场景：
 
-  开个 issue 解释一下为什么我们需要这个钩子，怎么用它……\
+  发起一个 [issue](https://github.com/rrousselGit/flutter_hooks/issues) 解释为什么我们需要这个钩子，如何使用它等等。\
   这很重要，如果这个钩子对很多人没有吸引力，那么它就不会被合并。
 
   如果你被拒了也没关系！这并不意味着以后也被拒绝，如果越来越多的人感兴趣。\
   在这之前，你也可以把你的钩子发布到 [pub](https://pub.dev/) 上～
 
-- 为你的钩子写测试
+- 为你的钩子写测试：
 
-  除非钩子被完全测试好，不然不会合并，以防未来不经意破坏了它也没法发现。
+  除非完全经过测试，否则钩子不会被合并，以防未来不经意破坏了它也没法发现。
 
-- 把它加到 README 并写介绍
+- 将其添加到 README 并为其编写文档。
 
 ## 赞助
 
