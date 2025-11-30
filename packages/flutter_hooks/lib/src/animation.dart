@@ -237,3 +237,95 @@ class _TickerProviderHookState
   @override
   bool get debugSkipValue => true;
 }
+
+/// Creates a [TickerProvider] that supports creating multiple [Ticker]s.
+///
+/// See also:
+///  * [SingleTickerProviderStateMixin]
+TickerProvider useMultiTickerProvider({List<Object?>? keys}) {
+  return use(
+    keys != null
+        ? _MultiTickerProviderHook(keys)
+        : const _MultiTickerProviderHook(),
+  );
+}
+
+class _MultiTickerProviderHook extends Hook<TickerProvider> {
+  const _MultiTickerProviderHook([List<Object?>? keys]) : super(keys: keys);
+
+  @override
+  _MultiTickerProviderHookState createState() => _MultiTickerProviderHookState();
+}
+
+class _MultiTickerProviderHookState
+    extends HookState<TickerProvider, _MultiTickerProviderHook>
+    implements TickerProvider {
+  final Set<Ticker> _tickers = <Ticker>{};
+  ValueListenable<bool>? _tickerModeNotifier;
+
+  @override
+  Ticker createTicker(TickerCallback onTick) {
+    final ticker = Ticker(onTick, debugLabel: 'created by $context (multi)');
+    _updateTickerModeNotifier();
+    _updateTickers();
+    _tickers.add(ticker);
+    return ticker;
+  }
+
+  @override
+  void dispose() {
+    assert(() {
+      // Ensure there are no active tickers left. Controllers that own Tickers
+      // are responsible for disposing them — leaving an active ticker here is
+      // almost always a leak or misuse.
+      for (final t in _tickers) {
+        if (t.isActive) {
+          throw FlutterError(
+              'useMultiTickerProvider created Ticker(s), but at the time '
+              'dispose() was called on the Hook, at least one of those Tickers '
+              'was still active. Tickers used by AnimationControllers should '
+              'be disposed by calling dispose() on the AnimationController '
+              'itself. Otherwise, the ticker will leak.\n');
+        }
+      }
+      return true;
+    }(), '');
+
+    _tickerModeNotifier?.removeListener(_updateTickers);
+    _tickerModeNotifier = null;
+    _tickers.clear();
+    super.dispose();
+  }
+
+  @override
+  TickerProvider build(BuildContext context) {
+    _updateTickerModeNotifier();
+    _updateTickers();
+    return this;
+  }
+
+  void _updateTickers() {
+    if (_tickers.isNotEmpty) {
+      final muted = !(_tickerModeNotifier?.value ?? TickerMode.of(context));
+      for (final t in _tickers) {
+        t.muted = muted;
+      }
+    }
+  }
+
+  void _updateTickerModeNotifier() {
+    final newNotifier = TickerMode.getNotifier(context);
+    if (newNotifier == _tickerModeNotifier) {
+      return;
+    }
+    _tickerModeNotifier?.removeListener(_updateTickers);
+    newNotifier.addListener(_updateTickers);
+    _tickerModeNotifier = newNotifier;
+  }
+
+  @override
+  String get debugLabel => 'useMultiTickerProvider';
+
+  @override
+  bool get debugSkipValue => true;
+}
