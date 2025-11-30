@@ -302,6 +302,7 @@ Flutter_Hooks 는 이미 재사용 가능한 훅 목록을 제공합니다. 이 
 | Name                                                                                                                              | Description                                                |
 | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
 | [useSingleTickerProvider](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useSingleTickerProvider.html) | `TickerProvider`를 생성합니다.                             |
+| [useMultiTickerProvider](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useMultiTickerProvider.html)  | 여러 `Ticker`를 생성할 수 있는 `TickerProvider`를 생성합니다. |
 | [useAnimationController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useAnimationController.html)   | 자동으로 dispose 되는 `AnimationController`를 생성합니다.  |
 | [useAnimation](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useAnimation.html)                       | `Animation` 를 구독합니다. 해당 객체의 value를 반환합니다. |
 

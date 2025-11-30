@@ -322,6 +322,7 @@ Eles serão responsáveis por criar/atualizar/descartar o objeto.
 | nome                                                                                                                              | descrição                                                 |
 | --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
 | [useSingleTickerProvider](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useSingleTickerProvider.html) | Cria um único `TickerProvider`.                           |
+| [useMultiTickerProvider](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useMultiTickerProvider.html)  | Cria um `TickerProvider` que suporta criar múltiplos `Ticker`s. |
 | [useAnimationController](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useAnimationController.html)   | Cria um `AnimationController` automaticamente descartado. |
 | [useAnimation](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useAnimation.html)                       | Inscreve um uma `Animation` e retorna seu valor.          |
 
