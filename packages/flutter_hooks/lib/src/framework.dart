@@ -589,11 +589,11 @@ abstract class HookWidget extends StatelessWidget {
   const HookWidget({Key? key}) : super(key: key);
 
   @override
-  _StatelessHookElement createElement() => _StatelessHookElement(this);
+  StatelessHookElement createElement() => StatelessHookElement(this);
 }
 
-class _StatelessHookElement extends StatelessElement with HookElement {
-  _StatelessHookElement(HookWidget hooks) : super(hooks);
+class StatelessHookElement extends StatelessElement with HookElement {
+  StatelessHookElement(HookWidget hooks) : super(hooks);
 }
 
 /// A [StatefulWidget] that can use a [Hook].
@@ -607,11 +607,11 @@ abstract class StatefulHookWidget extends StatefulWidget {
   const StatefulHookWidget({Key? key}) : super(key: key);
 
   @override
-  _StatefulHookElement createElement() => _StatefulHookElement(this);
+  StatefulHookElement createElement() => StatefulHookElement(this);
 }
 
-class _StatefulHookElement extends StatefulElement with HookElement {
-  _StatefulHookElement(StatefulHookWidget hooks) : super(hooks);
+class StatefulHookElement extends StatefulElement with HookElement {
+  StatefulHookElement(StatefulHookWidget hooks) : super(hooks);
 }
 
 /// Obtains the [BuildContext] of the building [HookWidget].
