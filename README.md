@@ -320,6 +320,7 @@ They will take care of creating/updating/disposing an object.
 | Name                                                                                                                     | Description                                                            |
 | ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
 | [useSingleTickerProvider](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useSingleTickerProvider.html) | Creates a single usage `TickerProvider`.                               |
+| [useMultiTickerProvider](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useMultiTickerProvider.html)  | Creates a `TickerProvider` that supports creating multiple `Ticker`s. |
 | [useAnimationController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAnimationController.html)   | Creates an `AnimationController` which will be automatically disposed. |
 | [useAnimation](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAnimation.html)                       | Subscribes to an `Animation` and returns its value.                    |
 

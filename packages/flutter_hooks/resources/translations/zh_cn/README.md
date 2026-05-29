@@ -313,6 +313,7 @@ Flutter_Hooks 已经包含一些不同类别的可复用的钩子：
 | 名称                                                                                                                     | 描述                                       |
 | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------ |
 | [useSingleTickerProvider](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useSingleTickerProvider.html) | 创建单次使用的 `TickerProvider`          |
+| [useMultiTickerProvider](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useMultiTickerProvider.html)  | 创建支持多个 `Ticker` 的 `TickerProvider` |
 | [useAnimationController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAnimationController.html)   | 创建并会自动释放的 `AnimationController` |
 | [useAnimation](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAnimation.html)                       | 订阅一个 `Animation` 并返回其当前值      |
 

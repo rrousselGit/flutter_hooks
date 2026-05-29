@@ -304,6 +304,7 @@ Flutter_Hooksには、再利用可能なフックのリストが既に含まれ�
 | 名前                                                                                                                     | 説明                                                                 |
 | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
 | [useSingleTickerProvider](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useSingleTickerProvider.html) | 単一使用の`TickerProvider`を作成します。                            |
+| [useMultiTickerProvider](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useMultiTickerProvider.html)  | 複数の`Ticker`を作成できる`TickerProvider`を作成します。             |
 | [useAnimationController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAnimationController.html)   | 自動的に破棄される`AnimationController`を作成します。               |
 | [useAnimation](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAnimation.html)                       | `Animation`を購読し、その値を返します。                              |
 
