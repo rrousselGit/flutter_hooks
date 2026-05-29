@@ -487,8 +487,20 @@ Type mismatch between hooks:
           .._hook = hook
           ..didUpdateHook(previousHook);
       } else {
-        _needDispose ??= LinkedList();
-        _needDispose!.add(_Entry(_currentHookState!.value));
+        try {
+          _currentHookState!.value.dispose();
+        } catch (exception, stack) {
+          FlutterError.reportError(
+            FlutterErrorDetails(
+              exception: exception,
+              stack: stack,
+              library: 'hooks library',
+              context: DiagnosticsNode.message(
+                'while disposing ${_currentHookState!.value.runtimeType}',
+              ),
+            ),
+          );
+        }
         _currentHookState!.value = _createHookState<R>(hook);
       }
     }

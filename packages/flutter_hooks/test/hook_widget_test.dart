@@ -79,8 +79,8 @@ void main() {
     );
 
     verifyInOrder([
-      second(),
       first(),
+      second(),
     ]);
     verifyNoMoreInteractions(first);
     verifyNoMoreInteractions(second);
@@ -94,6 +94,7 @@ void main() {
     verifyNoMoreInteractions(first);
     verifyNoMoreInteractions(second);
   });
+
   testWidgets('hooks are disposed in reverse order on unmount', (tester) async {
     final first = MockDispose();
     final second = MockDispose();
@@ -470,6 +471,7 @@ void main() {
     verify(dispose2()).called(1);
     verifyNoMoreInteractions(dispose);
   });
+
   testWidgets('keys recreate hookstate', (tester) async {
     List<Object?>? keys;
 
@@ -518,10 +520,10 @@ void main() {
     await tester.pumpWidget($build());
 
     verifyInOrder([
+      dispose(),
       createState(),
       initHook(),
       build(context),
-      dispose(),
     ]);
     verifyNoMoreHookInteraction();
 
@@ -553,10 +555,10 @@ void main() {
     await tester.pumpWidget($build());
 
     verifyInOrder([
+      dispose(),
       createState(),
       initHook(),
       build(context),
-      dispose(),
     ]);
     verifyNoMoreHookInteraction();
   });

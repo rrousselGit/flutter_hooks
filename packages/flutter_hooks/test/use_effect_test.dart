@@ -229,8 +229,8 @@ void main() {
     await tester.pumpWidget(builder());
 
     verifyInOrder([
-      effect(),
       disposerA(),
+      effect(),
     ]);
     verifyNoMoreInteractions(disposerA);
     verifyNoMoreInteractions(effect);
@@ -343,6 +343,168 @@ void main() {
       unrelated(),
     ]);
     verifyNoMoreInteractions(effect);
+  });
+
+  testWidgets('errors in dispose are handled when keys change', (tester) async {
+    final callOrder = <String>[];
+
+    Widget builder(String dep) {
+      return HookBuilder(builder: (context) {
+        useEffect(() {
+          callOrder.add('effect:$dep');
+          return () {
+            callOrder.add('dispose:$dep');
+            if (dep == 'foo') {
+              throw Exception();
+            }
+          };
+        }, [dep]);
+        return Container();
+      });
+    }
+
+    await tester.pumpWidget(builder('foo'));
+
+    expect(callOrder, ['effect:foo']);
+    expect(tester.takeException(), isNull);
+    callOrder.clear();
+
+    // Change dependency
+    await tester.pumpWidget(builder('bar'));
+
+    expect(callOrder, ['dispose:foo', 'effect:bar']);
+    expect(tester.takeException(), isA<Exception>());
+  });
+
+  testWidgets('errors in dispose are handled on unmount', (tester) async {
+    final callOrder = <String>[];
+
+    await tester.pumpWidget(HookBuilder(builder: (context) {
+      useEffect(() {
+        callOrder.add('effect');
+        return () {
+          callOrder.add('dispose');
+          throw Exception();
+        };
+      }, const []);
+
+      return Container();
+    }));
+
+    expect(callOrder, ['effect']);
+    expect(tester.takeException(), isNull);
+    callOrder.clear();
+
+    // Unmount
+    await tester.pumpWidget(Container());
+
+    expect(callOrder, ['dispose']);
+    expect(tester.takeException(), isA<Exception>());
+    callOrder.clear();
+  });
+
+  group('useEffect execution order', () {
+    testWidgets('dispose runs before effect when keys change', (tester) async {
+      // Regression test for https://github.com/rrousselGit/flutter_hooks/issues/335
+      final callOrder = <String>[];
+
+      Widget builder(String dep) {
+        return HookBuilder(builder: (context) {
+          useEffect(() {
+            callOrder.add('effect:$dep');
+            return () {
+              callOrder.add('dispose:$dep');
+            };
+          }, [dep]);
+          return Container();
+        });
+      }
+
+      await tester.pumpWidget(builder('foo'));
+
+      expect(callOrder, ['effect:foo']);
+      callOrder.clear();
+
+      // Change dependency: dispose should run BEFORE new effect
+      await tester.pumpWidget(builder('bar'));
+
+      expect(callOrder, ['dispose:foo', 'effect:bar']);
+    });
+
+    testWidgets(
+        'dispose runs before effect on every build when keys are not provided',
+        (tester) async {
+      final callOrder = <String>[];
+
+      Widget builder(int value) {
+        return HookBuilder(builder: (context) {
+          useEffect(() {
+            callOrder.add('effect:$value');
+            return () {
+              callOrder.add('dispose:$value');
+            };
+          });
+          return Container();
+        });
+      }
+
+      await tester.pumpWidget(builder(1));
+
+      expect(callOrder, ['effect:1']);
+      callOrder.clear();
+
+      // Rebuild
+      await tester.pumpWidget(builder(2));
+
+      expect(callOrder, ['dispose:1', 'effect:2']);
+      callOrder.clear();
+
+      // Rebuild
+      await tester.pumpWidget(builder(3));
+
+      expect(callOrder, ['dispose:2', 'effect:3']);
+      callOrder.clear();
+    });
+
+    testWidgets(
+        'dispose and effect run in group for each hook in declaration order',
+        (tester) async {
+      final callOrder = <String>[];
+
+      Widget builder(String dep) {
+        return HookBuilder(builder: (context) {
+          useEffect(() {
+            callOrder.add('effect1:$dep');
+            return () {
+              callOrder.add('dispose1:$dep');
+            };
+          }, [dep]);
+
+          useEffect(() {
+            callOrder.add('effect2:$dep');
+            return () {
+              callOrder.add('dispose2:$dep');
+            };
+          }, [dep]);
+
+          return Container();
+        });
+      }
+
+      await tester.pumpWidget(builder('foo'));
+
+      expect(callOrder, ['effect1:foo', 'effect2:foo']);
+      callOrder.clear();
+
+      await tester.pumpWidget(builder('bar'));
+
+      expect(callOrder, [
+        'dispose1:foo',
+        'effect1:bar',
+        'dispose2:foo',
+        'effect2:bar',
+      ]);
+    });
   });
 }
 
