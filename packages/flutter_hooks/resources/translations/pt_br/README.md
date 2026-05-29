@@ -299,6 +299,7 @@ Um conjunto de hooks que interagem com diferentes ciclos de vida de um widget
 | Nome                                                                                                              | descrição                                                    |
 | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
 | [useEffect](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useEffect.html)             | Útil para side-effects e opcionalmente, cancelá-los.         |
+| [useEffectEvent](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useEffectEvent.html)   | Extrai lógica não reativa do `useEffect`.                    |
 | [useState](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useState.html)               | Cria uma variável e escuta suas mudanças.                    |
 | [useMemoized](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useMemoized.html)         | Guarda a instância de um objeto complexo.                    |
 | [useContext](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useContext.html)           | Obtém o `BuildContext` do `HookWidget`.                      |

@@ -294,6 +294,7 @@ A set of low-level hooks that interact with the different life-cycles of a widge
 | Name                                                                                                     | Description                                                         |
 | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | [useEffect](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useEffect.html)             | Useful for side-effects and optionally canceling them.              |
+| [useEffectEvent](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useEffectEvent.html)   | Extracts non-reactive logic out of `useEffect`.                     |
 | [useState](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useState.html)               | Creates a variable and subscribes to it.                            |
 | [useMemoized](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useMemoized.html)         | Caches the instance of a complex object.                            |
 | [useRef](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useRef.html)                   | Creates an object that contains a single mutable property.          |

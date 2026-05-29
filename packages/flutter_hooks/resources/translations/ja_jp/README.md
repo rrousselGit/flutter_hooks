@@ -278,6 +278,7 @@ Flutter_Hooksには、再利用可能なフックのリストが既に含まれ�
 | 名前                                                                                                     | 説明                                                                 |
 | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | [useEffect](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useEffect.html)             | 副作用に役立ち、オプションでそれらをキャンセルします。              |
+| [useEffectEvent](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useEffectEvent.html)   | `useEffect`から非リアクティブなロジックを抽出します。               |
 | [useState](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useState.html)               | 変数を作成し、それを購読します。                                    |
 | [useMemoized](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useMemoized.html)         | 複雑なオブジェクトのインスタンスをキャッシュします。                |
 | [useRef](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useRef.html)                   | 単一の可変プロパティを含むオブジェクトを作成します。                |

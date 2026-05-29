@@ -236,6 +236,105 @@ class _EffectHookState extends HookState<void, _EffectHook> {
   bool get debugSkipValue => true;
 }
 
+/// A wrapper class that holds an effect event callback.
+///
+/// The wrapper provides access to the latest callback via the [call] getter,
+/// which reads from a shared ref. This ensures that even if you store the
+/// wrapper, calling [call] always returns the latest callback.
+///
+/// Each build returns a new [EffectEvent] instance (unstable identity),
+/// but all instances from the same hook share the same underlying ref.
+class EffectEvent<T extends Function> {
+  EffectEvent._(this._ref);
+
+  final ObjectRef<T> _ref;
+
+  /// The wrapped event callback.
+  ///
+  /// This getter always returns the latest callback stored in the shared ref.
+  /// Call this to invoke the effect event, e.g., `event.call()`.
+  T get call => _ref.value;
+}
+
+/// Extracts non-reactive logic into a function that reads the latest state.
+///
+/// Use this hook when you need a callback inside [useEffect] that accesses
+/// the latest values without adding them to the effect's dependencies.
+/// Returns an [EffectEvent] wrapper whose [EffectEvent.call] getter always
+/// returns the latest [callback].
+///
+/// The returned [EffectEvent] wrapper does NOT have stable identity across
+/// rebuilds (a new instance is created each build). However, all instances
+/// share the same underlying ref, so [EffectEvent.call] always returns the
+/// latest callback even if you stored a previous instance.
+///
+/// ```dart
+/// class Page extends HookWidget {
+///   final int itemCount;
+///
+///   @override
+///   Widget build(BuildContext context) {
+///     final logCurrentCount = useEffectEvent(() {
+///       print('Current count: $itemCount');
+///     });
+///
+///     useEffect(() {
+///       logCurrentCount.call();
+///       return null;
+///     }, const []); // Effect runs once, but always sees latest itemCount
+///
+///     return Text('$itemCount');
+///   }
+/// }
+/// ```
+///
+/// ## Caveats
+///
+///  * Only call effect events from inside [useEffect] or event handlers.
+///  * Never pass effect events to child widgets or other hooks.
+///
+/// See also:
+///
+///  * [useEffect], for side-effects that may use effect events.
+EffectEvent<T> useEffectEvent<T extends Function>(T callback) {
+  return use(_EffectEventHook<T>(callback));
+}
+
+class _EffectEventHook<T extends Function> extends Hook<EffectEvent<T>> {
+  const _EffectEventHook(this.callback);
+
+  final T callback;
+
+  @override
+  _EffectEventHookState<T> createState() => _EffectEventHookState<T>();
+}
+
+class _EffectEventHookState<T extends Function>
+    extends HookState<EffectEvent<T>, _EffectEventHook<T>> {
+  late final ObjectRef<T> _ref;
+
+  @override
+  void initHook() {
+    _ref = ObjectRef<T>(hook.callback);
+  }
+
+  @override
+  void didUpdateHook(_EffectEventHook<T> oldHook) {
+    _ref.value = hook.callback;
+  }
+
+  @override
+  EffectEvent<T> build(BuildContext context) {
+    return EffectEvent<T>._(_ref);
+  }
+
+  @override
+  String get debugLabel => 'useEffectEvent<$T>';
+
+  @override
+  bool get debugSkipValue => true;
+}
+
 /// Creates a variable and subscribes to it.
 ///
 /// Whenever [ValueNotifier.value] updates, it will mark the caller [HookWidget]

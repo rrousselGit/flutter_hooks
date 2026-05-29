@@ -277,6 +277,7 @@ Flutter_Hooks 는 이미 재사용 가능한 훅 목록을 제공합니다. 이 
 | Name                                                                                                              | Description                                                  |
 | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
 | [useEffect](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useEffect.html)             | 상태를 업데이트하거나 선택적으로 취소하기에 유용합니다.      |
+| [useEffectEvent](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useEffectEvent.html)   | `useEffect`에서 비반응적 로직을 추출합니다.                  |
 | [useState](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useState.html)               | 변수를 생성하고 구독합니다.                                  |
 | [useMemoized](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useMemoized.html)         | 다양한 객체의 인스턴스를 캐싱합니다.                         |
 | [useRef](https://pub.dartlang.org/documentation/flutter_hooks/latest/flutter_hooks/useRef.html)                   | 하나의 프로퍼티를 포함하는 객체를 만듭니다.                  |

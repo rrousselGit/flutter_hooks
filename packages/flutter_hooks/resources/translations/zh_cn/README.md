@@ -287,6 +287,7 @@ Flutter_Hooks 已经包含一些不同类别的可复用的钩子：
 | 名称                                                                                                     | 描述                                         |
 | -------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
 | [useEffect](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useEffect.html)             | 用于处理副作用，并可选择性地进行清理       |
+| [useEffectEvent](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useEffectEvent.html)   | 从 `useEffect` 中提取非响应式逻辑          |
 | [useState](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useState.html)               | 创建一个变量并订阅它的变化                 |
 | [useMemoized](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useMemoized.html)         | 缓存复杂对象的实例                         |
 | [useRef](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useRef.html)                   | 创建一个包含单个可变属性的对象           |
