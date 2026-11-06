@@ -9,6 +9,8 @@ environment:
   sdk: ^3.13.0
   flutter: ">=3.47.0"
 
+resolution: workspace
+
 dependencies:
   cupertino_ui: ^1.1.6
   flutter:

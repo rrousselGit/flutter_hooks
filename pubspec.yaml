@@ -1,0 +1,11 @@
+name: flutter_hooks_workspace
+publish_to: none
+
+environment:
+  sdk: ^3.6.0
+
+workspace:
+  - packages/flutter_hooks
+  - packages/flutter_hooks/example
+  - packages/material_hooks
+  - packages/cupertino_hooks

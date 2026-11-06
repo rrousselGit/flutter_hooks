@@ -1,3 +1,0 @@
-dependency_overrides:
-  flutter_hooks:
-    path: ../flutter_hooks

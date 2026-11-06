@@ -323,7 +323,7 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   }
 }
 
-class _Entry<T> extends LinkedListEntry<_Entry<T>> {
+final class _Entry<T> extends LinkedListEntry<_Entry<T>> {
   _Entry(this.value);
   T value;
 }

@@ -34,7 +34,7 @@ class _PlanetHandler {
 class PlanetScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final api = useMemoized(() => StarWarsApi());
+    final api = useMemoized(StarWarsApi.new);
 
     final store = useReducer<AppState, ReduxAction?>(
       reducer,
