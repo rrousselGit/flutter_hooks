@@ -5,7 +5,9 @@
 Since Flutter 3.47, `package:flutter/cupertino.dart` is deprecated in favor of `package:cupertino_ui`.
 This package provides hooks for the controllers of `package:cupertino_ui`:
 
-- `useCupertinoTabController`
+| Name                                                                                                                             | Description                                      |
+| -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| [useCupertinoTabController](https://pub.dev/documentation/cupertino_hooks/latest/cupertino_hooks/useCupertinoTabController.html) | Creates and disposes a `CupertinoTabController`. |
 
 ## Usage
 

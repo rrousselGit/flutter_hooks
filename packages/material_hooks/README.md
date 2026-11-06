@@ -5,9 +5,11 @@
 Since Flutter 3.47, `package:flutter/material.dart` is deprecated in favor of `package:material_ui`.
 This package provides hooks for the controllers of `package:material_ui`:
 
-- `useTabController`
-- `useSearchController`
-- `useCarouselController`
+| Name                                                                                                                   | Description                                  |
+| ---------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| [useTabController](https://pub.dev/documentation/material_hooks/latest/material_hooks/useTabController.html)           | Creates and disposes a `TabController`.      |
+| [useSearchController](https://pub.dev/documentation/material_hooks/latest/material_hooks/useSearchController.html)     | Creates and disposes a `SearchController`.   |
+| [useCarouselController](https://pub.dev/documentation/material_hooks/latest/material_hooks/useCarouselController.html) | Creates and disposes a `CarouselController`. |
 
 ## Usage
 
