@@ -1,8 +1,8 @@
 // ignore_for_file: omit_local_variable_types
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// This example demonstrates how to create a custom Hook.

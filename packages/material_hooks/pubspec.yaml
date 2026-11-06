@@ -1,0 +1,21 @@
+name: material_hooks
+description: Flutter hooks for the Material Design library (package:material_ui).
+homepage: https://github.com/rrousselGit/flutter_hooks
+repository: https://github.com/rrousselGit/flutter_hooks/tree/master/packages/material_hooks
+issue_tracker: https://github.com/rrousselGit/flutter_hooks/issues
+version: 0.1.0
+
+environment:
+  sdk: ^3.13.0
+  flutter: ">=3.47.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_hooks: ^0.21.3
+  material_ui: ^1.10.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mockito: ^5.0.16

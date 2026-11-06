@@ -343,7 +343,6 @@ A series of hooks with no particular theme.
 | [usePrevious](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/usePrevious.html)                                       | Returns the previous argument called to [usePrevious].                                                                                                                   |
 | [useTextEditingController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTextEditingController-constant.html)    | Creates a `TextEditingController`.                                                                                                                                       |
 | [useFocusNode](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useFocusNode.html)                                     | Creates a `FocusNode`.                                                                                                                                                   |
-| [useTabController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTabController.html)                             | Creates and disposes a `TabController`.                                                                                                                                  |
 | [useScrollController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useScrollController.html)                       | Creates and disposes a `ScrollController`.                                                                                                                               |
 | [usePageController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/usePageController.html)                           | Creates and disposes a `PageController`.                                                                                                                                 |
 | [useFixedExtentScrollController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useFixedExtentScrollController.html) | Creates and disposes a `FixedExtentScrollController`.                                                                                                                    |
@@ -353,16 +352,33 @@ A series of hooks with no particular theme.
 | [useIsMounted](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useIsMounted.html)                                     | An equivalent to `State.mounted` for hooks.                                                                                                                              |
 | [useAutomaticKeepAlive](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useAutomaticKeepAlive.html)                   | An equivalent to the `AutomaticKeepAlive` widget for hooks.                                                                                                              |
 | [useOnPlatformBrightnessChange](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOnPlatformBrightnessChange.html)   | Listens to platform `Brightness` changes and triggers a callback on change.                                                                                              |
-| [useSearchController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useSearchController.html)                       | Creates and disposes a `SearchController`.                                                                                                                               |
 | [useWidgetStatesController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useWidgetStatesController.html)           | Creates and disposes a `WidgetStatesController`.                                                                                                                         |
 | [useExpansibleController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useExpansibleController.html)               | Creates a `ExpansibleController`.                                                                                                                                        |
 | [useDebounced](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useDebounced.html)                                     | Returns a debounced version of the provided value, triggering widget updates accordingly after a specified timeout duration                                              |
 | [useDraggableScrollableController](https://api.flutter.dev/flutter/widgets/DraggableScrollableController-class.html)                   | Creates a `DraggableScrollableController`.                                                                                                                               |
-| [useCarouselController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useCarouselController.html)                   | Creates and disposes a **`CarouselController`**.                                                                                                                         |
 | [useTreeSliverController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useTreeSliverController.html)               | Creates a `TreeSliverController`.                                                                                                                                        |
 | [useOverlayPortalController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOverlayPortalController.html)         | Creates and manages an `OverlayPortalController` for controlling the visibility of overlay content. The controller will be automatically disposed when no longer needed. |
 | [useSnapshotController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useSnapshotController.html)                   | Creates and manages a `SnapshotController`                                                                                                                               |
-| [useCupertinoController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useCupertinoController.html)                 | Creates and manages a `CupertinoController`                                                                                                                              |
+
+#### Material and Cupertino hooks:
+
+Since Flutter 3.47, `package:flutter/material.dart` and `package:flutter/cupertino.dart`
+are deprecated in favor of the [material_ui](https://pub.dev/packages/material_ui)
+and [cupertino_ui](https://pub.dev/packages/cupertino_ui) packages.
+Hooks for controllers from those libraries live in separate packages:
+
+| Package                                                     | Hooks                                                              |
+| ----------------------------------------------------------- | ------------------------------------------------------------------ |
+| [material_hooks](https://pub.dev/packages/material_hooks)   | `useTabController`, `useSearchController`, `useCarouselController` |
+| [cupertino_hooks](https://pub.dev/packages/cupertino_hooks) | `useCupertinoTabController`                                        |
+
+Both packages re-export `flutter_hooks`, so import them **instead of** `flutter_hooks`:
+
+```dart
+import 'package:material_hooks/material_hooks.dart';
+```
+
+The versions of these hooks that are still in `flutter_hooks` are deprecated.
 
 ## Contributions
 

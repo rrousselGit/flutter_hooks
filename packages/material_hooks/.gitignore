@@ -1,0 +1,15 @@
+# Flutter/Dart/Pub related
+**/doc/api/
+.dart_tool/
+.flutter-plugins
+.packages
+.pub-cache/
+.pub/
+build/
+android/
+ios/
+/coverage
+pubspec.lock
+.vscode/
+.fvm
+.idea/

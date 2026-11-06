@@ -4,6 +4,11 @@ part of 'hooks.dart';
 ///
 /// See also:
 /// - [SearchController]
+@Deprecated(
+  'Use `useSearchController` from `package:material_hooks/material_hooks.dart` instead. '
+  'The Flutter SDK deprecated its Material and Cupertino libraries in favor of '
+  'the `material_ui` package.',
+)
 SearchController useSearchController({List<Object?>? keys}) {
   return use(_SearchControllerHook(keys: keys));
 }

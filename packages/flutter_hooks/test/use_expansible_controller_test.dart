@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_hooks/src/framework.dart';
 import 'package:flutter_hooks/src/hooks.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'mock.dart';
 
