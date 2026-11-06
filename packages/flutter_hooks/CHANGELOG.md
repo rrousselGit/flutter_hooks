@@ -1,4 +1,4 @@
-## Unreleased patch
+## 0.21.4 - 2026-11-06
 
 - Bumped the minimum Flutter SDK to 3.47.0 and Dart SDK to 3.6.0.
 - Deprecated `useTabController`, `useSearchController`, `useCarouselController`
@@ -351,3 +351,4 @@ Added a few common hooks:
 ## 0.0.0:
 
 - initial release
+
