@@ -277,4 +277,34 @@ void main() {
     expect(tester.takeException(), isStateError);
     expect(log, ['dispose b 1', 'dispose a 1', 'dispose parent 1']);
   });
+
+  testWidgets('a throwing dispose does not prevent disposing other hooks',
+      (tester) async {
+    final log = <String>[];
+
+    Widget build({required bool withHooks}) => HookBuilder(
+          builder: (context) {
+            if (withHooks) {
+              use(_Logged('a', log));
+              use(_Logged('b', log, throwOnDispose: true));
+              use(_Logged('c', log));
+            }
+            return const SizedBox();
+          },
+        );
+
+    await tester.pumpWidget(build(withHooks: true));
+    await tester.pumpWidget(build(withHooks: false));
+
+    expect(tester.takeException(), isStateError);
+    expect(log, ['dispose c', 'dispose b', 'dispose a']);
+
+    await tester.pumpWidget(build(withHooks: false));
+    expect(tester.takeException(), isNull);
+    expect(
+      log,
+      ['dispose c', 'dispose b', 'dispose a'],
+      reason: 'hooks must not be disposed twice',
+    );
+  });
 }

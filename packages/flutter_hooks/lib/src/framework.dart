@@ -477,14 +477,27 @@ mixin HookElement on ComponentElement {
       _isOptionalRebuild = null;
       _unmountAllRemainingHooks();
       HookElement._currentHookElement = null;
-      if (_needDispose != null && _needDispose!.isNotEmpty) {
+      final needDispose = _needDispose;
+      // Cleared first so that a failing dispose cannot cause hooks to be
+      // disposed again on the next build.
+      _needDispose = null;
+      if (needDispose != null && needDispose.isNotEmpty) {
+        Object? firstError;
+        StackTrace? firstStack;
         for (_Entry<HookState<dynamic, Hook<dynamic>>>? toDispose =
-                _needDispose!.last;
+                needDispose.last;
             toDispose != null;
             toDispose = toDispose.previous) {
-          _disposeHook(toDispose.value, reportErrors: false);
+          try {
+            _disposeHook(toDispose.value, reportErrors: false);
+          } catch (exception, stack) {
+            firstError ??= exception;
+            firstStack ??= stack;
+          }
         }
-        _needDispose = null;
+        if (firstError != null) {
+          Error.throwWithStackTrace(firstError, firstStack!);
+        }
       }
     }
 
