@@ -253,6 +253,19 @@ abstract class HookState<R, T extends Hook<R>> with Diagnosticable {
   T get hook => _hook!;
   T? _hook;
 
+  /// The hooks used inside [build] by this [HookState].
+  LinkedList<_Entry<HookState<Object?, Hook<Object?>>>>? _children;
+
+  void _visitChildren(void Function(HookState<Object?, Hook<Object?>>) cb) {
+    final children = _children;
+    if (children == null) {
+      return;
+    }
+    for (final child in children) {
+      cb(child.value);
+    }
+  }
+
   /// Equivalent of [State.initState] for [HookState].
   @protected
   void initHook() {}
@@ -358,7 +371,7 @@ extension on HookElement {
   void _appendHook<R>(Hook<R> hook) {
     final result = _createHookState<R>(hook);
     _currentHookState = _Entry(result);
-    _hooks.add(_currentHookState!);
+    _currentHookList.add(_currentHookState!);
   }
 
   void _unmountAllRemainingHooks() {
@@ -384,6 +397,13 @@ mixin HookElement on ComponentElement {
 
   _Entry<HookState<Object?, Hook<Object?>>>? _currentHookState;
   final _hooks = LinkedList<_Entry<HookState<Object?, Hook<Object?>>>>();
+
+  /// The list that [_currentHookState] belongs to.
+  ///
+  /// This is [_hooks] when [use] is called from the widget's build method,
+  /// or [HookState._children] when [use] is called from [HookState.build].
+  late LinkedList<_Entry<HookState<Object?, Hook<Object?>>>> _currentHookList =
+      _hooks;
   final _shouldRebuildQueue = LinkedList<_Entry<bool Function()>>();
   LinkedList<_Entry<HookState<Object?, Hook<Object?>>>>? _needDispose;
   bool? _isOptionalRebuild = false;
@@ -421,8 +441,14 @@ mixin HookElement on ComponentElement {
     super.reassemble();
     _isOptionalRebuild = false;
     _debugDidReassemble = true;
+    void reassembleHook(HookState<Object?, Hook<Object?>> hook) {
+      hook
+        ..reassemble()
+        .._visitChildren(reassembleHook);
+    }
+
     for (final hook in _hooks) {
-      hook.value.reassemble();
+      reassembleHook(hook.value);
     }
   }
 
@@ -442,6 +468,7 @@ mixin HookElement on ComponentElement {
     if (kDebugMode) {
       _debugIsInitHook = false;
     }
+    _currentHookList = _hooks;
     _currentHookState = _hooks.isEmpty ? null : _hooks.first;
     HookElement._currentHookElement = this;
     try {
@@ -450,14 +477,27 @@ mixin HookElement on ComponentElement {
       _isOptionalRebuild = null;
       _unmountAllRemainingHooks();
       HookElement._currentHookElement = null;
-      if (_needDispose != null && _needDispose!.isNotEmpty) {
+      final needDispose = _needDispose;
+      // Cleared first so that a failing dispose cannot cause hooks to be
+      // disposed again on the next build.
+      _needDispose = null;
+      if (needDispose != null && needDispose.isNotEmpty) {
+        Object? firstError;
+        StackTrace? firstStack;
         for (_Entry<HookState<dynamic, Hook<dynamic>>>? toDispose =
-                _needDispose!.last;
+                needDispose.last;
             toDispose != null;
             toDispose = toDispose.previous) {
-          toDispose.value.dispose();
+          try {
+            _disposeHook(toDispose.value, reportErrors: false);
+          } catch (exception, stack) {
+            firstError ??= exception;
+            firstStack ??= stack;
+          }
         }
-        _needDispose = null;
+        if (firstError != null) {
+          Error.throwWithStackTrace(firstError, firstStack!);
+        }
       }
     }
 
@@ -493,13 +533,87 @@ Type mismatch between hooks:
       }
     }
 
-    final result = _currentHookState!.value.build(this) as R;
+    final entry = _currentHookState!;
+    final state = entry.value;
+
+    // Hooks used inside HookState.build are scoped to that HookState,
+    // such that they are disposed alongside it.
+    final children = state._children ??= LinkedList();
+    _currentHookList = children;
+    _currentHookState = children.isEmpty ? null : children.first;
+
+    final R result;
+    try {
+      result = state.build(this) as R;
+      // Hooks that were not reused by this build are disposed.
+      _unmountAllRemainingHooks();
+    } finally {
+      // If build threw, the remaining children are left in place: the caller
+      // unmounts this hook, which disposes all of its children first.
+      _currentHookList = entry.list ?? _hooks;
+      _currentHookState = entry;
+    }
+
     assert(() {
-      _currentHookState!.value._debugLastBuiltValue = result;
+      state._debugLastBuiltValue = result;
       return true;
     }(), '');
-    _currentHookState = _currentHookState!.next;
+    _currentHookState = entry.next;
     return result;
+  }
+
+  /// Disposes [hook] and all the hooks it used, children first.
+  ///
+  /// If a dispose throws, the remaining hooks are still disposed.
+  /// When [reportErrors] is false, the first error is then rethrown.
+  void _disposeHook(
+    HookState<Object?, Hook<Object?>> hook, {
+    required bool reportErrors,
+  }) {
+    Object? firstError;
+    StackTrace? firstStack;
+
+    final children = hook._children;
+    if (children != null && children.isNotEmpty) {
+      for (_Entry<HookState<dynamic, Hook<dynamic>>>? child = children.last;
+          child != null;
+          child = child.previous) {
+        try {
+          _disposeHook(child.value, reportErrors: reportErrors);
+        } catch (exception, stack) {
+          firstError ??= exception;
+          firstStack ??= stack;
+        }
+      }
+    }
+
+    if (!reportErrors) {
+      try {
+        hook.dispose();
+      } catch (exception, stack) {
+        firstError ??= exception;
+        firstStack ??= stack;
+      }
+      if (firstError != null) {
+        Error.throwWithStackTrace(firstError, firstStack!);
+      }
+      return;
+    }
+
+    try {
+      hook.dispose();
+    } catch (exception, stack) {
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: exception,
+          stack: stack,
+          library: 'hooks library',
+          context: DiagnosticsNode.message(
+            'while disposing ${hook.runtimeType}',
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -521,29 +635,16 @@ Type mismatch between hooks:
       for (_Entry<HookState<dynamic, Hook<dynamic>>>? hook = _hooks.last;
           hook != null;
           hook = hook.previous) {
-        try {
-          hook.value.dispose();
-        } catch (exception, stack) {
-          FlutterError.reportError(
-            FlutterErrorDetails(
-              exception: exception,
-              stack: stack,
-              library: 'hooks library',
-              context: DiagnosticsNode.message(
-                'while disposing ${hook.runtimeType}',
-              ),
-            ),
-          );
-        }
+        _disposeHook(hook.value, reportErrors: true);
       }
     }
   }
 
   @override
   void deactivate() {
-    for (final hook in _hooks) {
+    void deactivateHook(HookState<Object?, Hook<Object?>> hook) {
       try {
-        hook.value.deactivate();
+        hook.deactivate();
       } catch (exception, stack) {
         FlutterError.reportError(
           FlutterErrorDetails(
@@ -556,6 +657,11 @@ Type mismatch between hooks:
           ),
         );
       }
+      hook._visitChildren(deactivateHook);
+    }
+
+    for (final hook in _hooks) {
+      deactivateHook(hook.value);
     }
     super.deactivate();
   }

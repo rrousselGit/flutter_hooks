@@ -1,3 +1,9 @@
+## Unreleased patch
+
+- Fixed a regression where class-based hooks could not use other hooks
+  inside `HookState.build` (thanks to @jeiea for the report, #215).
+  Hooks used by a `HookState` are now disposed alongside it.
+
 ## 0.21.4 - 2026-11-06
 
 - Bumped the minimum Flutter SDK to 3.47.0 and Dart SDK to 3.6.0.
