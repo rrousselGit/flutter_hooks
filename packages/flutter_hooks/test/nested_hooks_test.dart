@@ -50,6 +50,51 @@ class _ParentState extends HookState<int, _Parent> {
   }
 }
 
+class _Logged extends Hook<Object> {
+  const _Logged(this.name, this.log, {this.throwOnDispose = false});
+
+  final String name;
+  final List<String> log;
+  final bool throwOnDispose;
+
+  @override
+  _LoggedState createState() => _LoggedState();
+}
+
+class _LoggedState extends HookState<Object, _Logged> {
+  @override
+  void dispose() {
+    hook.log.add('dispose ${hook.name}');
+    if (hook.throwOnDispose) {
+      throw StateError('dispose ${hook.name} failed');
+    }
+  }
+
+  @override
+  Object build(BuildContext context) => this;
+}
+
+/// A hook whose [HookState.build] delegates to a callback.
+class _Delegate extends Hook<void> {
+  const _Delegate(this.name, this.log, this.body, {List<Object?>? keys})
+      : super(keys: keys);
+
+  final String name;
+  final List<String> log;
+  final void Function() body;
+
+  @override
+  _DelegateState createState() => _DelegateState();
+}
+
+class _DelegateState extends HookState<void, _Delegate> {
+  @override
+  void dispose() => hook.log.add('dispose ${hook.name}');
+
+  @override
+  void build(BuildContext context) => hook.body();
+}
+
 void main() {
   testWidgets('class hooks can use other hooks', (tester) async {
     late ValueNotifier<int> a;
@@ -147,5 +192,89 @@ void main() {
     await tester.pumpWidget(build());
     expect(value, 10);
     expect(log, isEmpty);
+  });
+
+  testWidgets('nested hooks that are no longer used are disposed',
+      (tester) async {
+    final log = <String>[];
+    late Object a;
+
+    Widget build({required bool withB}) => HookBuilder(
+          builder: (context) {
+            use(
+              _Delegate('parent', log, () {
+                a = use(_Logged('a', log));
+                if (withB) {
+                  use(_Logged('b', log));
+                }
+              }),
+            );
+            return const SizedBox();
+          },
+        );
+
+    await tester.pumpWidget(build(withB: true));
+    final firstA = a;
+
+    await tester.pumpWidget(build(withB: false));
+    expect(log, ['dispose b']);
+    expect(a, same(firstA));
+
+    await tester.pumpWidget(build(withB: false));
+    expect(log, ['dispose b'], reason: 'b must be disposed only once');
+  });
+
+  testWidgets('a throwing nested build disposes children before the parent',
+      (tester) async {
+    final log = <String>[];
+
+    Widget build({required bool shouldThrow}) => HookBuilder(
+          builder: (context) {
+            use(
+              _Delegate('parent', log, () {
+                use(_Logged('a', log));
+                if (shouldThrow) {
+                  throw StateError('build failed');
+                }
+                use(_Logged('b', log));
+              }),
+            );
+            return const SizedBox();
+          },
+        );
+
+    await tester.pumpWidget(build(shouldThrow: false));
+    await tester.pumpWidget(build(shouldThrow: true));
+
+    expect(tester.takeException(), isStateError);
+    expect(log, ['dispose b', 'dispose a', 'dispose parent']);
+  });
+
+  testWidgets('a throwing nested dispose does not prevent other disposals',
+      (tester) async {
+    final log = <String>[];
+
+    Widget build(int key) => HookBuilder(
+          builder: (context) {
+            use(
+              _Delegate(
+                'parent $key',
+                log,
+                () {
+                  use(_Logged('a $key', log, throwOnDispose: key == 1));
+                  use(_Logged('b $key', log));
+                },
+                keys: [key],
+              ),
+            );
+            return const SizedBox();
+          },
+        );
+
+    await tester.pumpWidget(build(1));
+    await tester.pumpWidget(build(2));
+
+    expect(tester.takeException(), isStateError);
+    expect(log, ['dispose b 1', 'dispose a 1', 'dispose parent 1']);
   });
 }

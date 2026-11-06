@@ -532,9 +532,11 @@ Type mismatch between hooks:
     final R result;
     try {
       result = state.build(this) as R;
-    } finally {
       // Hooks that were not reused by this build are disposed.
       _unmountAllRemainingHooks();
+    } finally {
+      // If build threw, the remaining children are left in place: the caller
+      // unmounts this hook, which disposes all of its children first.
       _currentHookList = entry.list ?? _hooks;
       _currentHookState = entry;
     }
@@ -548,21 +550,40 @@ Type mismatch between hooks:
   }
 
   /// Disposes [hook] and all the hooks it used, children first.
+  ///
+  /// If a dispose throws, the remaining hooks are still disposed.
+  /// When [reportErrors] is false, the first error is then rethrown.
   void _disposeHook(
     HookState<Object?, Hook<Object?>> hook, {
     required bool reportErrors,
   }) {
+    Object? firstError;
+    StackTrace? firstStack;
+
     final children = hook._children;
     if (children != null && children.isNotEmpty) {
       for (_Entry<HookState<dynamic, Hook<dynamic>>>? child = children.last;
           child != null;
           child = child.previous) {
-        _disposeHook(child.value, reportErrors: reportErrors);
+        try {
+          _disposeHook(child.value, reportErrors: reportErrors);
+        } catch (exception, stack) {
+          firstError ??= exception;
+          firstStack ??= stack;
+        }
       }
     }
 
     if (!reportErrors) {
-      hook.dispose();
+      try {
+        hook.dispose();
+      } catch (exception, stack) {
+        firstError ??= exception;
+        firstStack ??= stack;
+      }
+      if (firstError != null) {
+        Error.throwWithStackTrace(firstError, firstStack!);
+      }
       return;
     }
 
