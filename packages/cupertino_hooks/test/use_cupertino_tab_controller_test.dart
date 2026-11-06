@@ -1,6 +1,8 @@
 import 'package:cupertino_hooks/cupertino_hooks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_hooks/flutter_hooks.dart'
+    hide useCupertinoTabController;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

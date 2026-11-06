@@ -13,11 +13,20 @@ This package provides hooks for the controllers of `package:material_ui`:
 
 ## Usage
 
-`material_hooks` re-exports `flutter_hooks`. Import it **instead of** `flutter_hooks`:
+Import `material_hooks` alongside `flutter_hooks`:
 
 ```dart
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:material_hooks/material_hooks.dart';
 import 'package:material_ui/material_ui.dart';
+```
+
+While `flutter_hooks` still contains the deprecated versions of these hooks,
+using one of them in a file that imports both packages is ambiguous. Hide the
+deprecated version from `flutter_hooks`:
+
+```dart
+import 'package:flutter_hooks/flutter_hooks.dart' hide useCarouselController, useSearchController, useTabController;
 ```
 
 ## Migrating from flutter_hooks
@@ -29,9 +38,5 @@ To migrate:
 
 1. Add `material_hooks` and `material_ui` to your dependencies.
 2. Replace `package:flutter/material.dart` imports with `package:material_ui/material_ui.dart`.
-3. Replace `package:flutter_hooks/flutter_hooks.dart` imports with
-   `package:material_hooks/material_hooks.dart` in files using these hooks.
-
-Importing both `flutter_hooks` and `material_hooks` in the same file makes these hooks
-ambiguous, so don't import both. `material_hooks` and the other UI hooks package can be
-imported together.
+3. Import `package:material_hooks/material_hooks.dart` in files using these hooks, and hide
+   them from the `flutter_hooks` import as shown above.

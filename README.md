@@ -363,9 +363,10 @@ A series of hooks with no particular theme.
 #### Material hooks:
 
 Hooks for controllers from [material_ui](https://pub.dev/packages/material_ui), provided by the [material_hooks](https://pub.dev/packages/material_hooks) package.
-`material_hooks` re-exports `flutter_hooks`, so import it **instead of** `flutter_hooks`:
+Import it alongside `flutter_hooks`. While `flutter_hooks` still contains the deprecated versions of these hooks, hide them from that import:
 
 ```dart
+import 'package:flutter_hooks/flutter_hooks.dart' hide useCarouselController, useSearchController, useTabController;
 import 'package:material_hooks/material_hooks.dart';
 ```
 
@@ -378,9 +379,10 @@ import 'package:material_hooks/material_hooks.dart';
 #### Cupertino hooks:
 
 Hooks for controllers from [cupertino_ui](https://pub.dev/packages/cupertino_ui), provided by the [cupertino_hooks](https://pub.dev/packages/cupertino_hooks) package.
-`cupertino_hooks` re-exports `flutter_hooks`, so import it **instead of** `flutter_hooks`:
+Import it alongside `flutter_hooks`. While `flutter_hooks` still contains the deprecated versions of these hooks, hide them from that import:
 
 ```dart
+import 'package:flutter_hooks/flutter_hooks.dart' hide useCupertinoTabController;
 import 'package:cupertino_hooks/cupertino_hooks.dart';
 ```
 

@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_hooks/flutter_hooks.dart'
+    hide useCarouselController, useSearchController, useTabController;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_hooks/material_hooks.dart';
 import 'package:material_ui/material_ui.dart';
