@@ -360,25 +360,36 @@ A series of hooks with no particular theme.
 | [useOverlayPortalController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useOverlayPortalController.html)         | Creates and manages an `OverlayPortalController` for controlling the visibility of overlay content. The controller will be automatically disposed when no longer needed. |
 | [useSnapshotController](https://pub.dev/documentation/flutter_hooks/latest/flutter_hooks/useSnapshotController.html)                   | Creates and manages a `SnapshotController`                                                                                                                               |
 
-#### Material and Cupertino hooks:
+#### Material hooks:
 
-Since Flutter 3.47, `package:flutter/material.dart` and `package:flutter/cupertino.dart`
-are deprecated in favor of the [material_ui](https://pub.dev/packages/material_ui)
-and [cupertino_ui](https://pub.dev/packages/cupertino_ui) packages.
-Hooks for controllers from those libraries live in separate packages:
-
-| Package                                                     | Hooks                                                              |
-| ----------------------------------------------------------- | ------------------------------------------------------------------ |
-| [material_hooks](https://pub.dev/packages/material_hooks)   | `useTabController`, `useSearchController`, `useCarouselController` |
-| [cupertino_hooks](https://pub.dev/packages/cupertino_hooks) | `useCupertinoTabController`                                        |
-
-Both packages re-export `flutter_hooks`, so import them **instead of** `flutter_hooks`:
+Hooks for controllers from [material_ui](https://pub.dev/packages/material_ui), provided by the [material_hooks](https://pub.dev/packages/material_hooks) package.
+`material_hooks` re-exports `flutter_hooks`, so import it **instead of** `flutter_hooks`:
 
 ```dart
 import 'package:material_hooks/material_hooks.dart';
 ```
 
-The versions of these hooks that are still in `flutter_hooks` are deprecated.
+| Name                                                                                                                   | Description                                  |
+| ---------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| [useTabController](https://pub.dev/documentation/material_hooks/latest/material_hooks/useTabController.html)           | Creates and disposes a `TabController`.      |
+| [useSearchController](https://pub.dev/documentation/material_hooks/latest/material_hooks/useSearchController.html)     | Creates and disposes a `SearchController`.   |
+| [useCarouselController](https://pub.dev/documentation/material_hooks/latest/material_hooks/useCarouselController.html) | Creates and disposes a `CarouselController`. |
+
+#### Cupertino hooks:
+
+Hooks for controllers from [cupertino_ui](https://pub.dev/packages/cupertino_ui), provided by the [cupertino_hooks](https://pub.dev/packages/cupertino_hooks) package.
+`cupertino_hooks` re-exports `flutter_hooks`, so import it **instead of** `flutter_hooks`:
+
+```dart
+import 'package:cupertino_hooks/cupertino_hooks.dart';
+```
+
+| Name                                                                                                                             | Description                                      |
+| -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| [useCupertinoTabController](https://pub.dev/documentation/cupertino_hooks/latest/cupertino_hooks/useCupertinoTabController.html) | Creates and disposes a `CupertinoTabController`. |
+
+The versions of these hooks in `flutter_hooks` are deprecated, as Flutter deprecated
+`package:flutter/material.dart` and `package:flutter/cupertino.dart` in favor of `material_ui` and `cupertino_ui`.
 
 ## Contributions
 
