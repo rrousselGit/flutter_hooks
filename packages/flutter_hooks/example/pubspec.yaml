@@ -9,11 +9,13 @@ environment:
 dependencies:
   built_collection: ^5.0.0
   built_value: ^8.0.0
+  cupertino_ui: ^1.1.6
   flutter:
     sdk: flutter
   flutter_hooks:
     path: ../
   http: ^0.13.4
+  material_ui: ^1.10.0
   provider: ^6.0.5
   shared_preferences: ^2.0.0
 

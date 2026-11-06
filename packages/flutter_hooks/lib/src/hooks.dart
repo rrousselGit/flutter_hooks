@@ -1,8 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart' show CupertinoTabController;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoTabController;
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart'
+import 'package:flutter/scheduler.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart'
     show
         Brightness,
         CarouselController,
@@ -14,8 +16,6 @@ import 'package:flutter/material.dart'
         WidgetState,
         WidgetStatesController,
         kTabScrollDuration;
-import 'package:flutter/scheduler.dart';
-import 'package:flutter/widgets.dart';
 
 import 'framework.dart';
 
@@ -38,10 +38,10 @@ part 'platform_brightness.dart';
 part 'primitives.dart';
 part 'scroll_controller.dart';
 part 'search_controller.dart';
+part 'snapshot_controller.dart';
 part 'tab_controller.dart';
 part 'text_controller.dart';
 part 'transformation_controller.dart';
 part 'tree_sliver_controller.dart';
 part 'widget_states_controller.dart';
 part 'widgets_binding_observer.dart';
-part 'snapshot_controller.dart';

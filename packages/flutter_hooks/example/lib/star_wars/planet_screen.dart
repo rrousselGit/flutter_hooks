@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 import 'redux.dart';
@@ -133,8 +133,7 @@ class _LoadPageButton extends HookWidget {
     return ElevatedButton(
       onPressed: () async {
         final url = next ? state.planetPage.next : state.planetPage.previous;
-        await Provider.of<_PlanetHandler>(context, listen: false)
-            .fetchAndDispatch(url);
+        await Provider.of<_PlanetHandler>(context, listen: false).fetchAndDispatch(url);
       },
       child: next ? const Text('Next Page') : const Text('Prev Page'),
     );
@@ -175,8 +174,7 @@ class _PlanetListHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: buttonAlignment,
       children: <Widget>[
-        if (state.planetPage.previous != null)
-          const _LoadPageButton(next: false),
+        if (state.planetPage.previous != null) const _LoadPageButton(next: false),
         if (state.planetPage.next != null) const _LoadPageButton()
       ],
     );
