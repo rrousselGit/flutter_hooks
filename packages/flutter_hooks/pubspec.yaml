@@ -7,7 +7,7 @@ version: 0.21.3+1
 
 environment:
   sdk: ^3.6.0
-  flutter: ">=3.41.0"
+  flutter: ">=3.47.0"
 
 resolution: workspace
 

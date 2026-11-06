@@ -1,6 +1,6 @@
 ## Unreleased patch
 
-- Bumped the minimum Flutter SDK to 3.41.0.
+- Bumped the minimum Flutter SDK to 3.47.0 and Dart SDK to 3.6.0.
 - Deprecated `useTabController`, `useSearchController`, `useCarouselController`
   and `useCupertinoTabController`. The Flutter SDK deprecated its Material and
   Cupertino libraries in favor of `package:material_ui` and `package:cupertino_ui`.
