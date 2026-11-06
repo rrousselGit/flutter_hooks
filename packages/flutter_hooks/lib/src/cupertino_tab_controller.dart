@@ -4,6 +4,11 @@ part of 'hooks.dart';
 ///
 /// See also:
 /// - [CupertinoTabController]
+@Deprecated(
+  'Use `useCupertinoTabController` from `package:cupertino_hooks/cupertino_hooks.dart` instead. '
+  'The Flutter SDK deprecated its Material and Cupertino libraries in favor of '
+  'the `cupertino_ui` package.',
+)
 CupertinoTabController useCupertinoTabController({
   int initialIndex = 0,
   List<Object?>? keys,

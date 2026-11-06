@@ -171,7 +171,7 @@ class _TickerProviderHookState
     extends HookState<TickerProvider, _SingleTickerProviderHook>
     implements TickerProvider {
   Ticker? _ticker;
-  ValueListenable<bool>? _tickerModeNotifier;
+  ValueListenable<TickerModeData>? _tickerModeNotifier;
 
   @override
   Ticker createTicker(TickerCallback onTick) {
@@ -217,12 +217,15 @@ class _TickerProviderHookState
 
   void _updateTicker() {
     if (_ticker != null) {
-      _ticker!.muted = !_tickerModeNotifier!.value;
+      final values = _tickerModeNotifier!.value;
+      _ticker!
+        ..muted = !values.enabled
+        ..forceFrames = values.forceFrames;
     }
   }
 
   void _updateTickerModeNotifier() {
-    final newNotifier = TickerMode.getNotifier(context);
+    final newNotifier = TickerMode.getValuesNotifier(context);
     if (newNotifier == _tickerModeNotifier) {
       return;
     }

@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 import 'redux.dart';
@@ -34,7 +34,7 @@ class _PlanetHandler {
 class PlanetScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final api = useMemoized(() => StarWarsApi());
+    final api = useMemoized(StarWarsApi.new);
 
     final store = useReducer<AppState, ReduxAction?>(
       reducer,

@@ -1,6 +1,6 @@
 // ignore_for_file: omit_local_variable_types
-import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// This example demonstrates how to write a hook function that enhances the
 /// useState hook with logging functionality.

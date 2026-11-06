@@ -1,0 +1,23 @@
+name: cupertino_hooks
+description: Flutter hooks for the Cupertino library (package:cupertino_ui).
+homepage: https://github.com/rrousselGit/flutter_hooks
+repository: https://github.com/rrousselGit/flutter_hooks/tree/master/packages/cupertino_hooks
+issue_tracker: https://github.com/rrousselGit/flutter_hooks/issues
+version: 0.1.0
+
+environment:
+  sdk: ^3.13.0
+  flutter: ">=3.47.0"
+
+resolution: workspace
+
+dependencies:
+  cupertino_ui: ^1.1.6
+  flutter:
+    sdk: flutter
+  flutter_hooks: ^0.21.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mockito: ^5.0.16

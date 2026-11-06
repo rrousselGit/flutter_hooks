@@ -15,6 +15,8 @@ jobs:
       matrix:
         package:
           - flutter_hooks
+          - material_hooks
+          - cupertino_hooks
         channel:
           - master
           - stable

@@ -1,6 +1,6 @@
 // ignore_for_file: omit_local_variable_types
-import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'star_wars/planet_screen.dart';
 import 'use_effect.dart';

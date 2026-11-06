@@ -1,18 +1,19 @@
 import 'dart:async';
 
+// The Material and Cupertino libraries are deprecated in favor of the
+// material_ui and cupertino_ui packages. Hooks relying on them are deprecated
+// and live in the material_hooks and cupertino_hooks packages instead.
+// ignore: deprecated_member_use
 import 'package:flutter/cupertino.dart' show CupertinoTabController;
 import 'package:flutter/foundation.dart';
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart'
     show
-        Brightness,
         CarouselController,
-        DraggableScrollableController,
         // ignore: deprecated_member_use
         ExpansionTileController,
         SearchController,
         TabController,
-        WidgetState,
-        WidgetStatesController,
         kTabScrollDuration;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';

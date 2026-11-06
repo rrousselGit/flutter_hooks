@@ -1,3 +1,13 @@
+## Unreleased patch
+
+- Bumped the minimum Flutter SDK to 3.47.0 and Dart SDK to 3.6.0.
+- Deprecated `useTabController`, `useSearchController`, `useCarouselController`
+  and `useCupertinoTabController`. The Flutter SDK deprecated its Material and
+  Cupertino libraries in favor of `package:material_ui` and `package:cupertino_ui`.
+  Use the new `material_hooks` and `cupertino_hooks` packages instead.
+- `useSingleTickerProvider` now uses `TickerMode.getValuesNotifier` and respects
+  `TickerMode.forceFrames`.
+
 ## 0.21.3+1 - 2025-08-19
 
 Updated Discord link

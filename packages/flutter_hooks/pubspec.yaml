@@ -6,8 +6,10 @@ issue_tracker: https://github.com/rrousselGit/flutter_hooks/issues
 version: 0.21.3+1
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
-  flutter: ">=3.32.0"
+  sdk: ^3.6.0
+  flutter: ">=3.47.0"
+
+resolution: workspace
 
 dependencies:
   flutter:
@@ -16,4 +18,5 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  material_ui: ^1.10.0
   mockito: ^5.0.16

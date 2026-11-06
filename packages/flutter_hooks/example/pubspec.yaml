@@ -4,7 +4,9 @@ description: A new Flutter project.
 publish_to: none
 
 environment:
-  sdk: ">=2.12.0 <4.0.0"
+  sdk: ^3.6.0
+
+resolution: workspace
 
 dependencies:
   built_collection: ^5.0.0
@@ -14,6 +16,7 @@ dependencies:
   flutter_hooks:
     path: ../
   http: ^0.13.4
+  material_ui: ^1.10.0
   provider: ^6.0.5
   shared_preferences: ^2.0.0
 

@@ -4,6 +4,11 @@ part of 'hooks.dart';
 ///
 /// See also:
 /// - [TabController]
+@Deprecated(
+  'Use `useTabController` from `package:material_hooks/material_hooks.dart` instead. '
+  'The Flutter SDK deprecated its Material and Cupertino libraries in favor of '
+  'the `material_ui` package.',
+)
 TabController useTabController({
   required int initialLength,
   Duration? animationDuration = kTabScrollDuration,

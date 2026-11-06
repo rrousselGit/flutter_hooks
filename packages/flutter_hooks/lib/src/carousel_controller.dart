@@ -4,6 +4,11 @@ part of 'hooks.dart';
 ///
 /// See also:
 /// - [CarouselController]
+@Deprecated(
+  'Use `useCarouselController` from `package:material_hooks/material_hooks.dart` instead. '
+  'The Flutter SDK deprecated its Material and Cupertino libraries in favor of '
+  'the `material_ui` package.',
+)
 CarouselController useCarouselController({
   int initialItem = 0,
   List<Object?>? keys,
