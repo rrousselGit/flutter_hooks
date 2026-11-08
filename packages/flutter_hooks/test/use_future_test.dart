@@ -7,6 +7,45 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'mock.dart';
 
 void main() {
+  testWidgets('synchronous future is done on the first build', (tester) async {
+    late AsyncSnapshot<int> snapshot;
+    final future = SynchronousFuture(42);
+
+    await tester.pumpWidget(HookBuilder(builder: (context) {
+      snapshot = useFuture(future);
+      return const SizedBox();
+    }));
+
+    expect(
+        snapshot, const AsyncSnapshot<int>.withData(ConnectionState.done, 42));
+    await tester.pump();
+    expect(snapshot.connectionState, ConnectionState.done);
+  });
+
+  testWidgets('switching to a synchronous future preserves its done state',
+      (tester) async {
+    late AsyncSnapshot<int> snapshot;
+    final pending = Completer<int>();
+    var future = pending.future;
+    Widget build() => HookBuilder(builder: (context) {
+          snapshot = useFuture(future);
+          return const SizedBox();
+        });
+
+    await tester.pumpWidget(build());
+    expect(snapshot.connectionState, ConnectionState.waiting);
+
+    future = SynchronousFuture(42);
+    await tester.pumpWidget(build());
+    expect(
+        snapshot, const AsyncSnapshot<int>.withData(ConnectionState.done, 42));
+
+    pending.complete(0);
+    await tester.pump();
+    expect(
+        snapshot, const AsyncSnapshot<int>.withData(ConnectionState.done, 42));
+  });
+
   testWidgets('default preserve state, changing future keeps previous value',
       (tester) async {
     late AsyncSnapshot<int> value;

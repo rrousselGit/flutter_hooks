@@ -93,6 +93,7 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
     if (hook.future != null) {
       final callbackIdentity = Object();
       _activeCallbackIdentity = callbackIdentity;
+      _snapshot = _snapshot.inState(ConnectionState.waiting);
       hook.future!.then<void>((data) {
         if (_activeCallbackIdentity == callbackIdentity) {
           setState(() {
@@ -111,7 +112,6 @@ class _FutureStateHook<T> extends HookState<AsyncSnapshot<T>, _FutureHook<T>> {
           });
         }
       });
-      _snapshot = _snapshot.inState(ConnectionState.waiting);
     }
   }
 
