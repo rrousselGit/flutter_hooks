@@ -15,7 +15,7 @@ dependencies:
     sdk: flutter
   flutter_hooks:
     path: ../
-  http: ^0.13.4
+  http: ^1.6.0
   material_ui: ^1.10.0
   provider: ^6.0.5
   shared_preferences: ^2.0.0
